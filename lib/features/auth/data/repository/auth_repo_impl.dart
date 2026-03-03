@@ -5,5 +5,5 @@ abstract class AuthRepoImpl {
   Future<AppUser?> registerWithEmailPassword(String email, String password);
   Future<void> logout();
   Future<AppUser?> getCurrentUser();
-  Future<void> reauthenticateAndChangePassword(String newPassword, String currentPassword);
+  Future<void> reauthenticateAndChangePassword(String currentPassword, String newPassword);
 }

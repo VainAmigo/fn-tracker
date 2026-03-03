@@ -12,9 +12,6 @@ class FirebaseAuthRepo implements AuthRepoImpl {
       //   attempt sign in
       UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
 
-      // fetch user document from firestore
-      DocumentSnapshot userDoc = await firebaseFirestore.collection('users').doc(userCredential.user!.uid).get();
-
       //   create user
       AppUser user = AppUser(uid: userCredential.user!.uid, email: email);
 

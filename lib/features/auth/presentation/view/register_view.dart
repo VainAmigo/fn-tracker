@@ -69,18 +69,23 @@ class _RegisterViewState extends State<RegisterView> {
                   builder: (context, state) {
                     final isLoading = state is AuthLoading;
 
-                    final isValid = isLoading && passwordController == confirmPasswordController;
-
                     return SizedBox(
                       width: double.infinity,
                       child: FilledButton(
-                        onPressed: isValid ? null : _register,
+                        onPressed: isLoading ? null : _register,
                         child: isLoading
                             ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
                             : const Text('Register'),
                       ),
                     );
                   },
+                ),
+
+                const SizedBox(height: 12),
+
+                TextButton(
+                  onPressed: () => Navigator.of(context).pushNamed(AppRouter.login),
+                  child: const Text('Уже есть аккаунт? Войти'),
                 ),
               ],
             ),

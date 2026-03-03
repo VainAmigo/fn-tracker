@@ -69,6 +69,13 @@ class _LoginViewState extends State<LoginView> {
                     );
                   },
                 ),
+
+                const SizedBox(height: 12),
+
+                TextButton(
+                  onPressed: () => Navigator.of(context).pushNamed(AppRouter.register),
+                  child: const Text('Нет аккаунта? Регистрация'),
+                ),
               ],
             ),
           ),
