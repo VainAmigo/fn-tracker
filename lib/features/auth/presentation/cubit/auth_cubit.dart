@@ -7,13 +7,13 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthRepoImpl authRepo;
   AppUser? _currentUser;
 
-  AuthCubit({required this.authRepo}): super(AuthInitial());
+  AuthCubit({required this.authRepo}) : super(AuthInitial());
 
   // check if user is already authenticated
   void checkAuth() async {
     final AppUser? user = await authRepo.getCurrentUser();
 
-    if(user != null) {
+    if (user != null) {
       _currentUser = user;
       emit(Authenticated(user));
     } else {
@@ -67,16 +67,20 @@ class AuthCubit extends Cubit<AuthState> {
     emit(Unauthenticated());
   }
 
-
   // change password
-  void reauthenticateAndChangePassword(String currentPassword, String newPassword) async {
+  void reauthenticateAndChangePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
     emit(AuthLoading());
     try {
-      await authRepo.reauthenticateAndChangePassword(currentPassword, newPassword);
+      await authRepo.reauthenticateAndChangePassword(
+        currentPassword,
+        newPassword,
+      );
       emit(AuthPasswordChanged());
     } catch (e) {
       emit(AuthError(e.toString()));
     }
   }
-
 }

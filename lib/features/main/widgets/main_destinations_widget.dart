@@ -7,8 +7,8 @@ final mainBottomNavDestinations = [
     label: 'Главная',
   ),
   const BottomNavDestination(
-    icon: Icons.receipt_long_outlined,
-    selectedIcon: Icons.receipt_long_rounded,
+    icon: Icons.receipt_outlined,
+    selectedIcon: Icons.receipt_rounded,
     label: 'Транзакции',
   ),
   const BottomNavDestination(

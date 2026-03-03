@@ -63,7 +63,13 @@ class _LoginViewState extends State<LoginView> {
                       child: FilledButton(
                         onPressed: isLoading ? null : _login,
                         child: isLoading
-                            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
                             : const Text('Login'),
                       ),
                     );
@@ -73,7 +79,8 @@ class _LoginViewState extends State<LoginView> {
                 const SizedBox(height: 12),
 
                 TextButton(
-                  onPressed: () => Navigator.of(context).pushNamed(AppRouter.register),
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(AppRouter.register),
                   child: const Text('Нет аккаунта? Регистрация'),
                 ),
               ],
@@ -87,6 +94,9 @@ class _LoginViewState extends State<LoginView> {
   void _login() {
     if (!_formKey.currentState!.validate()) return;
 
-    context.read<AuthCubit>().login(emailController.text.trim(), passwordController.text.trim());
+    context.read<AuthCubit>().login(
+      emailController.text.trim(),
+      passwordController.text.trim(),
+    );
   }
 }

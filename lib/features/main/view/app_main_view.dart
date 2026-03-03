@@ -11,7 +11,12 @@ class AppMainView extends StatefulWidget {
 class _AppMainViewState extends State<AppMainView> {
   int _selectedIndex = 0;
 
-  static const _tabs = [Placeholder(), Placeholder(), Placeholder(), Placeholder()];
+  static const _tabs = [
+    Placeholder(),
+    Placeholder(),
+    Placeholder(),
+    Placeholder(),
+  ];
 
   @override
   Widget build(BuildContext context) {

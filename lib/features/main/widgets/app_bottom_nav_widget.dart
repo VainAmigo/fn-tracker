@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/features/features.dart';
 
 class AppBottomNavWidget extends StatelessWidget {
-  const AppBottomNavWidget({super.key, required this.destinations, required this.currentIndex, required this.onTap});
+  const AppBottomNavWidget({
+    super.key,
+    required this.destinations,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   final List<BottomNavDestination> destinations;
   final int currentIndex;
@@ -14,7 +19,13 @@ class AppBottomNavWidget extends StatelessWidget {
       selectedIndex: currentIndex,
       onDestinationSelected: onTap,
       destinations: destinations
-          .map((d) => NavigationDestination(icon: Icon(d.icon), selectedIcon: Icon(d.selectedIcon), label: d.label))
+          .map(
+            (d) => NavigationDestination(
+              icon: Icon(d.icon),
+              selectedIcon: Icon(d.selectedIcon),
+              label: d.label,
+            ),
+          )
           .toList(),
     );
   }

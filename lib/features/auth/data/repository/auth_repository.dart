@@ -10,7 +10,8 @@ class FirebaseAuthRepo implements AuthRepoImpl {
   Future<AppUser?> loginWithEmailPassword(String email, String password) async {
     try {
       //   attempt sign in
-      UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await firebaseAuth
+          .signInWithEmailAndPassword(email: email, password: password);
 
       //   create user
       AppUser user = AppUser(uid: userCredential.user!.uid, email: email);
@@ -23,19 +24,23 @@ class FirebaseAuthRepo implements AuthRepoImpl {
   }
 
   @override
-  Future<AppUser?> registerWithEmailPassword(String email, String password) async {
+  Future<AppUser?> registerWithEmailPassword(
+    String email,
+    String password,
+  ) async {
     try {
       //   attempt sign up
-      UserCredential userCredential = await firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await firebaseAuth
+          .createUserWithEmailAndPassword(email: email, password: password);
 
       //   create user
       AppUser user = AppUser(uid: userCredential.user!.uid, email: email);
 
       //save user data in firestore
-      await firebaseFirestore.collection("users").doc(user.uid).set(user.toJson());
+      await firebaseFirestore
+          .collection("users")
+          .doc(user.uid)
+          .set(user.toJson());
 
       //   return user
       return user;
@@ -59,7 +64,10 @@ class FirebaseAuthRepo implements AuthRepoImpl {
     }
 
     // fetch user document from firestore
-    DocumentSnapshot userDoc = await firebaseFirestore.collection('users').doc(firebaseUser.uid).get();
+    DocumentSnapshot userDoc = await firebaseFirestore
+        .collection('users')
+        .doc(firebaseUser.uid)
+        .get();
 
     // check if user doc exists
     if (!userDoc.exists) {
@@ -71,13 +79,19 @@ class FirebaseAuthRepo implements AuthRepoImpl {
 
   // change password
   @override
-  Future<void> reauthenticateAndChangePassword(String currentPassword, String newPassword) async {
+  Future<void> reauthenticateAndChangePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
     final user = firebaseAuth.currentUser;
     if (user == null || user.email == null) {
       throw Exception("User not logged in or email is null");
     }
 
-    final credential = EmailAuthProvider.credential(email: user.email!, password: currentPassword);
+    final credential = EmailAuthProvider.credential(
+      email: user.email!,
+      password: currentPassword,
+    );
 
     await user.reauthenticateWithCredential(credential);
     await user.updatePassword(newPassword);

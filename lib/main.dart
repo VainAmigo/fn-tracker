@@ -24,7 +24,12 @@ class _MyAppState extends State<MyApp> {
     final firebaseAuthRepo = FirebaseAuthRepo();
 
     return MultiBlocProvider(
-      providers: [BlocProvider<AuthCubit>(create: (context) => AuthCubit(authRepo: firebaseAuthRepo)..checkAuth())],
+      providers: [
+        BlocProvider<AuthCubit>(
+          create: (context) =>
+              AuthCubit(authRepo: firebaseAuthRepo)..checkAuth(),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'FN Tracker',
@@ -49,10 +54,7 @@ class _AuthRoot extends StatelessWidget {
         if (state is Authenticated) return const AppMainView();
         if (state is Unauthenticated) return const LoginView();
 
-        // AuthInitial/AuthLoading/AuthError — ждём завершения checkAuth()
-        return const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        );
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
       },
     );
   }

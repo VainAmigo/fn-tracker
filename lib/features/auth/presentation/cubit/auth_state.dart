@@ -1,16 +1,17 @@
 part of 'auth_cubit.dart';
 
-abstract class AuthState{}
+abstract class AuthState {}
 
 // initial
-class AuthInitial extends AuthState{}
+class AuthInitial extends AuthState {}
 
 // loading
-class AuthLoading extends AuthState{}
+class AuthLoading extends AuthState {}
 
 // authenticated
-class Authenticated extends AuthState{
+class Authenticated extends AuthState {
   final AppUser user;
+
   Authenticated(this.user);
 }
 
@@ -20,6 +21,7 @@ class Unauthenticated extends AuthState {}
 // error
 class AuthError extends AuthState {
   final String message;
+
   AuthError(this.message);
 }
 
