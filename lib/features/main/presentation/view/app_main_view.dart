@@ -1,32 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fn_tracker/features/auth/auth.dart';
+import 'package:fn_tracker/features/features.dart';
 
-class AppMainView extends StatelessWidget {
+class AppMainView extends StatefulWidget {
   const AppMainView({super.key});
+
+  @override
+  State<AppMainView> createState() => _AppMainViewState();
+}
+
+class _AppMainViewState extends State<AppMainView> {
+  int _selectedIndex = 0;
+
+  static const _tabs = [Placeholder(), Placeholder(), Placeholder(), Placeholder()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('FN Tracker'),
-        actions: [
-          IconButton(
-            tooltip: 'Выйти',
-            onPressed: () => context.read<AuthCubit>().logout(),
-            icon: const Icon(Icons.logout),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: const Column(
-            children: [
-              Text('App main view'),
-            ],
-          ),
-        ),
+      body: IndexedStack(index: _selectedIndex, children: _tabs),
+      bottomNavigationBar: AppBottomNavWidget(
+        destinations: mainBottomNavDestinations,
+        currentIndex: _selectedIndex,
+        onTap: (index) => setState(() => _selectedIndex = index),
       ),
     );
   }
