@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "632192902712",
+    "project_id": "fn-tracker",
+    "storage_bucket": "fn-tracker.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632192902712:android:36f622caeabf07754be8cd",
+        "android_client_info": {
+          "package_name": "com.example.fn_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAg3jJjabUWzmf_Tz6FbBAinYH7t4VYAA4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
