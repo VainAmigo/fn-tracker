@@ -1,4 +1,4 @@
-import 'package:fn_tracker/theme/app_theme.dart';
+import 'package:fn_tracker/theme/themes.dart';
 import 'package:flutter/material.dart';
 
 class TabTitleWidget extends StatelessWidget {
@@ -18,16 +18,23 @@ class TabTitleWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: AppTextStyles.tabTitle(context)),
-            if (subtitle != null) ...[
-              const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-              Text(subtitle!, style: AppTextStyles.tabSubTitle(context)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: AppTextStyles.tabTitle(context),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+                Text(subtitle!, style: AppTextStyles.tabSubTitle(context)),
+              ],
             ],
-          ],
+          ),
         ),
         if (action != null) ...[
           const SizedBox(width: AppSizing.spaceBtwItems),

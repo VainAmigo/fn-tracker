@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fn_tracker/theme/app_theme.dart';
+import 'package:fn_tracker/theme/themes.dart';
 
 class CategoryCard extends StatelessWidget {
   const CategoryCard({

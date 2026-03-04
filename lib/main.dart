@@ -7,7 +7,7 @@ import 'package:fn_tracker/core/core.dart';
 import 'package:provider/provider.dart';
 
 import 'l10n/generated/app_localizations.dart';
-import 'theme/app_theme.dart';
+import 'theme/themes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

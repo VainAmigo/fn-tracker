@@ -7,9 +7,9 @@ final mainBottomNavDestinations = [
     label: 'Главная',
   ),
   const BottomNavDestination(
-    icon: Icons.receipt_outlined,
-    selectedIcon: Icons.receipt_rounded,
-    label: 'Транзакции',
+    icon: Icons.account_balance_wallet_outlined,
+    selectedIcon: Icons.account_balance_wallet_rounded,
+    label: 'Бюджет',
   ),
   const BottomNavDestination(
     icon: Icons.add_circle_outline,

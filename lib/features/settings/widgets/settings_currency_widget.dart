@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
-import 'package:fn_tracker/theme/app_theme.dart';
+import 'package:fn_tracker/theme/themes.dart';
 
 /// Содержимое модального окна настроек валюты и форматов.
 class SettingsCurrencyWidget extends StatelessWidget {

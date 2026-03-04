@@ -1,4 +1,4 @@
-import 'package:fn_tracker/theme/app_theme.dart';
+import 'package:fn_tracker/theme/themes.dart';
 import 'package:flutter/material.dart';
 
 /// Кастомная цифровая клавиатура для ввода суммы.

@@ -3,11 +3,13 @@ import 'package:fn_tracker/features/features.dart';
 
 part 'add_transaction_state.dart';
 
+
 class TransactionsCubit extends Cubit<TransactionsState> {
   final TransactionsRepoImpl transactionsRepo;
 
-  TransactionsCubit({required this.transactionsRepo})
-    : super(TransactionsInitial());
+  TransactionsCubit({
+    required this.transactionsRepo,
+  }) : super(TransactionsInitial());
 
   Future<void> loadTransactions() async {
     try {

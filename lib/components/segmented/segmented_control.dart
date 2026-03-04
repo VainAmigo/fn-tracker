@@ -1,17 +1,13 @@
-import 'package:fn_tracker/theme/app_theme.dart';
+import 'package:fn_tracker/theme/themes.dart';
 import 'package:flutter/material.dart';
 
 /// Сегмент для выбора в [SegmentedControl].
 class SegmentItem<T> {
-  const SegmentItem({
-    required this.value,
-    required this.label,
-    required this.icon,
-  });
+  const SegmentItem({required this.value, required this.label, this.icon});
 
   final T value;
   final String label;
-  final IconData icon;
+  final IconData? icon;
 }
 
 /// Универсальный сегментированный контрол с pill-кнопками и иконками.
@@ -137,8 +133,10 @@ class _SegmentButton<T> extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(segment.icon, size: 18, color: foregroundColor),
-              const SizedBox(width: 6),
+              if (segment.icon != null) ...[
+                Icon(segment.icon, size: 18, color: foregroundColor),
+                const SizedBox(width: 6),
+              ],
               Flexible(
                 child: Text(
                   segment.label,

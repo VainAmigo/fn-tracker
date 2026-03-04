@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
-import 'package:fn_tracker/theme/app_theme.dart';
+import 'package:fn_tracker/theme/themes.dart';
 
 class AddTransactionActionWidget extends StatefulWidget {
   const AddTransactionActionWidget({
@@ -162,11 +162,11 @@ class _AddTransactionActionWidgetState
   }
 
   Future<void> _showCategoryPicker(BuildContext context) async {
-    final selected =
-        await AppBottomSheet.showFittedModalBottomSheet<CategoryModel>(
-          context,
-          child: AddTransactionCategorySheetWidget(),
-        );
+    final selected = await AppBottomSheet.showFittedModalBottomSheet<
+        CategoryModel>(
+      context,
+      child: AddTransactionCategorySheetWidget(),
+    );
     if (!mounted) return;
     if (selected != null) {
       widget.onCategoryChanged(selected);
