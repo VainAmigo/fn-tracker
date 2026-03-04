@@ -28,7 +28,7 @@ class CategoryCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSizing.spaceBtwElements,
-          vertical: AppSizing.spaceBtwElementsExtra,
+          vertical: AppSizing.spaceBtwItemsExtra,
         ),
         height: AppSizing.heightM,
         decoration: BoxDecoration(

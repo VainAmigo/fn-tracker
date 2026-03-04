@@ -48,7 +48,7 @@ class AmountDisplay extends StatelessWidget {
             children: [
               if (!isRight) ...[
                 _buildSymbol(context, colorScheme),
-                const SizedBox(width: AppSizing.spaceBtwElementsExtra),
+                const SizedBox(width: AppSizing.spaceBtwItemsExtra),
               ],
               Flexible(
                 child: Text(
@@ -59,7 +59,7 @@ class AmountDisplay extends StatelessWidget {
                 ),
               ),
               if (isRight) ...[
-                const SizedBox(width: AppSizing.spaceBtwElementsExtra),
+                const SizedBox(width: AppSizing.spaceBtwItemsExtra),
                 _buildSymbol(context, colorScheme),
               ],
             ],

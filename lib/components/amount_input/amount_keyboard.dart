@@ -33,7 +33,7 @@ class AmountKeyboard extends StatelessWidget {
         children: _keys.map((row) {
           return Padding(
             padding: const EdgeInsets.only(
-              bottom: AppSizing.spaceBtwElementsExtra,
+              bottom: AppSizing.spaceBtwItemsExtra,
             ),
             child: Row(
               children: row.map((key) {
@@ -41,7 +41,7 @@ class AmountKeyboard extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.only(
                       right: row.indexOf(key) < row.length - 1
-                          ? AppSizing.spaceBtwElementsExtra
+                          ? AppSizing.spaceBtwItemsExtra
                           : 0,
                     ),
                     child: _KeyButton(

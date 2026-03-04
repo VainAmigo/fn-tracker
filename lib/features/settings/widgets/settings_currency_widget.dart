@@ -41,7 +41,7 @@ class SettingsCurrencyWidget extends StatelessWidget {
 
                 return Padding(
                   padding: EdgeInsets.only(
-                    bottom: isLast ? 0 : AppSizing.spaceBtwElementsExtra,
+                    bottom: isLast ? 0 : AppSizing.spaceBtwItemsExtra,
                   ),
                   child: ListTile(
                     onTap: () {

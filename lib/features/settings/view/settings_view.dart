@@ -38,7 +38,7 @@ class SettingsView extends StatelessWidget {
                       );
                     },
                   ),
-                  const SizedBox(height: AppSizing.spaceBtwElementsExtra),
+                  const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                   _buildSettingsListTile(
                     context,
                     'Language',
@@ -50,7 +50,7 @@ class SettingsView extends StatelessWidget {
                       );
                     },
                   ),
-                  const SizedBox(height: AppSizing.spaceBtwElementsExtra),
+                  const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                   _buildSettingsListTile(
                     context,
                     'Currency and formats',
@@ -76,7 +76,7 @@ class SettingsView extends StatelessWidget {
                     Icons.privacy_tip,
                     isFirst: true,
                   ),
-                  const SizedBox(height: AppSizing.spaceBtwElementsExtra),
+                  const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                   _buildSettingsListTile(
                     context,
                     'Security',

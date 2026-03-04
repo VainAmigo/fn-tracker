@@ -61,7 +61,7 @@ class HomeTopActionWidget extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: AppSizing.spaceBtwElementsExtra),
+          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           AmountWithSignWidget(
             amount: totalExpense,
             preset: AmountTextPreset.large,

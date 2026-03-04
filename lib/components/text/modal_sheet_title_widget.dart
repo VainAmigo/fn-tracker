@@ -24,7 +24,7 @@ class ModalSheetTitleWidget extends StatelessWidget {
           children: [
             Text(title, style: AppTextStyles.modalSheetTitle(context)),
             if (subtitle != null) ...[
-              const SizedBox(height: AppSizing.spaceBtwElementsExtra),
+              const SizedBox(height: AppSizing.spaceBtwItemsExtra),
               Text(subtitle!, style: AppTextStyles.tabSubTitle(context)),
             ],
           ],

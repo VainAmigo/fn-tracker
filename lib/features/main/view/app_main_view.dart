@@ -13,7 +13,7 @@ class _AppMainViewState extends State<AppMainView> {
 
   static const _tabs = [
     HomeView(),
-    TransactionsListView(),
+    Placeholder(),
     Placeholder(),
     SettingsView(),
   ];

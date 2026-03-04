@@ -41,7 +41,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
   }) async {
     final uid = _requireUid();
     try {
-      final now = Timestamp.now();
+      final createdAt = Timestamp.fromDate(transaction.createdAt);
       final docRef = _transactionsRef(uid).doc();
 
       final model = TransactionModel(
@@ -49,7 +49,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
         categoryId: transaction.categoryId,
         amount: transaction.amount,
         note: transaction.note,
-        createdAt: now.toDate(),
+        createdAt: createdAt.toDate(),
         currency: transaction.currency,
         type: transaction.type,
       );
@@ -59,7 +59,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
         'categoryId': model.categoryId,
         'amount': model.amount,
         'note': model.note,
-        'createdAt': now,
+        'createdAt': createdAt,
         'currency': model.currency,
         'type': model.type.toJson(),
       });

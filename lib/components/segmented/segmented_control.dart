@@ -36,7 +36,7 @@ class SegmentedControl<T> extends StatelessWidget {
   }
 
   List<Widget> _buildSegments(BuildContext context) {
-    final spacing = AppSizing.spaceBtwElementsExtra;
+    final spacing = AppSizing.spaceBtwItemsExtra;
     final segmentCount = segments.length;
 
     return segments.asMap().entries.map((entry) {

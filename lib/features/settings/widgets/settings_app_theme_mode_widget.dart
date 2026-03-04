@@ -27,7 +27,7 @@ class SettingsAppThemeModeWidget extends StatelessWidget {
         return Expanded(
           child: Padding(
             padding: EdgeInsets.only(
-              right: index < segmentCount - 1 ? AppSizing.spaceBtwElementsExtra : 0,
+              right: index < segmentCount - 1 ? AppSizing.spaceBtwItemsExtra : 0,
             ),
             child: _ColorBlock(
               color: blockColor,
