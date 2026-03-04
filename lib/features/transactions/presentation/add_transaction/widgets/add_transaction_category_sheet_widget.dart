@@ -76,7 +76,6 @@ class _AddTransactionCategorySheetWidgetState
                       onTap: () => Navigator.of(context).pop(category),
                       child: CategoryCard(
                         title: category.name,
-                        subtitle: category.currency,
                         style: CategoryCardStyle.outlined,
                       ),
                     );

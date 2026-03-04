@@ -6,9 +6,7 @@ part 'categories_state.dart';
 class CategoriesCubit extends Cubit<CategoriesState> {
   final CategoryRepoImpl categoryRepo;
 
-  CategoriesCubit({
-    required this.categoryRepo,
-  }) : super(CategoriesInitial());
+  CategoriesCubit({required this.categoryRepo}) : super(CategoriesInitial());
 
   Future<void> loadCategories() async {
     try {
@@ -25,64 +23,24 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     }
   }
 
-  Future<void> createCategory({
-    required String name,
-    required String currency,
-    required String colorId,
-    required String iconId,
-    double? limitValue,
-  }) async {
-    final trimmedName = name.trim();
-    final trimmedCurrency = currency.trim();
-
-    if (trimmedName.isEmpty) {
-      emit(
-        CategoryCreateError(
-          message: 'Category name cannot be empty',
-          previousCategories: _currentCategoriesOrNull(),
-        ),
-      );
-      return;
-    }
-
-    if (trimmedCurrency.isEmpty) {
-      emit(
-        CategoryCreateError(
-          message: 'Currency cannot be empty',
-          previousCategories: _currentCategoriesOrNull(),
-        ),
-      );
-      return;
-    }
-
+  Future<void> createCategory({required CategoryModel categoryModel}) async {
     final previousCategories = _currentCategoriesOrNull() ?? [];
 
-    emit(
-      CategoryCreating(
-        previousCategories: previousCategories,
-      ),
-    );
+    emit(CategoryCreating(previousCategories: previousCategories));
 
     try {
-      // categoryId and createdAt will be overwritten by repository
       final draft = CategoryModel(
         categoryId: '',
-        name: trimmedName,
-        colorId: colorId,
-        iconId: iconId,
-        currency: trimmedCurrency,
-        limitValue: limitValue,
+        name: categoryModel.name,
+        colorId: categoryModel.colorId,
+        iconId: categoryModel.iconId,
+        limitValue: categoryModel.limitValue,
         createdAt: DateTime.now(),
       );
 
-      final createdCategory = await categoryRepo.addCategory(
-        category: draft,
-      );
+      final createdCategory = await categoryRepo.addCategory(category: draft);
 
-      final updatedCategories = [
-        createdCategory,
-        ...previousCategories,
-      ];
+      final updatedCategories = [createdCategory, ...previousCategories];
 
       emit(
         CategoryCreateSuccess(

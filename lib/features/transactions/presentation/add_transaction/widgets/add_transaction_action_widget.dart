@@ -78,7 +78,6 @@ class _AddTransactionActionWidgetState
             Expanded(
               child: CategoryCard(
                 title: widget.selectedCategory?.name ?? 'Category',
-                subtitle: widget.selectedCategory?.currency ?? 'Select category',
                 trailing: Icon(
                   Icons.arrow_forward_ios,
                   color: Theme.of(context).colorScheme.onSurface,
@@ -163,11 +162,11 @@ class _AddTransactionActionWidgetState
   }
 
   Future<void> _showCategoryPicker(BuildContext context) async {
-    final selected = await AppBottomSheet.showFittedModalBottomSheet<
-        CategoryModel>(
-      context,
-      child: AddTransactionCategorySheetWidget(),
-    );
+    final selected =
+        await AppBottomSheet.showFittedModalBottomSheet<CategoryModel>(
+          context,
+          child: AddTransactionCategorySheetWidget(),
+        );
     if (!mounted) return;
     if (selected != null) {
       widget.onCategoryChanged(selected);

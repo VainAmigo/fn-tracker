@@ -46,7 +46,6 @@ class CategoryRepository implements CategoryRepoImpl {
         name: category!.name,
         colorId: category.colorId,
         iconId: category.iconId,
-        currency: category.currency,
         limitValue: category.limitValue,
         createdAt: now.toDate(),
       );
@@ -56,7 +55,6 @@ class CategoryRepository implements CategoryRepoImpl {
         'name': model.name,
         'colorId': model.colorId,
         'iconId': model.iconId,
-        'currency': model.currency,
         'limitValue': model.limitValue,
         'createdAt': now,
       });

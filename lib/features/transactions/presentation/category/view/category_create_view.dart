@@ -12,7 +12,6 @@ class CategoryCreateView extends StatefulWidget {
 class _CategoryCreateViewState extends State<CategoryCreateView> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _currencyController = TextEditingController(text: 'USD');
   final _limitController = TextEditingController();
   final _colorIdController = TextEditingController(text: 'default_color');
   final _iconIdController = TextEditingController(text: 'default_icon');
@@ -22,7 +21,6 @@ class _CategoryCreateViewState extends State<CategoryCreateView> {
   @override
   void dispose() {
     _nameController.dispose();
-    _currencyController.dispose();
     _limitController.dispose();
     _colorIdController.dispose();
     _iconIdController.dispose();
@@ -34,10 +32,6 @@ class _CategoryCreateViewState extends State<CategoryCreateView> {
       return;
     }
 
-    final name = _nameController.text;
-    final currency = _currencyController.text;
-    final colorId = _colorIdController.text;
-    final iconId = _iconIdController.text;
     final rawLimit = _limitController.text.trim();
 
     double? limitValue;
@@ -56,14 +50,13 @@ class _CategoryCreateViewState extends State<CategoryCreateView> {
     setState(() {
       _isSubmitting = true;
     });
-
-    context.read<CategoriesCubit>().createCategory(
-          name: name,
-          currency: currency,
-          colorId: colorId,
-          iconId: iconId,
-          limitValue: limitValue,
-    );
+    //
+    // context.read<CategoriesCubit>().createCategory(
+    //       name: name,
+    //       colorId: colorId,
+    //       iconId: iconId,
+    //       limitValue: limitValue,
+    // );
   }
 
   @override
@@ -129,7 +122,6 @@ class _CategoryCreateViewState extends State<CategoryCreateView> {
                           ),
                           const SizedBox(height: 12),
                           TextFormField(
-                            controller: _currencyController,
                             decoration: const InputDecoration(
                               labelText: 'Валюта (например, USD)',
                             ),

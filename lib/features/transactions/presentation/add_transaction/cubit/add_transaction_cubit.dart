@@ -3,13 +3,11 @@ import 'package:fn_tracker/features/features.dart';
 
 part 'add_transaction_state.dart';
 
-
 class TransactionsCubit extends Cubit<TransactionsState> {
   final TransactionsRepoImpl transactionsRepo;
 
-  TransactionsCubit({
-    required this.transactionsRepo,
-  }) : super(TransactionsInitial());
+  TransactionsCubit({required this.transactionsRepo})
+    : super(TransactionsInitial());
 
   Future<void> loadTransactions() async {
     try {
@@ -26,76 +24,24 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     }
   }
 
-  Future<void> addTransaction({
-    required String categoryId,
-    required String currency,
-    required String note,
-    required String rawAmount,
-    required TransactionType type,
-    required DateTime date,
-  }) async {
-    final trimmedCategoryId = categoryId.trim();
-    final trimmedCurrency = currency.trim();
-    final trimmedNote = note.trim();
-
-    if (trimmedCategoryId.isEmpty) {
-      emit(
-        TransactionCreateError(
-          message: 'Категория обязательна',
-          previousTransactions: _currentTransactionsOrNull(),
-        ),
-      );
-      return;
-    }
-
-    if (trimmedCurrency.isEmpty) {
-      emit(
-        TransactionCreateError(
-          message: 'Валюта обязательна',
-          previousTransactions: _currentTransactionsOrNull(),
-        ),
-      );
-      return;
-    }
-
-    final amount = double.tryParse(rawAmount.replaceAll(',', '.'));
-    if (amount == null || amount <= 0) {
-      emit(
-        TransactionCreateError(
-          message: 'Сумма должна быть положительным числом',
-          previousTransactions: _currentTransactionsOrNull(),
-        ),
-      );
-      return;
-    }
-
+  Future<void> addTransaction({required TransactionModel transaction}) async {
     final previousTransactions = _currentTransactionsOrNull() ?? [];
 
-    emit(
-      TransactionCreating(
-        previousTransactions: previousTransactions,
-      ),
-    );
+    emit(TransactionCreating(previousTransactions: previousTransactions));
 
     try {
       final draft = TransactionModel(
         id: '',
-        categoryId: trimmedCategoryId,
-        amount: amount,
-        note: trimmedNote,
-        createdAt: date,
-        currency: trimmedCurrency,
-        type: type,
+        categoryId: transaction.categoryId,
+        amount: transaction.amount,
+        note: transaction.note,
+        createdAt: transaction.createdAt,
+        type: transaction.type,
       );
 
-      final created = await transactionsRepo.addTransaction(
-        transaction: draft,
-      );
+      final created = await transactionsRepo.addTransaction(transaction: draft);
 
-      final updated = <TransactionModel>[
-        created,
-        ...previousTransactions,
-      ];
+      final updated = <TransactionModel>[created, ...previousTransactions];
 
       emit(
         TransactionCreateSuccess(

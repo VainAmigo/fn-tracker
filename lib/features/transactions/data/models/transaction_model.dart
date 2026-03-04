@@ -6,7 +6,6 @@ class TransactionModel {
   final double amount;
   final String note;
   final DateTime createdAt;
-  final String currency;
   final TransactionType type;
 
   TransactionModel({
@@ -15,7 +14,6 @@ class TransactionModel {
     required this.amount,
     required this.note,
     required this.createdAt,
-    required this.currency,
     required this.type,
   });
 
@@ -26,7 +24,6 @@ class TransactionModel {
       'amount': amount,
       'note': note,
       'createdAt': createdAt.toIso8601String(),
-      'currency': currency,
       'type': type.toJson(),
     };
   }
@@ -47,7 +44,6 @@ class TransactionModel {
       amount: json['amount'],
       note: json['note'],
       createdAt: createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
-      currency: json['currency'],
       type: TransactionType.fromJson(json['type'] as String),
     );
   }

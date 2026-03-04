@@ -110,11 +110,6 @@ class _CategoriesListViewState extends State<CategoriesListView> {
                                 .titleMedium
                                 ?.copyWith(fontWeight: FontWeight.w600),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            category.currency,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
                           if (category.limitValue != null) ...[
                             const SizedBox(height: 4),
                             Text(

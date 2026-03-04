@@ -4,7 +4,6 @@ class CategoryModel {
   final String categoryId;
   final String colorId;
   final DateTime createdAt;
-  final String currency;
   final String iconId;
   final double? limitValue;
   final String name;
@@ -13,7 +12,6 @@ class CategoryModel {
     required this.categoryId,
     required this.colorId,
     required this.createdAt,
-    required this.currency,
     required this.iconId,
     this.limitValue,
     required this.name,
@@ -24,7 +22,6 @@ class CategoryModel {
       'categoryId': categoryId,
       'colorId': colorId,
       'createdAt': createdAt.toIso8601String(),
-      'currency': currency,
       'iconId': iconId,
       'limitValue': limitValue,
       'name': name,
@@ -45,7 +42,6 @@ class CategoryModel {
       categoryId: json['categoryId'],
       colorId: json['colorId'],
       createdAt: createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
-      currency: json['currency'],
       iconId: json['iconId'],
       limitValue: (json['limitValue'] as num?)?.toDouble(),
       name: json['name'],

@@ -121,15 +121,28 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   }
 
   void _onSavePressed() {
-    final currency = context.read<CurrencyProvider>().currency;
-    context.read<TransactionsCubit>().addTransaction(
+    if (_amount.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Amount cannot be empty')));
+      return;
+    }
+    if (_selectedCategory == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Category cannot be empty')));
+      return;
+    }
+    final model = TransactionModel(
+      id: '',
       categoryId: _selectedCategory?.categoryId ?? '',
-      currency: currency.code,
       note: _note,
-      rawAmount: _amount,
+      amount: _amount.isNotEmpty ? double.parse(_amount) : 0,
       type: _selectedType,
-      date: _selectedDate,
+      createdAt: _selectedDate,
     );
+
+    context.read<TransactionsCubit>().addTransaction(transaction: model);
   }
 
   void _onKeyPressed(String key) {
@@ -170,6 +183,4 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       }
     });
   }
-
-
 }
