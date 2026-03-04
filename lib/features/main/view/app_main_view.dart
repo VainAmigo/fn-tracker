@@ -15,7 +15,7 @@ class _AppMainViewState extends State<AppMainView> {
     CategoriesListView(),
     TransactionsListView(),
     Placeholder(),
-    Placeholder(),
+    SettingsView(),
   ];
 
   @override
