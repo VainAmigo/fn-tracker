@@ -33,6 +33,10 @@ class _MyAppState extends State<MyApp> {
           create: (context) =>
               CategoriesCubit(categoryRepo: CategoryRepository()),
         ),
+        BlocProvider<TransactionsCubit>(
+          create: (context) =>
+              TransactionsCubit(transactionsRepo: TransactionsRepository()),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

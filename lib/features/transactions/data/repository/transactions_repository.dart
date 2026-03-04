@@ -15,7 +15,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
   }
 
   CollectionReference<Map<String, dynamic>> _transactionsRef(String uid) =>
-      firebaseFirestore.collection('user').doc(uid).collection('transactions');
+      firebaseFirestore.collection('users').doc(uid).collection('transactions');
 
   @override
   Future<List<TransactionModel>> getUserTransactions() async {
@@ -61,7 +61,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
         'note': model.note,
         'createdAt': now,
         'currency': model.currency,
-        'type': model.type,
+        'type': model.type.toJson(),
       });
 
       return model;
