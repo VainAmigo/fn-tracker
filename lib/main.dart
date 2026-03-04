@@ -65,6 +65,7 @@ class FnTracker extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'FN Tracker',
+      initialRoute: AppRouter.main,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: localeProvider.locale,
@@ -74,24 +75,7 @@ class FnTracker extends StatelessWidget {
         Brightness.dark,
       ),
       themeMode: themeProvider.themeMode,
-      home: const _AuthRoot(),
       onGenerateRoute: AppRouter.onGenerateRoute,
-    );
-  }
-}
-
-class _AuthRoot extends StatelessWidget {
-  const _AuthRoot();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        if (state is Authenticated) return const AppMainView();
-        if (state is Unauthenticated) return const LoginView();
-
-        return const Scaffold(body: Center(child: CircularProgressIndicator()));
-      },
     );
   }
 }

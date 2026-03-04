@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
-import 'package:fn_tracker/features/auth/auth.dart';
+import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/theme/app_theme.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -13,7 +15,10 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  final PasswordVisibilityNotifier _passwordVisibilityNotifier =
+      PasswordVisibilityNotifier();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -22,6 +27,7 @@ class _RegisterViewState extends State<RegisterView> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    _passwordVisibilityNotifier.dispose();
     super.dispose();
   }
 
@@ -34,58 +40,73 @@ class _RegisterViewState extends State<RegisterView> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: AppSizing.spaceBtwSections),
+                Text(
+                  'Регистрация',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: AppSizing.spaceBtwItems),
+                Text(
+                  'Создайте аккаунт для отслеживания финансов',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSizing.spaceBtwSections),
 
-                TextFormField(
+                CustomTextFormField(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(hintText: 'Email'),
+                  label: 'Email',
                   validator: AuthValidationUtils.email,
                 ),
 
-                const SizedBox(height: 10),
-
-                TextFormField(
+                PasswordTextField(
                   controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(hintText: 'Password'),
                   validator: AuthValidationUtils.password,
+                  label: 'Password',
+                  passwordVisibilityNotifier: _passwordVisibilityNotifier,
                 ),
 
-                const SizedBox(height: 10),
-
-                TextFormField(
+                PasswordTextField(
                   controller: confirmPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(hintText: 'Confirm Password'),
-                  validator: (value) => AuthValidationUtils.confirmPassword(value, passwordController.text),
+                  validator: (value) => AuthValidationUtils.confirmPassword(
+                    value,
+                    passwordController.text,
+                  ),
+                  label: 'Confirm Password',
+                  passwordVisibilityNotifier: _passwordVisibilityNotifier,
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSizing.spaceBtwSections),
 
                 BlocBuilder<AuthCubit, AuthState>(
                   builder: (context, state) {
                     final isLoading = state is AuthLoading;
 
-                    return SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: isLoading ? null : _register,
-                        child: isLoading
-                            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                            : const Text('Register'),
-                      ),
+                    return PrimaryButton(
+                      onPressed: isLoading ? null : _register,
+                      text: 'Register',
                     );
                   },
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSizing.spaceBtwItems),
 
-                TextButton(
-                  onPressed: () => Navigator.of(context).pushNamed(AppRouter.login),
-                  child: const Text('Уже есть аккаунт? Войти'),
+                PrimaryButton(
+                  text: 'Уже есть аккаунт? Войти',
+                  onPressed: () => Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil(AppRouter.login, (route) => false),
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                  size: PrimaryButtonSize.xSmall,
+                  rounded: true,
                 ),
               ],
             ),
@@ -98,6 +119,9 @@ class _RegisterViewState extends State<RegisterView> {
   void _register() {
     if (!_formKey.currentState!.validate()) return;
 
-    context.read<AuthCubit>().register(emailController.text.trim(), passwordController.text.trim());
+    context.read<AuthCubit>().register(
+      emailController.text.trim(),
+      passwordController.text.trim(),
+    );
   }
 }

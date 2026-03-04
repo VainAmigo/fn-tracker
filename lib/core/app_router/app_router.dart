@@ -1,49 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/features.dart';
 
-class AppRouter {
-  static const login = '/login';
-  static const register = '/register';
-  static const app = '/app';
+@immutable
+final class AppRouter {
+  const AppRouter._();
 
-  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case login:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (context) {
-            final state = context.read<AuthCubit>().state;
-            if (state is Authenticated) return const AppMainView();
-            return const LoginView();
-          },
-        );
-      case register:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (context) {
-            final state = context.read<AuthCubit>().state;
-            if (state is Authenticated) return const AppMainView();
-            return const RegisterView();
-          },
-        );
-      case app:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (context) {
-            final state = context.read<AuthCubit>().state;
-            if (state is Unauthenticated) return const LoginView();
-            return const AppMainView();
-          },
-        );
-      default:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => Scaffold(
-            appBar: AppBar(title: const Text('Страница не найдена')),
-            body: Center(child: Text('Маршрут: ${settings.name}')),
-          ),
-        );
-    }
+  static const main = '/';
+  static const auth = '/auth';
+  static const register = '/register';
+  static const login = '/login';
+  static const addTransaction = '/add-transaction';
+
+  static Route<void> onGenerateRoute(RouteSettings settings) {
+    return switch (settings.name) {
+      main => MaterialPageRoute(
+        settings: const RouteSettings(name: main),
+        builder: (_) => const AuthGateView(),
+      ),
+      auth => MaterialPageRoute(
+        settings: const RouteSettings(name: auth),
+        builder: (_) => const AuthView(),
+      ),
+      register => MaterialPageRoute(
+        settings: const RouteSettings(name: register),
+        builder: (_) => const RegisterView(),
+      ),
+      login => MaterialPageRoute(
+        settings: const RouteSettings(name: login),
+        builder: (_) => const LoginView(),
+      ),
+      addTransaction => MaterialPageRoute(
+        settings: const RouteSettings(name: addTransaction),
+        builder: (_) => const AddTransactionView(),
+      ),
+      _ => throw Exception(
+        'No builder specified for route named: [${settings.name}]',
+      ),
+    };
   }
 }

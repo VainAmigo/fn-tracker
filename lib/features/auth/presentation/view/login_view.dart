@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
-import 'package:fn_tracker/features/auth/auth.dart';
+import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/theme/app_theme.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -13,6 +15,8 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final PasswordVisibilityNotifier _passwordVisibilityNotifier =
+      PasswordVisibilityNotifier();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -20,6 +24,7 @@ class _LoginViewState extends State<LoginView> {
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    _passwordVisibilityNotifier.dispose();
     super.dispose();
   }
 
@@ -32,56 +37,66 @@ class _LoginViewState extends State<LoginView> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: AppSizing.spaceBtwSections),
+                Text(
+                  'Finance Tracker',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSizing.spaceBtwItems),
+                Text(
+                  'Войдите, чтобы продолжить',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSizing.spaceBtwSections),
 
-                TextFormField(
+                CustomTextFormField(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(hintText: 'Email'),
+                  label: 'Email',
                   validator: AuthValidationUtils.email,
                 ),
 
-                const SizedBox(height: 10),
-
-                TextFormField(
+                PasswordTextField(
                   controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(hintText: 'Password'),
                   validator: AuthValidationUtils.password,
+                  label: 'Password',
+                  passwordVisibilityNotifier: _passwordVisibilityNotifier,
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSizing.spaceBtwSections),
 
                 BlocBuilder<AuthCubit, AuthState>(
                   builder: (context, state) {
                     final isLoading = state is AuthLoading;
 
-                    return SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: isLoading ? null : _login,
-                        child: isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text('Login'),
-                      ),
+                    return PrimaryButton(
+                      onPressed: isLoading ? null : _login,
+                      text: 'Login',
                     );
                   },
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSizing.spaceBtwItems),
 
-                TextButton(
+                PrimaryButton(
+                  text: 'Нет аккаунта? Регистрация',
                   onPressed: () =>
-                      Navigator.of(context).pushNamed(AppRouter.register),
-                  child: const Text('Нет аккаунта? Регистрация'),
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        AppRouter.register,
+                        (route) => false,
+                      ),
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                  size: PrimaryButtonSize.xSmall,
+                  rounded: true,
                 ),
               ],
             ),

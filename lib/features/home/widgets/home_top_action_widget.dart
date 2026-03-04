@@ -1,0 +1,69 @@
+import 'package:flutter/material.dart';
+import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/theme/app_theme.dart';
+
+class HomeTopActionWidget extends StatelessWidget {
+  const HomeTopActionWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSizing.defaultPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            spacing: AppSizing.spaceBtwItems,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Spent',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      'October, 21',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              PrimaryButton(
+                text: 'Deposit',
+                icon: Icons.add,
+                onPressed: () => Navigator.of(context).pushNamed(
+                  AppRouter.addTransaction,
+                ),
+                size: PrimaryButtonSize.medium,
+                paddingStyle: PrimaryButtonPaddingStyle.slim,
+                rounded: true,
+                fullWidth: false,
+                iconOnly: true,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSizing.spaceBtwElementsExtra),
+          AmountWithSignWidget(
+            amount: 120586.00,
+            preset: AmountTextPreset.large,
+          ),
+        ],
+      ),
+    );
+  }
+}
