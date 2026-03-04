@@ -1,5 +1,17 @@
 {
     "@@locale": "ky",
     "signIn": "Кирүү",
-    "signUp": "Катталуу"
+    "signUp": "Катталуу",
+    "january": "Январь",
+    "february": "Февраль",
+    "march": "Март",
+    "april": "Апрель",
+    "may": "Май",
+    "june": "Июнь",
+    "july": "Июль",
+    "august": "Август",
+    "september": "Сентябрь",
+    "october": "Октябрь",
+    "november": "Ноябрь",
+    "december": "Декабрь"
 }

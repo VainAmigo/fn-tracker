@@ -11,6 +11,7 @@ export 'chart/gradient_line_chart.dart';
 export 'section/titled_section.dart';
 export 'text/modal_sheet_title_widget.dart';
 export 'segmented/segmented_control.dart';
+export 'segmented/month_picker_scroll_widget.dart';
 
 export 'cards/category_card.dart';
 

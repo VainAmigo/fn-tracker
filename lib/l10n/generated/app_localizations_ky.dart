@@ -13,4 +13,40 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get signUp => 'Катталуу';
+
+  @override
+  String get january => 'Январь';
+
+  @override
+  String get february => 'Февраль';
+
+  @override
+  String get march => 'Март';
+
+  @override
+  String get april => 'Апрель';
+
+  @override
+  String get may => 'Май';
+
+  @override
+  String get june => 'Июнь';
+
+  @override
+  String get july => 'Июль';
+
+  @override
+  String get august => 'Август';
+
+  @override
+  String get september => 'Сентябрь';
+
+  @override
+  String get october => 'Октябрь';
+
+  @override
+  String get november => 'Ноябрь';
+
+  @override
+  String get december => 'Декабрь';
 }

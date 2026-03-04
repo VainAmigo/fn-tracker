@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class WalletBudgetTabWidget extends StatelessWidget {
@@ -10,12 +12,14 @@ class WalletBudgetTabWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Budget',
-            style: AppTextStyles.tabTitle(context),
+          MonthPickerScrollWidget(
+            onDateChange: (Month month, int year) {
+              // MonthRangeUtils.rangeFor(year, month) → (start, end) выбранного месяца
+              print('month: $month, year: $year');
+              print(MonthRangeUtils.rangeFor(year, month));
+            },
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
-          const SizedBox(height: 200),
         ],
       ),
     );
