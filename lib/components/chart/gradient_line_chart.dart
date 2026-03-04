@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// How to use
@@ -101,6 +102,7 @@ class StaticLineChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant StaticLineChartPainter oldDelegate) =>
-      oldDelegate.values != values ||
-      oldDelegate.minYFactor != minYFactor;
+      !listEquals(oldDelegate.values, values) ||
+      oldDelegate.minYFactor != minYFactor ||
+      oldDelegate.gradientColor != gradientColor;
 }

@@ -87,4 +87,61 @@ class TransactionsRepository implements TransactionsRepoImpl {
       throw Exception('Failed to get total for period: $e');
     }
   }
+
+  @override
+  Future<HomePageStatModel> getHomePageStats() async {
+    try {
+      final uid = _requireUid();
+      final now = DateTime.now();
+      final startOfMonth = DateTime(now.year, now.month, 1);
+      final startOfNextMonth = now.month == 12
+          ? DateTime(now.year + 1, 1, 1)
+          : DateTime(now.year, now.month + 1, 1);
+
+      final snapshot = await _transactionsRef(uid)
+          .where('type', isEqualTo: TransactionType.expense.toJson())
+          .where(
+            'createdAt',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startOfMonth),
+          )
+          .where(
+            'createdAt',
+            isLessThan: Timestamp.fromDate(startOfNextMonth),
+          )
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      final transactions = snapshot.docs
+          .map((doc) => TransactionModel.fromJson(doc.data()))
+          .toList();
+
+      // Суммируем только по тем дням, где есть транзакции
+      final Map<int, double> perDay = {};
+      for (final t in transactions) {
+        final d = t.createdAt;
+        if (d.year == now.year && d.month == now.month) {
+          perDay.update(
+            d.day,
+            (prev) => prev + t.amount,
+            ifAbsent: () => t.amount,
+          );
+        }
+      }
+
+      // Сортируем дни и возвращаем только суммы за дни с записями
+      final sortedDays = perDay.keys.toList()..sort();
+      final dailyTotals =
+          sortedDays.map((day) => perDay[day] ?? 0.0).toList(growable: false);
+
+      final totalExpense =
+          dailyTotals.fold<double>(0.0, (double sum, v) => sum + v);
+
+      return HomePageStatModel(
+        totalExpense: totalExpense,
+        homeChartStat: dailyTotals,
+      );
+    } catch (e) {
+      throw Exception('Failed to get home page stats: $e');
+    }
+  }
 }

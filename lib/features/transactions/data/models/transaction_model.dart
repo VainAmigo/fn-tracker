@@ -63,8 +63,26 @@ enum TransactionType {
   /// Создаёт enum из строки (например, из Firestore)
   static TransactionType fromJson(String value) {
     return TransactionType.values.firstWhere(
-          (e) => e.name.toUpperCase() == value.toUpperCase(),
+      (e) => e.name.toUpperCase() == value.toUpperCase(),
       orElse: () => TransactionType.expense, // значение по умолчанию
+    );
+  }
+}
+
+class HomePageStatModel {
+  final double totalExpense;
+  final List<double> homeChartStat;
+
+  HomePageStatModel({required this.totalExpense, required this.homeChartStat});
+
+  Map<String, dynamic> toJson() {
+    return {'totalExpense': totalExpense, 'homeChartStat': homeChartStat};
+  }
+
+  factory HomePageStatModel.fromJson(Map<String, dynamic> json) {
+    return HomePageStatModel(
+      totalExpense: json['totalExpense'] as double,
+      homeChartStat: List<double>.from(json['homeChartStat']),
     );
   }
 }

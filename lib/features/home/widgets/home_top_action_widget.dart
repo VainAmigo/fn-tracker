@@ -4,10 +4,14 @@ import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/theme/app_theme.dart';
 
 class HomeTopActionWidget extends StatelessWidget {
-  const HomeTopActionWidget({super.key});
+  const HomeTopActionWidget({super.key, required this.totalExpense});
+
+  final double totalExpense;
 
   @override
   Widget build(BuildContext context) {
+    final today = DateTime.now();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSizing.defaultPadding),
       child: Column(
@@ -33,7 +37,7 @@ class HomeTopActionWidget extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'October, 21',
+                      today.formatMonthDay,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -59,7 +63,7 @@ class HomeTopActionWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwElementsExtra),
           AmountWithSignWidget(
-            amount: 120586.00,
+            amount: totalExpense,
             preset: AmountTextPreset.large,
           ),
         ],
