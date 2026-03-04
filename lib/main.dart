@@ -29,6 +29,10 @@ class _MyAppState extends State<MyApp> {
           create: (context) =>
               AuthCubit(authRepo: firebaseAuthRepo)..checkAuth(),
         ),
+        BlocProvider<CategoriesCubit>(
+          create: (context) =>
+              CategoriesCubit(categoryRepo: CategoryRepository()),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

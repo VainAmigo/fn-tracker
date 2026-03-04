@@ -12,7 +12,7 @@ class _AppMainViewState extends State<AppMainView> {
   int _selectedIndex = 0;
 
   static const _tabs = [
-    Placeholder(),
+    CategoriesListView(),
     Placeholder(),
     Placeholder(),
     Placeholder(),
