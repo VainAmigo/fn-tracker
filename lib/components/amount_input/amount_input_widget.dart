@@ -102,7 +102,7 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
           currency: widget.currency,
           label: widget.label,
         ),
-        const SizedBox(height: AppSizing.spaceBtwSections),
+        const SizedBox(height: AppSizing.spaceBtwElements),
         AmountKeyboard(onKeyPressed: _onKeyPressed),
       ],
     );

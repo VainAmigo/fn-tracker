@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fn_tracker/theme/themes.dart';
 
 class CustomTextFormField extends StatelessWidget {
   const CustomTextFormField({
@@ -71,16 +72,20 @@ class CustomTextFormField extends StatelessWidget {
           prefixText: prefixText,
           prefixIcon: prefixIcon,
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary),
-            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+            borderRadius: BorderRadius.circular(AppSizing.borderRadius4),
           ),
           errorBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizing.borderRadius12),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface),
+            borderRadius: BorderRadius.circular(AppSizing.borderRadius12),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ),
       ),

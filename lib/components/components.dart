@@ -14,6 +14,7 @@ export 'segmented/segmented_control.dart';
 export 'segmented/month_picker_scroll_widget.dart';
 
 export 'cards/category_card.dart';
+export 'cards/selectable_card.dart';
 
 export 'form/text_form_field.dart';
 export 'form/password_form_text_field.dart';

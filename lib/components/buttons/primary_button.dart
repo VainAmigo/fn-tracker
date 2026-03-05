@@ -14,6 +14,7 @@ class PrimaryButton extends StatelessWidget {
     this.fullWidth = true,
     this.rounded = false,
     this.iconOnly = false,
+    this.isLoading = false,
   });
 
   final void Function()? onPressed;
@@ -26,6 +27,7 @@ class PrimaryButton extends StatelessWidget {
   final bool fullWidth;
   final bool rounded;
   final bool iconOnly;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -65,16 +67,18 @@ class PrimaryButton extends StatelessWidget {
             if (!iconOnly) SizedBox(width: size.iconPadding),
           ],
           if (!iconOnly)
-            Text(
-              text,
-              style: TextStyle(
-                color: isDisabled
-                    ? textColor.withValues(alpha: 0.5)
-                    : textColor,
-                fontSize: size.fontSize,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            isLoading
+                ? CircularProgressIndicator(color: textColor)
+                : Text(
+                    text,
+                    style: TextStyle(
+                      color: isDisabled
+                          ? textColor.withValues(alpha: 0.5)
+                          : textColor,
+                      fontSize: size.fontSize,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
         ],
       ),
     );

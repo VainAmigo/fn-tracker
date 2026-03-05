@@ -42,6 +42,8 @@ class _AddTransactionActionWidgetState
     final now = DateUtils.dateOnly(DateTime.now());
     final selected = DateUtils.dateOnly(widget.selectedDate);
     final yesterday = now.subtract(const Duration(days: 1));
+    final shade = findShadeById(widget.selectedCategory?.colorId ?? '');
+    final icon = findIconById(widget.selectedCategory?.iconId ?? '');
 
     String dateTitle;
     if (selected == now) {
@@ -82,6 +84,25 @@ class _AddTransactionActionWidgetState
                   Icons.arrow_forward_ios,
                   color: Theme.of(context).colorScheme.onSurface,
                   size: AppSizing.iconSizeM,
+                ),
+                leading: Container(
+                  height: AppSizing.heightS,
+                  decoration: BoxDecoration(
+                    color:
+                        shade?.color.withValues(alpha: 0.15) ??
+                        Colors.grey.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(
+                      AppSizing.borderRadius8,
+                    ),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Icon(
+                      icon?.icon ?? Icons.category,
+                      size: AppSizing.iconSizeM,
+                      color: shade?.color ?? Colors.grey,
+                    ),
+                  ),
                 ),
                 onTap: () => _showCategoryPicker(context),
               ),
@@ -162,11 +183,11 @@ class _AddTransactionActionWidgetState
   }
 
   Future<void> _showCategoryPicker(BuildContext context) async {
-    final selected = await AppBottomSheet.showFittedModalBottomSheet<
-        CategoryModel>(
-      context,
-      child: AddTransactionCategorySheetWidget(),
-    );
+    final selected =
+        await AppBottomSheet.showFittedModalBottomSheet<CategoryModel>(
+          context,
+          child: AddTransactionCategorySheetWidget(),
+        );
     if (!mounted) return;
     if (selected != null) {
       widget.onCategoryChanged(selected);

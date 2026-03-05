@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class CategoryModel {
   final String categoryId;
   final String colorId;
-  final DateTime createdAt;
+  final DateTime? createdAt;
   final String iconId;
   final double? limitValue;
   final String name;
@@ -11,7 +11,7 @@ class CategoryModel {
   CategoryModel({
     required this.categoryId,
     required this.colorId,
-    required this.createdAt,
+    this.createdAt,
     required this.iconId,
     this.limitValue,
     required this.name,
@@ -21,7 +21,7 @@ class CategoryModel {
     return {
       'categoryId': categoryId,
       'colorId': colorId,
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': createdAt!.toIso8601String(),
       'iconId': iconId,
       'limitValue': limitValue,
       'name': name,

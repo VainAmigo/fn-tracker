@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fn_tracker/theme/themes.dart';
+import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/features/features.dart';
 
 class WalletWalletTabWidget extends StatelessWidget {
   const WalletWalletTabWidget({super.key});
@@ -10,12 +12,24 @@ class WalletWalletTabWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Wallet',
-            style: AppTextStyles.tabTitle(context),
+          TitledSection(
+            title: 'Categories',
+            action: PrimaryButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(AppRouter.createCategory);
+              },
+              text: 'add category',
+              size: PrimaryButtonSize.xSmall,
+              rounded: true,
+              fullWidth: false,
+            ),
+            children: [
+              CategoryListWidget(
+                autoLoad: true,
+                shrinkWrap: true,
+              ),
+            ],
           ),
-          const SizedBox(height: AppSizing.spaceBtwSections),
-          const SizedBox(height: 200),
         ],
       ),
     );

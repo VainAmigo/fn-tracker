@@ -75,6 +75,11 @@ class AmountFormatter {
     }
     return buffer.toString().split('').reversed.join();
   }
+
+
+  static String formatWithDots(String left, String right) {
+    return '$left • $right';
+  }
 }
 
 /// Результат форматирования суммы с разделением на части.

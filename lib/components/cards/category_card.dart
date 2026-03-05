@@ -10,6 +10,7 @@ class CategoryCard extends StatelessWidget {
     this.trailing,
     this.onTap,
     this.style = CategoryCardStyle.filled,
+    this.radius = CategoryCardRadius.middle,
   });
 
   final String title;
@@ -18,6 +19,7 @@ class CategoryCard extends StatelessWidget {
   final Widget? trailing;
   final Function()? onTap;
   final CategoryCardStyle style;
+  final CategoryCardRadius radius;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,23 @@ class CategoryCard extends StatelessWidget {
           border: style == CategoryCardStyle.outlined
               ? Border.all(color: colorScheme.onSecondary, width: 1)
               : null,
-          borderRadius: BorderRadius.circular(AppSizing.borderRadius12),
+          borderRadius: switch (radius) {
+            CategoryCardRadius.first => BorderRadius.only(
+              topLeft: Radius.circular(AppSizing.borderRadius12),
+              topRight: Radius.circular(AppSizing.borderRadius12),
+              bottomLeft: Radius.circular(AppSizing.borderRadius4),
+              bottomRight: Radius.circular(AppSizing.borderRadius4),
+            ),
+            CategoryCardRadius.last => BorderRadius.only(
+              topLeft: Radius.circular(AppSizing.borderRadius4),
+              topRight: Radius.circular(AppSizing.borderRadius4),
+              bottomLeft: Radius.circular(AppSizing.borderRadius12),
+              bottomRight: Radius.circular(AppSizing.borderRadius12),
+            ),
+            CategoryCardRadius.middle => BorderRadius.circular(
+              AppSizing.borderRadius4,
+            ),
+          },
         ),
         child: Row(
           children: [
@@ -74,5 +92,7 @@ class CategoryCard extends StatelessWidget {
     );
   }
 }
+
+enum CategoryCardRadius { first, last, middle }
 
 enum CategoryCardStyle { filled, outlined }

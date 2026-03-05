@@ -40,7 +40,6 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     return BlocListener<TransactionsCubit, TransactionsState>(
       listener: (context, state) {
         if (state is TransactionCreateSuccess) {
-
           Navigator.of(context).pop(state.createdTransaction);
           return;
         }
@@ -53,10 +52,6 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
           title: const Text('Add Transaction'),
           actions: [
             Padding(
