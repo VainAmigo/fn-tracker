@@ -49,4 +49,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get december => 'Декабрь';
+
+  @override
+  String get week => 'Неделя';
+
+  @override
+  String get threeMonths => '3 месяца';
+
+  @override
+  String get sixMonths => '6 месяцев';
 }

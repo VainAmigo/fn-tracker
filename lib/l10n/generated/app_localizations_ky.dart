@@ -49,4 +49,13 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get december => 'Декабрь';
+
+  @override
+  String get week => 'Жума';
+
+  @override
+  String get threeMonths => '3 ай';
+
+  @override
+  String get sixMonths => '6 ай';
 }

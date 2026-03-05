@@ -33,7 +33,7 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
   }
 
   CategoryCardRadius _radiusForIndex(int index, int total) {
-    if (total == 1) return CategoryCardRadius.middle;
+    if (total == 1) return CategoryCardRadius.single;
     if (index == 0) return CategoryCardRadius.first;
     if (index == total - 1) return CategoryCardRadius.last;
     return CategoryCardRadius.middle;

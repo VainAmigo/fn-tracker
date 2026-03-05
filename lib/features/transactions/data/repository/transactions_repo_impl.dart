@@ -1,7 +1,10 @@
 import 'package:fn_tracker/features/transactions/data/models/transaction_model.dart';
 
 abstract class TransactionsRepoImpl {
-  Future<List<TransactionModel>> getUserTransactions();
+  Future<List<TransactionModel>> getUserTransactionsByPeriod({
+    required DateTime start,
+    required DateTime end,
+  });
 
   Future<TransactionModel> addTransaction({
     required TransactionModel transaction,

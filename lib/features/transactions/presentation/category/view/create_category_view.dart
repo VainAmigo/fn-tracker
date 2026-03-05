@@ -48,7 +48,7 @@ class _CreateCategoryViewState extends State<CreateCategoryView> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Create Category')),
+        appBar: AppBar(title: const Text('Create Category'), scrolledUnderElevation: 0,),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(

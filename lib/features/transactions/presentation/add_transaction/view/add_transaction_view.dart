@@ -18,6 +18,12 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   CategoryModel? _selectedCategory;
   String _note = '';
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<AddTransactionCubit>().reset();
+  }
+
   static const _segments = [
     SegmentItem<TransactionType>(
       value: TransactionType.expense,
@@ -34,38 +40,24 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   @override
   Widget build(BuildContext context) {
     final currency = context.watch<CurrencyProvider>().currency;
-    final txState = context.watch<TransactionsCubit>().state;
-    final isSaving = txState is TransactionCreating;
+    final txState = context.watch<AddTransactionCubit>().state;
+    final isSaving = txState is AddTransactionCreating;
 
-    return BlocListener<TransactionsCubit, TransactionsState>(
+    return BlocListener<AddTransactionCubit, AddTransactionState>(
       listener: (context, state) {
-        if (state is TransactionCreateSuccess) {
+        if (state is AddTransactionSuccess) {
           Navigator.of(context).pop(state.createdTransaction);
           return;
         }
 
-        if (state is TransactionCreateError) {
+        if (state is AddTransactionError) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Add Transaction'),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: AppSizing.defaultPadding),
-              child: PrimaryButton(
-                text: 'Save',
-                size: PrimaryButtonSize.xSmall,
-                rounded: true,
-                fullWidth: false,
-                onPressed: isSaving ? null : _onSavePressed,
-              ),
-            ),
-          ],
-        ),
+        appBar: AppBar(title: const Text('Add Transaction')),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -74,7 +66,6 @@ class _AddTransactionViewState extends State<AddTransactionView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: AppSizing.spaceBtwSections),
                 SegmentedControl<TransactionType>(
                   segments: _segments,
                   height: AppSizing.heightM,
@@ -108,6 +99,15 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                 ),
                 const SizedBox(height: AppSizing.spaceBtwElements),
                 AmountKeyboard(onKeyPressed: _onKeyPressed),
+                PrimaryButton(
+                  text: 'Save',
+                  size: PrimaryButtonSize.medium,
+                  rounded: true,
+                  isLoading: isSaving,
+                  fullWidth: false,
+                  onPressed: isSaving ? null : _onSavePressed,
+                ),
+                const SizedBox(height: AppSizing.spaceBtwElements),
               ],
             ),
           ),
@@ -138,7 +138,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       createdAt: _selectedDate,
     );
 
-    context.read<TransactionsCubit>().addTransaction(transaction: model);
+    context.read<AddTransactionCubit>().addTransaction(transaction: model);
   }
 
   void _onKeyPressed(String key) {

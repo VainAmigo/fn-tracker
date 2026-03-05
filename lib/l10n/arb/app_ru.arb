@@ -13,5 +13,8 @@
     "september": "Сентябрь",
     "october": "Октябрь",
     "november": "Ноябрь",
-    "december": "Декабрь"
+    "december": "Декабрь",
+    "week": "Неделя",
+    "threeMonths": "3 месяца",
+    "sixMonths": "6 месяцев"
 }

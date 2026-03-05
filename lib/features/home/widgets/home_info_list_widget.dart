@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class HomeInfoListWidget extends StatelessWidget {
@@ -12,9 +15,18 @@ class HomeInfoListWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: AppSizing.spaceBtwElements,
         children: [
-          Container(height: 200, color: Colors.red),
-          Container(height: 500, color: Colors.blue),
-          Container(height: 300, color: Colors.green),
+          TitledSection(
+            title: 'Last Transactions',
+            action: PrimaryButton(
+              text: 'View All',
+              onPressed: () =>
+                  Navigator.pushNamed(context, AppRouter.transactions),
+              size: PrimaryButtonSize.xSmall,
+              fullWidth: false,
+              rounded: true,
+            ),
+            children: [LastTransactionsListWidget()],
+          ),
         ],
       ),
     );

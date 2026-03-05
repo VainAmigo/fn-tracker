@@ -41,6 +41,10 @@ class _AppViewState extends State<AppView> {
           create: (context) =>
               TransactionsCubit(transactionsRepo: TransactionsRepository()),
         ),
+        BlocProvider<AddTransactionCubit>(
+          create: (context) =>
+              AddTransactionCubit(transactionsRepo: TransactionsRepository()),
+        ),
       ],
       child: MultiProvider(
         providers: [

@@ -56,6 +56,9 @@ class CategoryCard extends StatelessWidget {
             CategoryCardRadius.middle => BorderRadius.circular(
               AppSizing.borderRadius4,
             ),
+            CategoryCardRadius.single => BorderRadius.circular(
+              AppSizing.borderRadius12,
+            ),
           },
         ),
         child: Row(
@@ -93,6 +96,6 @@ class CategoryCard extends StatelessWidget {
   }
 }
 
-enum CategoryCardRadius { first, last, middle }
+enum CategoryCardRadius { first, last, middle, single }
 
 enum CategoryCardStyle { filled, outlined }

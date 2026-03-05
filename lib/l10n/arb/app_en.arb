@@ -27,5 +27,11 @@
     "november": "November",
     "@november": {},
     "december": "December",
-    "@december": {}
+    "@december": {},
+    "week": "Week",
+    "@week": {},
+    "threeMonths": "3 months",
+    "@threeMonths": {},
+    "sixMonths": "6 months",
+    "@sixMonths": {}
 }

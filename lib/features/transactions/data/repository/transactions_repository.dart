@@ -18,12 +18,17 @@ class TransactionsRepository implements TransactionsRepoImpl {
       firebaseFirestore.collection('users').doc(uid).collection('transactions');
 
   @override
-  Future<List<TransactionModel>> getUserTransactions() async {
+  Future<List<TransactionModel>> getUserTransactionsByPeriod({
+    required DateTime start,
+    required DateTime end,
+  }) async {
     try {
       final uid = _requireUid();
 
       final transactionsSnapshot = await _transactionsRef(uid)
           .where('type', isEqualTo: TransactionType.expense.toJson())
+          .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+          .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(end))
           .orderBy('createdAt', descending: true)
           .get();
 
@@ -102,10 +107,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
             'createdAt',
             isGreaterThanOrEqualTo: Timestamp.fromDate(startOfMonth),
           )
-          .where(
-            'createdAt',
-            isLessThan: Timestamp.fromDate(startOfNextMonth),
-          )
+          .where('createdAt', isLessThan: Timestamp.fromDate(startOfNextMonth))
           .orderBy('createdAt', descending: true)
           .get();
 
@@ -128,11 +130,14 @@ class TransactionsRepository implements TransactionsRepoImpl {
 
       // Сортируем дни и возвращаем только суммы за дни с записями
       final sortedDays = perDay.keys.toList()..sort();
-      final dailyTotals =
-          sortedDays.map((day) => perDay[day] ?? 0.0).toList(growable: false);
+      final dailyTotals = sortedDays
+          .map((day) => perDay[day] ?? 0.0)
+          .toList(growable: false);
 
-      final totalExpense =
-          dailyTotals.fold<double>(0.0, (double sum, v) => sum + v);
+      final totalExpense = dailyTotals.fold<double>(
+        0.0,
+        (double sum, v) => sum + v,
+      );
 
       return HomePageStatModel(
         totalExpense: totalExpense,

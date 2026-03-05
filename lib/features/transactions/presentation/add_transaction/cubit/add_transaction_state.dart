@@ -1,47 +1,19 @@
 part of 'add_transaction_cubit.dart';
 
-sealed class TransactionsState {}
+sealed class AddTransactionState {}
 
-class TransactionsInitial extends TransactionsState {}
+class AddTransactionInitial extends AddTransactionState {}
 
-class TransactionsLoading extends TransactionsState {}
+class AddTransactionCreating extends AddTransactionState {}
 
-class TransactionsEmpty extends TransactionsState {}
-
-class TransactionsLoaded extends TransactionsState {
-  final List<TransactionModel> transactions;
-
-  TransactionsLoaded({required this.transactions});
-}
-
-class TransactionsError extends TransactionsState {
-  final String message;
-
-  TransactionsError({required this.message});
-}
-
-class TransactionCreating extends TransactionsState {
-  final List<TransactionModel> previousTransactions;
-
-  TransactionCreating({required this.previousTransactions});
-}
-
-class TransactionCreateSuccess extends TransactionsState {
-  final List<TransactionModel> transactions;
+class AddTransactionSuccess extends AddTransactionState {
   final TransactionModel createdTransaction;
 
-  TransactionCreateSuccess({
-    required this.transactions,
-    required this.createdTransaction,
-  });
+  AddTransactionSuccess({required this.createdTransaction});
 }
 
-class TransactionCreateError extends TransactionsState {
+class AddTransactionError extends AddTransactionState {
   final String message;
-  final List<TransactionModel>? previousTransactions;
 
-  TransactionCreateError({
-    required this.message,
-    required this.previousTransactions,
-  });
+  AddTransactionError({required this.message});
 }

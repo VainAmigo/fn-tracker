@@ -13,5 +13,8 @@
     "september": "Сентябрь",
     "october": "Октябрь",
     "november": "Ноябрь",
-    "december": "Декабрь"
+    "december": "Декабрь",
+    "week": "Жума",
+    "threeMonths": "3 ай",
+    "sixMonths": "6 ай"
 }

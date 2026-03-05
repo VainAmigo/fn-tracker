@@ -1,0 +1,37 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fn_tracker/features/features.dart';
+
+part 'transactions_state.dart';
+
+class TransactionsCubit extends Cubit<TransactionsState> {
+  final TransactionsRepoImpl transactionsRepo;
+
+  TransactionsCubit({required this.transactionsRepo})
+    : super(TransactionsInitial());
+
+  Future<void> loadTransactionsByPeriod(TransactionPeriod period) async {
+    try {
+      emit(TransactionsLoading());
+      final transactions = await transactionsRepo.getUserTransactionsByPeriod(
+        start: period.dateRange.start,
+        end: period.dateRange.end,
+      );
+
+      if (transactions.isEmpty) {
+        emit(TransactionsEmpty());
+      } else {
+        emit(TransactionsLoaded(transactions: transactions));
+      }
+    } catch (e) {
+      emit(TransactionsError(message: e.toString()));
+    }
+  }
+
+  void addTransactionLocally(TransactionModel transaction) {
+    final current = state;
+    final existing = current is TransactionsLoaded
+        ? current.transactions
+        : <TransactionModel>[];
+    emit(TransactionsLoaded(transactions: [transaction, ...existing]));
+  }
+}

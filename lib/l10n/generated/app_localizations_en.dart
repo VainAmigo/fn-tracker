@@ -49,4 +49,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get december => 'December';
+
+  @override
+  String get week => 'Week';
+
+  @override
+  String get threeMonths => '3 months';
+
+  @override
+  String get sixMonths => '6 months';
 }

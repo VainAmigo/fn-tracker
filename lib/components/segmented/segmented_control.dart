@@ -78,7 +78,7 @@ class _SegmentButton<T> extends StatelessWidget {
 
   BorderRadius _getBorderRadius() {
     final selectedBorderRadius = AppSizing.borderRadius100;
-    final unselectedBorderRadius = AppSizing.borderRadius8;
+    final unselectedBorderRadius = AppSizing.borderRadius4;
 
     if (isSelected) {
       return BorderRadius.circular(selectedBorderRadius);
