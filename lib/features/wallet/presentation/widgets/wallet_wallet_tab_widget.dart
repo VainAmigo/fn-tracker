@@ -25,6 +25,11 @@ class WalletWalletTabWidget extends StatelessWidget {
             ),
             children: [
               CategoryListWidget(
+                onCategorySelected: (category) {
+                  Navigator.of(
+                    context,
+                  ).pushNamed(AppRouter.updateCategory, arguments: category);
+                },
                 autoLoad: true,
                 shrinkWrap: true,
               ),

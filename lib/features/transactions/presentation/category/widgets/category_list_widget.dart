@@ -60,6 +60,14 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
           CategoryCreating s => s.previousCategories,
           CategoryCreateError s =>
             s.previousCategories ?? const <CategoryModel>[],
+          CategoryUpdateSuccess s => s.categories,
+          CategoryUpdating s => s.previousCategories,
+          CategoryUpdateError s =>
+            s.previousCategories ?? const <CategoryModel>[],
+          CategoryDeleteSuccess s => s.categories,
+          CategoryDeleting s => s.previousCategories,
+          CategoryDeleteError s =>
+            s.previousCategories ?? const <CategoryModel>[],
           CategoriesEmpty _ => const <CategoryModel>[],
           _ => const <CategoryModel>[],
         };

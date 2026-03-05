@@ -58,6 +58,67 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     }
   }
 
+  Future<void> updateCategory({required CategoryModel categoryModel}) async {
+    final previousCategories = _currentCategoriesOrNull() ?? [];
+
+    emit(CategoryUpdating(previousCategories: previousCategories));
+
+    try {
+      final updatedCategory =
+          await categoryRepo.updateCategory(category: categoryModel);
+
+      final updatedCategories = previousCategories
+          .map((c) =>
+              c.categoryId == updatedCategory.categoryId ? updatedCategory : c)
+          .toList();
+
+      emit(
+        CategoryUpdateSuccess(
+          categories: updatedCategories,
+          updatedCategory: updatedCategory,
+        ),
+      );
+    } catch (e) {
+      emit(
+        CategoryUpdateError(
+          message: e.toString(),
+          previousCategories: previousCategories,
+        ),
+      );
+    }
+  }
+
+  Future<void> deleteCategory({required String categoryId}) async {
+    final previousCategories = _currentCategoriesOrNull() ?? [];
+
+    emit(CategoryDeleting(previousCategories: previousCategories));
+
+    try {
+      await categoryRepo.deleteCategory(categoryId: categoryId);
+
+      final updatedCategories =
+          previousCategories.where((c) => c.categoryId != categoryId).toList();
+
+      if (updatedCategories.isEmpty) {
+        emit(CategoriesEmpty());
+      } else {
+        emit(
+          CategoryDeleteSuccess(
+            categories: updatedCategories,
+            deletedCategoryId: categoryId,
+          ),
+        );
+      }
+    } catch (e) {
+      emit(
+        CategoryDeleteError(
+          message: e.toString(),
+          previousCategories: previousCategories,
+        ),
+      );
+    }
+  }
+
   List<CategoryModel>? _currentCategoriesOrNull() {
     final currentState = state;
 
@@ -74,6 +135,30 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     }
 
     if (currentState is CategoryCreateError) {
+      return currentState.previousCategories;
+    }
+
+    if (currentState is CategoryUpdating) {
+      return currentState.previousCategories;
+    }
+
+    if (currentState is CategoryUpdateSuccess) {
+      return currentState.categories;
+    }
+
+    if (currentState is CategoryUpdateError) {
+      return currentState.previousCategories;
+    }
+
+    if (currentState is CategoryDeleting) {
+      return currentState.previousCategories;
+    }
+
+    if (currentState is CategoryDeleteSuccess) {
+      return currentState.categories;
+    }
+
+    if (currentState is CategoryDeleteError) {
       return currentState.previousCategories;
     }
 

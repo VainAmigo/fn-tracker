@@ -51,3 +51,59 @@ class CategoryCreateError extends CategoriesState {
     required this.previousCategories,
   });
 }
+
+// Update states
+
+class CategoryUpdating extends CategoriesState {
+  final List<CategoryModel> previousCategories;
+
+  CategoryUpdating({required this.previousCategories});
+}
+
+class CategoryUpdateSuccess extends CategoriesState {
+  final List<CategoryModel> categories;
+  final CategoryModel updatedCategory;
+
+  CategoryUpdateSuccess({
+    required this.categories,
+    required this.updatedCategory,
+  });
+}
+
+class CategoryUpdateError extends CategoriesState {
+  final String message;
+  final List<CategoryModel>? previousCategories;
+
+  CategoryUpdateError({
+    required this.message,
+    required this.previousCategories,
+  });
+}
+
+// Delete states
+
+class CategoryDeleting extends CategoriesState {
+  final List<CategoryModel> previousCategories;
+
+  CategoryDeleting({required this.previousCategories});
+}
+
+class CategoryDeleteSuccess extends CategoriesState {
+  final List<CategoryModel> categories;
+  final String deletedCategoryId;
+
+  CategoryDeleteSuccess({
+    required this.categories,
+    required this.deletedCategoryId,
+  });
+}
+
+class CategoryDeleteError extends CategoriesState {
+  final String message;
+  final List<CategoryModel>? previousCategories;
+
+  CategoryDeleteError({
+    required this.message,
+    required this.previousCategories,
+  });
+}

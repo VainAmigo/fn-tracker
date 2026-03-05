@@ -64,4 +64,36 @@ class CategoryRepository implements CategoryRepoImpl {
       throw Exception('Failed to add category: $e');
     }
   }
+
+  @override
+  Future<CategoryModel> updateCategory({required CategoryModel category}) async {
+    final uid = _requireUid();
+    try {
+      final docRef = _categoriesRef(uid).doc(category.categoryId);
+
+      final data = {
+        'name': category.name,
+        'colorId': category.colorId,
+        'iconId': category.iconId,
+        'limitValue': category.limitValue,
+      };
+
+      await docRef.update(data);
+
+      final snapshot = await docRef.get();
+      return CategoryModel.fromJson(snapshot.data()!);
+    } catch (e) {
+      throw Exception('Failed to update category: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteCategory({required String categoryId}) async {
+    final uid = _requireUid();
+    try {
+      await _categoriesRef(uid).doc(categoryId).delete();
+    } catch (e) {
+      throw Exception('Failed to delete category: $e');
+    }
+  }
 }

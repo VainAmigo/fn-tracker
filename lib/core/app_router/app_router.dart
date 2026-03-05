@@ -11,6 +11,7 @@ final class AppRouter {
   static const login = '/login';
   static const addTransaction = '/add-transaction';
   static const createCategory = '/create-category';
+  static const updateCategory = '/update-category';
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
     return switch (settings.name) {
@@ -37,6 +38,10 @@ final class AppRouter {
       createCategory => MaterialPageRoute(
         settings: const RouteSettings(name: createCategory),
         builder: (_) => const CreateCategoryView(),
+      ),
+      updateCategory => MaterialPageRoute(
+        settings: const RouteSettings(name: updateCategory),
+        builder: (_) => UpdateCategoryView(category: settings.arguments as CategoryModel),
       ),
       _ => throw Exception(
         'No builder specified for route named: [${settings.name}]',
