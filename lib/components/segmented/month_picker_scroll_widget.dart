@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/core/core.dart';
-import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Диапазон лет для прокрутки (включительно).
@@ -82,24 +81,6 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
     _notifyDateChange();
   }
 
-  String _localizedMonthName(BuildContext context, Month month) {
-    final l10n = context.l10n;
-    return switch (month) {
-      Month.january => l10n.january,
-      Month.february => l10n.february,
-      Month.march => l10n.march,
-      Month.april => l10n.april,
-      Month.may => l10n.may,
-      Month.june => l10n.june,
-      Month.july => l10n.july,
-      Month.august => l10n.august,
-      Month.september => l10n.september,
-      Month.october => l10n.october,
-      Month.november => l10n.november,
-      Month.december => l10n.december,
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -134,7 +115,7 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
                       : colorScheme.onSecondary,
                 ),
                 child: Center(
-                  child: Text(_localizedMonthName(context, monthEnum)),
+                  child: Text(monthEnum.localizedName(context)),
                 ),
               );
             },

@@ -1,0 +1,183 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/theme/themes.dart';
+
+class WalletBudgetTabWidget extends StatefulWidget {
+  const WalletBudgetTabWidget({super.key});
+
+  @override
+  State<WalletBudgetTabWidget> createState() => _WalletBudgetTabWidgetState();
+}
+
+class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<BudgetCubit>().getBudget();
+    _loadTotalForCurrentPeriod();
+  }
+
+  void _onDateChange(Month month, int year) {
+    final (:start, :end) = MonthRangeUtils.rangeFor(year, month);
+    context.read<TransactionsPeriodTotalCubit>().getTotalForPeriod(start, end);
+  }
+
+  void _loadTotalForCurrentPeriod() {
+    final (:start, :end) = MonthRangeUtils.currentMonth();
+    context.read<TransactionsPeriodTotalCubit>().getTotalForPeriod(start, end);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currency = context.read<CurrencyProvider>().currency;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        MonthPickerScrollWidget(onDateChange: _onDateChange),
+        const SizedBox(height: AppSizing.spaceBtwSections),
+        BlocBuilder<BudgetCubit, BudgetState>(
+          builder: (context, state) {
+            return switch (state) {
+              BudgetInitial() || BudgetLoading() => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              BudgetNotFound() => _NoBudgetPlaceholder(
+                onCreatePressed: () => _showBudgetSheet(currency: currency),
+              ),
+              BudgetLoaded(:final budget) =>
+                BlocBuilder<TransactionsPeriodTotalCubit,
+                    TransactionsPeriodTotalState>(
+                  builder: (context, totalState) {
+                    final total = switch (totalState) {
+                      TransactionsPeriodTotalLoaded(:final total) => total,
+                      _ => 0.0,
+                    };
+                    return BudgetStatWidget(
+                      budget: budget,
+                      totalForPeriod: total,
+                      currency: currency,
+                      onEditBudgetPressed: () => _showBudgetSheet(
+                        currency: currency,
+                        existingBudget: budget,
+                      ),
+                    );
+                  },
+                ),
+              BudgetError() => _BudgetErrorPlaceholder(
+                onRetry: () => context.read<BudgetCubit>().getBudget(),
+              ),
+            };
+          },
+        ),
+      ],
+    );
+  }
+
+  void _showBudgetSheet({
+    required Currency currency,
+    BudgetModel? existingBudget,
+  }) {
+    String? newAmount = existingBudget?.amount.toString();
+
+    AppBottomSheet.showFittedModalBottomSheet(
+      context,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizing.defaultPadding,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AmountInputWidget(
+              initialAmount: existingBudget?.amount.toString() ?? '',
+              currency: currency,
+              onAmountChanged: (amount) => newAmount = amount,
+            ),
+            PrimaryButton(
+              text: 'Save',
+              onPressed: () {
+                final parsed = double.tryParse(newAmount ?? '');
+                if (parsed == null || parsed <= 0) return;
+
+                if (existingBudget != null) {
+                  final updated = BudgetModel(
+                    id: existingBudget.id,
+                    amount: parsed,
+                  );
+                  context.read<BudgetCubit>().updateBudget(budget: updated);
+                } else {
+                  final created = BudgetModel(id: '', amount: parsed);
+                  context.read<BudgetCubit>().createBudget(budget: created);
+                }
+                Navigator.of(context).pop();
+              },
+              size: PrimaryButtonSize.medium,
+            ),
+            const SizedBox(height: AppSizing.spaceBtwSections),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NoBudgetPlaceholder extends StatelessWidget {
+  const _NoBudgetPlaceholder({required this.onCreatePressed});
+
+  final VoidCallback onCreatePressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'No budget found. Please create one.',
+          style: AppTextStyles.text16w400(context),
+        ),
+        const SizedBox(height: AppSizing.spaceBtwItems),
+        PrimaryButton(
+          text: 'Create budget',
+          size: PrimaryButtonSize.xSmall,
+          rounded: true,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Theme.of(context).colorScheme.primary,
+          onPressed: onCreatePressed,
+        ),
+      ],
+    );
+  }
+}
+
+class _BudgetErrorPlaceholder extends StatelessWidget {
+  const _BudgetErrorPlaceholder({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          'Something went wrong. Please try again later.',
+          style: AppTextStyles.text16w400(context),
+        ),
+        const SizedBox(height: AppSizing.spaceBtwItems),
+        PrimaryButton(
+          text: 'Retry',
+          size: PrimaryButtonSize.xSmall,
+          rounded: true,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Theme.of(context).colorScheme.primary,
+          onPressed: onRetry,
+        ),
+      ],
+    );
+  }
+}

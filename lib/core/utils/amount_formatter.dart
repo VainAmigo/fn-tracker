@@ -104,34 +104,15 @@ class CurrencyFormatter {
 
   /// Форматирует сумму согласно настройкам валюты.
   String format(double amount) {
-    final rounded = amount.toStringAsFixed(currency.decimalPlaces);
-    final parts = rounded.split('.');
+    final formatted = formatWithParts(amount);
+    final formattedNumber = formatted.full;
 
-    final intPart = parts[0];
-    final buffer = StringBuffer();
-
-    for (int i = 0; i < intPart.length; i++) {
-      if (i > 0 && (intPart.length - i) % 3 == 0) {
-        buffer.write(_getThousandsSeparator());
-      }
-      buffer.write(intPart[i]);
-    }
-
-    String formattedNumber = buffer.toString();
-    if (currency.decimalPlaces > 0) {
-      formattedNumber += _getDecimalSeparator() + parts[1];
-    }
-
-    switch (currency.symbolPosition) {
-      case SymbolPosition.left:
-        return '${currency.symbol}$formattedNumber';
-      case SymbolPosition.leftWithSpace:
-        return '${currency.symbol} $formattedNumber';
-      case SymbolPosition.right:
-        return '$formattedNumber${currency.symbol}';
-      case SymbolPosition.rightWithSpace:
-        return '$formattedNumber ${currency.symbol}';
-    }
+    return switch (currency.symbolPosition) {
+      SymbolPosition.left => '${currency.symbol}$formattedNumber',
+      SymbolPosition.leftWithSpace => '${currency.symbol} $formattedNumber',
+      SymbolPosition.right => '$formattedNumber${currency.symbol}',
+      SymbolPosition.rightWithSpace => '$formattedNumber ${currency.symbol}',
+    };
   }
 
   /// Форматирует сумму с разбиением на целую и дробную части (без символа валюты).

@@ -1,6 +1,8 @@
 export 'view/wallet_view.dart';
 export 'wallet_tab.dart';
-export 'widgets/wallet_budget_tab_widget.dart';
-export 'widgets/wallet_goals_tab_widget.dart';
+export 'view/tabs/wallet_budget_tab_view.dart';
+export 'view/tabs/wallet_goals_tab_view.dart';
+export 'view/tabs/wallet_wallet_tab_view.dart';
 export 'widgets/wallet_tab_bar_widget.dart';
-export 'widgets/wallet_wallet_tab_widget.dart';
+export 'widgets/budget_stat_widget.dart';
+export 'cubit/budget_cubit.dart';

@@ -26,7 +26,6 @@ class TransactionsRepository implements TransactionsRepoImpl {
       final uid = _requireUid();
 
       final transactionsSnapshot = await _transactionsRef(uid)
-          .where('type', isEqualTo: TransactionType.expense.toJson())
           .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
           .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(end))
           .orderBy('createdAt', descending: true)
@@ -34,6 +33,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
 
       return transactionsSnapshot.docs
           .map((doc) => TransactionModel.fromJson(doc.data()))
+          .where((t) => t.type == TransactionType.expense)
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch transactions: $e');
@@ -78,12 +78,14 @@ class TransactionsRepository implements TransactionsRepoImpl {
     try {
       final uid = _requireUid();
       final snapshot = await _transactionsRef(uid)
-          .where('type', isEqualTo: TransactionType.expense.toJson())
           .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
           .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(end))
           .get();
 
-      return snapshot.docs.fold<double>(0.0, (double sum, doc) {
+      final expenseType = TransactionType.expense.toJson();
+      return snapshot.docs
+          .where((doc) => doc.data()['type'] == expenseType)
+          .fold<double>(0.0, (double sum, doc) {
         return sum + (doc.data()['amount'] as num).toDouble();
       });
     } catch (e) {
@@ -102,7 +104,6 @@ class TransactionsRepository implements TransactionsRepoImpl {
           : DateTime(now.year, now.month + 1, 1);
 
       final snapshot = await _transactionsRef(uid)
-          .where('type', isEqualTo: TransactionType.expense.toJson())
           .where(
             'createdAt',
             isGreaterThanOrEqualTo: Timestamp.fromDate(startOfMonth),
@@ -113,6 +114,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
 
       final transactions = snapshot.docs
           .map((doc) => TransactionModel.fromJson(doc.data()))
+          .where((t) => t.type == TransactionType.expense)
           .toList();
 
       // Суммируем только по тем дням, где есть транзакции
