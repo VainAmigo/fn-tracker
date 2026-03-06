@@ -164,7 +164,7 @@ class _SpendingCategoryCard extends StatelessWidget {
                     ],
               trackColor: colorScheme.secondary,
             ),
-            const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+            const SizedBox(height: AppSizing.spaceBtwElements),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

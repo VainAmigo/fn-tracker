@@ -105,17 +105,27 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
               final isCenter = index == _currentIndex;
               final monthEnum = Month.fromValue(month);
 
-              return AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 150),
-                style: TextStyle(
-                  fontSize: isCenter ? 18 : 16,
-                  fontWeight: isCenter ? FontWeight.w600 : FontWeight.w400,
-                  color: isCenter
-                      ? colorScheme.onSurface
-                      : colorScheme.onSecondary,
-                ),
-                child: Center(
-                  child: Text(monthEnum.localizedName(context)),
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: isCenter
+                    ? null
+                    : () => _pageController.animateToPage(
+                          index,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        ),
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 150),
+                  style: TextStyle(
+                    fontSize: isCenter ? 18 : 16,
+                    fontWeight: isCenter ? FontWeight.w600 : FontWeight.w400,
+                    color: isCenter
+                        ? colorScheme.onSurface
+                        : colorScheme.onSecondary,
+                  ),
+                  child: Center(
+                    child: Text(monthEnum.localizedName(context)),
+                  ),
                 ),
               );
             },
