@@ -78,13 +78,16 @@ class _Body extends StatelessWidget {
                 decimalPlaces: currency.decimalPlaces,
               );
 
+              final fallbackColor = Theme.of(context).colorScheme.onSecondary;
+              final resolvedColor = shade?.color ?? fallbackColor;
+
               return CategoryCard(
                 title: category?.name ?? tx.categoryId,
                 subtitle: tx.note.isNotEmpty ? tx.note : null,
                 leading: Container(
                   height: AppSizing.heightS,
                   decoration: BoxDecoration(
-                    color: shade!.color.withValues(alpha: 0.15),
+                    color: resolvedColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(
                       AppSizing.borderRadius8,
                     ),
@@ -94,7 +97,7 @@ class _Body extends StatelessWidget {
                     child: Icon(
                       icon?.icon ?? Icons.category,
                       size: AppSizing.iconSizeM,
-                      color: shade.color,
+                      color: resolvedColor,
                     ),
                   ),
                 ),

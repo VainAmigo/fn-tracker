@@ -31,13 +31,13 @@ extension DateFormattingExtension on DateTime {
 
   /// October 21
   String get formatMonthDay {
-    final monthName = _monthsFull[this.month - 1];
+    final monthName = _monthsFull[month - 1];
     return '$monthName $day';
   }
 
   /// 21 OCT 2025
   String get formatDayMonthYearUpper {
-    final monthName = _monthsShortUpper[this.month - 1];
+    final monthName = _monthsShortUpper[month - 1];
     return '$day $monthName $year';
   }
 

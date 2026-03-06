@@ -13,20 +13,11 @@ class BudgetStatWidget extends StatefulWidget {
 }
 
 class _BudgetStatWidgetState extends State<BudgetStatWidget> {
-  late Future<double> _totalFuture;
-
   @override
   void initState() {
     super.initState();
-    _loadData();
-  }
-
-  void _loadData() {
     final (:start, :end) = MonthRangeUtils.currentMonth();
-    _totalFuture = context
-        .read<TransactionsPeriodTotalCubit>()
-        .transactionsRepo
-        .getTotalForPeriod(start, end);
+    context.read<TransactionsPeriodTotalCubit>().getTotalForPeriod(start, end);
 
     final budgetState = context.read<BudgetCubit>().state;
     if (budgetState is BudgetInitial) {
@@ -47,10 +38,12 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
 
         final budget = budgetState.budget;
 
-        return FutureBuilder<double>(
-          future: _totalFuture,
-          builder: (context, snapshot) {
-            final spent = snapshot.data ?? 0.0;
+        return BlocBuilder<TransactionsPeriodTotalCubit,
+            TransactionsPeriodTotalState>(
+          builder: (context, totalState) {
+            final spent = totalState is TransactionsPeriodTotalLoaded
+                ? totalState.total
+                : 0.0;
             final exceeded = spent > budget.amount;
 
             final remainingPercent =
@@ -116,7 +109,9 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
                     children: [
                       Text(
                         '${formatter.format(budget.amount)} / ${formatter.format(spent)}',
-                        style: AppTextStyles.listTileSubtitle(context).copyWith(fontWeight: FontWeight.w600),
+                        style: AppTextStyles.listTileSubtitle(
+                          context,
+                        ).copyWith(fontWeight: FontWeight.w600),
                       ),
                       Text(
                         exceeded

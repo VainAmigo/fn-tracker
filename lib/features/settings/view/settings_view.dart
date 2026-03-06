@@ -112,6 +112,7 @@ class SettingsView extends StatelessWidget {
   }) {
     return ListTile(
       onTap: onTap,
+      tileColor: Theme.of(context).colorScheme.secondary,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: isFirst
@@ -121,7 +122,6 @@ class SettingsView extends StatelessWidget {
               ? Radius.circular(AppSizing.borderRadius12)
               : Radius.circular(AppSizing.borderRadius4),
         ),
-        side: BorderSide(color: Theme.of(context).colorScheme.onSecondary),
       ),
       leading: Icon(icon, color: Theme.of(context).colorScheme.onSecondary),
       title: Text(title, style: AppTextStyles.listTileTitle(context)),

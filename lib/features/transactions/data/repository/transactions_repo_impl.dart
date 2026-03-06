@@ -12,5 +12,8 @@ abstract class TransactionsRepoImpl {
 
   Future<double> getTotalForPeriod(DateTime start, DateTime end);
 
-  Future<HomePageStatModel> getHomePageStats();
+  Future<HomePageStatModel> getHomePageStats({
+    required DateTime start,
+    required DateTime end,
+  });
 }

@@ -18,7 +18,7 @@ class SegmentedControl<T> extends StatelessWidget {
     required this.segments,
     required this.selectedValue,
     required this.onChanged,
-    this.height = 40,
+    this.height = AppSizing.heightM,
   });
 
   final List<SegmentItem<T>> segments;
@@ -102,18 +102,19 @@ class _SegmentButton<T> extends StatelessWidget {
     return BorderRadius.circular(unselectedBorderRadius);
   }
 
+  static const _animationDuration = Duration(milliseconds: 300);
+  static const _animationCurve = Curves.easeInOut;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final backgroundColor = isSelected
-        ? colorScheme.primary
-        : colorScheme.secondary;
+    final backgroundColor =
+        isSelected ? colorScheme.primary : colorScheme.secondary;
 
-    final foregroundColor = isSelected
-        ? colorScheme.onPrimary
-        : colorScheme.onSecondary;
+    final foregroundColor =
+        isSelected ? colorScheme.onPrimary : colorScheme.onSecondary;
 
     final borderRadius = _getBorderRadius();
 
@@ -122,31 +123,38 @@ class _SegmentButton<T> extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppSizing.borderRadius100),
-        child: Container(
+        child: AnimatedContainer(
+          duration: _animationDuration,
+          curve: _animationCurve,
           height: height,
           padding: const EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: borderRadius,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (segment.icon != null) ...[
-                Icon(segment.icon, size: 18, color: foregroundColor),
-                const SizedBox(width: 6),
-              ],
-              Flexible(
-                child: Text(
-                  segment.label,
-                  style: AppTextStyles.segmentedButtonLabel(
-                    context,
-                  ).copyWith(color: foregroundColor),
-                  overflow: TextOverflow.ellipsis,
+          child: TweenAnimationBuilder<Color?>(
+            tween: ColorTween(end: foregroundColor),
+            duration: _animationDuration,
+            curve: _animationCurve,
+            builder: (context, color, _) => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (segment.icon != null) ...[
+                  Icon(segment.icon, size: 18, color: color),
+                  const SizedBox(width: 6),
+                ],
+                Flexible(
+                  child: Text(
+                    segment.label,
+                    style: AppTextStyles.segmentedButtonLabel(
+                      context,
+                    ).copyWith(color: color),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

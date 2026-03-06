@@ -27,6 +27,7 @@ class WalletTabBarWidget extends StatelessWidget {
           segments: WalletTab.values.toSegmentItems(),
           selectedValue: selectedTab,
           onChanged: onChanged,
+          height: AppSizing.heightS,
         ),
       ],
     );

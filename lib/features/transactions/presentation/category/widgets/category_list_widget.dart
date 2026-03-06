@@ -82,7 +82,7 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
               ? const NeverScrollableScrollPhysics()
               : null,
           itemCount: categories.length,
-          separatorBuilder: (_, __) =>
+          separatorBuilder: (_, _) =>
               const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           itemBuilder: (context, index) {
             final category = categories[index];

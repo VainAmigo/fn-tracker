@@ -62,7 +62,7 @@ class _CreateCategoryIconPickerWidgetState
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: categoryIconGroups.length,
-        separatorBuilder: (_, __) =>
+        separatorBuilder: (_, _) =>
             const SizedBox(width: AppSizing.spaceBtwItemsExtra),
         itemBuilder: (context, index) {
           final group = categoryIconGroups[index];

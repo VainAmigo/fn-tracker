@@ -86,29 +86,23 @@ class TransactionsRepository implements TransactionsRepoImpl {
       return snapshot.docs
           .where((doc) => doc.data()['type'] == expenseType)
           .fold<double>(0.0, (double sum, doc) {
-        return sum + (doc.data()['amount'] as num).toDouble();
-      });
+            return sum + (doc.data()['amount'] as num).toDouble();
+          });
     } catch (e) {
       throw Exception('Failed to get total for period: $e');
     }
   }
 
   @override
-  Future<HomePageStatModel> getHomePageStats() async {
+  Future<HomePageStatModel> getHomePageStats({
+    required DateTime start,
+    required DateTime end,
+  }) async {
     try {
       final uid = _requireUid();
-      final now = DateTime.now();
-      final startOfMonth = DateTime(now.year, now.month, 1);
-      final startOfNextMonth = now.month == 12
-          ? DateTime(now.year + 1, 1, 1)
-          : DateTime(now.year, now.month + 1, 1);
-
       final snapshot = await _transactionsRef(uid)
-          .where(
-            'createdAt',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(startOfMonth),
-          )
-          .where('createdAt', isLessThan: Timestamp.fromDate(startOfNextMonth))
+          .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+          .where('createdAt', isLessThan: Timestamp.fromDate(end))
           .orderBy('createdAt', descending: true)
           .get();
 
@@ -121,7 +115,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
       final Map<int, double> perDay = {};
       for (final t in transactions) {
         final d = t.createdAt;
-        if (d.year == now.year && d.month == now.month) {
+        if (d.year == start.year && d.month == start.month) {
           perDay.update(
             d.day,
             (prev) => prev + t.amount,

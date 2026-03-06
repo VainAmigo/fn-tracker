@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/app_sizing/app_sizing.dart';
 
@@ -13,7 +14,6 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   final ValueNotifier<bool> _isCollapsedNotifier = ValueNotifier<bool>(false);
-  late Future<HomePageStatModel> _homeStatsFuture;
 
   @override
   void initState() {
@@ -22,10 +22,8 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void _loadStats() {
-    _homeStatsFuture = context
-        .read<TransactionsCubit>()
-        .transactionsRepo
-        .getHomePageStats();
+    final (:start, :end) = MonthRangeUtils.currentMonth();
+    context.read<HomeCubit>().getHomePageStats(start: start, end: end);
   }
 
   @override
@@ -45,17 +43,18 @@ class _HomeViewState extends State<HomeView> {
           context.read<TransactionsCubit>().addTransactionLocally(
             state.createdTransaction,
           );
-          setState(() {
-            _loadStats();
-          });
+          _loadStats();
+          final (:start, :end) = MonthRangeUtils.currentMonth();
+          context
+              .read<TransactionsPeriodTotalCubit>()
+              .getTotalForPeriod(start, end);
         }
       },
-      child: FutureBuilder<HomePageStatModel>(
-        future: _homeStatsFuture,
-        builder: (context, snapshot) {
-          final homePageStat =
-              snapshot.data ??
-              HomePageStatModel(totalExpense: 0.0, homeChartStat: const []);
+      child: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          final homePageStat = state is HomeLoaded
+              ? state.homePageStat
+              : HomePageStatModel(totalExpense: 0.0, homeChartStat: const []);
 
           final rawValues = homePageStat.homeChartStat;
           final values = rawValues.length == 1
@@ -105,7 +104,7 @@ class _HomeViewState extends State<HomeView> {
                       flexibleSpace: LayoutBuilder(
                         builder: (context, constraints) {
                           final isCollapsed =
-                              constraints.biggest.height <= height * 0.40;
+                              constraints.biggest.height <= height * 0.30;
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (_isCollapsedNotifier.value != isCollapsed) {
                               _isCollapsedNotifier.value = isCollapsed;
