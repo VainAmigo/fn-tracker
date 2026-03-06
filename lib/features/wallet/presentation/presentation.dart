@@ -7,4 +7,5 @@ export 'widgets/wallet_tab_bar_widget.dart';
 export 'widgets/budget_donut_stat_widget.dart';
 export 'widgets/budget_stat_widget.dart';
 export 'widgets/budget_chart_data.dart';
+export 'widgets/budgets_spending_categories_list_widget.dart';
 export 'cubit/budget_cubit.dart';

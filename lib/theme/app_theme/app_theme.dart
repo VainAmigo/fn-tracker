@@ -53,7 +53,7 @@ class AppThemes {
       surface: Color(0xFF102216),
       onSurface: Color(0xFFFFFFFF),
       secondary: Color(0xFF1C2D22),
-      onSecondary: Color.fromARGB(255, 189, 197, 211),
+      onSecondary: Color.fromARGB(255, 86, 107, 94),
       tertiary: Color(0xFF13EC5B),
     ),
   );

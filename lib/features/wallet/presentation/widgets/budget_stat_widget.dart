@@ -16,12 +16,9 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
   @override
   void initState() {
     super.initState();
-    final (:start, :end) = MonthRangeUtils.currentMonth();
-    context.read<TransactionsPeriodTotalCubit>().getTotalForPeriod(start, end);
-
-    final budgetState = context.read<BudgetCubit>().state;
-    if (budgetState is BudgetInitial) {
-      context.read<BudgetCubit>().getBudget();
+    if (context.read<BudgetCubit>().state is BudgetInitial) {
+      final (:start, :end) = MonthRangeUtils.currentMonth();
+      context.read<BudgetCubit>().loadBudgetStats(start: start, end: end);
     }
   }
 
@@ -32,101 +29,94 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return BlocBuilder<BudgetCubit, BudgetState>(
-      buildWhen: (prev, curr) => curr is BudgetLoaded || curr is BudgetNotFound,
-      builder: (context, budgetState) {
-        if (budgetState is! BudgetLoaded) return const SizedBox.shrink();
+      buildWhen: (prev, curr) =>
+          curr is BudgetStatsLoaded || curr is BudgetError,
+      builder: (context, state) {
+        if (state is! BudgetStatsLoaded) return const SizedBox.shrink();
 
-        final budget = budgetState.budget;
+        final budget = state.stats.budget;
+        if (budget == null) return const SizedBox.shrink();
 
-        return BlocBuilder<TransactionsPeriodTotalCubit,
-            TransactionsPeriodTotalState>(
-          builder: (context, totalState) {
-            final spent = totalState is TransactionsPeriodTotalLoaded
-                ? totalState.total
-                : 0.0;
-            final exceeded = spent > budget.amount;
+        final spent = state.stats.totalForPeriod;
+        final exceeded = spent > budget.amount;
 
-            final remainingPercent =
-                ((budget.amount - spent) / budget.amount * 100)
-                    .clamp(0, 100)
-                    .toStringAsFixed(0);
+        final remainingPercent =
+            ((budget.amount - spent) / budget.amount * 100)
+                .clamp(0, 100)
+                .toStringAsFixed(0);
 
-            final barSegments = exceeded
-                ? [
-                    BarChartSegment(
-                      value: budget.amount,
-                      color: colorScheme.onSecondary,
-                    ),
-                    BarChartSegment(
-                      value: spent - budget.amount,
-                      color: colorScheme.error,
-                    ),
-                  ]
-                : [
-                    BarChartSegment(value: spent, color: colorScheme.primary),
-                    BarChartSegment(
-                      value: budget.amount - spent,
-                      color: colorScheme.onSecondary,
-                    ),
-                  ];
+        final barSegments = exceeded
+            ? [
+                BarChartSegment(
+                  value: budget.amount,
+                  color: colorScheme.onSecondary,
+                ),
+                BarChartSegment(
+                  value: spent - budget.amount,
+                  color: colorScheme.error,
+                ),
+              ]
+            : [
+                BarChartSegment(value: spent, color: colorScheme.primary),
+                BarChartSegment(
+                  value: budget.amount - spent,
+                  color: colorScheme.onSecondary,
+                ),
+              ];
 
-            final accentColor = exceeded
-                ? colorScheme.error
-                : colorScheme.primary;
+        final accentColor = exceeded ? colorScheme.error : colorScheme.primary;
 
-            return Container(
-              padding: const EdgeInsets.all(AppSizing.defaultPadding),
-              margin: const EdgeInsets.only(bottom: AppSizing.spaceBtwSections),
-              decoration: BoxDecoration(
-                color: colorScheme.secondary,
-                borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
+        return Container(
+          padding: const EdgeInsets.all(AppSizing.defaultPadding),
+          margin: const EdgeInsets.only(bottom: AppSizing.spaceBtwSections),
+          decoration: BoxDecoration(
+            color: colorScheme.secondary,
+            borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Monthly Budget',
+                style: AppTextStyles.text20w600(context),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+              const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+              Text(
+                formatter.format(spent),
+                style: AppTextStyles.text20w600(
+                  context,
+                ).copyWith(color: accentColor),
+              ),
+              const SizedBox(height: AppSizing.spaceBtwItems),
+              SegmentedBar(
+                height: 8,
+                gap: 3,
+                segments: barSegments,
+                trackColor: colorScheme.secondary,
+              ),
+              const SizedBox(height: AppSizing.spaceBtwElements),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Monthly Budget',
-                    style: AppTextStyles.text20w600(context),
+                    '${formatter.format(budget.amount)} / ${formatter.format(spent)}',
+                    style: AppTextStyles.listTileSubtitle(
+                      context,
+                    ).copyWith(fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                   Text(
-                    formatter.format(spent),
-                    style: AppTextStyles.text20w600(
+                    exceeded
+                        ? 'Budget exceeded'
+                        : '$remainingPercent% remaining',
+                    style: AppTextStyles.listTileSubtitle(
                       context,
                     ).copyWith(color: accentColor),
                   ),
-                  const SizedBox(height: AppSizing.spaceBtwItems),
-                  SegmentedBar(
-                    height: 8,
-                    gap: 3,
-                    segments: barSegments,
-                    trackColor: colorScheme.secondary,
-                  ),
-                  const SizedBox(height: AppSizing.spaceBtwElements),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${formatter.format(budget.amount)} / ${formatter.format(spent)}',
-                        style: AppTextStyles.listTileSubtitle(
-                          context,
-                        ).copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        exceeded
-                            ? 'Budget exceeded'
-                            : '$remainingPercent% remaining',
-                        style: AppTextStyles.listTileSubtitle(
-                          context,
-                        ).copyWith(color: accentColor),
-                      ),
-                    ],
-                  ),
                 ],
               ),
-            );
-          },
+            ],
+          ),
         );
       },
     );

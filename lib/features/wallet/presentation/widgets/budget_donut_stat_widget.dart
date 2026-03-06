@@ -71,8 +71,8 @@ class BudgetDonutStatWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _StatColumn(
-              label: 'Budget',
-              value: formatter.format(budget.amount),
+              label: 'Spent',
+              value: formatter.format(totalForPeriod),
             ),
             Container(
               height: AppSizing.heightXS,
@@ -84,8 +84,8 @@ class BudgetDonutStatWidget extends StatelessWidget {
               ),
             ),
             _StatColumn(
-              label: 'Spent',
-              value: formatter.format(totalForPeriod),
+              label: 'Budget',
+              value: formatter.format(budget.amount),
             ),
           ],
         ),

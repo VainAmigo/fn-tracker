@@ -46,8 +46,8 @@ class _HomeViewState extends State<HomeView> {
           _loadStats();
           final (:start, :end) = MonthRangeUtils.currentMonth();
           context
-              .read<TransactionsPeriodTotalCubit>()
-              .getTotalForPeriod(start, end);
+              .read<BudgetCubit>()
+              .loadBudgetStats(start: start, end: end);
         }
       },
       child: BlocBuilder<HomeCubit, HomeState>(

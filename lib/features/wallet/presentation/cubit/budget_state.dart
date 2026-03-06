@@ -6,12 +6,10 @@ class BudgetInitial extends BudgetState {}
 
 class BudgetLoading extends BudgetState {}
 
-class BudgetNotFound extends BudgetState {}
+class BudgetStatsLoaded extends BudgetState {
+  final BudgetStatModel stats;
 
-class BudgetLoaded extends BudgetState {
-  final BudgetModel budget;
-
-  BudgetLoaded(this.budget);
+  BudgetStatsLoaded(this.stats);
 }
 
 class BudgetError extends BudgetState {
