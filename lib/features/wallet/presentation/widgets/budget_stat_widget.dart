@@ -1,100 +1,139 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-class BudgetStatWidget extends StatelessWidget {
-  const BudgetStatWidget({
-    super.key,
-    required this.budget,
-    required this.totalForPeriod,
-    required this.currency,
-    required this.onEditBudgetPressed,
-  });
-
-  final BudgetModel budget;
-  final double totalForPeriod;
-  final Currency currency;
-  final VoidCallback onEditBudgetPressed;
+class BudgetStatWidget extends StatefulWidget {
+  const BudgetStatWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final formatter = CurrencyFormatter(currency);
-    final remaining = budget.amount - totalForPeriod;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _StatRow(
-          label: 'Budget',
-          value: formatter.format(budget.amount),
-          style: AppTextStyles.text16w400(context),
-        ),
-        const SizedBox(height: AppSizing.spaceBtwElements),
-        _StatRow(
-          label: 'Spent',
-          value: formatter.format(totalForPeriod),
-          style: AppTextStyles.text16w400(context),
-        ),
-        const SizedBox(height: AppSizing.spaceBtwElements),
-        _StatRow(
-          label: 'Remaining',
-          value: formatter.format(remaining),
-          style: AppTextStyles.text16w400(context).copyWith(
-            color: remaining >= 0
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.error,
-          ),
-        ),
-        const SizedBox(height: AppSizing.spaceBtwItems),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(AppSizing.borderRadius4),
-          child: LinearProgressIndicator(
-            value: budget.amount > 0
-                ? (totalForPeriod / budget.amount).clamp(0.0, 1.0)
-                : 0,
-            minHeight: 8,
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            color: totalForPeriod > budget.amount
-                ? Theme.of(context).colorScheme.error
-                : Theme.of(context).colorScheme.primary,
-          ),
-        ),
-        const SizedBox(height: AppSizing.spaceBtwItems),
-        PrimaryButton(
-          text: 'Edit budget',
-          size: PrimaryButtonSize.xSmall,
-          rounded: true,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Theme.of(context).colorScheme.primary,
-          onPressed: onEditBudgetPressed,
-        ),
-      ],
-    );
-  }
+  State<BudgetStatWidget> createState() => _BudgetStatWidgetState();
 }
 
-class _StatRow extends StatelessWidget {
-  const _StatRow({
-    required this.label,
-    required this.value,
-    required this.style,
-  });
+class _BudgetStatWidgetState extends State<BudgetStatWidget> {
+  late Future<double> _totalFuture;
 
-  final String label;
-  final String value;
-  final TextStyle style;
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  void _loadData() {
+    final (:start, :end) = MonthRangeUtils.currentMonth();
+    _totalFuture = context
+        .read<TransactionsPeriodTotalCubit>()
+        .transactionsRepo
+        .getTotalForPeriod(start, end);
+
+    final budgetState = context.read<BudgetCubit>().state;
+    if (budgetState is BudgetInitial) {
+      context.read<BudgetCubit>().getBudget();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: AppTextStyles.text16w400(context)),
-        Text(value, style: style),
-      ],
+    final currency = context.read<CurrencyProvider>().currency;
+    final formatter = CurrencyFormatter(currency);
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return BlocBuilder<BudgetCubit, BudgetState>(
+      buildWhen: (prev, curr) => curr is BudgetLoaded || curr is BudgetNotFound,
+      builder: (context, budgetState) {
+        if (budgetState is! BudgetLoaded) return const SizedBox.shrink();
+
+        final budget = budgetState.budget;
+
+        return FutureBuilder<double>(
+          future: _totalFuture,
+          builder: (context, snapshot) {
+            final spent = snapshot.data ?? 0.0;
+            final exceeded = spent > budget.amount;
+
+            final remainingPercent =
+                ((budget.amount - spent) / budget.amount * 100)
+                    .clamp(0, 100)
+                    .toStringAsFixed(0);
+
+            final barSegments = exceeded
+                ? [
+                    BarChartSegment(
+                      value: budget.amount,
+                      color: colorScheme.onSecondary,
+                    ),
+                    BarChartSegment(
+                      value: spent - budget.amount,
+                      color: colorScheme.error,
+                    ),
+                  ]
+                : [
+                    BarChartSegment(value: spent, color: colorScheme.primary),
+                    BarChartSegment(
+                      value: budget.amount - spent,
+                      color: colorScheme.onSecondary,
+                    ),
+                  ];
+
+            final accentColor = exceeded
+                ? colorScheme.error
+                : colorScheme.primary;
+
+            return Container(
+              padding: const EdgeInsets.all(AppSizing.defaultPadding),
+              margin: const EdgeInsets.only(bottom: AppSizing.spaceBtwSections),
+              decoration: BoxDecoration(
+                color: colorScheme.secondary,
+                borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Monthly Budget',
+                    style: AppTextStyles.text20w600(context),
+                  ),
+                  const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+                  Text(
+                    formatter.format(spent),
+                    style: AppTextStyles.text20w600(
+                      context,
+                    ).copyWith(color: accentColor),
+                  ),
+                  const SizedBox(height: AppSizing.spaceBtwItems),
+                  SegmentedBar(
+                    height: 8,
+                    gap: 3,
+                    segments: barSegments,
+                    trackColor: colorScheme.secondary,
+                  ),
+                  const SizedBox(height: AppSizing.spaceBtwElements),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${formatter.format(budget.amount)} / ${formatter.format(spent)}',
+                        style: AppTextStyles.listTileSubtitle(context).copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        exceeded
+                            ? 'Budget exceeded'
+                            : '$remainingPercent% remaining',
+                        style: AppTextStyles.listTileSubtitle(
+                          context,
+                        ).copyWith(color: accentColor),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

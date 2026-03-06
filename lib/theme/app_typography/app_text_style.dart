@@ -92,4 +92,22 @@ class AppTextStyles {
       color: color ?? theme.colorScheme.onSurface,
     );
   }
+
+  static TextStyle text20w600(BuildContext context, {Color? color}) {
+    final theme = Theme.of(context);
+    return TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      color: color ?? theme.colorScheme.onSurface,
+    );
+  }
+
+  static TextStyle text36w600(BuildContext context, {Color? color}) {
+    final theme = Theme.of(context);
+    return TextStyle(
+      fontSize: 36,
+      fontWeight: FontWeight.w600,
+      color: color ?? theme.colorScheme.onSurface,
+    );
+  }
 }

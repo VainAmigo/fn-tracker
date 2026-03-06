@@ -4,5 +4,7 @@ export 'view/tabs/wallet_budget_tab_view.dart';
 export 'view/tabs/wallet_goals_tab_view.dart';
 export 'view/tabs/wallet_wallet_tab_view.dart';
 export 'widgets/wallet_tab_bar_widget.dart';
+export 'widgets/budget_donut_stat_widget.dart';
 export 'widgets/budget_stat_widget.dart';
+export 'widgets/budget_chart_data.dart';
 export 'cubit/budget_cubit.dart';

@@ -53,7 +53,7 @@ class AppThemes {
       surface: Color(0xFF102216),
       onSurface: Color(0xFFFFFFFF),
       secondary: Color(0xFF1C2D22),
-      onSecondary: Color(0xFF98A7BD),
+      onSecondary: Color.fromARGB(255, 189, 197, 211),
       tertiary: Color(0xFF13EC5B),
     ),
   );
@@ -112,8 +112,8 @@ class AppThemes {
       onPrimary: Color(0xFFFFFFFF),
       surface: Color(0xFFF0F4F8),
       onSurface: Color(0xFF2D3748),
-      secondary: Color(0xFFE5EFF9), 
-      onSecondary: Color(0xFFB1BAC7),
+      secondary: Color.fromARGB(255, 216, 228, 240), 
+      onSecondary: Color.fromARGB(255, 147, 157, 173),
       tertiary: Color(0xFF3BC9DB),
     ),
   );
@@ -153,7 +153,7 @@ class AppThemes {
       surface: Color(0xFFF7F2E9),
       onSurface: Color(0xFF4A3728),
       secondary: Color(0xFFEEE8DF), 
-      onSecondary: Color(0xFFB8AFA4),
+      onSecondary: Color.fromARGB(255, 161, 152, 141),
       tertiary: Color(0xFFDF7457),
     ),
   );

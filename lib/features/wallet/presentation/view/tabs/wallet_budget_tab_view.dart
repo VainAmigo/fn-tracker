@@ -49,14 +49,18 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                 onCreatePressed: () => _showBudgetSheet(currency: currency),
               ),
               BudgetLoaded(:final budget) =>
-                BlocBuilder<TransactionsPeriodTotalCubit,
-                    TransactionsPeriodTotalState>(
+                BlocBuilder<
+                  TransactionsPeriodTotalCubit,
+                  TransactionsPeriodTotalState
+                >(
+                  buildWhen: (prev, curr) =>
+                      curr is! TransactionsPeriodTotalLoading,
                   builder: (context, totalState) {
                     final total = switch (totalState) {
                       TransactionsPeriodTotalLoaded(:final total) => total,
                       _ => 0.0,
                     };
-                    return BudgetStatWidget(
+                    return BudgetDonutStatWidget(
                       budget: budget,
                       totalForPeriod: total,
                       currency: currency,
@@ -98,6 +102,24 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
               currency: currency,
               onAmountChanged: (amount) => newAmount = amount,
             ),
+            
+            if (existingBudget != null) ...[
+              PrimaryButton(
+                text: 'Delete Budget',
+                onPressed: () {
+                  context.read<BudgetCubit>().deleteBudget(existingBudget.id);
+                  Navigator.of(context).pop();
+                },
+                size: PrimaryButtonSize.xSmall,
+                rounded: true,
+                backgroundColor: Theme.of(
+                  context,
+                ).colorScheme.error.withValues(alpha: 0.3),
+                foregroundColor: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(height: AppSizing.spaceBtwElements),
+            ],
+
             PrimaryButton(
               text: 'Save',
               onPressed: () {

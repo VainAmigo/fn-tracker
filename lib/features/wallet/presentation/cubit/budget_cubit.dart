@@ -46,7 +46,7 @@ class BudgetCubit extends Cubit<BudgetState> {
     emit(BudgetLoading());
     try {
       await walletRepo.deleteBudget(id);
-      emit(BudgetInitial());
+      emit(BudgetNotFound());
     } catch (e) {
       emit(BudgetError(e.toString()));
     }

@@ -13,8 +13,8 @@ class HomeInfoListWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: AppSizing.defaultPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSizing.spaceBtwElements,
         children: [
+          const BudgetStatWidget(),
           TitledSection(
             title: 'Last Transactions',
             action: PrimaryButton(
