@@ -24,6 +24,12 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   void initState() {
     super.initState();
     context.read<AddTransactionCubit>().reset();
+    final walletsState = context.read<WalletCubit>().state;
+    if (walletsState is WalletsLoaded) {
+      _selectedWallet = walletsState.wallets
+          .cast<WalletModel?>()
+          .firstWhere((w) => w!.isDefault, orElse: () => null);
+    }
   }
 
   static const _segments = [
