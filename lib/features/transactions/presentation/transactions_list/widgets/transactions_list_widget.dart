@@ -38,16 +38,17 @@ class _Body extends StatelessWidget {
     final categoryMap = {for (final c in categories) c.categoryId: c};
     final currency = context.watch<CurrencyProvider>().currency;
 
-    final grouped = _groupByDate(transactions);
-    final entries = grouped.entries.toList();
+    final grouped = _groupByDayKey(transactions);
+    final sortedKeys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
     return ListView.separated(
-      itemCount: entries.length,
+      itemCount: sortedKeys.length,
       separatorBuilder: (_, _) =>
           const SizedBox(height: AppSizing.spaceBtwElements),
       itemBuilder: (context, sectionIndex) {
-        final date = entries[sectionIndex].key;
-        final txList = entries[sectionIndex].value;
+        final dayKey = sortedKeys[sectionIndex];
+        final date = DateTime.parse(dayKey);
+        final txList = grouped[dayKey]!;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,17 +122,12 @@ class _Body extends StatelessWidget {
     );
   }
 
-  Map<DateTime, List<TransactionModel>> _groupByDate(
+  Map<String, List<TransactionModel>> _groupByDayKey(
     List<TransactionModel> transactions,
   ) {
-    final map = <DateTime, List<TransactionModel>>{};
+    final map = <String, List<TransactionModel>>{};
     for (final tx in transactions) {
-      final dateOnly = DateTime(
-        tx.createdAt?.year ?? 0,
-        tx.createdAt?.month ?? 0,
-        tx.createdAt?.day ?? 0,
-      );
-      map.putIfAbsent(dateOnly, () => []).add(tx);
+      map.putIfAbsent(tx.dayKey, () => []).add(tx);
     }
     return map;
   }

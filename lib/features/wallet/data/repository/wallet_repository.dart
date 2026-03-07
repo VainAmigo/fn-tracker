@@ -27,6 +27,90 @@ class WalletRepository implements WalletRepoImpl {
       firebaseFirestore.collection('users').doc(uid).collection('wallets');
 
   @override
+  Future<WalletModel> addWallet({required WalletModel wallet}) async {
+    final uid = _requireUid();
+    try {
+      final docRef = _walletsRef(uid).doc();
+      await docRef.set({
+        'id': docRef.id,
+        'name': wallet.name,
+        'colorId': wallet.colorId,
+        'iconId': wallet.iconId,
+        'isDefault': wallet.isDefault,
+      });
+      return wallet;
+    } catch (e) {
+      throw Exception('Failed to add wallet: $e');
+    }
+  }
+
+  @override
+  Future<WalletModel> updateWallet({required WalletModel wallet}) async {
+    final uid = _requireUid();
+    try {
+      final docRef = _walletsRef(uid).doc(wallet.id);
+      await docRef.update(wallet.toJson());
+      return wallet;
+    } catch (e) {
+      throw Exception('Failed to update wallet: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteWallet(String id) async {
+    final uid = _requireUid();
+    try {
+      await _walletsRef(uid).doc(id).delete();
+    } catch (e) {
+      throw Exception('Failed to delete wallet: $e');
+    }
+  }
+
+  @override
+  Future<List<WalletModel>> getWallets() async {
+    final uid = _requireUid();
+
+    try {
+      final results = await Future.wait([
+        _walletsRef(uid).get(),
+        _transactionsRef(uid).get(),
+      ]);
+
+      final walletSnapshot = results[0];
+      final transactionsSnapshot = results[1];
+
+      final wallets = walletSnapshot.docs
+          .map((doc) => WalletModel.fromJson(doc.data()))
+          .toList();
+
+      final transactions = transactionsSnapshot.docs
+          .map((doc) => TransactionModel.fromJson(doc.data()))
+          .toList();
+
+      /// walletId -> balance
+      final Map<String, double> balances = {};
+
+      for (final t in transactions) {
+        final current = balances[t.walletId] ?? 0;
+
+        if (t.type == TransactionType.income) {
+          balances[t.walletId ?? ''] = current + t.amount;
+        } else {
+          balances[t.walletId ?? ''] = current - t.amount;
+        }
+      }
+
+      return wallets.map((wallet) {
+        final balance = balances[wallet.id] ?? 0;
+
+        return wallet.copyWith(balance: balance);
+      }).toList();
+    } catch (e) {
+      throw Exception('Failed to get wallets: $e');
+    }
+  }
+
+  @override
   Future<BudgetModel?> getBudget() async {
     final uid = _requireUid();
     try {
@@ -76,18 +160,14 @@ class WalletRepository implements WalletRepoImpl {
   }
 
   @override
-  Future<BudgetStatModel> getBudgetStats({
-    required DateTime start,
-    required DateTime end,
-  }) async {
+  Future<BudgetStatModel> getBudgetStats({required String periodKey}) async {
     final uid = _requireUid();
     try {
       final results = await Future.wait([
         _budgetsRef(uid).get(),
         _transactionsRef(uid)
-            .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
-            .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(end))
-            .orderBy('createdAt', descending: true)
+            .where('periodKey', isEqualTo: periodKey)
+            .orderBy('dayKey', descending: true)
             .get(),
         _categoriesRef(uid).orderBy('createdAt', descending: true).get(),
       ]);
@@ -112,7 +192,10 @@ class WalletRepository implements WalletRepoImpl {
 
       final totalForPeriod = transactionsSnapshot.docs
           .where((doc) => doc.data()['type'] == expenseType)
-          .fold<double>(0.0, (double sum, doc) => sum + (doc.data()['amount'] as num).toDouble());
+          .fold<double>(
+            0.0,
+            (double sum, doc) => sum + (doc.data()['amount'] as num).toDouble(),
+          );
 
       final categories = categoriesSnapshot.docs
           .map((doc) => CategoryModel.fromJson(doc.data()))
@@ -129,14 +212,17 @@ class WalletRepository implements WalletRepoImpl {
 
       final categoriesMap = {for (final c in categories) c.categoryId: c};
 
-      final categorySpending = spendingByCategoryId.entries
-          .where((e) => categoriesMap.containsKey(e.key))
-          .map((e) => CategorySpending(
-                category: categoriesMap[e.key]!,
-                amount: e.value,
-              ))
-          .toList()
-        ..sort((a, b) => b.amount.compareTo(a.amount));
+      final categorySpending =
+          spendingByCategoryId.entries
+              .where((e) => categoriesMap.containsKey(e.key))
+              .map(
+                (e) => CategorySpending(
+                  category: categoriesMap[e.key]!,
+                  amount: e.value,
+                ),
+              )
+              .toList()
+            ..sort((a, b) => b.amount.compareTo(a.amount));
 
       return BudgetStatModel(
         budget: budget,

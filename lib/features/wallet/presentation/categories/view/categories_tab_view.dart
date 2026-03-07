@@ -22,7 +22,11 @@ class CategoriesTabView extends StatelessWidget {
               rounded: true,
               fullWidth: false,
             ),
-            children: [],
+            children: [
+              WalletsListWidget(
+                autoLoad: true,
+              ),
+            ],
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
           TitledSection(

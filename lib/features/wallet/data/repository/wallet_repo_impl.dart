@@ -6,7 +6,11 @@ abstract class WalletRepoImpl {
   Future<BudgetModel> updateBudget({required BudgetModel budget});
   Future<void> deleteBudget(String id);
   Future<BudgetStatModel> getBudgetStats({
-    required DateTime start,
-    required DateTime end,
+    required String periodKey,
   });
+
+  Future<WalletModel> addWallet({required WalletModel wallet});
+  Future<WalletModel> updateWallet({required WalletModel wallet});
+  Future<void> deleteWallet(String id);
+  Future<List<WalletModel>> getWallets();
 }

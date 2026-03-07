@@ -19,16 +19,16 @@ class TransactionsRepository implements TransactionsRepoImpl {
 
   @override
   Future<List<TransactionModel>> getUserTransactionsByPeriod({
-    required DateTime start,
-    required DateTime end,
+    required String start,
+    required String end,
   }) async {
     try {
       final uid = _requireUid();
 
       final transactionsSnapshot = await _transactionsRef(uid)
-          .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
-          .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(end))
-          .orderBy('createdAt', descending: true)
+          .where('dayKey', isGreaterThanOrEqualTo: start)
+          .where('dayKey', isLessThanOrEqualTo: end)
+          .orderBy('dayKey', descending: true)
           .get();
 
       return transactionsSnapshot.docs
@@ -80,26 +80,6 @@ class TransactionsRepository implements TransactionsRepoImpl {
   }
 
   @override
-  Future<double> getTotalForPeriod(DateTime start, DateTime end) async {
-    try {
-      final uid = _requireUid();
-      final snapshot = await _transactionsRef(uid)
-          .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
-          .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(end))
-          .get();
-
-      final expenseType = TransactionType.expense.toJson();
-      return snapshot.docs
-          .where((doc) => doc.data()['type'] == expenseType)
-          .fold<double>(0.0, (double sum, doc) {
-            return sum + (doc.data()['amount'] as num).toDouble();
-          });
-    } catch (e) {
-      throw Exception('Failed to get total for period: $e');
-    }
-  }
-
-  @override
   Future<HomePageStatModel> getHomePageStats({
     required String startDayKey,
     required String endDayKey,
@@ -135,8 +115,6 @@ class TransactionsRepository implements TransactionsRepoImpl {
         0.0,
         (double sum, v) => sum + v,
       );
-
-      print('dailyTotals: $dailyTotals');
 
       return HomePageStatModel(
         totalExpense: totalExpense,

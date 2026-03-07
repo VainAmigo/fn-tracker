@@ -47,10 +47,10 @@ class _HomeViewState extends State<HomeView> {
             state.createdTransaction,
           );
           _loadStats();
-          final (:start, :end) = MonthRangeUtils.currentMonth();
+          final periodKey = MonthRangeUtils.currentMonth().start.periodKey;
           context
               .read<BudgetCubit>()
-              .loadBudgetStats(start: start, end: end);
+              .loadBudgetStats(periodKey: periodKey);
         }
       },
       child: BlocBuilder<HomeCubit, HomeState>(

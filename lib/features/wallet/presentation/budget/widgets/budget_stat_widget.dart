@@ -17,8 +17,8 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
   void initState() {
     super.initState();
     if (context.read<BudgetCubit>().state is BudgetInitial) {
-      final (:start, :end) = MonthRangeUtils.currentMonth();
-      context.read<BudgetCubit>().loadBudgetStats(start: start, end: end);
+      final periodKey = MonthRangeUtils.currentMonth().start.periodKey;
+      context.read<BudgetCubit>().loadBudgetStats(periodKey: periodKey);
     }
   }
 

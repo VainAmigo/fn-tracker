@@ -17,12 +17,12 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
   void initState() {
     super.initState();
     final (:start, :end) = MonthRangeUtils.currentMonth();
-    context.read<BudgetCubit>().loadBudgetStats(start: start, end: end);
+    context.read<BudgetCubit>().loadBudgetStats(periodKey: start.periodKey);
   }
 
   void _onDateChange(Month month, int year) {
-    final (:start, :end) = MonthRangeUtils.rangeFor(year, month);
-    context.read<BudgetCubit>().loadBudgetStats(start: start, end: end);
+    final periodKey = MonthRangeUtils.rangeFor(year, month).start.periodKey;
+    context.read<BudgetCubit>().loadBudgetStats(periodKey: periodKey);
   }
 
   @override
@@ -71,8 +71,7 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                   onRetry: () {
                     final (:start, :end) = MonthRangeUtils.currentMonth();
                     context.read<BudgetCubit>().loadBudgetStats(
-                      start: start,
-                      end: end,
+                      periodKey: start.periodKey,
                     );
                   },
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 
 part 'transactions_state.dart';
@@ -13,8 +14,8 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     try {
       emit(TransactionsLoading());
       final transactions = await transactionsRepo.getUserTransactionsByPeriod(
-        start: period.dateRange.start,
-        end: period.dateRange.end,
+        start: period.dateRange.start.dayKey,
+        end: period.dateRange.end.dayKey,
       );
 
       if (transactions.isEmpty) {

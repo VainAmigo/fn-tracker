@@ -1,20 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class WalletModel {
-  final String id;
+  final String? id;
   final String name;
   final String colorId;
   final String iconId;
   final double? balance;
-  final DateTime? createdAt;
+  final bool? isDefault;
 
   WalletModel({
-    required this.id,
+    this.id,
     required this.name,
     required this.colorId,
     required this.iconId,
     this.balance,
-    this.createdAt,
+    this.isDefault = false,
   });
 
   Map<String, dynamic> toJson() {
@@ -24,27 +22,36 @@ class WalletModel {
       'colorId': colorId,
       'iconId': iconId,
       'balance': balance,
-      'createdAt': createdAt?.toIso8601String(),
+      'isDefault': isDefault,
     };
   }
 
-  factory WalletModel.fromJson(Map<String, dynamic> json) {
-    final createdAtRaw = json['createdAt'];
-    final DateTime? createdAt = createdAtRaw is Timestamp
-        ? createdAtRaw.toDate()
-        : createdAtRaw is DateTime
-            ? createdAtRaw
-            : createdAtRaw is String
-                ? DateTime.tryParse(createdAtRaw)
-                : null;
+  WalletModel copyWith({
+    String? id,
+    String? name,
+    String? colorId,
+    String? iconId,
+    double? balance,
+    bool? isDefault,
+  }) {
+    return WalletModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      colorId: colorId ?? this.colorId,
+      iconId: iconId ?? this.iconId,
+      balance: balance ?? this.balance,
+      isDefault: isDefault ?? this.isDefault,
+    );
+  }
 
+  factory WalletModel.fromJson(Map<String, dynamic> json) {
     return WalletModel(
       id: json['id'],
       name: json['name'],
       colorId: json['colorId'],
       iconId: json['iconId'],
       balance: (json['balance'] as num?)?.toDouble(),
-      createdAt: createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+      isDefault: json['isDefault'] as bool? ?? false,
     );
   }
 }
