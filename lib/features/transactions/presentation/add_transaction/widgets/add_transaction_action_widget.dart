@@ -5,6 +5,9 @@ import 'package:fn_tracker/theme/themes.dart';
 
 class AddTransactionActionWidget extends StatefulWidget {
   const AddTransactionActionWidget({
+    required this.selectedType,
+    required this.selectedWallet,
+    required this.onWalletChanged,
     required this.selectedDate,
     required this.onDateChanged,
     required this.selectedCategory,
@@ -14,6 +17,9 @@ class AddTransactionActionWidget extends StatefulWidget {
     super.key,
   });
 
+  final TransactionType selectedType;
+  final WalletModel? selectedWallet;
+  final ValueChanged<WalletModel> onWalletChanged;
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateChanged;
   final CategoryModel? selectedCategory;
@@ -44,6 +50,9 @@ class _AddTransactionActionWidgetState
     final yesterday = now.subtract(const Duration(days: 1));
     final shade = findShadeById(widget.selectedCategory?.colorId ?? '');
     final icon = findIconById(widget.selectedCategory?.iconId ?? '');
+    final walletShade = findShadeById(widget.selectedWallet?.colorId ?? '');
+    final walletIcon = findIconById(widget.selectedWallet?.iconId ?? '');
+    final walletColor = walletShade?.color ?? Colors.grey;
 
     String dateTitle;
     if (selected == now) {
@@ -62,35 +71,15 @@ class _AddTransactionActionWidgetState
           children: [
             Expanded(
               child: CategoryCard(
-                title: 'Cash',
-                subtitle: 'Take from',
-                leading: Icon(
-                  Icons.category,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  size: AppSizing.iconSizeM,
-                ),
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  size: AppSizing.iconSizeM,
-                ),
-              ),
-            ),
-            const SizedBox(width: AppSizing.spaceBtwItems),
-            Expanded(
-              child: CategoryCard(
-                title: widget.selectedCategory?.name ?? 'Category',
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  size: AppSizing.iconSizeM,
-                ),
+                radius: CategoryCardRadius.single,
+                title: widget.selectedWallet?.name ?? 'Wallet',
+                subtitle: widget.selectedType == TransactionType.expense
+                    ? 'Take from'
+                    : 'Add to',
                 leading: Container(
                   height: AppSizing.heightS,
                   decoration: BoxDecoration(
-                    color:
-                        shade?.color.withValues(alpha: 0.15) ??
-                        Colors.grey.withValues(alpha: 0.15),
+                    color: walletColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(
                       AppSizing.borderRadius8,
                     ),
@@ -98,15 +87,54 @@ class _AddTransactionActionWidgetState
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Icon(
-                      icon?.icon ?? Icons.category,
+                      walletIcon?.icon ?? Icons.account_balance_wallet,
                       size: AppSizing.iconSizeM,
-                      color: shade?.color ?? Colors.grey,
+                      color: walletColor,
                     ),
                   ),
                 ),
-                onTap: () => _showCategoryPicker(context),
+                trailing: Icon(
+                  Icons.arrow_forward_ios,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  size: AppSizing.iconSizeM,
+                ),
+                onTap: () => _showWalletPicker(context),
               ),
             ),
+            if (widget.selectedType == TransactionType.expense) ...[
+              const SizedBox(width: AppSizing.spaceBtwItems),
+              Expanded(
+                child: CategoryCard(
+                  radius: CategoryCardRadius.single,
+                  title: widget.selectedCategory?.name ?? 'Category',
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    size: AppSizing.iconSizeM,
+                  ),
+                  leading: Container(
+                    height: AppSizing.heightS,
+                    decoration: BoxDecoration(
+                      color:
+                          shade?.color.withValues(alpha: 0.15) ??
+                          Colors.grey.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(
+                        AppSizing.borderRadius8,
+                      ),
+                    ),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Icon(
+                        icon?.icon ?? Icons.category,
+                        size: AppSizing.iconSizeM,
+                        color: shade?.color ?? Colors.grey,
+                      ),
+                    ),
+                  ),
+                  onTap: () => _showCategoryPicker(context),
+                ),
+              ),
+            ],
           ],
         ),
         const SizedBox(height: AppSizing.spaceBtwElements),
@@ -141,6 +169,7 @@ class _AddTransactionActionWidgetState
                   size: AppSizing.iconSizeM,
                 ),
                 () => _showNotePicker(context),
+                expandText: true,
               ),
             ),
           ],
@@ -153,33 +182,47 @@ class _AddTransactionActionWidgetState
     BuildContext context,
     String title,
     Widget leading,
-    Function()? onTap,
-  ) {
-    return InkWell(
+    Function()? onTap, {
+    bool expandText = false,
+  }) {
+    final text = Text(
+      title,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: AppTextStyles.listTileTitle(
+        context,
+      ).copyWith(color: Theme.of(context).colorScheme.onSecondary),
+    );
+
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSizing.spaceBtwItems,
           vertical: AppSizing.spaceBtwItemsExtra,
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: expandText ? MainAxisSize.max : MainAxisSize.min,
           children: [
             leading,
             const SizedBox(width: AppSizing.spaceBtwItems),
-            Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.listTileTitle(
-                context,
-              ).copyWith(color: Theme.of(context).colorScheme.onSecondary),
-            ),
+            if (expandText) Expanded(child: text) else text,
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _showWalletPicker(BuildContext context) async {
+    final selected =
+        await AppBottomSheet.showFittedModalBottomSheet<WalletModel>(
+          context,
+          child: AddTransactionWalletsSheetWidget(),
+        );
+    if (!mounted) return;
+    if (selected != null) {
+      widget.onWalletChanged(selected);
+    }
   }
 
   Future<void> _showCategoryPicker(BuildContext context) async {

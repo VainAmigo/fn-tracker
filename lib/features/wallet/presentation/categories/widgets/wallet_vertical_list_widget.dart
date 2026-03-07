@@ -1,0 +1,111 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/theme/themes.dart';
+
+class WalletVerticalListWidget extends StatefulWidget {
+  const WalletVerticalListWidget({
+    super.key,
+    this.onWalletSelected,
+    this.cardStyle = CategoryCardStyle.filled,
+    this.shrinkWrap = false,
+    this.autoLoad = false,
+  });
+
+  final ValueChanged<WalletModel>? onWalletSelected;
+  final CategoryCardStyle cardStyle;
+  final bool shrinkWrap;
+  final bool autoLoad;
+
+  @override
+  State<WalletVerticalListWidget> createState() =>
+      _WalletVerticalListWidgetState();
+}
+
+class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.autoLoad) {
+      context.read<WalletCubit>().loadWallets();
+    }
+  }
+
+  CategoryCardRadius _radiusForIndex(int index, int total) {
+    if (total == 1) return CategoryCardRadius.single;
+    if (index == 0) return CategoryCardRadius.first;
+    if (index == total - 1) return CategoryCardRadius.last;
+    return CategoryCardRadius.middle;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<WalletCubit, WalletsState>(
+      builder: (context, state) {
+        if (state is WalletsLoading || state is WalletsInitial) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is WalletsError) {
+          return Center(
+            child: Text(state.message, textAlign: TextAlign.center),
+          );
+        }
+
+        final wallets = switch (state) {
+          WalletsLoaded s => s.wallets,
+          WalletsEmpty() => const <WalletModel>[],
+          _ => const <WalletModel>[],
+        };
+
+        if (wallets.isEmpty) {
+          return const Center(child: Text('Кошельков пока нет'));
+        }
+
+        return ListView.separated(
+          shrinkWrap: widget.shrinkWrap,
+          physics:
+              widget.shrinkWrap ? const NeverScrollableScrollPhysics() : null,
+          itemCount: wallets.length,
+          separatorBuilder: (_, __) =>
+              const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+          itemBuilder: (context, index) {
+            final wallet = wallets[index];
+            final shade = findShadeById(wallet.colorId);
+            final icon = findIconById(wallet.iconId);
+            final color = shade?.color ?? Colors.grey;
+
+            return CategoryCard(
+              title: wallet.name,
+              subtitle: wallet.balance != null
+                  ? wallet.balance.toString()
+                  : null,
+              leading: Container(
+                height: AppSizing.heightS,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius:
+                      BorderRadius.circular(AppSizing.borderRadius8),
+                ),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Icon(
+                    icon?.icon ?? Icons.account_balance_wallet,
+                    size: AppSizing.iconSizeM,
+                    color: color,
+                  ),
+                ),
+              ),
+              style: widget.cardStyle,
+              radius: _radiusForIndex(index, wallets.length),
+              onTap: widget.onWalletSelected != null
+                  ? () => widget.onWalletSelected!(wallet)
+                  : null,
+            );
+          },
+        );
+      },
+    );
+  }
+}

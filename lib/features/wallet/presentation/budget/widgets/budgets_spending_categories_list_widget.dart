@@ -156,7 +156,10 @@ class _SpendingCategoryCard extends StatelessWidget {
                       ),
                     ]
                   : [
-                      BarChartSegment(value: spent, color: color),
+                      BarChartSegment(
+                        value: spent,
+                        color: colorScheme.primary,
+                      ),
                       BarChartSegment(
                         value: limit - spent,
                         color: colorScheme.onSecondary,
@@ -180,7 +183,7 @@ class _SpendingCategoryCard extends StatelessWidget {
                       : '${((limit - spent) / limit * 100).clamp(0, 100).toStringAsFixed(0)}% remaining',
                   style: AppTextStyles.listTileSubtitle(
                     context,
-                  ).copyWith(color: exceeded ? colorScheme.error : color),
+                  ).copyWith(color: exceeded ? colorScheme.error : colorScheme.onSecondary),
                 ),
               ],
             ),

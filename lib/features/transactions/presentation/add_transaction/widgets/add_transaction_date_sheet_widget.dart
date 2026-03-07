@@ -35,7 +35,7 @@ class AddTransactionDateSheetWidget extends StatelessWidget {
                 context: context,
                 initialDate: initialDate,
                 firstDate: DateTime(2000),
-                lastDate: DateTime(2100),
+                lastDate: DateTime.now(),
               );
               if (!context.mounted) return;
               if (picked != null) {

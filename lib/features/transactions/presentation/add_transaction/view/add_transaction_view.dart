@@ -18,6 +18,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   TransactionType _selectedType = TransactionType.expense;
   CategoryModel? _selectedCategory;
   String _note = '';
+  WalletModel? _selectedWallet;
 
   @override
   void initState() {
@@ -79,6 +80,13 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                 AmountDisplay(amount: _amount, currency: currency),
                 const Spacer(),
                 AddTransactionActionWidget(
+                  selectedWallet: _selectedWallet,
+                  selectedType: _selectedType,
+                  onWalletChanged: (wallet) {
+                    setState(() {
+                      _selectedWallet = wallet;
+                    });
+                  },
                   selectedDate: _selectedDate,
                   onDateChanged: (date) {
                     setState(() {
@@ -124,16 +132,24 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       ).showSnackBar(const SnackBar(content: Text('Amount cannot be empty')));
       return;
     }
-    if (_selectedCategory == null) {
+    if (_selectedType == TransactionType.expense && _selectedCategory == null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Category cannot be empty')));
       return;
     }
+    if (_selectedType == TransactionType.income && _selectedWallet == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Wallet cannot be empty')));
+      return;
+    }
     final model = TransactionModel(
       id: '',
-      categoryId: _selectedCategory?.categoryId ?? '',
-      walletId: '',
+      categoryId: _selectedType == TransactionType.income
+          ? ''
+          : _selectedCategory?.categoryId ?? '',
+      walletId: _selectedWallet?.id ?? '',
       dayKey: _selectedDate.dayKey,
       periodKey: _selectedDate.periodKey,
       note: _note,
