@@ -85,7 +85,7 @@ class _Body extends StatelessWidget {
               final resolvedColor = shade?.color ?? fallbackColor;
 
               return CategoryCard(
-                title: category?.name ?? tx.categoryId ?? '',
+                title: category?.name ?? 'Unknown category',
                 subtitle: tx.note.isNotEmpty ? tx.note : null,
                 leading: Container(
                   height: AppSizing.heightS,
