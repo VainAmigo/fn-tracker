@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
-import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class CreateCategoryColorPickerWidget extends StatefulWidget {
@@ -8,10 +8,12 @@ class CreateCategoryColorPickerWidget extends StatefulWidget {
     super.key,
     required this.selectedShade,
     required this.onShadeSelected,
+    this.usedColorIds = const {},
   });
 
   final CategoryShade selectedShade;
   final void Function(CategoryShade) onShadeSelected;
+  final Set<String> usedColorIds;
 
   @override
   State<CreateCategoryColorPickerWidget> createState() =>
@@ -92,8 +94,10 @@ class _CreateCategoryColorPickerWidgetState
       itemBuilder: (context, index) {
         final shade = palette.shades[index];
         final isSelected = shade.id == widget.selectedShade.id;
+        final isUsed = widget.usedColorIds.contains(shade.id);
 
         return SelectableCard(
+          isUsed: isUsed,
           isSelected: isSelected,
           backgroundColor: shade.color,
           selectedBackgroundColor: shade.color,

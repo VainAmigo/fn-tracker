@@ -18,8 +18,10 @@ class WalletCubit extends Cubit<WalletsState> {
     }
   }
 
-  List<WalletModel> get _currentWallets =>
+  List<WalletModel> get currentWallets =>
       state is WalletsLoaded ? (state as WalletsLoaded).wallets : [];
+
+  List<WalletModel> get _currentWallets => currentWallets;
 
   Future<void> addWallet({required WalletModel wallet}) async {
     final previous = _currentWallets;

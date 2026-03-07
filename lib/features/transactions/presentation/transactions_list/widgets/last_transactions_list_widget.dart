@@ -32,7 +32,10 @@ class _LastTransactionsListWidgetState
           TransactionsLoading() => const Center(
             child: CircularProgressIndicator(),
           ),
-          TransactionsEmpty() => const Center(child: Text('No transactions')),
+          TransactionsEmpty() => const EmptyCardWidget(
+            title: 'No transactions',
+            subtitle: 'You have no transactions yet',
+          ),
           TransactionsLoaded() => _Body(transactions: state.transactions),
           TransactionsError() => Center(child: Text(state.message)),
         };
@@ -117,15 +120,6 @@ class _Body extends StatelessWidget {
   List<CategoryModel> _extractCategories(CategoriesState state) {
     return switch (state) {
       CategoriesLoaded s => s.categories,
-      CategoryCreateSuccess s => s.categories,
-      CategoryCreating s => s.previousCategories,
-      CategoryCreateError s => s.previousCategories ?? const [],
-      CategoryUpdateSuccess s => s.categories,
-      CategoryUpdating s => s.previousCategories,
-      CategoryUpdateError s => s.previousCategories ?? const [],
-      CategoryDeleteSuccess s => s.categories,
-      CategoryDeleting s => s.previousCategories,
-      CategoryDeleteError s => s.previousCategories ?? const [],
       _ => const [],
     };
   }

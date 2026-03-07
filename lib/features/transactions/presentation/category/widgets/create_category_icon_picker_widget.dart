@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
-import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class CreateCategoryIconPickerWidget extends StatefulWidget {
@@ -9,11 +9,13 @@ class CreateCategoryIconPickerWidget extends StatefulWidget {
     required this.selectedIcon,
     required this.selectedColor,
     required this.onIconSelected,
+    this.usedIconIds = const {},
   });
 
   final CategoryIcon selectedIcon;
   final Color selectedColor;
   final void Function(CategoryIcon) onIconSelected;
+  final Set<String> usedIconIds;
 
   @override
   State<CreateCategoryIconPickerWidget> createState() =>
@@ -103,9 +105,11 @@ class _CreateCategoryIconPickerWidgetState
       itemBuilder: (context, index) {
         final icon = group.icons[index];
         final isSelected = icon.id == widget.selectedIcon.id;
+        final isUsed = widget.usedIconIds.contains(icon.id);
 
         return SelectableCard(
           isSelected: isSelected,
+          isUsed: isUsed,
           onTap: () => widget.onIconSelected(icon),
           child: Icon(
             icon.icon,

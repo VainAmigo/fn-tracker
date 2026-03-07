@@ -23,6 +23,15 @@ CategoryShade? findShadeById(String id) {
   return null;
 }
 
+CategoryShade firstUnusedShade(Set<String> usedIds) {
+  for (final palette in categoryColorPalettes) {
+    for (final shade in palette.shades) {
+      if (!usedIds.contains(shade.id)) return shade;
+    }
+  }
+  return categoryColorPalettes[0].shades.first;
+}
+
 const categoryColorPalettes = [
   /// RED
   CategoryColorPalette(

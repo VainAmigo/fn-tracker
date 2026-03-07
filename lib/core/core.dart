@@ -5,3 +5,5 @@ export 'utils/date_formatter.dart';
 export 'utils/month.dart';
 export 'utils/month_range_utils.dart';
 export 'utils/date_keys_extention.dart';
+export 'app_groups/category_color_palettes.dart';
+export 'app_groups/category_icon_groups.dart';

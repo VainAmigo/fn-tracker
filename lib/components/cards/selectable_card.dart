@@ -12,6 +12,7 @@ class SelectableCard extends StatelessWidget {
     this.isSelected = false,
     this.height,
     this.width,
+    this.isUsed = false,
     super.key,
   });
 
@@ -24,20 +25,26 @@ class SelectableCard extends StatelessWidget {
   final bool isSelected;
   final double? height;
   final double? width;
+  final bool? isUsed;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    final backgroundColor = this.backgroundColor ?? colorScheme.secondary;
-    final borderColor = this.borderColor ?? colorScheme.secondary;
+    final isEnabled = isUsed == true ? false : true;
+    final backgroundColor = isEnabled
+        ? this.backgroundColor ?? colorScheme.secondary
+        : this.backgroundColor ?? colorScheme.surface;
+    final borderColor = isEnabled
+        ? this.borderColor ?? colorScheme.secondary
+        : colorScheme.onSurface;
     final selectedBackgroundColor =
         this.selectedBackgroundColor ?? colorScheme.secondary;
     final selectedBorderColor =
         this.selectedBorderColor ?? colorScheme.secondary;
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: isEnabled ? onTap : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         height: height,

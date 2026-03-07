@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
@@ -29,7 +30,10 @@ class _WalletsListWidgetState extends State<WalletsListWidget> {
         return switch (state) {
           WalletsInitial() => const SizedBox.shrink(),
           WalletsLoading() => const Center(child: CircularProgressIndicator()),
-          WalletsEmpty() => _Body(wallets: const []),
+          WalletsEmpty() => const EmptyCardWidget(
+            title: 'No wallets',
+            subtitle: 'Create your first wallet',
+          ),
           WalletsLoaded() => _Body(wallets: state.wallets),
           WalletsError() => Center(child: Text(state.message)),
         };

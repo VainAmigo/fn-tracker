@@ -28,6 +28,15 @@ CategoryIcon? findIconById(String id) {
   return null;
 }
 
+CategoryIcon firstUnusedIcon(Set<String> usedIds) {
+  for (final group in categoryIconGroups) {
+    for (final icon in group.icons) {
+      if (!usedIds.contains(icon.id)) return icon;
+    }
+  }
+  return categoryIconGroups[0].icons.first;
+}
+
 const categoryIconGroups = [
   CategoryIconGroup(
     label: 'Food',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
@@ -18,6 +19,8 @@ class _CategoryFormViewState extends State<CategoryFormView> {
   late CategoryShade _selectedShade;
   late TextEditingController _nameController;
   late String? _limit;
+  bool _isSubmitting = false;
+  bool _defaultsInitialized = false;
 
   bool get _isEditing => widget.category != null;
 
@@ -30,6 +33,7 @@ class _CategoryFormViewState extends State<CategoryFormView> {
       _limit = category.limitValue?.toString();
       _selectedIcon = findIconById(category.iconId)!;
       _selectedShade = findShadeById(category.colorId)!;
+      _defaultsInitialized = true;
     } else {
       _nameController = TextEditingController();
       _limit = null;
@@ -39,9 +43,43 @@ class _CategoryFormViewState extends State<CategoryFormView> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_defaultsInitialized) {
+      _defaultsInitialized = true;
+      final usedIds = _collectUsedIds(context);
+      _selectedIcon = firstUnusedIcon(usedIds.iconIds);
+      _selectedShade = firstUnusedShade(usedIds.colorIds);
+    }
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     super.dispose();
+  }
+
+  ({Set<String> colorIds, Set<String> iconIds}) _collectUsedIds(
+      BuildContext context) {
+    final wallets = context.read<WalletCubit>().currentWallets;
+    final categories = context.read<CategoriesCubit>().currentCategories;
+
+    final editingId = widget.category?.categoryId;
+
+    final usedColorIds = <String>{};
+    final usedIconIds = <String>{};
+
+    for (final w in wallets) {
+      usedColorIds.add(w.colorId);
+      usedIconIds.add(w.iconId);
+    }
+    for (final c in categories) {
+      if (c.categoryId == editingId) continue;
+      usedColorIds.add(c.colorId);
+      usedIconIds.add(c.iconId);
+    }
+
+    return (colorIds: usedColorIds, iconIds: usedIconIds);
   }
 
   @override
@@ -49,64 +87,35 @@ class _CategoryFormViewState extends State<CategoryFormView> {
     final currency = context.watch<CurrencyProvider>().currency;
     final colorScheme = Theme.of(context).colorScheme;
     final categoriesState = context.watch<CategoriesCubit>().state;
-    final isLoading = categoriesState is CategoryCreating ||
-        categoriesState is CategoryUpdating;
-    final isDeleting = categoriesState is CategoryDeleting;
+    final isLoading = _isSubmitting && categoriesState is CategoriesLoading;
+    final usedIds = _collectUsedIds(context);
 
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<CategoriesCubit, CategoriesState>(
-          listener: (context, state) {
-            if (state is CategoryCreateSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Category created successfully')),
-              );
-              Navigator.of(context).pop();
-            }
-            if (state is CategoryCreateError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: colorScheme.error,
-                ),
-              );
-            }
-          },
-        ),
-        BlocListener<CategoriesCubit, CategoriesState>(
-          listener: (context, state) {
-            if (state is CategoryUpdateSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Category updated successfully')),
-              );
-              Navigator.of(context).pop();
-            }
-            if (state is CategoryUpdateError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: colorScheme.error,
-                ),
-              );
-            }
-          },
-        ),
-        BlocListener<CategoriesCubit, CategoriesState>(
-          listener: (context, state) {
-            if (state is CategoryDeleteSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Category deleted successfully')),
-              );
-              Navigator.of(context).pop();
-            }
-            if (state is CategoryDeleteError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
-            }
-          },
-        ),
-      ],
+    return BlocListener<CategoriesCubit, CategoriesState>(
+      listener: (context, state) {
+        if (!_isSubmitting) return;
+        if (state is CategoriesLoaded || state is CategoriesEmpty) {
+          _isSubmitting = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                _isEditing
+                    ? 'Category updated successfully'
+                    : 'Category created successfully',
+              ),
+            ),
+          );
+          Navigator.of(context).pop();
+        }
+        if (state is CategoriesError) {
+          _isSubmitting = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: colorScheme.error,
+            ),
+          );
+        }
+      },
       child: Scaffold(
         appBar: AppBar(
           title: Text(_isEditing ? 'Update Category' : 'Create Category'),
@@ -148,11 +157,13 @@ class _CategoryFormViewState extends State<CategoryFormView> {
                           selectedColor: _selectedShade.color,
                           onIconSelected: (icon) =>
                               setState(() => _selectedIcon = icon),
+                          usedIconIds: usedIds.iconIds,
                         ),
                         CreateCategoryColorPickerWidget(
                           selectedShade: _selectedShade,
                           onShadeSelected: (shade) =>
                               setState(() => _selectedShade = shade),
+                          usedColorIds: usedIds.colorIds,
                         ),
                       ],
                     ),
@@ -167,16 +178,14 @@ class _CategoryFormViewState extends State<CategoryFormView> {
                     foregroundColor: colorScheme.primary,
                     size: PrimaryButtonSize.small,
                     rounded: true,
-                    onPressed:
-                        isLoading || isDeleting ? null : _deleteCategory,
-                    isLoading: isDeleting,
+                    onPressed: isLoading ? null : _deleteCategory,
+                    isLoading: false,
                   ),
                   const SizedBox(height: AppSizing.spaceBtwItems),
                 ],
                 PrimaryButton(
                   text: _isEditing ? 'Update' : 'Create',
-                  onPressed:
-                      isLoading || isDeleting ? null : _submitCategory,
+                  onPressed: isLoading ? null : _submitCategory,
                   isLoading: isLoading,
                 ),
                 const SizedBox(height: AppSizing.spaceBtwElements),
@@ -242,6 +251,7 @@ class _CategoryFormViewState extends State<CategoryFormView> {
   }
 
   void _deleteCategory() {
+    setState(() => _isSubmitting = true);
     context.read<CategoriesCubit>().deleteCategory(
           categoryId: widget.category!.categoryId,
         );
@@ -258,6 +268,8 @@ class _CategoryFormViewState extends State<CategoryFormView> {
 
     final double? limitValue =
         _limit != null && _limit!.isNotEmpty ? double.parse(_limit!) : null;
+
+    setState(() => _isSubmitting = true);
 
     if (_isEditing) {
       final category = CategoryModel(

@@ -23,10 +23,14 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     }
   }
 
-  Future<void> createCategory({required CategoryModel categoryModel}) async {
-    final previousCategories = _currentCategoriesOrNull() ?? [];
+  List<CategoryModel> get currentCategories =>
+      state is CategoriesLoaded ? (state as CategoriesLoaded).categories : [];
 
-    emit(CategoryCreating(previousCategories: previousCategories));
+  List<CategoryModel> get _currentCategories => currentCategories;
+
+  Future<void> createCategory({required CategoryModel categoryModel}) async {
+    final previous = _currentCategories;
+    emit(CategoriesLoading());
 
     try {
       final draft = CategoryModel(
@@ -39,129 +43,48 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       );
 
       final createdCategory = await categoryRepo.addCategory(category: draft);
-
-      final updatedCategories = [createdCategory, ...previousCategories];
-
-      emit(
-        CategoryCreateSuccess(
-          categories: updatedCategories,
-          createdCategory: createdCategory,
-        ),
-      );
+      emit(CategoriesLoaded(categories: [createdCategory, ...previous]));
     } catch (e) {
-      emit(
-        CategoryCreateError(
-          message: e.toString(),
-          previousCategories: previousCategories,
-        ),
-      );
+      emit(CategoriesError(message: e.toString()));
     }
   }
 
   Future<void> updateCategory({required CategoryModel categoryModel}) async {
-    final previousCategories = _currentCategoriesOrNull() ?? [];
-
-    emit(CategoryUpdating(previousCategories: previousCategories));
+    final previous = _currentCategories;
+    emit(CategoriesLoading());
 
     try {
       final updatedCategory =
           await categoryRepo.updateCategory(category: categoryModel);
 
-      final updatedCategories = previousCategories
+      final updatedCategories = previous
           .map((c) =>
               c.categoryId == updatedCategory.categoryId ? updatedCategory : c)
           .toList();
 
-      emit(
-        CategoryUpdateSuccess(
-          categories: updatedCategories,
-          updatedCategory: updatedCategory,
-        ),
-      );
+      emit(CategoriesLoaded(categories: updatedCategories));
     } catch (e) {
-      emit(
-        CategoryUpdateError(
-          message: e.toString(),
-          previousCategories: previousCategories,
-        ),
-      );
+      emit(CategoriesError(message: e.toString()));
     }
   }
 
   Future<void> deleteCategory({required String categoryId}) async {
-    final previousCategories = _currentCategoriesOrNull() ?? [];
-
-    emit(CategoryDeleting(previousCategories: previousCategories));
+    final previous = _currentCategories;
+    emit(CategoriesLoading());
 
     try {
       await categoryRepo.deleteCategory(categoryId: categoryId);
 
       final updatedCategories =
-          previousCategories.where((c) => c.categoryId != categoryId).toList();
+          previous.where((c) => c.categoryId != categoryId).toList();
 
       if (updatedCategories.isEmpty) {
         emit(CategoriesEmpty());
       } else {
-        emit(
-          CategoryDeleteSuccess(
-            categories: updatedCategories,
-            deletedCategoryId: categoryId,
-          ),
-        );
+        emit(CategoriesLoaded(categories: updatedCategories));
       }
     } catch (e) {
-      emit(
-        CategoryDeleteError(
-          message: e.toString(),
-          previousCategories: previousCategories,
-        ),
-      );
+      emit(CategoriesError(message: e.toString()));
     }
-  }
-
-  List<CategoryModel>? _currentCategoriesOrNull() {
-    final currentState = state;
-
-    if (currentState is CategoriesLoaded) {
-      return currentState.categories;
-    }
-
-    if (currentState is CategoryCreating) {
-      return currentState.previousCategories;
-    }
-
-    if (currentState is CategoryCreateSuccess) {
-      return currentState.categories;
-    }
-
-    if (currentState is CategoryCreateError) {
-      return currentState.previousCategories;
-    }
-
-    if (currentState is CategoryUpdating) {
-      return currentState.previousCategories;
-    }
-
-    if (currentState is CategoryUpdateSuccess) {
-      return currentState.categories;
-    }
-
-    if (currentState is CategoryUpdateError) {
-      return currentState.previousCategories;
-    }
-
-    if (currentState is CategoryDeleting) {
-      return currentState.previousCategories;
-    }
-
-    if (currentState is CategoryDeleteSuccess) {
-      return currentState.categories;
-    }
-
-    if (currentState is CategoryDeleteError) {
-      return currentState.previousCategories;
-    }
-
-    return null;
   }
 }

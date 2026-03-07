@@ -44,85 +44,69 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
     final currency = context.watch<CurrencyProvider>().currency;
     return BlocBuilder<CategoriesCubit, CategoriesState>(
       builder: (context, state) {
-        if (state is CategoriesLoading || state is CategoriesInitial) {
-          return SizedBox(
+        return switch (state) {
+          CategoriesInitial() || CategoriesLoading() => SizedBox(
             height: 200,
             child: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        if (state is CategoriesError) {
-          return Center(
+          ),
+          CategoriesError() => Center(
             child: Text(state.message, textAlign: TextAlign.center),
-          );
-        }
-
-        final categories = switch (state) {
-          CategoriesLoaded s => s.categories,
-          CategoryCreateSuccess s => s.categories,
-          CategoryCreating s => s.previousCategories,
-          CategoryCreateError s =>
-            s.previousCategories ?? const <CategoryModel>[],
-          CategoryUpdateSuccess s => s.categories,
-          CategoryUpdating s => s.previousCategories,
-          CategoryUpdateError s =>
-            s.previousCategories ?? const <CategoryModel>[],
-          CategoryDeleteSuccess s => s.categories,
-          CategoryDeleting s => s.previousCategories,
-          CategoryDeleteError s =>
-            s.previousCategories ?? const <CategoryModel>[],
-          CategoriesEmpty _ => const <CategoryModel>[],
-          _ => const <CategoryModel>[],
+          ),
+          CategoriesEmpty() => const EmptyCardWidget(
+            title: 'No categories',
+            subtitle: 'Create you first category',
+          ),
+          CategoriesLoaded() => _buildList(context, state.categories, currency),
         };
+      },
+    );
+  }
 
-        if (categories.isEmpty) {
-          return const Center(child: Text('Категорий пока нет'));
-        }
+  Widget _buildList(
+    BuildContext context,
+    List<CategoryModel> categories,
+    Currency currency,
+  ) {
+    return ListView.separated(
+      shrinkWrap: widget.shrinkWrap,
+      physics: widget.shrinkWrap ? const NeverScrollableScrollPhysics() : null,
+      itemCount: categories.length,
+      separatorBuilder: (_, __) =>
+          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+      itemBuilder: (context, index) {
+        final category = categories[index];
+        final shade = findShadeById(category.colorId);
+        final icon = findIconById(category.iconId);
+        final color = shade?.color ?? Colors.grey;
 
-        return ListView.separated(
-          shrinkWrap: widget.shrinkWrap,
-          physics: widget.shrinkWrap
-              ? const NeverScrollableScrollPhysics()
+        return CategoryCard(
+          title: category.name,
+          subtitle: category.limitValue != null
+              ? AmountFormatter.formatWithDots(
+                  'Limit',
+                  '${category.limitValue} ${currency.symbol}',
+                )
               : null,
-          itemCount: categories.length,
-          separatorBuilder: (_, _) =>
-              const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            final shade = findShadeById(category.colorId);
-            final icon = findIconById(category.iconId);
-            final color = shade?.color ?? Colors.grey;
-
-            return CategoryCard(
-              title: category.name,
-              subtitle: category.limitValue != null
-                  ? AmountFormatter.formatWithDots(
-                      'Limit',
-                      '${category.limitValue} ${currency.symbol}',
-                    )
-                  : null,
-              leading: Container(
-                height: AppSizing.heightS,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
-                ),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Icon(
-                    icon?.icon ?? Icons.category,
-                    size: AppSizing.iconSizeM,
-                    color: color,
-                  ),
-                ),
+          leading: Container(
+            height: AppSizing.heightS,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+            ),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Icon(
+                icon?.icon ?? Icons.category,
+                size: AppSizing.iconSizeM,
+                color: color,
               ),
-              style: widget.cardStyle,
-              radius: _radiusForIndex(index, categories.length),
-              onTap: widget.onCategorySelected != null
-                  ? () => widget.onCategorySelected!(category)
-                  : null,
-            );
-          },
+            ),
+          ),
+          style: widget.cardStyle,
+          radius: _radiusForIndex(index, categories.length),
+          onTap: widget.onCategorySelected != null
+              ? () => widget.onCategorySelected!(category)
+              : null,
         );
       },
     );

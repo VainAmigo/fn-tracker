@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
@@ -19,6 +20,7 @@ class _WalletFormViewState extends State<WalletFormView> {
   late TextEditingController _nameController;
   late bool _isDefault;
   bool _isSubmitting = false;
+  bool _defaultsInitialized = false;
 
   bool get _isEditing => widget.wallet != null;
 
@@ -31,6 +33,7 @@ class _WalletFormViewState extends State<WalletFormView> {
       _selectedIcon = findIconById(wallet.iconId)!;
       _selectedShade = findShadeById(wallet.colorId)!;
       _isDefault = wallet.isDefault;
+      _defaultsInitialized = true;
     } else {
       _nameController = TextEditingController();
       _selectedIcon = categoryIconGroups[0].icons.first;
@@ -40,9 +43,44 @@ class _WalletFormViewState extends State<WalletFormView> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_defaultsInitialized) {
+      _defaultsInitialized = true;
+      final usedIds = _collectUsedIds(context);
+      _selectedIcon = firstUnusedIcon(usedIds.iconIds);
+      _selectedShade = firstUnusedShade(usedIds.colorIds);
+    }
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     super.dispose();
+  }
+
+  ({Set<String> colorIds, Set<String> iconIds}) _collectUsedIds(
+    BuildContext context,
+  ) {
+    final wallets = context.read<WalletCubit>().currentWallets;
+    final categories = context.read<CategoriesCubit>().currentCategories;
+
+    final editingId = widget.wallet?.id;
+
+    final usedColorIds = <String>{};
+    final usedIconIds = <String>{};
+
+    for (final w in wallets) {
+      if (w.id == editingId) continue;
+      usedColorIds.add(w.colorId);
+      usedIconIds.add(w.iconId);
+    }
+    for (final c in categories) {
+      usedColorIds.add(c.colorId);
+      usedIconIds.add(c.iconId);
+    }
+
+    return (colorIds: usedColorIds, iconIds: usedIconIds);
   }
 
   @override
@@ -50,6 +88,7 @@ class _WalletFormViewState extends State<WalletFormView> {
     final colorScheme = Theme.of(context).colorScheme;
     final walletsState = context.watch<WalletCubit>().state;
     final isLoading = _isSubmitting && walletsState is WalletsLoading;
+    final usedIds = _collectUsedIds(context);
 
     return BlocListener<WalletCubit, WalletsState>(
       listener: (context, state) {
@@ -113,18 +152,21 @@ class _WalletFormViewState extends State<WalletFormView> {
                             ),
                             onTap: widget.wallet!.isDefault
                                 ? null
-                                : () => setState(() => _isDefault = !_isDefault),
+                                : () =>
+                                      setState(() => _isDefault = !_isDefault),
                           ),
                         CreateCategoryIconPickerWidget(
                           selectedIcon: _selectedIcon,
                           selectedColor: _selectedShade.color,
                           onIconSelected: (icon) =>
                               setState(() => _selectedIcon = icon),
+                          usedIconIds: usedIds.iconIds,
                         ),
                         CreateCategoryColorPickerWidget(
                           selectedShade: _selectedShade,
                           onShadeSelected: (shade) =>
                               setState(() => _selectedShade = shade),
+                          usedColorIds: usedIds.colorIds,
                         ),
                       ],
                     ),
@@ -134,8 +176,7 @@ class _WalletFormViewState extends State<WalletFormView> {
                 if (_isEditing) ...[
                   PrimaryButton(
                     text: 'Delete',
-                    backgroundColor:
-                        colorScheme.primary.withValues(alpha: 0.3),
+                    backgroundColor: colorScheme.primary.withValues(alpha: 0.3),
                     foregroundColor: colorScheme.primary,
                     size: PrimaryButtonSize.small,
                     rounded: true,
@@ -178,17 +219,15 @@ class _WalletFormViewState extends State<WalletFormView> {
 
   void _deleteWallet() {
     setState(() => _isSubmitting = true);
-    context.read<WalletCubit>().deleteWallet(
-          walletId: widget.wallet!.id!,
-        );
+    context.read<WalletCubit>().deleteWallet(walletId: widget.wallet!.id!);
   }
 
   void _submitWallet() {
     final name = _nameController.text;
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Name is required')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Name is required')));
       return;
     }
 
