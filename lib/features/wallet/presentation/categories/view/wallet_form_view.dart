@@ -4,18 +4,40 @@ import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-class CreateCategoryView extends StatefulWidget {
-  const CreateCategoryView({super.key});
+class WalletFormView extends StatefulWidget {
+  const WalletFormView({super.key, this.wallet});
+
+  final WalletModel? wallet;
 
   @override
-  State<CreateCategoryView> createState() => _CreateCategoryViewState();
+  State<WalletFormView> createState() => _WalletFormViewState();
 }
 
-class _CreateCategoryViewState extends State<CreateCategoryView> {
-  CategoryIcon _selectedIcon = categoryIconGroups[0].icons.first;
-  CategoryShade _selectedShade = categoryColorPalettes[0].shades.first;
-  final TextEditingController _nameController = TextEditingController();
-  String? _limit;
+class _WalletFormViewState extends State<WalletFormView> {
+  late CategoryIcon _selectedIcon;
+  late CategoryShade _selectedShade;
+  late TextEditingController _nameController;
+  late bool _isDefault;
+  bool _isSubmitting = false;
+
+  bool get _isEditing => widget.wallet != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final wallet = widget.wallet;
+    if (wallet != null) {
+      _nameController = TextEditingController(text: wallet.name);
+      _selectedIcon = findIconById(wallet.iconId)!;
+      _selectedShade = findShadeById(wallet.colorId)!;
+      _isDefault = wallet.isDefault;
+    } else {
+      _nameController = TextEditingController();
+      _selectedIcon = categoryIconGroups[0].icons.first;
+      _selectedShade = categoryColorPalettes[0].shades.first;
+      _isDefault = false;
+    }
+  }
 
   @override
   void dispose() {
@@ -25,20 +47,28 @@ class _CreateCategoryViewState extends State<CreateCategoryView> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = context.watch<CurrencyProvider>().currency;
     final colorScheme = Theme.of(context).colorScheme;
-    final categoriesState = context.watch<CategoriesCubit>().state;
-    final isCreating = categoriesState is CategoryCreating;
+    final walletsState = context.watch<WalletCubit>().state;
+    final isLoading = _isSubmitting && walletsState is WalletsLoading;
 
-    return BlocListener<CategoriesCubit, CategoriesState>(
+    return BlocListener<WalletCubit, WalletsState>(
       listener: (context, state) {
-        if (state is CategoryCreateSuccess) {
+        if (!_isSubmitting) return;
+        if (state is WalletsLoaded) {
+          _isSubmitting = false;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Category created successfully')),
+            SnackBar(
+              content: Text(
+                _isEditing
+                    ? 'Wallet updated successfully'
+                    : 'Wallet created successfully',
+              ),
+            ),
           );
           Navigator.of(context).pop();
         }
-        if (state is CategoryCreateError) {
+        if (state is WalletsError) {
+          _isSubmitting = false;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -48,7 +78,10 @@ class _CreateCategoryViewState extends State<CreateCategoryView> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Create Category'), scrolledUnderElevation: 0,),
+        appBar: AppBar(
+          title: Text(_isEditing ? 'Update Wallet' : 'Create Wallet'),
+          scrolledUnderElevation: 0,
+        ),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -66,19 +99,19 @@ class _CreateCategoryViewState extends State<CreateCategoryView> {
                         const SizedBox(height: AppSizing.spaceBtwElements),
                         _buildPreview(context),
                         CustomTextFormField(
-                          label: 'Category name',
-                          hintText: 'e.g. Groceries',
+                          label: 'Wallet name',
+                          hintText: 'e.g. Cash',
                           controller: _nameController,
                         ),
                         CategoryCard(
-                          title: _limit ?? 'no limit',
-                          subtitle: 'Monthly limit',
+                          title: _isDefault ? 'Yes' : 'No',
+                          subtitle: 'Default wallet',
                           leading: Icon(
-                            Icons.data_usage_rounded,
+                            _isDefault ? Icons.star : Icons.star_border,
                             color: colorScheme.onSecondary,
                           ),
                           onTap: () =>
-                              _openLimitSheet(context, currency, _limit),
+                              setState(() => _isDefault = !_isDefault),
                         ),
                         CreateCategoryIconPickerWidget(
                           selectedIcon: _selectedIcon,
@@ -96,10 +129,23 @@ class _CreateCategoryViewState extends State<CreateCategoryView> {
                   ),
                 ),
                 const SizedBox(height: AppSizing.spaceBtwElements),
+                if (_isEditing) ...[
+                  PrimaryButton(
+                    text: 'Delete',
+                    backgroundColor:
+                        colorScheme.primary.withValues(alpha: 0.3),
+                    foregroundColor: colorScheme.primary,
+                    size: PrimaryButtonSize.small,
+                    rounded: true,
+                    onPressed: isLoading ? null : _deleteWallet,
+                    isLoading: false,
+                  ),
+                  const SizedBox(height: AppSizing.spaceBtwItems),
+                ],
                 PrimaryButton(
-                  text: 'Create',
-                  onPressed: isCreating ? null : () => _createCategory(),
-                  isLoading: isCreating,
+                  text: _isEditing ? 'Update' : 'Create',
+                  onPressed: isLoading ? null : _submitWallet,
+                  isLoading: isLoading,
                 ),
                 const SizedBox(height: AppSizing.spaceBtwElements),
               ],
@@ -128,60 +174,37 @@ class _CreateCategoryViewState extends State<CreateCategoryView> {
     );
   }
 
-  void _openLimitSheet(BuildContext context, Currency currency, String? limit) {
-    AppBottomSheet.showFittedModalBottomSheet(
-      context,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSizing.defaultPadding,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AmountInputWidget(
-              initialAmount: limit ?? '',
-              currency: currency,
-              onAmountChanged: (amount) {
-                setState(() {
-                  _limit = amount;
-                });
-              },
-            ),
-
-            PrimaryButton(
-              text: 'Save',
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              size: PrimaryButtonSize.medium,
-            ),
-            const SizedBox(height: AppSizing.spaceBtwSections),
-          ],
-        ),
-      ),
-    );
+  void _deleteWallet() {
+    setState(() => _isSubmitting = true);
+    context.read<WalletCubit>().deleteWallet(
+          walletId: widget.wallet!.id!,
+        );
   }
 
-  void _createCategory() {
+  void _submitWallet() {
     final name = _nameController.text;
     if (name.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Name is required')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Name is required')),
+      );
       return;
     }
 
-    final category = CategoryModel(
-      categoryId: '',
+    setState(() => _isSubmitting = true);
+
+    final wallet = WalletModel(
+      id: widget.wallet?.id,
       name: name,
       colorId: _selectedShade.id,
       iconId: _selectedIcon.id,
-      limitValue: _limit != null && _limit!.isNotEmpty
-          ? double.parse(_limit!)
-          : null,
+      balance: widget.wallet?.balance,
+      isDefault: _isDefault,
     );
 
-    context.read<CategoriesCubit>().createCategory(categoryModel: category);
+    if (_isEditing) {
+      context.read<WalletCubit>().updateWallet(wallet: wallet);
+    } else {
+      context.read<WalletCubit>().addWallet(wallet: wallet);
+    }
   }
 }

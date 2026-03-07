@@ -47,6 +47,7 @@ class _HomeViewState extends State<HomeView> {
             state.createdTransaction,
           );
           _loadStats();
+          context.read<WalletCubit>().loadWallets();
           final periodKey = MonthRangeUtils.currentMonth().start.periodKey;
           context
               .read<BudgetCubit>()

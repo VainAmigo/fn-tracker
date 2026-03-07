@@ -4,7 +4,7 @@ class WalletModel {
   final String colorId;
   final String iconId;
   final double? balance;
-  final bool? isDefault;
+  final bool isDefault;
 
   WalletModel({
     this.id,
@@ -12,7 +12,7 @@ class WalletModel {
     required this.colorId,
     required this.iconId,
     this.balance,
-    this.isDefault = false,
+    required this.isDefault,
   });
 
   Map<String, dynamic> toJson() {
@@ -51,7 +51,7 @@ class WalletModel {
       colorId: json['colorId'],
       iconId: json['iconId'],
       balance: (json['balance'] as num?)?.toDouble(),
-      isDefault: json['isDefault'] as bool? ?? false,
+      isDefault: json['isDefault'] as bool,
     );
   }
 }

@@ -18,44 +18,35 @@ class WalletCubit extends Cubit<WalletsState> {
     }
   }
 
+  List<WalletModel> get _currentWallets =>
+      state is WalletsLoaded ? (state as WalletsLoaded).wallets : [];
+
   Future<void> addWallet({required WalletModel wallet}) async {
+    final previous = _currentWallets;
     emit(WalletsLoading());
     final newWallet = await walletRepo.addWallet(wallet: wallet);
-    emit(
-      WalletsLoaded(
-        wallets: [
-          newWallet,
-          ...(state is WalletsLoaded ? (state as WalletsLoaded).wallets : []),
-        ],
-      ),
-    );
+    emit(WalletsLoaded(wallets: [newWallet, ...previous]));
   }
 
   Future<void> updateWallet({required WalletModel wallet}) async {
+    final previous = _currentWallets;
     emit(WalletsLoading());
     final updatedWallet = await walletRepo.updateWallet(wallet: wallet);
-    emit(
-      WalletsLoaded(
-        wallets: [
-          updatedWallet,
-          ...(state is WalletsLoaded ? (state as WalletsLoaded).wallets : []),
-        ],
-      ),
-    );
+    final updatedList = previous
+        .map((w) => w.id == updatedWallet.id ? updatedWallet : w)
+        .toList();
+    emit(WalletsLoaded(wallets: updatedList));
   }
 
   Future<void> deleteWallet({required String walletId}) async {
+    final previous = _currentWallets;
     emit(WalletsLoading());
     await walletRepo.deleteWallet(walletId);
-    emit(
-      WalletsLoaded(
-        wallets:
-            (state is WalletsLoaded
-                    ? (state as WalletsLoaded).wallets
-                    : <WalletModel>[])
-                .where((wallet) => wallet.id != walletId)
-                .toList(),
-      ),
-    );
+    final updatedList = previous.where((w) => w.id != walletId).toList();
+    if (updatedList.isEmpty) {
+      emit(WalletsEmpty());
+    } else {
+      emit(WalletsLoaded(wallets: updatedList));
+    }
   }
 }

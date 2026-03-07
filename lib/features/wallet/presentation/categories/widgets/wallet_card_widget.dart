@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
@@ -24,6 +25,7 @@ class WalletCardWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 height: AppSizing.heightXS,
@@ -44,18 +46,22 @@ class WalletCardWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   wallet.name,
-                  style: AppTextStyles.listTileTitle(context),
+                  style: AppTextStyles.text20w600(context),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: AppSizing.spaceBtwItems),
+              Icon(
+                wallet.isDefault ? Icons.star : Icons.star_border,
+                size: AppSizing.iconSizeL,
+                color: colorScheme.onSecondary,
+              ),
             ],
           ),
-          const Spacer(),
-          Text(
-            wallet.balance.toString(),
-            style: AppTextStyles.listTileTitle(
-              context,
-            ).copyWith(color: colorScheme.onSecondary),
+          const SizedBox(height: AppSizing.spaceBtwElements),
+          AmountWithSignWidget(
+            amount: wallet.balance ?? 0,
+            preset: AmountTextPreset.large,
           ),
         ],
       ),

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
-
-const _cardWidth = 160.0;
-const _cardHeight = 100.0;
 
 class WalletsListWidget extends StatefulWidget {
   const WalletsListWidget({super.key, this.autoLoad = false});
@@ -47,41 +45,28 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final totalCount = wallets.length + 1;
+    final width = MediaQuery.of(context).size.width * 0.7;
 
-    return SizedBox(
-      height: _cardHeight,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: totalCount,
-        separatorBuilder: (_, _) =>
-            const SizedBox(width: AppSizing.spaceBtwItems),
-        itemBuilder: (context, index) {
-          if (index < wallets.length) {
-            return SizedBox(
-              width: _cardWidth,
-              child: WalletCardWidget(wallet: wallets[index]),
-            );
-          }
-          return SizedBox(
-            width: _cardWidth,
-            child: Container(
-              decoration: BoxDecoration(
-                color: colorScheme.secondary,
-                borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
-                border: Border.all(
-                  color: colorScheme.onSecondary.withValues(alpha: 0.3),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (int i = 0; i < wallets.length; i++) ...[
+              if (i > 0) const SizedBox(width: AppSizing.spaceBtwItems),
+              SizedBox(
+                width: width,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(
+                    context,
+                  ).pushNamed(AppRouter.updateWallet, arguments: wallets[i]),
+                  child: WalletCardWidget(wallet: wallets[i]),
                 ),
               ),
-              child: Icon(
-                Icons.add_rounded,
-                size: AppSizing.iconSizeL,
-                color: colorScheme.onSecondary,
-              ),
-            ),
-          );
-        },
+            ],
+          ],
+        ),
       ),
     );
   }

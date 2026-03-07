@@ -16,7 +16,9 @@ class CategoriesTabView extends StatelessWidget {
           TitledSection(
             title: 'Wallets',
             action: PrimaryButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed(AppRouter.createWallet);
+              },
               text: 'Create wallet',
               size: PrimaryButtonSize.xSmall,
               rounded: true,

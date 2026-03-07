@@ -16,6 +16,9 @@ final class AppRouter {
   static const createCategory = '/create-category';
   static const updateCategory = '/update-category';
 
+  static const createWallet = '/create-wallet';
+  static const updateWallet = '/update-wallet';
+
   static Route<void> onGenerateRoute(RouteSettings settings) {
     return switch (settings.name) {
       main => MaterialPageRoute(
@@ -40,7 +43,7 @@ final class AppRouter {
       ),
       createCategory => MaterialPageRoute(
         settings: const RouteSettings(name: createCategory),
-        builder: (_) => const CreateCategoryView(),
+        builder: (_) => const CategoryFormView(),
       ),
       transactions => MaterialPageRoute(
         settings: const RouteSettings(name: transactions),
@@ -49,7 +52,16 @@ final class AppRouter {
       updateCategory => MaterialPageRoute(
         settings: const RouteSettings(name: updateCategory),
         builder: (_) =>
-            UpdateCategoryView(category: settings.arguments as CategoryModel),
+            CategoryFormView(category: settings.arguments as CategoryModel),
+      ),
+      createWallet => MaterialPageRoute(
+        settings: const RouteSettings(name: createWallet),
+        builder: (_) => const WalletFormView(),
+      ),
+      updateWallet => MaterialPageRoute(
+        settings: const RouteSettings(name: updateWallet),
+        builder: (_) =>
+            WalletFormView(wallet: settings.arguments as WalletModel),
       ),
       _ => throw Exception(
         'No builder specified for route named: [${settings.name}]',
