@@ -25,7 +25,10 @@ class HomeInfoListWidget extends StatelessWidget {
               fullWidth: false,
               rounded: true,
             ),
-            children: [LastTransactionsListWidget()],
+            children: [
+              LastTransactionsListWidget(),
+              const SizedBox(height: AppSizing.spaceBtwElements),
+            ],
           ),
         ],
       ),

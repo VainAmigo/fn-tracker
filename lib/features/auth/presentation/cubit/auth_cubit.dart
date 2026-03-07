@@ -1,13 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/auth/auth.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepoImpl authRepo;
+  final DefaultDataSeeder? dataSeeder;
   AppUser? _currentUser;
 
-  AuthCubit({required this.authRepo}) : super(AuthInitial());
+  AuthCubit({required this.authRepo, this.dataSeeder}) : super(AuthInitial());
 
   // check if user is already authenticated
   void checkAuth() async {
@@ -42,7 +44,6 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  //   register with email and password
   Future<void> register(String email, String password) async {
     try {
       emit(AuthLoading());
@@ -50,6 +51,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       if (user != null) {
         _currentUser = user;
+        await dataSeeder?.seed();
         emit(Authenticated(user));
       } else {
         emit(Unauthenticated());

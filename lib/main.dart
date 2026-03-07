@@ -26,16 +26,32 @@ class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     final firebaseAuthRepo = FirebaseAuthRepo();
+    final walletRepo = WalletRepository();
+    final categoryRepo = CategoryRepository();
+
+    final dataSeeder = DefaultDataSeeder(
+      tasks: [
+        WalletSeedTask(
+          walletRepo: walletRepo,
+          wallets: DefaultSeedData.wallets,
+        ),
+        CategorySeedTask(
+          categoryRepo: categoryRepo,
+          categories: DefaultSeedData.categories,
+        ),
+      ],
+    );
 
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(
           create: (context) =>
-              AuthCubit(authRepo: firebaseAuthRepo)..checkAuth(),
+              AuthCubit(authRepo: firebaseAuthRepo, dataSeeder: dataSeeder)
+                ..checkAuth(),
         ),
         BlocProvider<CategoriesCubit>(
           create: (context) =>
-              CategoriesCubit(categoryRepo: CategoryRepository()),
+              CategoriesCubit(categoryRepo: categoryRepo),
         ),
         BlocProvider<TransactionsCubit>(
           create: (context) =>
@@ -46,14 +62,14 @@ class _AppViewState extends State<AppView> {
               AddTransactionCubit(transactionsRepo: TransactionsRepository()),
         ),
         BlocProvider<BudgetCubit>(
-          create: (context) => BudgetCubit(walletRepo: WalletRepository()),
+          create: (context) => BudgetCubit(walletRepo: walletRepo),
         ),
         BlocProvider<HomeCubit>(
           create: (context) =>
               HomeCubit(transactionsRepo: TransactionsRepository()),
         ),
         BlocProvider<WalletCubit>(
-          create: (context) => WalletCubit(walletRepo: WalletRepository()),
+          create: (context) => WalletCubit(walletRepo: walletRepo),
         ),
       ],
       child: MultiProvider(
