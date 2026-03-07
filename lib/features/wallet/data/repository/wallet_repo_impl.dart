@@ -13,4 +13,5 @@ abstract class WalletRepoImpl {
   Future<WalletModel> updateWallet({required WalletModel wallet});
   Future<void> deleteWallet(String id);
   Future<List<WalletModel>> getWallets();
+  Future<void> setDefaultWallet(String walletId);
 }

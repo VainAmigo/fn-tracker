@@ -30,15 +30,19 @@ class WalletRepository implements WalletRepoImpl {
   Future<WalletModel> addWallet({required WalletModel wallet}) async {
     final uid = _requireUid();
     try {
+      final existing = await _walletsRef(uid).get();
+      final isFirst = existing.docs.isEmpty;
+
       final docRef = _walletsRef(uid).doc();
+      final created = wallet.copyWith(id: docRef.id, isDefault: isFirst);
       await docRef.set({
         'id': docRef.id,
-        'name': wallet.name,
-        'colorId': wallet.colorId,
-        'iconId': wallet.iconId,
-        'isDefault': wallet.isDefault,
+        'name': created.name,
+        'colorId': created.colorId,
+        'iconId': created.iconId,
+        'isDefault': created.isDefault,
       });
-      return wallet;
+      return created;
     } catch (e) {
       throw Exception('Failed to add wallet: $e');
     }
@@ -48,6 +52,9 @@ class WalletRepository implements WalletRepoImpl {
   Future<WalletModel> updateWallet({required WalletModel wallet}) async {
     final uid = _requireUid();
     try {
+      if (wallet.isDefault) {
+        await setDefaultWallet(wallet.id!);
+      }
       final docRef = _walletsRef(uid).doc(wallet.id);
       await docRef.update(wallet.toJson());
       return wallet;
@@ -60,9 +67,34 @@ class WalletRepository implements WalletRepoImpl {
   Future<void> deleteWallet(String id) async {
     final uid = _requireUid();
     try {
+      final walletDoc = await _walletsRef(uid).doc(id).get();
+      final wasDefault = walletDoc.data()?['isDefault'] == true;
+
       await _walletsRef(uid).doc(id).delete();
+
+      if (wasDefault) {
+        final remaining = await _walletsRef(uid).limit(1).get();
+        if (remaining.docs.isNotEmpty) {
+          await remaining.docs.first.reference.update({'isDefault': true});
+        }
+      }
     } catch (e) {
       throw Exception('Failed to delete wallet: $e');
+    }
+  }
+
+  @override
+  Future<void> setDefaultWallet(String walletId) async {
+    final uid = _requireUid();
+    try {
+      final snapshot = await _walletsRef(uid).get();
+      final batch = firebaseFirestore.batch();
+      for (final doc in snapshot.docs) {
+        batch.update(doc.reference, {'isDefault': doc.id == walletId});
+      }
+      await batch.commit();
+    } catch (e) {
+      throw Exception('Failed to set default wallet: $e');
     }
   }
 

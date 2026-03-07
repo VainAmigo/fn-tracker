@@ -32,17 +32,26 @@ class WalletCubit extends Cubit<WalletsState> {
     final previous = _currentWallets;
     emit(WalletsLoading());
     final updatedWallet = await walletRepo.updateWallet(wallet: wallet);
-    final updatedList = previous
-        .map((w) => w.id == updatedWallet.id ? updatedWallet : w)
-        .toList();
+    final updatedList = previous.map((w) {
+      if (w.id == updatedWallet.id) return updatedWallet;
+      if (wallet.isDefault) return w.copyWith(isDefault: false);
+      return w;
+    }).toList();
     emit(WalletsLoaded(wallets: updatedList));
   }
 
   Future<void> deleteWallet({required String walletId}) async {
     final previous = _currentWallets;
+    final wasDefault = previous.any((w) => w.id == walletId && w.isDefault);
     emit(WalletsLoading());
     await walletRepo.deleteWallet(walletId);
-    final updatedList = previous.where((w) => w.id != walletId).toList();
+    var updatedList = previous.where((w) => w.id != walletId).toList();
+    if (wasDefault && updatedList.isNotEmpty) {
+      updatedList = [
+        updatedList.first.copyWith(isDefault: true),
+        ...updatedList.skip(1),
+      ];
+    }
     if (updatedList.isEmpty) {
       emit(WalletsEmpty());
     } else {

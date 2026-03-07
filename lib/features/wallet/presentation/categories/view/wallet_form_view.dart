@@ -103,16 +103,18 @@ class _WalletFormViewState extends State<WalletFormView> {
                           hintText: 'e.g. Cash',
                           controller: _nameController,
                         ),
-                        CategoryCard(
-                          title: _isDefault ? 'Yes' : 'No',
-                          subtitle: 'Default wallet',
-                          leading: Icon(
-                            _isDefault ? Icons.star : Icons.star_border,
-                            color: colorScheme.onSecondary,
+                        if (_isEditing)
+                          CategoryCard(
+                            title: _isDefault ? 'Yes' : 'No',
+                            subtitle: 'Default wallet',
+                            leading: Icon(
+                              _isDefault ? Icons.star : Icons.star_border,
+                              color: colorScheme.onSecondary,
+                            ),
+                            onTap: widget.wallet!.isDefault
+                                ? null
+                                : () => setState(() => _isDefault = !_isDefault),
                           ),
-                          onTap: () =>
-                              setState(() => _isDefault = !_isDefault),
-                        ),
                         CreateCategoryIconPickerWidget(
                           selectedIcon: _selectedIcon,
                           selectedColor: _selectedShade.color,
