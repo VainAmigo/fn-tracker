@@ -23,7 +23,10 @@ class _HomeViewState extends State<HomeView> {
 
   void _loadStats() {
     final (:start, :end) = MonthRangeUtils.currentMonth();
-    context.read<HomeCubit>().getHomePageStats(start: start, end: end);
+    context.read<HomeCubit>().getHomePageStats(
+      startDayKey: start.dayKey,
+      endDayKey: end.dayKey,
+    );
   }
 
   @override

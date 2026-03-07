@@ -77,7 +77,7 @@ class StaticLineChartPainter extends CustomPainter {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [
-        gradientColor.withValues(alpha: .6),
+        gradientColor.withValues(alpha: .4),
         gradientColor.withValues(alpha: .0),
       ],
     );
@@ -92,7 +92,7 @@ class StaticLineChartPainter extends CustomPainter {
 
     /// --- ЛИНИЯ ---
     final linePaint = Paint()
-      ..color = gradientColor
+      ..color = gradientColor.withValues(alpha: .6)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke
       ..isAntiAlias = true;

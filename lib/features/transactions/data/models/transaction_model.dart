@@ -2,29 +2,38 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TransactionModel {
   final String id;
-  final String categoryId;
+  final String? categoryId;
+  final String? walletId;
   final double amount;
   final String note;
-  final DateTime createdAt;
+  final DateTime? createdAt;
   final TransactionType type;
+  final String dayKey;
+  final String periodKey;
 
   TransactionModel({
     required this.id,
-    required this.categoryId,
+    this.categoryId,
+    this.walletId,
     required this.amount,
     required this.note,
-    required this.createdAt,
+    this.createdAt,
     required this.type,
+    required this.dayKey,
+    required this.periodKey,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'categoryId': categoryId,
+      'walletId': walletId,
       'amount': amount,
       'note': note,
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': createdAt!.toIso8601String(),
       'type': type.toJson(),
+      'dayKey': dayKey,
+      'periodKey': periodKey,
     };
   }
 
@@ -41,6 +50,9 @@ class TransactionModel {
     return TransactionModel(
       id: json['id'],
       categoryId: json['categoryId'],
+      walletId: json['walletId'],
+      dayKey: json['dayKey'],
+      periodKey: json['periodKey'],
       amount: json['amount'],
       note: json['note'],
       createdAt: createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),

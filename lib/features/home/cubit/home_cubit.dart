@@ -9,14 +9,14 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit({required this.transactionsRepo}) : super(HomeInitial());
 
   Future<void> getHomePageStats({
-    required DateTime start,
-    required DateTime end,
+    required String startDayKey,
+    required String endDayKey,
   }) async {
     try {
       emit(HomeLoading());
       final homePageStat = await transactionsRepo.getHomePageStats(
-        start: start,
-        end: end,
+        startDayKey: startDayKey,
+        endDayKey: endDayKey,
       );
       emit(HomeLoaded(homePageStat: homePageStat));
     } catch (e) {

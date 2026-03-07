@@ -23,6 +23,9 @@ class WalletRepository implements WalletRepoImpl {
   CollectionReference<Map<String, dynamic>> _categoriesRef(String uid) =>
       firebaseFirestore.collection('users').doc(uid).collection('categories');
 
+  CollectionReference<Map<String, dynamic>> _walletsRef(String uid) =>
+      firebaseFirestore.collection('users').doc(uid).collection('wallets');
+
   @override
   Future<BudgetModel?> getBudget() async {
     final uid = _requireUid();
@@ -109,7 +112,7 @@ class WalletRepository implements WalletRepoImpl {
 
       final totalForPeriod = transactionsSnapshot.docs
           .where((doc) => doc.data()['type'] == expenseType)
-          .fold<double>(0.0, (sum, doc) => sum + (doc.data()['amount'] as num).toDouble());
+          .fold<double>(0.0, (double sum, doc) => sum + (doc.data()['amount'] as num).toDouble());
 
       final categories = categoriesSnapshot.docs
           .map((doc) => CategoryModel.fromJson(doc.data()))
@@ -118,7 +121,7 @@ class WalletRepository implements WalletRepoImpl {
       final Map<String, double> spendingByCategoryId = {};
       for (final t in transactions) {
         spendingByCategoryId.update(
-          t.categoryId,
+          t.categoryId ?? '',
           (prev) => prev + t.amount,
           ifAbsent: () => t.amount,
         );

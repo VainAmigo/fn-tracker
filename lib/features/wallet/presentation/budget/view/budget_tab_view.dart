@@ -27,7 +27,7 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = context.read<CurrencyProvider>().currency;
+    final currency = context.watch<CurrencyProvider>().currency;
 
     return SingleChildScrollView(
       child: Column(

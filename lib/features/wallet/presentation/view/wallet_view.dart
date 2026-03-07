@@ -14,8 +14,8 @@ class _WalletViewState extends State<WalletView> {
 
   static const _tabBodies = [
     WalletBudgetTabWidget(),
-    WalletWalletTabWidget(),
-    WalletGoalsTabWidget(),
+    CategoriesTabView(),
+    GoalsTabWidget(),
   ];
 
   @override

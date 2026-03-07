@@ -46,12 +46,15 @@ class TransactionsRepository implements TransactionsRepoImpl {
   }) async {
     final uid = _requireUid();
     try {
-      final createdAt = Timestamp.fromDate(transaction.createdAt);
+      final createdAt = Timestamp.now();
       final docRef = _transactionsRef(uid).doc();
 
       final model = TransactionModel(
         id: docRef.id,
         categoryId: transaction.categoryId,
+        walletId: transaction.walletId,
+        dayKey: transaction.dayKey,
+        periodKey: transaction.periodKey,
         amount: transaction.amount,
         note: transaction.note,
         createdAt: createdAt.toDate(),
@@ -61,6 +64,9 @@ class TransactionsRepository implements TransactionsRepoImpl {
       await docRef.set({
         'id': model.id,
         'categoryId': model.categoryId,
+        'walletId': model.walletId,
+        'dayKey': model.dayKey,
+        'periodKey': model.periodKey,
         'amount': model.amount,
         'note': model.note,
         'createdAt': createdAt,
@@ -95,15 +101,15 @@ class TransactionsRepository implements TransactionsRepoImpl {
 
   @override
   Future<HomePageStatModel> getHomePageStats({
-    required DateTime start,
-    required DateTime end,
+    required String startDayKey,
+    required String endDayKey,
   }) async {
     try {
       final uid = _requireUid();
       final snapshot = await _transactionsRef(uid)
-          .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
-          .where('createdAt', isLessThan: Timestamp.fromDate(end))
-          .orderBy('createdAt', descending: true)
+          .where('dayKey', isGreaterThanOrEqualTo: startDayKey)
+          .where('dayKey', isLessThanOrEqualTo: endDayKey)
+          .orderBy('dayKey', descending: true)
           .get();
 
       final transactions = snapshot.docs
@@ -111,20 +117,15 @@ class TransactionsRepository implements TransactionsRepoImpl {
           .where((t) => t.type == TransactionType.expense)
           .toList();
 
-      // Суммируем только по тем дням, где есть транзакции
-      final Map<int, double> perDay = {};
+      final Map<String, double> perDay = {};
       for (final t in transactions) {
-        final d = t.createdAt;
-        if (d.year == start.year && d.month == start.month) {
-          perDay.update(
-            d.day,
-            (prev) => prev + t.amount,
-            ifAbsent: () => t.amount,
-          );
-        }
+        perDay.update(
+          t.dayKey,
+          (prev) => prev + t.amount,
+          ifAbsent: () => t.amount,
+        );
       }
 
-      // Сортируем дни и возвращаем только суммы за дни с записями
       final sortedDays = perDay.keys.toList()..sort();
       final dailyTotals = sortedDays
           .map((day) => perDay[day] ?? 0.0)
@@ -134,6 +135,8 @@ class TransactionsRepository implements TransactionsRepoImpl {
         0.0,
         (double sum, v) => sum + v,
       );
+
+      print('dailyTotals: $dailyTotals');
 
       return HomePageStatModel(
         totalExpense: totalExpense,

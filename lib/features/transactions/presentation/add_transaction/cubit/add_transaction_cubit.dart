@@ -18,6 +18,9 @@ class AddTransactionCubit extends Cubit<AddTransactionState> {
       final draft = TransactionModel(
         id: '',
         categoryId: transaction.categoryId,
+        walletId: transaction.walletId,
+        dayKey: transaction.dayKey,
+        periodKey: transaction.periodKey,
         amount: transaction.amount,
         note: transaction.note,
         createdAt: transaction.createdAt,

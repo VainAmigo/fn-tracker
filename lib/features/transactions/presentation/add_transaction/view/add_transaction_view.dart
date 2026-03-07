@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/utils/date_keys_extention.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
@@ -132,10 +133,12 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     final model = TransactionModel(
       id: '',
       categoryId: _selectedCategory?.categoryId ?? '',
+      walletId: '',
+      dayKey: _selectedDate.dayKey,
+      periodKey: _selectedDate.periodKey,
       note: _note,
       amount: _amount.isNotEmpty ? double.parse(_amount) : 0,
       type: _selectedType,
-      createdAt: _selectedDate,
     );
 
     context.read<AddTransactionCubit>().addTransaction(transaction: model);

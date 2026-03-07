@@ -94,7 +94,7 @@ class _Body extends StatelessWidget {
     );
 
     return CategoryCard(
-      title: category?.name ?? tx.categoryId,
+      title: category?.name ?? tx.categoryId ?? '',
       subtitle: tx.note.isNotEmpty ? tx.note : null,
       leading: Container(
         height: AppSizing.heightS,
@@ -127,9 +127,9 @@ class _Body extends StatelessWidget {
     final map = <DateTime, List<TransactionModel>>{};
     for (final tx in transactions) {
       final dateOnly = DateTime(
-        tx.createdAt.year,
-        tx.createdAt.month,
-        tx.createdAt.day,
+        tx.createdAt?.year ?? 0,
+        tx.createdAt?.month ?? 0,
+        tx.createdAt?.day ?? 0,
       );
       map.putIfAbsent(dateOnly, () => []).add(tx);
     }

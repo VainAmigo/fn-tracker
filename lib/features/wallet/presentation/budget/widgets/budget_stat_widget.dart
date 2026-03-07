@@ -24,7 +24,7 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = context.read<CurrencyProvider>().currency;
+    final currency = context.watch<CurrencyProvider>().currency;
     final formatter = CurrencyFormatter(currency);
     final colorScheme = Theme.of(context).colorScheme;
 

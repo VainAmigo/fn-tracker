@@ -13,7 +13,7 @@ abstract class TransactionsRepoImpl {
   Future<double> getTotalForPeriod(DateTime start, DateTime end);
 
   Future<HomePageStatModel> getHomePageStats({
-    required DateTime start,
-    required DateTime end,
+    required String startDayKey,
+    required String endDayKey,
   });
 }

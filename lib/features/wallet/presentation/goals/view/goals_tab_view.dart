@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-class WalletGoalsTabWidget extends StatelessWidget {
-  const WalletGoalsTabWidget({super.key});
+class GoalsTabWidget extends StatelessWidget {
+  const GoalsTabWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
