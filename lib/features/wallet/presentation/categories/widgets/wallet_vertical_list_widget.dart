@@ -44,7 +44,10 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
     return BlocBuilder<WalletCubit, WalletsState>(
       builder: (context, state) {
         if (state is WalletsLoading || state is WalletsInitial) {
-          return const Center(child: CircularProgressIndicator());
+          return const SizedBox(
+            height: 200,
+            child: Center(child: CircularProgressIndicator()),
+          );
         }
 
         if (state is WalletsError) {
@@ -68,7 +71,7 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
           physics:
               widget.shrinkWrap ? const NeverScrollableScrollPhysics() : null,
           itemCount: wallets.length,
-          separatorBuilder: (_, __) =>
+          separatorBuilder: (_, _) =>
               const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           itemBuilder: (context, index) {
             final wallet = wallets[index];
@@ -78,9 +81,7 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
 
             return CategoryCard(
               title: wallet.name,
-              subtitle: wallet.balance != null
-                  ? wallet.balance.toString()
-                  : null,
+              subtitle: wallet.balance?.toString(),
               leading: Container(
                 height: AppSizing.heightS,
                 decoration: BoxDecoration(

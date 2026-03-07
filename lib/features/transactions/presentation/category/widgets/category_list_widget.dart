@@ -45,7 +45,10 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
     return BlocBuilder<CategoriesCubit, CategoriesState>(
       builder: (context, state) {
         if (state is CategoriesLoading || state is CategoriesInitial) {
-          return const Center(child: CircularProgressIndicator());
+          return SizedBox(
+            height: 200,
+            child: Center(child: CircularProgressIndicator()),
+          );
         }
 
         if (state is CategoriesError) {

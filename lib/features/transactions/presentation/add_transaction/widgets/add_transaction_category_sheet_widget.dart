@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/theme/themes.dart';
@@ -15,7 +16,6 @@ class AddTransactionCategorySheetWidget extends StatelessWidget {
         bottom: AppSizing.bottomPadding,
       ),
       width: double.infinity,
-      height: 500,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,14 +25,19 @@ class AddTransactionCategorySheetWidget extends StatelessWidget {
             style: AppTextStyles.modalSheetTitle(context),
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
-          Expanded(
-            child: CategoryListWidget(
-              autoLoad: true,
-              cardStyle: CategoryCardStyle.filled,
-              onCategorySelected: (category) {
-                Navigator.of(context).pop(category);
-              },
-            ),
+          CategoryListWidget(
+            autoLoad: true,
+            shrinkWrap: true,
+            cardStyle: CategoryCardStyle.filled,
+            onCategorySelected: (category) {
+              Navigator.of(context).pop(category);
+            },
+          ),
+          PrimaryButton(
+            text: 'Create new category',
+            onPressed: () {
+              Navigator.of(context).pushNamed(AppRouter.createCategory);
+            },
           ),
         ],
       ),
