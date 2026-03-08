@@ -84,31 +84,67 @@ class _Body extends StatelessWidget {
               final fallbackColor = Theme.of(context).colorScheme.onSecondary;
               final resolvedColor = shade?.color ?? fallbackColor;
 
-              return CategoryCard(
-                title: category?.name ?? 'Unknown category',
-                subtitle: tx.note.isNotEmpty ? tx.note : null,
-                leading: Container(
-                  height: AppSizing.heightS,
+              final radius = _radiusForIndex(index, lastItems.length);
+
+              return Dismissible(
+                key: Key(tx.id),
+                direction: DismissDirection.endToStart,
+                onDismissed: (_) {
+                  context.read<TransactionsCubit>().deleteTransaction(tx.id);
+                },
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20),
                   decoration: BoxDecoration(
-                    color: resolvedColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(
-                      AppSizing.borderRadius8,
+                    color: Colors.red,
+                    borderRadius: switch (radius) {
+                      CategoryCardRadius.single =>
+                        BorderRadius.circular(AppSizing.borderRadius12),
+                      CategoryCardRadius.first => const BorderRadius.only(
+                          topLeft: Radius.circular(AppSizing.borderRadius12),
+                          topRight: Radius.circular(AppSizing.borderRadius12),
+                          bottomLeft: Radius.circular(AppSizing.borderRadius4),
+                          bottomRight: Radius.circular(AppSizing.borderRadius4),
+                        ),
+                      CategoryCardRadius.last => const BorderRadius.only(
+                          topLeft: Radius.circular(AppSizing.borderRadius4),
+                          topRight: Radius.circular(AppSizing.borderRadius4),
+                          bottomLeft: Radius.circular(AppSizing.borderRadius12),
+                          bottomRight:
+                              Radius.circular(AppSizing.borderRadius12),
+                        ),
+                      CategoryCardRadius.middle =>
+                        BorderRadius.circular(AppSizing.borderRadius4),
+                    },
+                  ),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                child: CategoryCard(
+                  title: category?.name ?? 'Unknown category',
+                  subtitle: tx.note.isNotEmpty ? tx.note : null,
+                  leading: Container(
+                    height: AppSizing.heightS,
+                    decoration: BoxDecoration(
+                      color: resolvedColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(
+                        AppSizing.borderRadius8,
+                      ),
+                    ),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Icon(
+                        icon?.icon ?? Icons.category,
+                        size: AppSizing.iconSizeM,
+                        color: resolvedColor,
+                      ),
                     ),
                   ),
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Icon(
-                      icon?.icon ?? Icons.category,
-                      size: AppSizing.iconSizeM,
-                      color: resolvedColor,
-                    ),
+                  trailing: Text(
+                    '$formattedAmount ${currency.symbol}',
+                    style: AppTextStyles.listTileTitle(context),
                   ),
+                  radius: radius,
                 ),
-                trailing: Text(
-                  '$formattedAmount ${currency.symbol}',
-                  style: AppTextStyles.listTileTitle(context),
-                ),
-                radius: _radiusForIndex(index, lastItems.length),
               );
             },
           ),

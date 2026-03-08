@@ -28,6 +28,22 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     }
   }
 
+  Future<void> deleteTransaction(String id) async {
+    final current = state;
+    if (current is TransactionsLoaded) {
+      final updated =
+          current.transactions.where((tx) => tx.id != id).toList();
+      if (updated.isEmpty) {
+        emit(TransactionsEmpty());
+      } else {
+        emit(TransactionsLoaded(transactions: updated));
+      }
+    }
+    try {
+      await transactionsRepo.deleteTransaction(id: id);
+    } catch (_) {}
+  }
+
   void addTransactionLocally(TransactionModel transaction) {
     final current = state;
     final existing = current is TransactionsLoaded

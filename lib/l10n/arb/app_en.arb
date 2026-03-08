@@ -33,5 +33,9 @@
     "threeMonths": "3 months",
     "@threeMonths": {},
     "sixMonths": "6 months",
-    "@sixMonths": {}
+    "@sixMonths": {},
+    "expense": "Expense",
+    "@expense": {},
+    "income": "Income",
+    "@income": {}
 }

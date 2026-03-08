@@ -90,38 +90,71 @@ class _Body extends StatelessWidget {
     final icon = category != null ? findIconById(category.iconId) : null;
     final color = shade?.color ?? Colors.grey;
 
-    final isExpense = tx.type == TransactionType.expense;
-    final sign = isExpense ? '-' : '+';
     final formattedAmount = AmountFormatter.format(
       tx.amount,
       decimalPlaces: currency.decimalPlaces,
     );
 
-    return CategoryCard(
-      title: category?.name ?? tx.categoryId ?? '',
-      subtitle: tx.note.isNotEmpty ? tx.note : null,
-      leading: Container(
-        height: AppSizing.heightS,
+    return Dismissible(
+      key: Key(tx.id),
+      direction: DismissDirection.endToStart,
+      onDismissed: (_) {
+        context.read<TransactionsCubit>().deleteTransaction(tx.id);
+      },
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+          color: Colors.red,
+          borderRadius: switch (radius) {
+            CategoryCardRadius.single => BorderRadius.circular(
+              AppSizing.borderRadius12,
+            ),
+            CategoryCardRadius.first => const BorderRadius.only(
+              topLeft: Radius.circular(AppSizing.borderRadius12),
+              topRight: Radius.circular(AppSizing.borderRadius12),
+              bottomLeft: Radius.circular(AppSizing.borderRadius4),
+              bottomRight: Radius.circular(AppSizing.borderRadius4),
+            ),
+            CategoryCardRadius.last => const BorderRadius.only(
+              topLeft: Radius.circular(AppSizing.borderRadius4),
+              topRight: Radius.circular(AppSizing.borderRadius4),
+              bottomLeft: Radius.circular(AppSizing.borderRadius12),
+              bottomRight: Radius.circular(AppSizing.borderRadius12),
+            ),
+            CategoryCardRadius.middle => BorderRadius.circular(
+              AppSizing.borderRadius4,
+            ),
+          },
         ),
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: Icon(
-            icon?.icon ?? Icons.category,
-            size: AppSizing.iconSizeM,
-            color: color,
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      child: CategoryCard(
+        title: category?.name ?? tx.categoryId ?? '',
+        subtitle: tx.note.isNotEmpty ? tx.note : null,
+        leading: Container(
+          height: AppSizing.heightS,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+          ),
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Icon(
+              icon?.icon ?? Icons.category,
+              size: AppSizing.iconSizeM,
+              color: color,
+            ),
           ),
         ),
+        trailing: Text(
+          '$formattedAmount ${currency.symbol}',
+          style: AppTextStyles.listTileTitle(
+            context,
+          ).copyWith(color: Theme.of(context).colorScheme.onSecondary),
+        ),
+        radius: radius,
       ),
-      trailing: Text(
-        '$sign $formattedAmount ${currency.symbol}',
-        style: AppTextStyles.listTileTitle(
-          context,
-        ).copyWith(color: isExpense ? Colors.red : Colors.green),
-      ),
-      radius: radius,
     );
   }
 

@@ -16,5 +16,9 @@
     "december": "Декабрь",
     "week": "Неделя",
     "threeMonths": "3 месяца",
-    "sixMonths": "6 месяцев"
+    "sixMonths": "6 месяцев",
+    "expense": "Расход",
+    "@expense": {},
+    "income": "Доход",
+    "@income": {}
 }

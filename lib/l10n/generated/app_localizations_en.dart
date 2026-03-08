@@ -58,4 +58,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sixMonths => '6 months';
+
+  @override
+  String get expense => 'Expense';
+
+  @override
+  String get income => 'Income';
 }

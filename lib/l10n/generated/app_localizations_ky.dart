@@ -58,4 +58,10 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get sixMonths => '6 ай';
+
+  @override
+  String get expense => 'Чыгым';
+
+  @override
+  String get income => 'Киреше';
 }

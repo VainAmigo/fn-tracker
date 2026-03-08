@@ -58,4 +58,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sixMonths => '6 месяцев';
+
+  @override
+  String get expense => 'Расход';
+
+  @override
+  String get income => 'Доход';
 }

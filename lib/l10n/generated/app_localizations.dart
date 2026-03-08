@@ -201,6 +201,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'6 months'**
   String get sixMonths;
+
+  /// No description provided for @expense.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get expense;
+
+  /// No description provided for @income.
+  ///
+  /// In en, this message translates to:
+  /// **'Income'**
+  String get income;
 }
 
 class _AppLocalizationsDelegate

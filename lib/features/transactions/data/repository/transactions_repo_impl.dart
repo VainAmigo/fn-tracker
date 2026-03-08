@@ -14,4 +14,6 @@ abstract class TransactionsRepoImpl {
     required String startDayKey,
     required String endDayKey,
   });
+
+  Future<void> deleteTransaction({required String id});
 }

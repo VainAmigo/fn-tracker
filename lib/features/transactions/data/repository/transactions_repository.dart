@@ -80,6 +80,16 @@ class TransactionsRepository implements TransactionsRepoImpl {
   }
 
   @override
+  Future<void> deleteTransaction({required String id}) async {
+    final uid = _requireUid();
+    try {
+      await _transactionsRef(uid).doc(id).delete();
+    } catch (e) {
+      throw Exception('Failed to delete transaction: $e');
+    }
+  }
+
+  @override
   Future<HomePageStatModel> getHomePageStats({
     required String startDayKey,
     required String endDayKey,

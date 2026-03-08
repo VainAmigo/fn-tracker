@@ -16,5 +16,9 @@
     "december": "Декабрь",
     "week": "Жума",
     "threeMonths": "3 ай",
-    "sixMonths": "6 ай"
+    "sixMonths": "6 ай",
+    "expense": "Чыгым",
+    "@expense": {},
+    "income": "Киреше",
+    "@income": {}
 }
