@@ -22,6 +22,12 @@ class TransactionsListWidget extends StatelessWidget {
             subtitle: 'You have no transactions yet',
           ),
           TransactionsLoaded() => _Body(transactions: state.transactions),
+          TransactionDeleted() => state.transactions.isEmpty
+              ? const EmptyCardWidget(
+                  title: 'No transactions',
+                  subtitle: 'You have no transactions yet',
+                )
+              : _Body(transactions: state.transactions),
           TransactionsError() => Center(child: Text(state.message)),
         };
       },

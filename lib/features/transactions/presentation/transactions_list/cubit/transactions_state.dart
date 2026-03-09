@@ -14,6 +14,12 @@ class TransactionsLoaded extends TransactionsState {
   TransactionsLoaded({required this.transactions});
 }
 
+class TransactionDeleted extends TransactionsState {
+  final List<TransactionModel> transactions;
+
+  TransactionDeleted({required this.transactions});
+}
+
 class TransactionsError extends TransactionsState {
   final String message;
 

@@ -30,15 +30,13 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   Future<void> deleteTransaction(String id) async {
     final current = state;
+    List<TransactionModel> updated = [];
     if (current is TransactionsLoaded) {
-      final updated =
-          current.transactions.where((tx) => tx.id != id).toList();
-      if (updated.isEmpty) {
-        emit(TransactionsEmpty());
-      } else {
-        emit(TransactionsLoaded(transactions: updated));
-      }
+      updated = current.transactions.where((tx) => tx.id != id).toList();
+    } else if (current is TransactionDeleted) {
+      updated = current.transactions.where((tx) => tx.id != id).toList();
     }
+    emit(TransactionDeleted(transactions: updated));
     try {
       await transactionsRepo.deleteTransaction(id: id);
     } catch (_) {}

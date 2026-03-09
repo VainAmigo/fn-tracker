@@ -29,6 +29,23 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
+  Future<void> _onRefresh() async {
+    final (:start, :end) = MonthRangeUtils.currentMonth();
+    await Future.wait([
+      context.read<HomeCubit>().getHomePageStats(
+        startDayKey: start.dayKey,
+        endDayKey: end.dayKey,
+      ),
+      context.read<TransactionsCubit>().loadTransactionsByPeriod(
+        TransactionPeriod.month,
+      ),
+      context.read<WalletCubit>().loadWallets(),
+      context.read<BudgetCubit>().loadBudgetStats(
+        periodKey: start.periodKey,
+      ),
+    ]);
+  }
+
   @override
   void dispose() {
     _isCollapsedNotifier.dispose();
@@ -40,20 +57,36 @@ class _HomeViewState extends State<HomeView> {
     final height = MediaQuery.of(context).size.height;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return BlocListener<AddTransactionCubit, AddTransactionState>(
-      listener: (context, state) {
-        if (state is AddTransactionSuccess) {
-          context.read<TransactionsCubit>().addTransactionLocally(
-            state.createdTransaction,
-          );
-          _loadStats();
-          context.read<WalletCubit>().loadWallets();
-          final periodKey = MonthRangeUtils.currentMonth().start.periodKey;
-          context
-              .read<BudgetCubit>()
-              .loadBudgetStats(periodKey: periodKey);
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AddTransactionCubit, AddTransactionState>(
+          listener: (context, state) {
+            if (state is AddTransactionSuccess) {
+              context.read<TransactionsCubit>().addTransactionLocally(
+                state.createdTransaction,
+              );
+              _loadStats();
+              context.read<WalletCubit>().loadWallets();
+              final periodKey = MonthRangeUtils.currentMonth().start.periodKey;
+              context
+                  .read<BudgetCubit>()
+                  .loadBudgetStats(periodKey: periodKey);
+            }
+          },
+        ),
+        BlocListener<TransactionsCubit, TransactionsState>(
+          listener: (context, state) {
+            if (state is TransactionDeleted) {
+              _loadStats();
+              context.read<WalletCubit>().loadWallets();
+              final periodKey = MonthRangeUtils.currentMonth().start.periodKey;
+              context
+                  .read<BudgetCubit>()
+                  .loadBudgetStats(periodKey: periodKey);
+            }
+          },
+        ),
+      ],
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           final homePageStat = state is HomeLoaded
@@ -91,53 +124,55 @@ class _HomeViewState extends State<HomeView> {
                     );
                   },
                 ),
-                CustomScrollView(
-                  clipBehavior: Clip.none,
-                  scrollBehavior: ScrollBehavior().copyWith(overscroll: false),
-                  slivers: [
-                    SliverAppBar(
-                      pinned: true,
-                      automaticallyImplyLeading: false,
-                      backgroundColor: Colors.transparent,
-                      elevation: 0,
-                      scrolledUnderElevation: 0,
-                      surfaceTintColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      expandedHeight: height * 0.7,
-                      collapsedHeight: height * 0.15,
-                      flexibleSpace: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final isCollapsed =
-                              constraints.biggest.height <= height * 0.30;
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (_isCollapsedNotifier.value != isCollapsed) {
-                              _isCollapsedNotifier.value = isCollapsed;
-                            }
-                          });
+                RefreshIndicator(
+                  onRefresh: _onRefresh,
+                  child: CustomScrollView(
+                    clipBehavior: Clip.none,
+                    slivers: [
+                      SliverAppBar(
+                        pinned: true,
+                        automaticallyImplyLeading: false,
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        scrolledUnderElevation: 0,
+                        surfaceTintColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        expandedHeight: height * 0.7,
+                        collapsedHeight: height * 0.15,
+                        flexibleSpace: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final isCollapsed =
+                                constraints.biggest.height <= height * 0.30;
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (_isCollapsedNotifier.value != isCollapsed) {
+                                _isCollapsedNotifier.value = isCollapsed;
+                              }
+                            });
 
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            color: isCollapsed
-                                ? colorScheme.surface
-                                : Colors.transparent,
-                            child: FlexibleSpaceBar(
-                              title: HomeTopActionWidget(
-                                totalExpense: homePageStat.totalExpense,
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              color: isCollapsed
+                                  ? colorScheme.surface
+                                  : Colors.transparent,
+                              child: FlexibleSpaceBar(
+                                title: HomeTopActionWidget(
+                                  totalExpense: homePageStat.totalExpense,
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: AppSizing.spaceBtwElements,
+                            );
+                          },
                         ),
-                        child: const HomeInfoListWidget(),
                       ),
-                    ),
-                  ],
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            top: AppSizing.spaceBtwElements,
+                          ),
+                          child: const HomeInfoListWidget(),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
