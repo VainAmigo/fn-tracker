@@ -6,12 +6,14 @@ class AnalyticsPeriodModel {
   final double totalExpense;
   final List<CategorySpending> categorySpending;
   final List<MonthlyTrendItem> monthlyTrend;
+  final BudgetModel? budget;
 
   const AnalyticsPeriodModel({
     required this.totalIncome,
     required this.totalExpense,
     required this.categorySpending,
     required this.monthlyTrend,
+    this.budget,
   });
 
   double get balance => totalIncome - totalExpense;

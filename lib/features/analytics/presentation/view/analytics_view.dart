@@ -4,8 +4,6 @@ import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-import '../widgets/analytics_widgets.dart';
-
 class AnalyticsView extends StatefulWidget {
   const AnalyticsView({super.key});
 

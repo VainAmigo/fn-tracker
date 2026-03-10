@@ -27,8 +27,15 @@ class AnalyticsSpendingDonutWidget extends StatelessWidget {
     final segments = categorySpending
         .map((s) {
           final shade = findShadeById(s.category.colorId);
+          final icon = findIconById(s.category.iconId);
           final color = shade?.color ?? colorScheme.outline;
-          return DonutChartSegment(value: s.amount, color: color);
+          return DonutChartSegment(
+            value: s.amount,
+            color: color,
+            icon: icon != null
+                ? Icon(icon.icon, size: 22, color: colorScheme.onSurface)
+                : null,
+          );
         })
         .where((s) => s.value > 0)
         .toList();
@@ -40,9 +47,11 @@ class AnalyticsSpendingDonutWidget extends StatelessWidget {
       children: [
         Center(
           child: DonutChart(
-            size: 220,
-            strokeWidth: 22,
+            size: 300,
+            strokeWidth: 44,
             segments: segments,
+            iconSize: 32,
+            minSegmentValue: totalExpense * 0.02,
             trackColor: colorScheme.surface,
             child: Column(
               mainAxisSize: MainAxisSize.min,

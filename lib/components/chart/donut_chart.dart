@@ -6,28 +6,36 @@ import 'package:flutter/material.dart';
 class DonutChartSegment {
   final double value;
   final Color color;
+  final Widget? icon;
 
-  const DonutChartSegment({required this.value, required this.color});
+  const DonutChartSegment({
+    required this.value,
+    required this.color,
+    this.icon,
+  });
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is DonutChartSegment &&
           value == other.value &&
-          color == other.color;
+          color == other.color &&
+          icon == other.icon;
 
   @override
-  int get hashCode => Object.hash(value, color);
+  int get hashCode => Object.hash(value, color, icon);
 }
 
 class DonutChart extends StatefulWidget {
   const DonutChart({
     super.key,
     required this.segments,
-    this.size = 200,
+    this.size = 280,
     this.strokeWidth = 14,
-    this.gapDegrees = 4,
-    this.minSweepDegrees = 12,
+    this.gapDegrees = 5,
+    this.minSweepDegrees = 20,
+    this.minSegmentValue,
+    this.iconSize = 32,
     this.trackColor,
     this.startAngle = -90,
     this.child,
@@ -45,6 +53,13 @@ class DonutChart extends StatefulWidget {
 
   /// Минимальная угловая ширина сегмента (в градусах).
   final double minSweepDegrees;
+
+  /// Минимальное значение сегмента — сегменты с value < minSegmentValue
+  /// исключаются из отображения.
+  final double? minSegmentValue;
+
+  /// Размер иконки в сегменте.
+  final double iconSize;
 
   final Color? trackColor;
 
@@ -92,7 +107,7 @@ class _DonutChartState extends State<DonutChart>
     super.dispose();
   }
 
-  int? _hitTestSegment(Offset localPosition) {
+  int? _hitTestSegment(Offset localPosition, List<DonutChartSegment> segments) {
     final center = Offset(widget.size / 2, widget.size / 2);
     final dx = localPosition.dx - center.dx;
     final dy = localPosition.dy - center.dy;
@@ -103,19 +118,18 @@ class _DonutChartState extends State<DonutChart>
     final innerRadius = radius - widget.strokeWidth / 2;
     if (distance < innerRadius || distance > outerRadius) return null;
 
-    final total =
-        widget.segments.fold<double>(0, (sum, s) => sum + s.value);
+    final total = segments.fold<double>(0, (sum, s) => sum + s.value);
     if (total <= 0) return null;
 
     var angle = math.atan2(dy, dx) * 180 / math.pi;
     angle = (angle - widget.startAngle) % 360;
 
-    final segmentCount = widget.segments.length;
+    final segmentCount = segments.length;
     final totalGapDeg = segmentCount > 1 ? widget.gapDegrees * segmentCount : 0;
     final availableDeg = 360.0 - totalGapDeg;
 
     final sweeps = _computeSweepsDeg(
-      segments: widget.segments,
+      segments: segments,
       availableDeg: availableDeg,
       minSweepDeg: widget.minSweepDegrees,
     );
@@ -128,15 +142,22 @@ class _DonutChartState extends State<DonutChart>
     return null;
   }
 
+  List<DonutChartSegment> get _filteredSegments {
+    final minVal = widget.minSegmentValue;
+    if (minVal == null || minVal <= 0) return widget.segments;
+    return widget.segments.where((s) => s.value >= minVal).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final trackColor =
         widget.trackColor ?? Theme.of(context).colorScheme.surface;
+    final segments = _filteredSegments;
 
     return GestureDetector(
       onTapUp: widget.onSegmentTap != null
           ? (details) {
-              final index = _hitTestSegment(details.localPosition);
+              final index = _hitTestSegment(details.localPosition, segments);
               if (index != null) widget.onSegmentTap!(index);
             }
           : null,
@@ -146,23 +167,141 @@ class _DonutChartState extends State<DonutChart>
         child: AnimatedBuilder(
           animation: _animation,
           builder: (context, child) {
-            return CustomPaint(
-              painter: _DonutChartPainter(
-                segments: widget.segments,
-                strokeWidth: widget.strokeWidth,
-                gapDegrees: widget.gapDegrees,
-                minSweepDegrees: widget.minSweepDegrees,
-                trackColor: trackColor,
-                startAngle: widget.startAngle,
-                progress: _animation.value,
-              ),
-              child: child,
+            return Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
+                CustomPaint(
+                  size: Size(widget.size, widget.size),
+                  painter: _DonutChartPainter(
+                    segments: segments,
+                    strokeWidth: widget.strokeWidth,
+                    gapDegrees: widget.gapDegrees,
+                    minSweepDegrees: widget.minSweepDegrees,
+                    trackColor: trackColor,
+                    startAngle: widget.startAngle,
+                    progress: _animation.value,
+                  ),
+                ),
+                if (segments.any((s) => s.icon != null))
+                  _SegmentIconsOverlay(
+                    segments: segments,
+                    size: widget.size,
+                    strokeWidth: widget.strokeWidth,
+                    iconSize: widget.iconSize,
+                    startAngle: widget.startAngle,
+                    gapDegrees: widget.gapDegrees,
+                    minSweepDegrees: widget.minSweepDegrees,
+                    progress: _animation.value,
+                  ),
+                ...?(child != null ? [child] : null),
+              ],
             );
           },
           child: widget.child != null
-              ? Center(child: widget.child)
+              ? Center(child: widget.child!)
               : const SizedBox.shrink(),
         ),
+      ),
+    );
+  }
+}
+
+class _SegmentIconsOverlay extends StatelessWidget {
+  const _SegmentIconsOverlay({
+    required this.segments,
+    required this.size,
+    required this.strokeWidth,
+    required this.iconSize,
+    required this.startAngle,
+    required this.gapDegrees,
+    required this.minSweepDegrees,
+    required this.progress,
+  });
+
+  final List<DonutChartSegment> segments;
+  final double size;
+  final double strokeWidth;
+  final double iconSize;
+  final double startAngle;
+  final double gapDegrees;
+  final double minSweepDegrees;
+  final double progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final total = segments.fold<double>(0, (s, seg) => s + seg.value);
+    if (total <= 0 || progress <= 0) return const SizedBox.shrink();
+
+    final n = segments.length;
+    final totalGap = n > 1 ? gapDegrees * n : 0;
+    final available = 360.0 - totalGap;
+    final sweeps = _computeSweepsDeg(
+      segments: segments,
+      availableDeg: available,
+      minSweepDeg: minSweepDegrees,
+    );
+
+    final ringRadius = (size - strokeWidth) / 2;
+    final center = size / 2;
+
+    final minSegmentIconSize = math.min(iconSize, strokeWidth * 0.75);
+
+    var cursorDeg = startAngle;
+    final iconWidgets = <Widget>[];
+    for (var i = 0; i < n; i++) {
+      if (segments[i].icon != null && sweeps[i] * progress >= 16) {
+        final sweepDeg = sweeps[i] * progress;
+        final isMinWidth = sweepDeg <= minSweepDegrees + 2;
+        iconWidgets.add(
+          _PositionedSegmentIcon(
+            icon: segments[i].icon!,
+            centerAngleDeg: cursorDeg + sweeps[i] / 2,
+            radius: ringRadius,
+            chartCenter: center,
+            iconSize: isMinWidth ? minSegmentIconSize : iconSize,
+          ),
+        );
+      }
+      cursorDeg += sweeps[i] + (n > 1 ? gapDegrees : 0);
+    }
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(clipBehavior: Clip.none, children: iconWidgets),
+    );
+  }
+}
+
+class _PositionedSegmentIcon extends StatelessWidget {
+  const _PositionedSegmentIcon({
+    required this.icon,
+    required this.centerAngleDeg,
+    required this.radius,
+    required this.chartCenter,
+    required this.iconSize,
+  });
+
+  final Widget icon;
+  final double centerAngleDeg;
+  final double radius;
+  final double chartCenter;
+  final double iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    final angleRad = centerAngleDeg * math.pi / 180;
+    final half = iconSize / 2;
+    final x = chartCenter + radius * math.cos(angleRad);
+    final y = chartCenter + radius * math.sin(angleRad);
+    return Positioned(
+      left: x - half,
+      top: y - half,
+      width: iconSize,
+      height: iconSize,
+      child: Center(
+        child: FittedBox(fit: BoxFit.contain, child: icon),
       ),
     );
   }
@@ -177,8 +316,10 @@ List<double> _computeSweepsDeg({
   if (total <= 0) return List.filled(segments.length, 0);
 
   final n = segments.length;
-  final sweeps =
-      List.generate(n, (i) => (segments[i].value / total) * availableDeg);
+  final sweeps = List.generate(
+    n,
+    (i) => (segments[i].value / total) * availableDeg,
+  );
 
   double deficit = 0;
   double unclampedSum = 0;
@@ -256,20 +397,33 @@ class _DonutChartPainter extends CustomPainter {
     double cursor = startRad;
 
     for (int i = 0; i < segmentCount; i++) {
-      final sweepRad = sweepsDeg[i] * math.pi / 180 * progress;
+      final sweepDeg = sweepsDeg[i] * progress;
+      final sweepRad = sweepDeg * math.pi / 180;
+      final isMinWidth = sweepDeg <= minSweepDegrees + 2;
 
       if (sweepRad > 0) {
-        final paint = Paint()
-          ..color = segments[i].color
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = strokeWidth
-          ..strokeCap = StrokeCap.round;
+        if (isMinWidth && segmentCount > 1) {
+          final centerAngleRad = cursor + sweepRad / 2;
+          final dotCenter = Offset(
+            center.dx + radius * math.cos(centerAngleRad),
+            center.dy + radius * math.sin(centerAngleRad),
+          );
+          final dotPaint = Paint()
+            ..color = segments[i].color
+            ..style = PaintingStyle.fill;
+          canvas.drawCircle(dotCenter, strokeWidth / 2, dotPaint);
+        } else {
+          final paint = Paint()
+            ..color = segments[i].color
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = strokeWidth
+            ..strokeCap = StrokeCap.round;
 
-        final inset =
-            segmentCount > 1 ? math.min(capRad, sweepRad / 3) : 0.0;
-        final drawSweep = sweepRad - 2 * inset;
+          final inset = segmentCount > 1 ? math.min(capRad, sweepRad / 3) : 0.0;
+          final drawSweep = sweepRad - 2 * inset;
 
-        canvas.drawArc(rect, cursor + inset, drawSweep, false, paint);
+          canvas.drawArc(rect, cursor + inset, drawSweep, false, paint);
+        }
       }
 
       cursor += sweepsDeg[i] * math.pi / 180 * progress + gapRad * progress;

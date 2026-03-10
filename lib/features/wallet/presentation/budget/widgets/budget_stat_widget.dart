@@ -24,8 +24,6 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = context.watch<CurrencyProvider>().currency;
-    final formatter = CurrencyFormatter(currency);
     final colorScheme = Theme.of(context).colorScheme;
 
     return BlocBuilder<BudgetCubit, BudgetState>(
@@ -40,18 +38,23 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
         final spent = state.stats.totalForPeriod;
         final exceeded = spent > budget.amount;
 
-        final remainingPercent = ((budget.amount - spent) / budget.amount * 100)
-            .clamp(0, 100)
-            .toStringAsFixed(0);
+        final remainingPercent = budget.amount > 0
+            ? ((budget.amount - spent) / budget.amount * 100)
+                .clamp(0, 100)
+                .toStringAsFixed(0)
+            : '0';
+        final exceededPercent = budget.amount > 0
+            ? ((spent - budget.amount) / budget.amount * 100).toStringAsFixed(0)
+            : '0';
 
         final barSegments = exceeded
             ? [
                 BarChartSegment(
-                  value: spent > budget.amount ? spent - budget.amount : spent,
+                  value: spent - budget.amount,
                   color: colorScheme.error,
                 ),
                 BarChartSegment(
-                  value: spent > budget.amount ? 0 : budget.amount,
+                  value: budget.amount,
                   color: colorScheme.onSecondary,
                 ),
               ]
@@ -77,13 +80,6 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Monthly Budget', style: AppTextStyles.text20w600(context)),
-              const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-              Text(
-                formatter.format(spent),
-                style: AppTextStyles.text20w600(
-                  context,
-                ).copyWith(color: accentColor),
-              ),
               const SizedBox(height: AppSizing.spaceBtwItems),
               SegmentedBar(
                 height: 8,
@@ -95,16 +91,15 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '${formatter.format(budget.amount)} / ${formatter.format(spent)}',
-                    style: AppTextStyles.listTileSubtitle(
-                      context,
-                    ).copyWith(fontWeight: FontWeight.w600),
+                  AmountDividerWidget(
+                    leftAmount: budget.amount,
+                    rightAmount: spent,
+                    dividerType: DividerType.slash,
                   ),
                   Text(
                     exceeded
-                        ? 'Budget exceeded'
-                        : '$remainingPercent% remaining',
+                        ? 'Превышен на $exceededPercent%'
+                        : '$remainingPercent% осталось',
                     style: AppTextStyles.listTileSubtitle(
                       context,
                     ).copyWith(color: accentColor),

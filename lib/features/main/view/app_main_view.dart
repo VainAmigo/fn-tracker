@@ -59,7 +59,12 @@ class _AppMainViewState extends State<AppMainView> {
         bottomNavigationBar: AppBottomNavWidget(
           destinations: mainBottomNavDestinations,
           currentIndex: _selectedIndex,
-          onTap: (index) => setState(() => _selectedIndex = index),
+          onTap: (index) {
+            setState(() => _selectedIndex = index);
+            if (index == 2) {
+              context.read<AnalyticsCubit>().loadAnalytics();
+            }
+          },
         ),
       ),
     );

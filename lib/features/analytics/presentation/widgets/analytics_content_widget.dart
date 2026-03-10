@@ -4,11 +4,6 @@ import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-import 'analytics_empty_placeholder_widget.dart';
-import 'analytics_spending_donut_widget.dart';
-import 'analytics_summary_cards_widget.dart';
-import 'analytics_trend_chart_widget.dart';
-
 class AnalyticsContentWidget extends StatelessWidget {
   const AnalyticsContentWidget({required this.data, super.key});
 
@@ -27,15 +22,9 @@ class AnalyticsContentWidget extends StatelessWidget {
           totalExpense: data.totalExpense,
           balance: data.balance,
           formatter: formatter,
+          budget: data.budget,
         ),
         const SizedBox(height: AppSizing.spaceBtwSections),
-        if (data.monthlyTrend.length > 1) ...[
-          AnalyticsTrendChartWidget(
-            monthlyTrend: data.monthlyTrend,
-            formatter: formatter,
-          ),
-          const SizedBox(height: AppSizing.spaceBtwSections),
-        ],
         if (data.categorySpending.isNotEmpty) ...[
           AnalyticsSpendingDonutWidget(
             categorySpending: data.categorySpending,

@@ -20,6 +20,9 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
   CollectionReference<Map<String, dynamic>> _categoriesRef(String uid) =>
       firebaseFirestore.collection('users').doc(uid).collection('categories');
 
+  CollectionReference<Map<String, dynamic>> _budgetsRef(String uid) =>
+      firebaseFirestore.collection('users').doc(uid).collection('budget');
+
   @override
   Future<AnalyticsPeriodModel> getAnalytics({
     required String startDayKey,
@@ -34,10 +37,18 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
           .where('dayKey', isLessThanOrEqualTo: endDayKey)
           .get(),
       _categoriesRef(uid).orderBy('createdAt', descending: true).get(),
+      _budgetsRef(uid).get(),
     ]);
 
     final transactionsSnapshot = results[0];
     final categoriesSnapshot = results[1];
+    final budgetSnapshot = results[2];
+
+    BudgetModel? budget;
+    if (budgetSnapshot.docs.isNotEmpty) {
+      final doc = budgetSnapshot.docs.first;
+      budget = BudgetModel.fromJson({...doc.data(), 'id': doc.id});
+    }
 
     final transactions = transactionsSnapshot.docs
         .map((doc) => TransactionModel.fromJson(doc.data()))
@@ -102,6 +113,7 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
       totalExpense: totalExpense,
       categorySpending: categorySpending,
       monthlyTrend: monthlyTrend,
+      budget: budget,
     );
   }
 }

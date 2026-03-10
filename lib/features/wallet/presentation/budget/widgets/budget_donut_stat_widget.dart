@@ -42,7 +42,7 @@ class BudgetDonutStatWidget extends StatelessWidget {
         Center(
           child: DonutChart(
             size: 300,
-            strokeWidth: 26,
+            strokeWidth: 44,
             segments: chartData.segments,
             child: Column(
               mainAxisSize: MainAxisSize.min,
