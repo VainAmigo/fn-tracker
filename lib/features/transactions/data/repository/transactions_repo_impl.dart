@@ -6,6 +6,13 @@ abstract class TransactionsRepoImpl {
     required String end,
   });
 
+  Future<List<TransactionModel>> getUserTransactionsById({
+    required String id,
+    required TransactionIdType idType,
+    required String start,
+    required String end,
+  });
+
   Future<TransactionModel> addTransaction({
     required TransactionModel transaction,
   });

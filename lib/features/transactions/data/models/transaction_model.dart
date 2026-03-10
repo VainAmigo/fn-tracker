@@ -81,6 +81,12 @@ enum TransactionType {
   }
 }
 
+enum TransactionIdType {
+  category,
+  wallet,
+  goal;
+}
+
 class HomePageStatModel {
   final double totalExpense;
   final List<double> homeChartStat;

@@ -161,6 +161,8 @@ class _Body extends StatelessWidget {
                   ),
                   trailing: AmountTextWidget(
                     amount: tx.amount,
+                    type: tx.type,
+                    showSignPrefix: true,
                     style: AppTextStyles.listTileTitle(context),
                   ),
                   radius: radius,

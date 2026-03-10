@@ -41,6 +41,35 @@ class TransactionsRepository implements TransactionsRepoImpl {
   }
 
   @override
+  Future<List<TransactionModel>> getUserTransactionsById({
+    required String start,
+    required String end,
+    required String id,
+    required TransactionIdType idType,
+  }) async {
+    final uid = _requireUid();
+    final idFieldName = switch (idType) {
+      TransactionIdType.category => 'categoryId',
+      TransactionIdType.wallet => 'walletId',
+      TransactionIdType.goal => 'goalId',
+    };
+    try {
+      final transactionsSnapshot = await _transactionsRef(uid)
+          .where(idFieldName, isEqualTo: id)
+          .where('dayKey', isGreaterThanOrEqualTo: start)
+          .where('dayKey', isLessThanOrEqualTo: end)
+          .orderBy('dayKey', descending: true)
+          .get();
+
+      return transactionsSnapshot.docs
+          .map((doc) => TransactionModel.fromJson(doc.data()))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch transaction: $e');
+    }
+  }
+
+  @override
   Future<TransactionModel> addTransaction({
     required TransactionModel transaction,
   }) async {

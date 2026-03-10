@@ -38,6 +38,19 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
           const SizedBox(height: AppSizing.spaceBtwElements),
           GoalCardWidget(goal: goal),
           const SizedBox(height: AppSizing.spaceBtwElements),
+          PrimaryButton(
+            text: 'History',
+            icon: Icons.history,
+            size: PrimaryButtonSize.xSmall,
+            rounded: true,
+            backgroundColor: colorScheme.tertiary.withValues(alpha: 0.3),
+            foregroundColor: colorScheme.tertiary,
+            onPressed: () => Navigator.of(context).pushNamed(
+              AppRouter.transactionsById,
+              arguments: {'idType': TransactionIdType.goal, 'id': goal.id},
+            ),
+          ),
+          const SizedBox(height: AppSizing.spaceBtwElements),
           Row(
             children: [
               Icon(

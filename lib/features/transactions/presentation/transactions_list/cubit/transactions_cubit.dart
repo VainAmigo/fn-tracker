@@ -28,6 +28,29 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     }
   }
 
+  Future<void> loadTransactionsById(
+    TransactionIdType idType,
+    String id,
+    TransactionPeriod period,
+  ) async {
+    try {
+      emit(TransactionsLoading());
+      final transactions = await transactionsRepo.getUserTransactionsById(
+        idType: idType,
+        id: id,
+        start: period.dateRange.start.dayKey,
+        end: period.dateRange.end.dayKey,
+      );
+      if (transactions.isEmpty) {
+        emit(TransactionsEmpty());
+      } else {
+        emit(TransactionsLoaded(transactions: transactions));
+      }
+    } catch (e) {
+      emit(TransactionsError(message: e.toString()));
+    }
+  }
+
   Future<void> deleteTransaction(String id) async {
     final current = state;
     List<TransactionModel> updated = [];

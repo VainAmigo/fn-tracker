@@ -22,10 +22,17 @@ class AmountTextWidget extends StatelessWidget {
     this.currency,
     this.sign,
     this.style,
+    this.type,
     this.decimalPlaces = 2,
+    this.showSignPrefix = false,
   });
 
   final double amount;
+
+  final TransactionType? type;
+
+  /// Показывать знак + или - перед суммой (по умолчанию false).
+  final bool showSignPrefix;
 
   /// Явная валюта (приоритет над [CurrencyProvider]).
   final Currency? currency;
@@ -45,13 +52,21 @@ class AmountTextWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final effectiveCurrency = currency ?? _currencyFromContext(context);
 
+    // Знак для отображения: + для дохода, - для расхода (только если showSignPrefix == true)
+    final useSign = showSignPrefix && (type != null || amount != 0);
+    final isPositive = type != null
+        ? type == TransactionType.income
+        : amount >= 0;
+    final signPrefix = useSign ? (isPositive ? '+ ' : '- ') : '';
+    final amountToFormat = useSign ? amount.abs() : amount;
+
     String formattedText;
     if (effectiveCurrency != null) {
       final formatter = CurrencyFormatter(effectiveCurrency);
-      formattedText = formatter.format(amount);
+      formattedText = formatter.format(amountToFormat);
     } else {
       final formatted = AmountFormatter.formatWithParts(
-        amount,
+        amountToFormat,
         decimalPlaces: decimalPlaces,
       );
       final symbol = sign ?? '';
@@ -61,16 +76,18 @@ class AmountTextWidget extends StatelessWidget {
     }
 
     // Убираем .00 или ,00 для целых чисел (0{1,2} — только дробная часть, не ,000)
-    if (amount == amount.truncateToDouble()) {
+    if (amountToFormat == amountToFormat.truncateToDouble()) {
       formattedText = formattedText.replaceAll(
         RegExp(r'[.,]0{1,2}(?=\s|$|[^\d])'),
         '',
       );
     }
 
+    final displayText = '$signPrefix$formattedText';
+
     final effectiveStyle = style ?? theme.textTheme.bodyLarge;
 
-    return Text(formattedText, style: effectiveStyle);
+    return Text(displayText, style: effectiveStyle);
   }
 
   Currency? _currencyFromContext(BuildContext context) {

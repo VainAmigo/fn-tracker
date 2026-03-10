@@ -12,6 +12,7 @@ final class AppRouter {
 
   static const transactions = '/transactions';
   static const addTransaction = '/add-transaction';
+  static const transactionsById = '/transactions-by-id';
 
   static const createCategory = '/create-category';
   static const updateCategory = '/update-category';
@@ -52,6 +53,16 @@ final class AppRouter {
         settings: const RouteSettings(name: transactions),
         builder: (_) => const TransactionsListView(),
       ),
+      transactionsById => MaterialPageRoute(
+        settings: const RouteSettings(name: transactionsById),
+        builder: (_) {
+          final args = settings.arguments as Map<String, dynamic>;
+          return TransactionsListByidView(
+            idType: args['idType'] as TransactionIdType,
+            id: args['id'] as String,
+          );
+        },
+      ),
       updateCategory => MaterialPageRoute(
         settings: const RouteSettings(name: updateCategory),
         builder: (_) =>
@@ -72,8 +83,7 @@ final class AppRouter {
       ),
       updateGoal => MaterialPageRoute(
         settings: const RouteSettings(name: updateGoal),
-        builder: (_) =>
-            GoalFormView(goal: settings.arguments as GoalModel),
+        builder: (_) => GoalFormView(goal: settings.arguments as GoalModel),
       ),
       _ => throw Exception(
         'No builder specified for route named: [${settings.name}]',

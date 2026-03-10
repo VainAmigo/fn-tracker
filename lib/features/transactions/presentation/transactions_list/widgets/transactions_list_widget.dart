@@ -96,8 +96,7 @@ class _Body extends StatelessWidget {
     required Currency currency,
     required CategoryCardRadius radius,
   }) {
-    final isGoalTransaction =
-        tx.categoryId == null || tx.categoryId!.isEmpty;
+    final isGoalTransaction = tx.categoryId == null || tx.categoryId!.isEmpty;
     final goal = isGoalTransaction && tx.goalId != null
         ? goalMap[tx.goalId]
         : null;
@@ -106,13 +105,13 @@ class _Body extends StatelessWidget {
     final shade = category != null
         ? findShadeById(category.colorId)
         : goal != null
-            ? findShadeById(goal.colorId)
-            : null;
+        ? findShadeById(goal.colorId)
+        : null;
     final icon = category != null
         ? findIconById(category.iconId)
         : goal != null
-            ? findIconById(goal.iconId)
-            : null;
+        ? findIconById(goal.iconId)
+        : null;
     final color = shade?.color ?? Colors.grey;
 
     return Dismissible(
@@ -151,7 +150,11 @@ class _Body extends StatelessWidget {
       ),
       child: CategoryCard(
         title: category?.name ?? goal?.name ?? tx.categoryId ?? '',
-        subtitle: isGoalTransaction ? 'Goal' : tx.note.isNotEmpty ? tx.note : null,
+        subtitle: isGoalTransaction
+            ? 'Goal'
+            : tx.note.isNotEmpty
+            ? tx.note
+            : null,
         leading: Container(
           height: AppSizing.heightS,
           decoration: BoxDecoration(
@@ -169,6 +172,8 @@ class _Body extends StatelessWidget {
         ),
         trailing: AmountTextWidget(
           amount: tx.amount,
+          type: tx.type,
+          showSignPrefix: true,
           style: AppTextStyles.listTileTitle(context),
         ),
         radius: radius,
