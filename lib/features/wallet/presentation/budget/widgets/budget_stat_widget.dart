@@ -40,8 +40,8 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
 
         final remainingPercent = budget.amount > 0
             ? ((budget.amount - spent) / budget.amount * 100)
-                .clamp(0, 100)
-                .toStringAsFixed(0)
+                  .clamp(0, 100)
+                  .toStringAsFixed(0)
             : '0';
         final exceededPercent = budget.amount > 0
             ? ((spent - budget.amount) / budget.amount * 100).toStringAsFixed(0)
@@ -50,11 +50,11 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
         final barSegments = exceeded
             ? [
                 BarChartSegment(
-                  value: spent - budget.amount,
+                  value: spent > budget.amount * 2 ? spent - budget.amount : 0,
                   color: colorScheme.error,
                 ),
                 BarChartSegment(
-                  value: budget.amount,
+                  value: spent > budget.amount * 2 ? 0 : budget.amount,
                   color: colorScheme.onSecondary,
                 ),
               ]

@@ -32,7 +32,7 @@ class AnalyticsSummaryCardsWidget extends StatelessWidget {
             Expanded(
               child: _AnalyticsStatCard(
                 label: 'Доход',
-                value: formatter.format(totalIncome),
+                value: totalIncome,
                 icon: Icons.arrow_downward_rounded,
                 color: colorScheme.primary,
               ),
@@ -41,7 +41,7 @@ class AnalyticsSummaryCardsWidget extends StatelessWidget {
             Expanded(
               child: _AnalyticsStatCard(
                 label: 'Расход',
-                value: formatter.format(totalExpense),
+                value: totalExpense,
                 icon: Icons.arrow_upward_rounded,
                 color: colorScheme.error,
               ),
@@ -93,8 +93,8 @@ class _BalanceCard extends StatelessWidget {
               Text('Баланс', style: AppTextStyles.sectionTitle(context)),
             ],
           ),
-          Text(
-            formatter.format(balance),
+          AmountTextWidget(
+            amount: balance,
             style: AppTextStyles.text20w600(context).copyWith(
               color: balance >= 0 ? colorScheme.primary : colorScheme.error,
             ),
@@ -122,8 +122,8 @@ class _BudgetCard extends StatelessWidget {
     final exceeded = spent > budget.amount;
     final remainingPercent = budget.amount > 0
         ? ((budget.amount - spent) / budget.amount * 100)
-            .clamp(0, 100)
-            .toStringAsFixed(0)
+              .clamp(0, 100)
+              .toStringAsFixed(0)
         : '0';
     final exceededPercent = budget.amount > 0
         ? ((spent - budget.amount) / budget.amount * 100).toStringAsFixed(0)
@@ -132,10 +132,13 @@ class _BudgetCard extends StatelessWidget {
     final barSegments = exceeded
         ? [
             BarChartSegment(
-              value: spent - budget.amount,
+              value: spent > budget.amount * 2 ? spent - budget.amount : 0,
               color: colorScheme.error,
             ),
-            BarChartSegment(value: budget.amount, color: colorScheme.onSecondary),
+            BarChartSegment(
+              value: spent > budget.amount * 2 ? 0 : budget.amount,
+              color: colorScheme.onSecondary,
+            ),
           ]
         : [
             BarChartSegment(value: spent, color: colorScheme.primary),
@@ -208,7 +211,7 @@ class _AnalyticsStatCard extends StatelessWidget {
   });
 
   final String label;
-  final String value;
+  final double value;
   final IconData icon;
   final Color color;
 
@@ -234,11 +237,9 @@ class _AnalyticsStatCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),
-          Text(
-            value,
+          AmountTextWidget(
+            amount: value,
             style: AppTextStyles.text20w600(context),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

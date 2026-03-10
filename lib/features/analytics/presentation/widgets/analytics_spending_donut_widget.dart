@@ -57,9 +57,9 @@ class AnalyticsSpendingDonutWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('Всего', style: AppTextStyles.text16w400(context)),
-                Text(
-                  formatter.format(totalExpense),
-                  style: AppTextStyles.text20w600(context),
+                AmountTextWidget(
+                  amount: totalExpense,
+                  style: AppTextStyles.text36w600(context),
                 ),
               ],
             ),
