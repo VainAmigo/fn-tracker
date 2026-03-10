@@ -1,11 +1,7 @@
 import 'package:fn_tracker/components/components.dart';
 
 /// Табы экрана кошелька. Единый источник истины для переключателя и контента.
-enum WalletTab {
-  budget,
-  accounts,
-  wallet,
-}
+enum WalletTab { budget, accounts, categories }
 
 extension WalletTabX on WalletTab {
   String get label {
@@ -14,8 +10,8 @@ extension WalletTabX on WalletTab {
         return 'Budget';
       case WalletTab.accounts:
         return 'Accounts';
-      case WalletTab.wallet:
-        return 'Wallet';
+      case WalletTab.categories:
+        return 'Categories';
     }
   }
 }

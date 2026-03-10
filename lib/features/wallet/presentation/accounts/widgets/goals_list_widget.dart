@@ -9,10 +9,12 @@ class GoalsListWidget extends StatefulWidget {
   const GoalsListWidget({
     super.key,
     this.autoLoad = false,
+    this.shrinkWrap = false,
     this.onGoalSelected,
   });
 
   final bool autoLoad;
+  final bool shrinkWrap;
   final ValueChanged<GoalModel>? onGoalSelected;
 
   @override
@@ -54,72 +56,69 @@ class _GoalsListWidgetState extends State<GoalsListWidget> {
     final colorScheme = Theme.of(context).colorScheme;
     final total = goals.length + 1;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (int i = 0; i < goals.length; i++)
-          Padding(
-            padding: const EdgeInsets.only(
-              bottom: AppSizing.spaceBtwItemsExtra,
+    return ListView.separated(
+      shrinkWrap: widget.shrinkWrap,
+      physics: widget.shrinkWrap ? const NeverScrollableScrollPhysics() : null,
+      itemCount: total,
+      separatorBuilder: (_, _) =>
+          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+      itemBuilder: (context, index) {
+        if (index == goals.length) {
+          return CategoryCard(
+            title: 'New goal',
+            leading: Container(
+              height: AppSizing.heightS,
+              decoration: BoxDecoration(
+                color: colorScheme.onSecondary.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+              ),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Icon(
+                  Icons.add_rounded,
+                  size: AppSizing.iconSizeM,
+                  color: colorScheme.onSecondary,
+                ),
+              ),
             ),
-            child: Builder(
-              builder: (context) {
-                final shade = findShadeById(goals[i].colorId);
-                final icon = findIconById(goals[i].iconId);
-                final color = shade?.color ?? colorScheme.primary;
+            radius: _radiusForIndex(index, total),
+            onTap: () => Navigator.of(context).pushNamed(AppRouter.createGoal),
+          );
+        }
 
-                return CategoryCard(
-                  title: goals[i].name,
-                  subtitle:
-                      '\$${goals[i].progress.toStringAsFixed(0)} / \$${goals[i].targetAmount.toStringAsFixed(0)}',
-                  leading: Container(
-                    height: AppSizing.heightS,
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(
-                        AppSizing.borderRadius8,
-                      ),
-                    ),
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Icon(
-                        icon?.icon ?? Icons.flag_rounded,
-                        size: AppSizing.iconSizeM,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                  radius: _radiusForIndex(i, total),
-                  onTap: widget.onGoalSelected != null
-                      ? () => widget.onGoalSelected!(goals[i])
-                      : () => Navigator.of(
-                          context,
-                        ).pushNamed(AppRouter.updateGoal, arguments: goals[i]),
-                );
-              },
-            ),
-          ),
-        CategoryCard(
-          title: 'New goal',
+        final goal = goals[index];
+        final shade = findShadeById(goal.colorId);
+        final icon = findIconById(goal.iconId);
+        final color = shade?.color ?? colorScheme.primary;
+
+        return CategoryCard(
+          title: goal.name,
+          subtitle:
+              '\$${goal.progress.toStringAsFixed(0)} / \$${goal.targetAmount.toStringAsFixed(0)}',
           leading: Container(
             height: AppSizing.heightS,
             decoration: BoxDecoration(
-              color: colorScheme.onSecondary.withValues(alpha: 0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
             ),
             child: AspectRatio(
               aspectRatio: 1,
               child: Icon(
-                Icons.add_rounded,
+                icon?.icon ?? Icons.flag_rounded,
                 size: AppSizing.iconSizeM,
-                color: colorScheme.onSecondary,
+                color: color,
               ),
             ),
           ),
-          radius: _radiusForIndex(goals.length, total),
-          onTap: () => Navigator.of(context).pushNamed(AppRouter.createGoal),
-        ),
-      ],
+          radius: _radiusForIndex(index, total),
+          onTap: widget.onGoalSelected != null
+              ? () => widget.onGoalSelected!(goal)
+              : () => Navigator.of(context).pushNamed(
+                    AppRouter.updateGoal,
+                    arguments: goal,
+                  ),
+        );
+      },
     );
   }
 }

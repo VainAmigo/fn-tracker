@@ -25,13 +25,19 @@ class AddTransactionCategorySheetWidget extends StatelessWidget {
             style: AppTextStyles.modalSheetTitle(context),
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
-          CategoryListWidget(
-            autoLoad: true,
-            shrinkWrap: true,
-            cardStyle: CategoryCardStyle.filled,
-            onCategorySelected: (category) {
-              Navigator.of(context).pop(category);
-            },
+
+          Flexible(
+            child: SingleChildScrollView(
+              child: CategoryListWidget(
+                autoLoad: true,
+                shrinkWrap: true,
+                cardStyle: CategoryCardStyle.filled,
+                dismissible: false,
+                onCategorySelected: (category) {
+                  Navigator.of(context).pop(category);
+                },
+              ),
+            ),
           ),
           PrimaryButton(
             text: 'Create new category',

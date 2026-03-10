@@ -74,7 +74,7 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
           physics:
               widget.shrinkWrap ? const NeverScrollableScrollPhysics() : null,
           itemCount: total,
-          separatorBuilder: (_, __) =>
+          separatorBuilder: (_, _) =>
               const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           itemBuilder: (context, index) {
             if (index == wallets.length) {

@@ -19,10 +19,13 @@ class AddTransactionAccountsSheetWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TitledSection(
-            title: 'Your wallets',
-            children: [
-              WalletVerticalListWidget(
+          ModalSheetTitleWidget(title: 'Choose account'),
+          const SizedBox(height: AppSizing.spaceBtwElements),
+          Text('Your wallets', style: AppTextStyles.listTileTitle(context)),
+          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+          Flexible(
+            child: SingleChildScrollView(
+              child: WalletVerticalListWidget(
                 autoLoad: true,
                 shrinkWrap: true,
                 cardStyle: CategoryCardStyle.filled,
@@ -30,19 +33,21 @@ class AddTransactionAccountsSheetWidget extends StatelessWidget {
                   Navigator.of(context).pop(wallet);
                 },
               ),
-            ],
+            ),
           ),
-          const SizedBox(height: AppSizing.spaceBtwElements),
-          TitledSection(
-            title: 'Your goals',
-            children: [
-              GoalsListWidget(
+          const SizedBox(height: AppSizing.spaceBtwItems),
+          Text('Your goals', style: AppTextStyles.listTileTitle(context)),
+          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+          Flexible(
+            child: SingleChildScrollView(
+              child: GoalsListWidget(
                 autoLoad: true,
+                shrinkWrap: true,
                 onGoalSelected: (goal) {
                   Navigator.of(context).pop(goal);
                 },
               ),
-            ],
+            ),
           ),
         ],
       ),

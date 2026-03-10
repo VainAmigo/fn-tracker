@@ -59,11 +59,13 @@ class _AddTransactionActionWidgetState
         : widget.selectedWallet?.name ?? 'Wallet';
     final walletShade = findShadeById(widget.selectedWallet?.colorId ?? '');
     final walletIcon = findIconById(widget.selectedWallet?.iconId ?? '');
+    final goalShade = findShadeById(widget.selectedGoal?.colorId ?? '');
+    final goalIcon = findIconById(widget.selectedGoal?.iconId ?? '');
     final accountColor = hasGoal
-        ? colorScheme.primary
+        ? (goalShade?.color ?? colorScheme.primary)
         : (walletShade?.color ?? Colors.grey);
     final accountIcon = hasGoal
-        ? Icons.flag_rounded
+        ? (goalIcon?.icon ?? Icons.flag_rounded)
         : (walletIcon?.icon ?? Icons.account_balance_wallet);
 
     String dateTitle;
