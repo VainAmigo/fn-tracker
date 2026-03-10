@@ -5,9 +5,16 @@ import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class WalletCardWidget extends StatelessWidget {
-  const WalletCardWidget({super.key, required this.wallet});
+  const WalletCardWidget({
+    super.key,
+    required this.wallet,
+    this.onDefaultChanged,
+    this.isEnabled = false,
+  });
 
   final WalletModel wallet;
+  final VoidCallback? onDefaultChanged;
+  final bool isEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +39,7 @@ class WalletCardWidget extends StatelessWidget {
                 height: AppSizing.heightXS,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(
-                    AppSizing.borderRadius8,
-                  ),
+                  borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
                 ),
                 child: AspectRatio(
                   aspectRatio: 1,
@@ -54,10 +59,9 @@ class WalletCardWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSizing.spaceBtwItems),
-              Icon(
-                wallet.isDefault ? Icons.star : Icons.star_border,
-                size: AppSizing.iconSizeL,
-                color: colorScheme.onSecondary,
+              IconButton(
+                onPressed: isEnabled ? onDefaultChanged : null,
+                icon: Icon(wallet.isDefault ? Icons.star : Icons.star_border),
               ),
             ],
           ),

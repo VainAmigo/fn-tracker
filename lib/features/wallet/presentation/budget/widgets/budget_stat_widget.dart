@@ -40,20 +40,19 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
         final spent = state.stats.totalForPeriod;
         final exceeded = spent > budget.amount;
 
-        final remainingPercent =
-            ((budget.amount - spent) / budget.amount * 100)
-                .clamp(0, 100)
-                .toStringAsFixed(0);
+        final remainingPercent = ((budget.amount - spent) / budget.amount * 100)
+            .clamp(0, 100)
+            .toStringAsFixed(0);
 
         final barSegments = exceeded
             ? [
                 BarChartSegment(
-                  value: budget.amount,
-                  color: colorScheme.onSecondary,
+                  value: spent > budget.amount ? spent - budget.amount : spent,
+                  color: colorScheme.error,
                 ),
                 BarChartSegment(
-                  value: spent - budget.amount,
-                  color: colorScheme.error,
+                  value: spent > budget.amount ? 0 : budget.amount,
+                  color: colorScheme.onSecondary,
                 ),
               ]
             : [
@@ -77,10 +76,7 @@ class _BudgetStatWidgetState extends State<BudgetStatWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Monthly Budget',
-                style: AppTextStyles.text20w600(context),
-              ),
+              Text('Monthly Budget', style: AppTextStyles.text20w600(context)),
               const SizedBox(height: AppSizing.spaceBtwItemsExtra),
               Text(
                 formatter.format(spent),

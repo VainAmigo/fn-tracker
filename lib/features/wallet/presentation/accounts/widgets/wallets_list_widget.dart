@@ -71,7 +71,7 @@ class _Body extends StatelessWidget {
                 width: width,
                 child: GestureDetector(
                   onTap: () => onWalletSelected(wallets[i]),
-                  child: WalletCardWidget(wallet: wallets[i]),
+                  child: WalletCardWidget(wallet: wallets[i], isEnabled: false),
                 ),
               ),
             ],

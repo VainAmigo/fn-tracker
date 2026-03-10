@@ -142,19 +142,6 @@ class _WalletFormViewState extends State<WalletFormView> {
                           hintText: 'e.g. Cash',
                           controller: _nameController,
                         ),
-                        if (_isEditing)
-                          CategoryCard(
-                            title: _isDefault ? 'Yes' : 'No',
-                            subtitle: 'Default wallet',
-                            leading: Icon(
-                              _isDefault ? Icons.star : Icons.star_border,
-                              color: colorScheme.onSecondary,
-                            ),
-                            onTap: widget.wallet!.isDefault
-                                ? null
-                                : () =>
-                                      setState(() => _isDefault = !_isDefault),
-                          ),
                         CreateCategoryIconPickerWidget(
                           selectedIcon: _selectedIcon,
                           selectedColor: _selectedShade.color,
@@ -173,18 +160,6 @@ class _WalletFormViewState extends State<WalletFormView> {
                   ),
                 ),
                 const SizedBox(height: AppSizing.spaceBtwElements),
-                if (_isEditing) ...[
-                  PrimaryButton(
-                    text: 'Delete',
-                    backgroundColor: colorScheme.primary.withValues(alpha: 0.3),
-                    foregroundColor: colorScheme.primary,
-                    size: PrimaryButtonSize.small,
-                    rounded: true,
-                    onPressed: isLoading ? null : _deleteWallet,
-                    isLoading: false,
-                  ),
-                  const SizedBox(height: AppSizing.spaceBtwItems),
-                ],
                 PrimaryButton(
                   text: _isEditing ? 'Update' : 'Create',
                   onPressed: isLoading ? null : _submitWallet,
@@ -215,11 +190,6 @@ class _WalletFormViewState extends State<WalletFormView> {
         ),
       ),
     );
-  }
-
-  void _deleteWallet() {
-    setState(() => _isSubmitting = true);
-    context.read<WalletCubit>().deleteWallet(walletId: widget.wallet!.id!);
   }
 
   void _submitWallet() {

@@ -10,10 +10,12 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
     super.key,
     required this.wallet,
     required this.onEdit,
+    this.onDefaultChanged,
   });
 
   final WalletModel wallet;
   final VoidCallback onEdit;
+  final VoidCallback? onDefaultChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,11 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
-          WalletCardWidget(wallet: wallet),
+          WalletCardWidget(
+            wallet: wallet,
+            onDefaultChanged: onDefaultChanged,
+            isEnabled: true,
+          ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           PrimaryButton(
             text: 'History',
@@ -84,10 +90,9 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
                   rounded: true,
                   onPressed: () {
                     Navigator.of(context).pop();
-                    Navigator.of(context).pushNamed(
-                      AppRouter.addTransaction,
-                      arguments: wallet,
-                    );
+                    Navigator.of(
+                      context,
+                    ).pushNamed(AppRouter.addTransaction, arguments: wallet);
                   },
                 ),
               ),

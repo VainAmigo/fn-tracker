@@ -107,7 +107,7 @@ class WalletRepository implements WalletRepoImpl {
 
     try {
       final results = await Future.wait([
-        _walletsRef(uid).get(),
+        _walletsRef(uid).orderBy('isDefault', descending: true).get(),
         _transactionsRef(uid).get(),
       ]);
 
@@ -210,9 +210,7 @@ class WalletRepository implements WalletRepoImpl {
       for (final doc in transactionsSnapshot.docs) {
         final t = TransactionModel.fromJson(doc.data());
         if (t.goalId == null || t.goalId!.isEmpty) continue;
-        final delta = t.type == TransactionType.income
-            ? t.amount
-            : -t.amount;
+        final delta = t.type == TransactionType.income ? t.amount : -t.amount;
         progressByGoalId.update(
           t.goalId!,
           (prev) => prev + delta,
@@ -228,9 +226,9 @@ class WalletRepository implements WalletRepoImpl {
 
       final totalProgress = goals.fold<double>(0, (s, g) => s + g.progress);
       final totalTarget = goals.fold<double>(0, (s, g) => s + g.targetAmount);
-      final completedCount = goals.where(
-        (g) => g.targetAmount > 0 && g.progress >= g.targetAmount,
-      ).length;
+      final completedCount = goals
+          .where((g) => g.targetAmount > 0 && g.progress >= g.targetAmount)
+          .length;
 
       return GoalsModel(
         goals: goals,
@@ -356,6 +354,4 @@ class WalletRepository implements WalletRepoImpl {
       throw Exception('Failed to get budget stats: $e');
     }
   }
-
-
 }

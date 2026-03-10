@@ -147,19 +147,16 @@ class _SpendingCategoryCard extends StatelessWidget {
               segments: exceeded
                   ? [
                       BarChartSegment(
-                        value: limit,
-                        color: colorScheme.onSecondary,
+                        value: spent > limit ? spent - limit : spent,
+                        color: colorScheme.error,
                       ),
                       BarChartSegment(
-                        value: spent - limit,
-                        color: colorScheme.error,
+                        value: spent > limit ? 0 : limit,
+                        color: colorScheme.onSecondary,
                       ),
                     ]
                   : [
-                      BarChartSegment(
-                        value: spent,
-                        color: colorScheme.primary,
-                      ),
+                      BarChartSegment(value: spent, color: colorScheme.primary),
                       BarChartSegment(
                         value: limit - spent,
                         color: colorScheme.onSecondary,
@@ -181,9 +178,11 @@ class _SpendingCategoryCard extends StatelessWidget {
                   exceeded
                       ? 'Limit exceeded'
                       : '${((limit - spent) / limit * 100).clamp(0, 100).toStringAsFixed(0)}% remaining',
-                  style: AppTextStyles.listTileSubtitle(
-                    context,
-                  ).copyWith(color: exceeded ? colorScheme.error : colorScheme.onSecondary),
+                  style: AppTextStyles.listTileSubtitle(context).copyWith(
+                    color: exceeded
+                        ? colorScheme.error
+                        : colorScheme.onSecondary,
+                  ),
                 ),
               ],
             ),
