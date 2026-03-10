@@ -24,7 +24,13 @@ class AccountsTabWidget extends StatelessWidget {
               rounded: true,
               fullWidth: false,
             ),
-            children: [WalletsListWidget(autoLoad: true)],
+            children: [
+              WalletsListWidget(
+                autoLoad: true,
+                onWalletSelected: (wallet) =>
+                    _onWalletSelected(context, wallet),
+              ),
+            ],
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
           TitledSection(
@@ -48,6 +54,20 @@ class AccountsTabWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _onWalletSelected(BuildContext context, WalletModel wallet) {
+    AppBottomSheet.showFittedModalBottomSheet(
+      context,
+      child: WalletDetailsModalSheetWidget(
+        wallet: wallet,
+        onEdit: () => _onUpdateWallet(context, wallet),
+      ),
+    );
+  }
+
+  void _onUpdateWallet(BuildContext context, WalletModel wallet) {
+    Navigator.of(context).pushNamed(AppRouter.updateWallet, arguments: wallet);
   }
 
   void _onGoalSelected(BuildContext context, GoalModel goal) {

@@ -32,7 +32,9 @@ class WalletCardWidget extends StatelessWidget {
                 height: AppSizing.heightXS,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+                  borderRadius: BorderRadius.circular(
+                    AppSizing.borderRadius8,
+                  ),
                 ),
                 child: AspectRatio(
                   aspectRatio: 1,

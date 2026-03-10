@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
-import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class WalletsListWidget extends StatefulWidget {
-  const WalletsListWidget({super.key, this.autoLoad = false});
+  const WalletsListWidget({
+    super.key,
+    this.autoLoad = false,
+    required this.onWalletSelected,
+  });
 
   final bool autoLoad;
+  final ValueChanged onWalletSelected;
 
   @override
   State<WalletsListWidget> createState() => _WalletsListWidgetState();
@@ -34,7 +38,10 @@ class _WalletsListWidgetState extends State<WalletsListWidget> {
             title: 'No wallets',
             subtitle: 'Create your first wallet',
           ),
-          WalletsLoaded() => _Body(wallets: state.wallets),
+          WalletsLoaded() => _Body(
+            wallets: state.wallets,
+            onWalletSelected: widget.onWalletSelected,
+          ),
           WalletsError() => Center(child: Text(state.message)),
         };
       },
@@ -43,9 +50,10 @@ class _WalletsListWidgetState extends State<WalletsListWidget> {
 }
 
 class _Body extends StatelessWidget {
-  const _Body({required this.wallets});
+  const _Body({required this.wallets, required this.onWalletSelected});
 
   final List<WalletModel> wallets;
+  final ValueChanged<Object> onWalletSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +70,7 @@ class _Body extends StatelessWidget {
               SizedBox(
                 width: width,
                 child: GestureDetector(
-                  onTap: () => Navigator.of(
-                    context,
-                  ).pushNamed(AppRouter.updateWallet, arguments: wallets[i]),
+                  onTap: () => onWalletSelected(wallets[i]),
                   child: WalletCardWidget(wallet: wallets[i]),
                 ),
               ),

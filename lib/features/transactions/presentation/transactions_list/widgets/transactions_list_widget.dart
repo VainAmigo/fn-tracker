@@ -48,6 +48,11 @@ class _Body extends StatelessWidget {
     final categoryMap = {for (final c in categories) c.categoryId: c};
     final goals = _extractGoals(context.watch<GoalsCubit>().state);
     final goalMap = {for (final g in goals) g.id: g};
+    final wallets = _extractWallets(context.watch<WalletCubit>().state);
+    final walletMap = {
+      for (final w in wallets)
+        if (w.id != null) w.id!: w,
+    };
     final currency = context.watch<CurrencyProvider>().currency;
 
     final grouped = _groupByDayKey(transactions);
@@ -78,6 +83,7 @@ class _Body extends StatelessWidget {
                 tx: txList[i],
                 categoryMap: categoryMap,
                 goalMap: goalMap,
+                walletMap: walletMap,
                 currency: currency,
                 radius: _radiusForIndex(i, txList.length),
               ),
@@ -93,6 +99,7 @@ class _Body extends StatelessWidget {
     required TransactionModel tx,
     required Map<String, CategoryModel> categoryMap,
     required Map<String, GoalModel> goalMap,
+    required Map<String, WalletModel> walletMap,
     required Currency currency,
     required CategoryCardRadius radius,
   }) {
@@ -101,6 +108,7 @@ class _Body extends StatelessWidget {
         ? goalMap[tx.goalId]
         : null;
     final category = !isGoalTransaction ? categoryMap[tx.categoryId] : null;
+    final wallet = tx.walletId != null ? walletMap[tx.walletId] : null;
 
     final shade = category != null
         ? findShadeById(category.colorId)
@@ -149,12 +157,13 @@ class _Body extends StatelessWidget {
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       child: CategoryCard(
-        title: category?.name ?? goal?.name ?? tx.categoryId ?? '',
-        subtitle: isGoalTransaction
-            ? 'Goal'
-            : tx.note.isNotEmpty
-            ? tx.note
-            : null,
+        title:
+            category?.name ?? goal?.name ?? tx.categoryId ?? wallet?.name ?? '',
+        subtitle: _buildSubtitle(
+          isGoalTransaction: isGoalTransaction,
+          note: tx.note,
+          wallet: wallet,
+        ),
         leading: Container(
           height: AppSizing.heightS,
           decoration: BoxDecoration(
@@ -203,6 +212,31 @@ class _Body extends StatelessWidget {
       GoalsLoaded s => s.goalsModel.goals,
       _ => const [],
     };
+  }
+
+  List<WalletModel> _extractWallets(WalletsState state) {
+    return switch (state) {
+      WalletsLoaded s => s.wallets,
+      _ => const [],
+    };
+  }
+
+  String? _buildSubtitle({
+    required bool isGoalTransaction,
+    required String note,
+    WalletModel? wallet,
+  }) {
+    String? base;
+    if (isGoalTransaction) {
+      base = 'Goal';
+    } else if (note.isNotEmpty) {
+      base = note;
+    }
+    final walletName = wallet?.name;
+    if (walletName != null && walletName.isNotEmpty) {
+      return walletName;
+    }
+    return base;
   }
 
   CategoryCardRadius _radiusForIndex(int index, int total) {

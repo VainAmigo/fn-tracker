@@ -5,20 +5,19 @@ import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-class GoalDetailsModalSheetWidget extends StatelessWidget {
-  const GoalDetailsModalSheetWidget({
+class WalletDetailsModalSheetWidget extends StatelessWidget {
+  const WalletDetailsModalSheetWidget({
     super.key,
-    required this.goal,
+    required this.wallet,
     required this.onEdit,
   });
 
-  final GoalModel goal;
+  final WalletModel wallet;
   final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     return Container(
       padding: const EdgeInsets.all(AppSizing.defaultPadding),
       child: Column(
@@ -26,7 +25,7 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ModalSheetTitleWidget(
-            title: 'Goal details',
+            title: 'Wallet details',
             action: PrimaryButton(
               text: 'Edit',
               onPressed: onEdit,
@@ -36,7 +35,7 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
-          GoalCardWidget(goal: goal),
+          WalletCardWidget(wallet: wallet),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           PrimaryButton(
             text: 'History',
@@ -47,23 +46,8 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
             foregroundColor: colorScheme.tertiary,
             onPressed: () => Navigator.of(context).pushNamed(
               AppRouter.transactionsById,
-              arguments: {'idType': TransactionIdType.goal, 'id': goal.id},
+              arguments: {'idType': TransactionIdType.wallet, 'id': wallet.id},
             ),
-          ),
-          const SizedBox(height: AppSizing.spaceBtwElements),
-          Row(
-            children: [
-              Icon(
-                Icons.calendar_today_rounded,
-                size: AppSizing.iconSizeXS,
-                color: colorScheme.onSecondary,
-              ),
-              const SizedBox(width: AppSizing.spaceBtwItems),
-              Text(
-                'Created ${goal.createdAt.formatMonthDay}',
-                style: AppTextStyles.text14w400(context),
-              ),
-            ],
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           Row(
@@ -71,9 +55,9 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             spacing: AppSizing.spaceBtwItemsExtra,
             children: [
-              BlocListener<GoalsCubit, GoalsState>(
+              BlocListener<WalletCubit, WalletsState>(
                 listener: (context, state) {
-                  if (state is GoalsLoaded) {
+                  if (state is WalletsLoaded) {
                     Navigator.of(context).pop();
                   }
                 },
@@ -86,7 +70,9 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                   paddingStyle: PrimaryButtonPaddingStyle.slim,
                   rounded: true,
                   onPressed: () {
-                    context.read<GoalsCubit>().deleteGoal(goalId: goal.id);
+                    context.read<WalletCubit>().deleteWallet(
+                      walletId: wallet.id!,
+                    );
                   },
                 ),
               ),
@@ -96,9 +82,8 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                   icon: Icons.add,
                   size: PrimaryButtonSize.large,
                   rounded: true,
-                  onPressed: () => Navigator.of(
-                    context,
-                  ).pushNamed(AppRouter.addTransaction, arguments: goal),
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(AppRouter.addTransaction),
                 ),
               ),
             ],
