@@ -6,7 +6,16 @@ import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AddTransactionView extends StatefulWidget {
-  const AddTransactionView({super.key});
+  const AddTransactionView({
+    super.key,
+    this.initialType,
+    this.initialWallet,
+    this.initialGoal,
+  });
+
+  final TransactionType? initialType;
+  final WalletModel? initialWallet;
+  final GoalModel? initialGoal;
 
   @override
   State<AddTransactionView> createState() => _AddTransactionViewState();
@@ -25,12 +34,23 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   void initState() {
     super.initState();
     context.read<AddTransactionCubit>().reset();
-    final walletsState = context.read<WalletCubit>().state;
-    if (walletsState is WalletsLoaded) {
-      _selectedWallet = walletsState.wallets.cast<WalletModel?>().firstWhere(
-        (w) => w!.isDefault,
-        orElse: () => null,
-      );
+    if (widget.initialType != null) {
+      _selectedType = widget.initialType!;
+    }
+    if (widget.initialWallet != null) {
+      _selectedWallet = widget.initialWallet;
+      _selectedGoal = null;
+    } else if (widget.initialGoal != null) {
+      _selectedGoal = widget.initialGoal;
+      _selectedWallet = null;
+    } else {
+      final walletsState = context.read<WalletCubit>().state;
+      if (walletsState is WalletsLoaded) {
+        _selectedWallet = walletsState.wallets.cast<WalletModel?>().firstWhere(
+          (w) => w!.isDefault,
+          orElse: () => null,
+        );
+      }
     }
   }
 

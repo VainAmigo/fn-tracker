@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
@@ -230,9 +231,17 @@ class _AddTransactionActionWidgetState
   }
 
   Future<void> _showAccountsPicker(BuildContext context) async {
+    final walletCubit = context.read<WalletCubit>();
+    final goalsCubit = context.read<GoalsCubit>();
     final selected = await AppBottomSheet.showFittedModalBottomSheet<Object>(
       context,
-      child: AddTransactionAccountsSheetWidget(),
+      child: BlocProvider<WalletCubit>.value(
+        value: walletCubit,
+        child: BlocProvider<GoalsCubit>.value(
+          value: goalsCubit,
+          child: AddTransactionAccountsSheetWidget(),
+        ),
+      ),
     );
     if (!mounted) return;
     if (selected != null) {

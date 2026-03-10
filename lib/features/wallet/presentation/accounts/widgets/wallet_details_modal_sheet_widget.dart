@@ -82,8 +82,13 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
                   icon: Icons.add,
                   size: PrimaryButtonSize.large,
                   rounded: true,
-                  onPressed: () =>
-                      Navigator.of(context).pushNamed(AppRouter.addTransaction),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pushNamed(
+                      AppRouter.addTransaction,
+                      arguments: wallet,
+                    );
+                  },
                 ),
               ),
             ],

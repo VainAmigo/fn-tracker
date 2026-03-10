@@ -42,8 +42,20 @@ final class AppRouter {
         builder: (_) => const LoginView(),
       ),
       addTransaction => MaterialPageRoute(
-        settings: const RouteSettings(name: addTransaction),
-        builder: (_) => const AddTransactionView(),
+        settings: RouteSettings(
+          name: addTransaction,
+          arguments: settings.arguments,
+        ),
+        builder: (_) {
+          final args = settings.arguments;
+          return AddTransactionView(
+            initialType: args is WalletModel || args is GoalModel
+                ? TransactionType.income
+                : null,
+            initialWallet: args is WalletModel ? args : null,
+            initialGoal: args is GoalModel ? args : null,
+          );
+        },
       ),
       createCategory => MaterialPageRoute(
         settings: const RouteSettings(name: createCategory),
