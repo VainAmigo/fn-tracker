@@ -1,3 +1,4 @@
+export 'analytics/analytics.dart';
 export 'auth/auth.dart';
 export 'main/app_main.dart';
 export 'home/home.dart';

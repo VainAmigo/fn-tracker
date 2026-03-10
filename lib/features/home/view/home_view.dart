@@ -39,11 +39,10 @@ class _HomeViewState extends State<HomeView> {
       context.read<TransactionsCubit>().loadTransactionsByPeriod(
         TransactionPeriod.month,
       ),
+      context.read<AnalyticsCubit>().loadAnalytics(),
       context.read<WalletCubit>().loadWallets(),
       context.read<GoalsCubit>().loadGoals(),
-      context.read<BudgetCubit>().loadBudgetStats(
-        periodKey: start.periodKey,
-      ),
+      context.read<BudgetCubit>().loadBudgetStats(periodKey: start.periodKey),
     ]);
   }
 
@@ -58,39 +57,7 @@ class _HomeViewState extends State<HomeView> {
     final height = MediaQuery.of(context).size.height;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<AddTransactionCubit, AddTransactionState>(
-          listener: (context, state) {
-            if (state is AddTransactionSuccess) {
-              context.read<TransactionsCubit>().addTransactionLocally(
-                state.createdTransaction,
-              );
-              _loadStats();
-              context.read<WalletCubit>().loadWallets();
-              context.read<GoalsCubit>().loadGoals();
-              final periodKey = MonthRangeUtils.currentMonth().start.periodKey;
-              context
-                  .read<BudgetCubit>()
-                  .loadBudgetStats(periodKey: periodKey);
-            }
-          },
-        ),
-        BlocListener<TransactionsCubit, TransactionsState>(
-          listener: (context, state) {
-            if (state is TransactionDeleted) {
-              _loadStats();
-              context.read<WalletCubit>().loadWallets();
-              context.read<GoalsCubit>().loadGoals();
-              final periodKey = MonthRangeUtils.currentMonth().start.periodKey;
-              context
-                  .read<BudgetCubit>()
-                  .loadBudgetStats(periodKey: periodKey);
-            }
-          },
-        ),
-      ],
-      child: BlocBuilder<HomeCubit, HomeState>(
+    return BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           final homePageStat = state is HomeLoaded
               ? state.homePageStat
@@ -181,7 +148,7 @@ class _HomeViewState extends State<HomeView> {
             ),
           );
         },
-      ),
     );
   }
 }
+

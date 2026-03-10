@@ -1,0 +1,97 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/theme/themes.dart';
+
+import '../widgets/analytics_widgets.dart';
+
+class AnalyticsView extends StatefulWidget {
+  const AnalyticsView({super.key});
+
+  @override
+  State<AnalyticsView> createState() => _AnalyticsViewState();
+}
+
+class _AnalyticsViewState extends State<AnalyticsView> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<AnalyticsCubit>().loadAnalytics();
+  }
+
+  Future<void> _onRefresh() async {
+    await context.read<AnalyticsCubit>().loadAnalytics();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizing.defaultPadding,
+          ),
+          child: RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Text(
+                    'Analytics',
+                    style: AppTextStyles.tabTitle(context),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: _AnalyticsBody(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AnalyticsBody extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AnalyticsCubit, AnalyticsState>(
+      buildWhen: (prev, curr) =>
+          curr is AnalyticsLoaded ||
+          curr is AnalyticsLoading ||
+          curr is AnalyticsError ||
+          curr is AnalyticsInitial,
+      builder: (context, state) {
+        final cubit = context.read<AnalyticsCubit>();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            MonthPickerScrollWidget(
+              initialYear: cubit.selectedYear,
+              initialMonth: cubit.selectedMonth,
+              onDateChange: (month, year) =>
+                  cubit.loadAnalyticsByMonth(month, year),
+            ),
+            const SizedBox(height: AppSizing.spaceBtwSections),
+            if (state is AnalyticsLoading)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(AppSizing.spaceBtwSections),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (state is AnalyticsError)
+              AnalyticsErrorPlaceholderWidget(
+                message: state.message,
+                onRetry: () => cubit.loadAnalytics(),
+              )
+            else if (state is AnalyticsLoaded)
+              AnalyticsContentWidget(data: state.data),
+          ],
+        );
+      },
+    );
+  }
+}
