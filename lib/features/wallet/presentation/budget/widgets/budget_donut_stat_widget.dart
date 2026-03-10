@@ -72,7 +72,7 @@ class BudgetDonutStatWidget extends StatelessWidget {
           children: [
             _StatColumn(
               label: 'Spent',
-              value: formatter.format(totalForPeriod),
+              value: totalForPeriod,
             ),
             Container(
               height: AppSizing.heightXS,
@@ -85,7 +85,7 @@ class BudgetDonutStatWidget extends StatelessWidget {
             ),
             _StatColumn(
               label: 'Budget',
-              value: formatter.format(budget.amount),
+              value: budget.amount,
             ),
           ],
         ),
@@ -107,11 +107,11 @@ class _StatColumn extends StatelessWidget {
   const _StatColumn({required this.label, required this.value});
 
   final String label;
-  final String value;
+  final double value;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Flexible(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -124,7 +124,10 @@ class _StatColumn extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          Text(value, style: AppTextStyles.text20w600(context)),
+          AmountTextWidget(
+            amount: value,
+            style: AppTextStyles.text20w600(context),
+          ),
         ],
       ),
     );

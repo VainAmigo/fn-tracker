@@ -83,11 +83,20 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
     );
   }
 
+  String _formatAmountForInput(double amount) {
+    if (amount == amount.truncateToDouble()) {
+      return amount.truncate().toString();
+    }
+    return amount.toString();
+  }
+
   void _showBudgetSheet({
     required Currency currency,
     BudgetModel? existingBudget,
   }) {
-    String? newAmount = existingBudget?.amount.toString();
+    String? newAmount = existingBudget != null
+        ? _formatAmountForInput(existingBudget.amount)
+        : null;
 
     AppBottomSheet.showFittedModalBottomSheet(
       context,
@@ -100,7 +109,9 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             AmountInputWidget(
-              initialAmount: existingBudget?.amount.toString() ?? '',
+              initialAmount: existingBudget != null
+                  ? _formatAmountForInput(existingBudget.amount)
+                  : '',
               currency: currency,
               onAmountChanged: (amount) => newAmount = amount,
             ),
