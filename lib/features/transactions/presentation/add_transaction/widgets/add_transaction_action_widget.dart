@@ -88,8 +88,8 @@ class _AddTransactionActionWidgetState
                 subtitle: hasGoal
                     ? 'Goal'
                     : widget.selectedType == TransactionType.expense
-                        ? 'Take from'
-                        : 'Add to',
+                    ? 'Take from'
+                    : 'Add to',
                 leading: Container(
                   height: AppSizing.heightS,
                   decoration: BoxDecoration(

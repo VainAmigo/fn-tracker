@@ -22,12 +22,13 @@ class TransactionsListWidget extends StatelessWidget {
             subtitle: 'You have no transactions yet',
           ),
           TransactionsLoaded() => _Body(transactions: state.transactions),
-          TransactionDeleted() => state.transactions.isEmpty
-              ? const EmptyCardWidget(
-                  title: 'No transactions',
-                  subtitle: 'You have no transactions yet',
-                )
-              : _Body(transactions: state.transactions),
+          TransactionDeleted() =>
+            state.transactions.isEmpty
+                ? const EmptyCardWidget(
+                    title: 'No transactions',
+                    subtitle: 'You have no transactions yet',
+                  )
+                : _Body(transactions: state.transactions),
           TransactionsError() => Center(child: Text(state.message)),
         };
       },
@@ -96,11 +97,6 @@ class _Body extends StatelessWidget {
     final icon = category != null ? findIconById(category.iconId) : null;
     final color = shade?.color ?? Colors.grey;
 
-    final formattedAmount = AmountFormatter.format(
-      tx.amount,
-      decimalPlaces: currency.decimalPlaces,
-    );
-
     return Dismissible(
       key: Key(tx.id),
       direction: DismissDirection.endToStart,
@@ -153,11 +149,9 @@ class _Body extends StatelessWidget {
             ),
           ),
         ),
-        trailing: Text(
-          '$formattedAmount ${currency.symbol}',
-          style: AppTextStyles.listTileTitle(
-            context,
-          ).copyWith(color: Theme.of(context).colorScheme.onSecondary),
+        trailing: AmountTextWidget(
+          amount: tx.amount,
+          style: AppTextStyles.listTileTitle(context),
         ),
         radius: radius,
       ),

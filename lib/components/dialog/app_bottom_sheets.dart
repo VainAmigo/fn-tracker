@@ -40,10 +40,12 @@ abstract class AppBottomSheet {
     required Widget child,
     Color? backgroundColor,
     bool showDragHandle = true,
+    bool isDismissible = true,
   }) {
     return showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
+      isDismissible: isDismissible,
       useSafeArea: true,
       showDragHandle: showDragHandle,
       backgroundColor: backgroundColor,

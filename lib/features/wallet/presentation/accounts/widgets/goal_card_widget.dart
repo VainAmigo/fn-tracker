@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:fn_tracker/components/chart/segmented_bar.dart';
+import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
-import 'package:fn_tracker/features/wallet/wallet.dart';
+import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class GoalCardWidget extends StatelessWidget {
-  const GoalCardWidget({
-    super.key,
-    required this.goal,
-    this.onTap,
-  });
+  const GoalCardWidget({super.key, required this.goal, this.onTap});
 
   final GoalModel goal;
   final VoidCallback? onTap;
@@ -24,6 +20,7 @@ class GoalCardWidget extends StatelessWidget {
       0.0,
       double.infinity,
     );
+    final isCompleted = goal.progress > goal.targetAmount;
 
     return GestureDetector(
       onTap: onTap,
@@ -80,14 +77,23 @@ class GoalCardWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  '\$${goal.progress.toStringAsFixed(0)} / \$${goal.targetAmount.toStringAsFixed(0)}',
-                  style: AppTextStyles.text14w400(context),
+                AmountDividerWidget(
+                  leftAmount: goal.progress,
+                  rightAmount: goal.targetAmount,
+                  dividerType: DividerType.slash,
+                  styel: AppTextStyles.text14w400(context),
                 ),
-                Text(
-                  'Remaining: \$${remaining.toStringAsFixed(0)}',
-                  style: AppTextStyles.text14w400(context),
-                ),
+                isCompleted
+                    ? Text(
+                        'Remaining: ${AmountFormatter.format(remaining)}',
+                        style: AppTextStyles.text14w400(context),
+                      )
+                    : Text(
+                        'Completed',
+                        style: AppTextStyles.text14w400(
+                          context,
+                        ).copyWith(color: colorScheme.onSurface),
+                      ),
               ],
             ),
           ],

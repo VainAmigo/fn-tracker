@@ -6,8 +6,7 @@ import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AddTransactionView extends StatefulWidget {
-  const AddTransactionView({super.key, this.initialGoal});
-  final GoalModel? initialGoal;
+  const AddTransactionView({super.key});
 
   @override
   State<AddTransactionView> createState() => _AddTransactionViewState();
@@ -32,9 +31,6 @@ class _AddTransactionViewState extends State<AddTransactionView> {
         (w) => w!.isDefault,
         orElse: () => null,
       );
-    }
-    if (widget.initialGoal != null) {
-      _selectedGoal = widget.initialGoal;
     }
   }
 

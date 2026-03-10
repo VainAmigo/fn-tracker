@@ -37,12 +37,13 @@ class _LastTransactionsListWidgetState
             subtitle: 'You have no transactions yet',
           ),
           TransactionsLoaded() => _Body(transactions: state.transactions),
-          TransactionDeleted() => state.transactions.isEmpty
-              ? const EmptyCardWidget(
-                  title: 'No transactions',
-                  subtitle: 'You have no transactions yet',
-                )
-              : _Body(transactions: state.transactions),
+          TransactionDeleted() =>
+            state.transactions.isEmpty
+                ? const EmptyCardWidget(
+                    title: 'No transactions',
+                    subtitle: 'You have no transactions yet',
+                  )
+                : _Body(transactions: state.transactions),
           TransactionsError() => Center(child: Text(state.message)),
         };
       },
@@ -60,7 +61,6 @@ class _Body extends StatelessWidget {
     final categoriesState = context.watch<CategoriesCubit>().state;
     final categories = _extractCategories(categoriesState);
     final categoryMap = {for (final c in categories) c.categoryId: c};
-    final currency = context.watch<CurrencyProvider>().currency;
 
     final lastItems = transactions.length > 10
         ? transactions.sublist(transactions.length - 10)
@@ -82,11 +82,6 @@ class _Body extends StatelessWidget {
                   ? findIconById(category.iconId)
                   : null;
 
-              final formattedAmount = AmountFormatter.format(
-                tx.amount,
-                decimalPlaces: currency.decimalPlaces,
-              );
-
               final fallbackColor = Theme.of(context).colorScheme.onSecondary;
               final resolvedColor = shade?.color ?? fallbackColor;
 
@@ -104,23 +99,24 @@ class _Body extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.red,
                     borderRadius: switch (radius) {
-                      CategoryCardRadius.single =>
-                        BorderRadius.circular(AppSizing.borderRadius12),
+                      CategoryCardRadius.single => BorderRadius.circular(
+                        AppSizing.borderRadius12,
+                      ),
                       CategoryCardRadius.first => const BorderRadius.only(
-                          topLeft: Radius.circular(AppSizing.borderRadius12),
-                          topRight: Radius.circular(AppSizing.borderRadius12),
-                          bottomLeft: Radius.circular(AppSizing.borderRadius4),
-                          bottomRight: Radius.circular(AppSizing.borderRadius4),
-                        ),
+                        topLeft: Radius.circular(AppSizing.borderRadius12),
+                        topRight: Radius.circular(AppSizing.borderRadius12),
+                        bottomLeft: Radius.circular(AppSizing.borderRadius4),
+                        bottomRight: Radius.circular(AppSizing.borderRadius4),
+                      ),
                       CategoryCardRadius.last => const BorderRadius.only(
-                          topLeft: Radius.circular(AppSizing.borderRadius4),
-                          topRight: Radius.circular(AppSizing.borderRadius4),
-                          bottomLeft: Radius.circular(AppSizing.borderRadius12),
-                          bottomRight:
-                              Radius.circular(AppSizing.borderRadius12),
-                        ),
-                      CategoryCardRadius.middle =>
-                        BorderRadius.circular(AppSizing.borderRadius4),
+                        topLeft: Radius.circular(AppSizing.borderRadius4),
+                        topRight: Radius.circular(AppSizing.borderRadius4),
+                        bottomLeft: Radius.circular(AppSizing.borderRadius12),
+                        bottomRight: Radius.circular(AppSizing.borderRadius12),
+                      ),
+                      CategoryCardRadius.middle => BorderRadius.circular(
+                        AppSizing.borderRadius4,
+                      ),
                     },
                   ),
                   child: const Icon(Icons.delete, color: Colors.white),
@@ -145,8 +141,8 @@ class _Body extends StatelessWidget {
                       ),
                     ),
                   ),
-                  trailing: Text(
-                    '$formattedAmount ${currency.symbol}',
+                  trailing: AmountTextWidget(
+                    amount: tx.amount,
                     style: AppTextStyles.listTileTitle(context),
                   ),
                   radius: radius,

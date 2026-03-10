@@ -37,10 +37,30 @@ class AccountsTabWidget extends StatelessWidget {
               rounded: true,
               fullWidth: false,
             ),
-            children: [GoalListWithTotalWidget(autoLoad: true, shrinkWrap: true)],
+            children: [
+              GoalListWithTotalWidget(
+                autoLoad: true,
+                shrinkWrap: true,
+                onGoalSelected: (goal) => _onGoalSelected(context, goal),
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  void _onGoalSelected(BuildContext context, GoalModel goal) {
+    AppBottomSheet.showFittedModalBottomSheet(
+      context,
+      child: GoalDetailsModalSheetWidget(
+        goal: goal,
+        onEdit: () => _onUpdateGoal(context, goal),
+      ),
+    );
+  }
+
+  void _onUpdateGoal(BuildContext context, GoalModel goal) {
+    Navigator.of(context).pushNamed(AppRouter.updateGoal, arguments: goal);
   }
 }

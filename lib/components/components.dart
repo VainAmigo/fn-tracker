@@ -7,6 +7,8 @@ export 'navigation/app_bottom_nav.dart';
 export 'navigation/bottom_nav_destination.dart';
 export 'buttons/primary_button.dart';
 export 'text/amount_with_sign_widget.dart';
+export 'text/amount_text_widget.dart';
+export 'text/amount_divider_widget.dart';
 export 'text/tab_title_widget.dart';
 export 'chart/donut_chart.dart';
 export 'chart/gradient_line_chart.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fn_tracker/components/chart/segmented_bar.dart';
-import 'package:fn_tracker/features/wallet/wallet.dart';
+import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class GoalTotalCardWidget extends StatelessWidget {
@@ -11,7 +12,6 @@ class GoalTotalCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     return Container(
       padding: const EdgeInsets.all(AppSizing.defaultPadding),
       decoration: BoxDecoration(
@@ -54,12 +54,14 @@ class GoalTotalCardWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '\$${total.totalProgress.toStringAsFixed(0)} / \$${total.totalTargetAmount.toStringAsFixed(0)}',
-                style: AppTextStyles.text14w400(context),
+              AmountDividerWidget(
+                leftAmount: total.totalProgress,
+                rightAmount: total.totalTargetAmount,
+                dividerType: DividerType.slash,
+                styel: AppTextStyles.text14w400(context),
               ),
               Text(
-                'Remaining: \$${total.remaining.toStringAsFixed(0)}',
+                'Remaining: ${AmountFormatter.format(total.remaining)}',
                 style: AppTextStyles.text14w400(context),
               ),
             ],

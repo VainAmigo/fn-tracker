@@ -34,8 +34,10 @@ class _GoalFormViewState extends State<GoalFormView> {
       _targetAmountController = TextEditingController(
         text: goal.targetAmount.toStringAsFixed(0),
       );
-      _selectedIcon = findIconById(goal.iconId) ?? categoryIconGroups[0].icons.first;
-      _selectedShade = findShadeById(goal.colorId) ?? categoryColorPalettes[0].shades.first;
+      _selectedIcon =
+          findIconById(goal.iconId) ?? categoryIconGroups[0].icons.first;
+      _selectedShade =
+          findShadeById(goal.colorId) ?? categoryColorPalettes[0].shades.first;
       _defaultsInitialized = true;
     } else {
       _nameController = TextEditingController();
@@ -180,19 +182,6 @@ class _GoalFormViewState extends State<GoalFormView> {
                   ),
                 ),
                 const SizedBox(height: AppSizing.spaceBtwElements),
-                if (_isEditing) ...[
-                  PrimaryButton(
-                    text: 'Delete',
-                    backgroundColor:
-                        colorScheme.primary.withValues(alpha: 0.3),
-                    foregroundColor: colorScheme.primary,
-                    size: PrimaryButtonSize.small,
-                    rounded: true,
-                    onPressed: isLoading ? null : _deleteGoal,
-                    isLoading: false,
-                  ),
-                  const SizedBox(height: AppSizing.spaceBtwItems),
-                ],
                 PrimaryButton(
                   text: _isEditing ? 'Update' : 'Create',
                   onPressed: isLoading ? null : _submitGoal,
@@ -227,8 +216,10 @@ class _GoalFormViewState extends State<GoalFormView> {
 
   Widget _buildProgressInfo(BuildContext context) {
     final goal = widget.goal!;
-    final remaining =
-        (goal.targetAmount - goal.progress).clamp(0.0, double.infinity);
+    final remaining = (goal.targetAmount - goal.progress).clamp(
+      0.0,
+      double.infinity,
+    );
     final percent = goal.targetAmount > 0
         ? (goal.progress / goal.targetAmount * 100).clamp(0.0, 100.0)
         : 0.0;
@@ -247,9 +238,11 @@ class _GoalFormViewState extends State<GoalFormView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              '\$${goal.progress.toStringAsFixed(0)} / \$${goal.targetAmount.toStringAsFixed(0)}',
-              style: AppTextStyles.text14w400(context),
+            AmountDividerWidget(
+              leftAmount: goal.progress,
+              rightAmount: goal.targetAmount,
+              dividerType: DividerType.slash,
+              styel: AppTextStyles.text14w400(context),
             ),
             Text(
               'Remaining: \$${remaining.toStringAsFixed(0)}',
@@ -261,19 +254,14 @@ class _GoalFormViewState extends State<GoalFormView> {
     );
   }
 
-  void _deleteGoal() {
-    setState(() => _isSubmitting = true);
-    context.read<GoalsCubit>().deleteGoal(goalId: widget.goal!.id);
-  }
-
   void _submitGoal() {
     final name = _nameController.text.trim();
     final targetText = _targetAmountController.text.trim();
 
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Name is required')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Name is required')));
       return;
     }
 
