@@ -45,7 +45,7 @@ class AmountTextWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final effectiveCurrency = currency ?? _currencyFromContext(context);
 
-    final String formattedText;
+    String formattedText;
     if (effectiveCurrency != null) {
       final formatter = CurrencyFormatter(effectiveCurrency);
       formattedText = formatter.format(amount);
@@ -55,15 +55,22 @@ class AmountTextWidget extends StatelessWidget {
         decimalPlaces: decimalPlaces,
       );
       final symbol = sign ?? '';
-      formattedText = symbol.isNotEmpty ? '$symbol ${formatted.full}' : formatted.full;
+      formattedText = symbol.isNotEmpty
+          ? '$symbol ${formatted.full}'
+          : formatted.full;
+    }
+
+    // Убираем .00 или ,00 для целых чисел (0{1,2} — только дробная часть, не ,000)
+    if (amount == amount.truncateToDouble()) {
+      formattedText = formattedText.replaceAll(
+        RegExp(r'[.,]0{1,2}(?=\s|$|[^\d])'),
+        '',
+      );
     }
 
     final effectiveStyle = style ?? theme.textTheme.bodyLarge;
 
-    return Text(
-      formattedText,
-      style: effectiveStyle,
-    );
+    return Text(formattedText, style: effectiveStyle);
   }
 
   Currency? _currencyFromContext(BuildContext context) {

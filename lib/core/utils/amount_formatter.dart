@@ -117,7 +117,9 @@ class CurrencyFormatter {
 
   /// Форматирует сумму с разбиением на целую и дробную части (без символа валюты).
   FormattedAmount formatWithParts(double amount) {
-    final rounded = amount.toStringAsFixed(currency.decimalPlaces);
+    final sign = amount.isNegative ? '-' : '';
+    final absAmount = amount.abs();
+    final rounded = absAmount.toStringAsFixed(currency.decimalPlaces);
     final parts = rounded.split('.');
 
     final intPart = parts[0];
@@ -130,7 +132,7 @@ class CurrencyFormatter {
       buffer.write(intPart[i]);
     }
 
-    final integerPart = buffer.toString();
+    final integerPart = '$sign${buffer.toString()}';
     final decimalPart = currency.decimalPlaces > 0
         ? _getDecimalSeparator() + parts[1]
         : '';

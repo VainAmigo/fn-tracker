@@ -61,6 +61,8 @@ class _Body extends StatelessWidget {
     final categoriesState = context.watch<CategoriesCubit>().state;
     final categories = _extractCategories(categoriesState);
     final categoryMap = {for (final c in categories) c.categoryId: c};
+    final goals = _extractGoals(context.watch<GoalsCubit>().state);
+    final goalMap = {for (final g in goals) g.id: g};
 
     final lastItems = transactions.length > 10
         ? transactions.sublist(transactions.length - 10)
@@ -74,12 +76,24 @@ class _Body extends StatelessWidget {
           Builder(
             builder: (context) {
               final tx = lastItems[index];
-              final category = categoryMap[tx.categoryId];
+              final isGoalTransaction =
+                  tx.categoryId == null || tx.categoryId!.isEmpty;
+              final goal = isGoalTransaction && tx.goalId != null
+                  ? goalMap[tx.goalId]
+                  : null;
+              final category = !isGoalTransaction
+                  ? categoryMap[tx.categoryId]
+                  : null;
+
               final shade = category != null
                   ? findShadeById(category.colorId)
+                  : goal != null
+                  ? findShadeById(goal.colorId)
                   : null;
               final icon = category != null
                   ? findIconById(category.iconId)
+                  : goal != null
+                  ? findIconById(goal.iconId)
                   : null;
 
               final fallbackColor = Theme.of(context).colorScheme.onSecondary;
@@ -122,8 +136,12 @@ class _Body extends StatelessWidget {
                   child: const Icon(Icons.delete, color: Colors.white),
                 ),
                 child: CategoryCard(
-                  title: category?.name ?? 'Unknown category',
-                  subtitle: tx.note.isNotEmpty ? tx.note : null,
+                  title: category?.name ?? goal?.name ?? 'Unknown category',
+                  subtitle: isGoalTransaction
+                      ? 'Goal'
+                      : tx.note.isNotEmpty
+                      ? tx.note
+                      : null,
                   leading: Container(
                     height: AppSizing.heightS,
                     decoration: BoxDecoration(
@@ -158,6 +176,13 @@ class _Body extends StatelessWidget {
   List<CategoryModel> _extractCategories(CategoriesState state) {
     return switch (state) {
       CategoriesLoaded s => s.categories,
+      _ => const [],
+    };
+  }
+
+  List<GoalModel> _extractGoals(GoalsState state) {
+    return switch (state) {
+      GoalsLoaded s => s.goalsModel.goals,
       _ => const [],
     };
   }

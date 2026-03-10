@@ -46,6 +46,8 @@ class _Body extends StatelessWidget {
     final categoriesState = context.watch<CategoriesCubit>().state;
     final categories = _extractCategories(categoriesState);
     final categoryMap = {for (final c in categories) c.categoryId: c};
+    final goals = _extractGoals(context.watch<GoalsCubit>().state);
+    final goalMap = {for (final g in goals) g.id: g};
     final currency = context.watch<CurrencyProvider>().currency;
 
     final grouped = _groupByDayKey(transactions);
@@ -75,6 +77,7 @@ class _Body extends StatelessWidget {
                 context,
                 tx: txList[i],
                 categoryMap: categoryMap,
+                goalMap: goalMap,
                 currency: currency,
                 radius: _radiusForIndex(i, txList.length),
               ),
@@ -89,12 +92,27 @@ class _Body extends StatelessWidget {
     BuildContext context, {
     required TransactionModel tx,
     required Map<String, CategoryModel> categoryMap,
+    required Map<String, GoalModel> goalMap,
     required Currency currency,
     required CategoryCardRadius radius,
   }) {
-    final category = categoryMap[tx.categoryId];
-    final shade = category != null ? findShadeById(category.colorId) : null;
-    final icon = category != null ? findIconById(category.iconId) : null;
+    final isGoalTransaction =
+        tx.categoryId == null || tx.categoryId!.isEmpty;
+    final goal = isGoalTransaction && tx.goalId != null
+        ? goalMap[tx.goalId]
+        : null;
+    final category = !isGoalTransaction ? categoryMap[tx.categoryId] : null;
+
+    final shade = category != null
+        ? findShadeById(category.colorId)
+        : goal != null
+            ? findShadeById(goal.colorId)
+            : null;
+    final icon = category != null
+        ? findIconById(category.iconId)
+        : goal != null
+            ? findIconById(goal.iconId)
+            : null;
     final color = shade?.color ?? Colors.grey;
 
     return Dismissible(
@@ -132,8 +150,8 @@ class _Body extends StatelessWidget {
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       child: CategoryCard(
-        title: category?.name ?? tx.categoryId ?? '',
-        subtitle: tx.note.isNotEmpty ? tx.note : null,
+        title: category?.name ?? goal?.name ?? tx.categoryId ?? '',
+        subtitle: isGoalTransaction ? 'Goal' : tx.note.isNotEmpty ? tx.note : null,
         leading: Container(
           height: AppSizing.heightS,
           decoration: BoxDecoration(
@@ -171,6 +189,13 @@ class _Body extends StatelessWidget {
   List<CategoryModel> _extractCategories(CategoriesState state) {
     return switch (state) {
       CategoriesLoaded s => s.categories,
+      _ => const [],
+    };
+  }
+
+  List<GoalModel> _extractGoals(GoalsState state) {
+    return switch (state) {
+      GoalsLoaded s => s.goalsModel.goals,
       _ => const [],
     };
   }
