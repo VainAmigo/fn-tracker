@@ -5,13 +5,16 @@ abstract class WalletRepoImpl {
   Future<BudgetModel> createBudget({required BudgetModel budget});
   Future<BudgetModel> updateBudget({required BudgetModel budget});
   Future<void> deleteBudget(String id);
-  Future<BudgetStatModel> getBudgetStats({
-    required String periodKey,
-  });
+  Future<BudgetStatModel> getBudgetStats({required String periodKey});
 
   Future<WalletModel> addWallet({required WalletModel wallet});
   Future<WalletModel> updateWallet({required WalletModel wallet});
   Future<void> deleteWallet(String id);
   Future<List<WalletModel>> getWallets();
   Future<void> setDefaultWallet(String walletId);
+
+  Future<GoalsModel> getGoals();
+  Future<GoalModel> createGoal({required GoalModel goal});
+  Future<GoalModel> updateGoal({required GoalModel goal});
+  Future<void> deleteGoal(String id);
 }

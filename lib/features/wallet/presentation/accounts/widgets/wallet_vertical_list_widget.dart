@@ -67,14 +67,43 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
           return const Center(child: Text('Кошельков пока нет'));
         }
 
+        final total = wallets.length + 1;
+
         return ListView.separated(
           shrinkWrap: widget.shrinkWrap,
           physics:
               widget.shrinkWrap ? const NeverScrollableScrollPhysics() : null,
-          itemCount: wallets.length,
-          separatorBuilder: (_, _) =>
+          itemCount: total,
+          separatorBuilder: (_, __) =>
               const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           itemBuilder: (context, index) {
+            if (index == wallets.length) {
+              final colorScheme = Theme.of(context).colorScheme;
+              return CategoryCard(
+                title: 'New wallet',
+                leading: Container(
+                  height: AppSizing.heightS,
+                  decoration: BoxDecoration(
+                    color: colorScheme.onSecondary.withValues(alpha: 0.15),
+                    borderRadius:
+                        BorderRadius.circular(AppSizing.borderRadius8),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Icon(
+                      Icons.add_rounded,
+                      size: AppSizing.iconSizeM,
+                      color: colorScheme.onSecondary,
+                    ),
+                  ),
+                ),
+                style: widget.cardStyle,
+                radius: _radiusForIndex(index, total),
+                onTap: () =>
+                    Navigator.of(context).pushNamed(AppRouter.createWallet),
+              );
+            }
+
             final wallet = wallets[index];
             final shade = findShadeById(wallet.colorId);
             final icon = findIconById(wallet.iconId);
@@ -100,7 +129,7 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
                 ),
               ),
               style: widget.cardStyle,
-              radius: _radiusForIndex(index, wallets.length),
+              radius: _radiusForIndex(index, total),
               onTap: widget.onWalletSelected != null
                   ? () => widget.onWalletSelected!(wallet)
                   : null,

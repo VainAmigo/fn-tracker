@@ -26,6 +26,9 @@ class WalletRepository implements WalletRepoImpl {
   CollectionReference<Map<String, dynamic>> _walletsRef(String uid) =>
       firebaseFirestore.collection('users').doc(uid).collection('wallets');
 
+  CollectionReference<Map<String, dynamic>> _goalsRef(String uid) =>
+      firebaseFirestore.collection('users').doc(uid).collection('goals');
+
   @override
   Future<WalletModel> addWallet({required WalletModel wallet}) async {
     final uid = _requireUid();
@@ -192,6 +195,93 @@ class WalletRepository implements WalletRepoImpl {
   }
 
   @override
+  Future<GoalsModel> getGoals() async {
+    final uid = _requireUid();
+    try {
+      final results = await Future.wait([
+        _goalsRef(uid).get(),
+        _transactionsRef(uid).where('goalId', isNull: false).get(),
+      ]);
+
+      final goalsSnapshot = results[0];
+      final transactionsSnapshot = results[1];
+
+      final Map<String, double> progressByGoalId = {};
+      for (final doc in transactionsSnapshot.docs) {
+        final t = TransactionModel.fromJson(doc.data());
+        if (t.goalId == null || t.goalId!.isEmpty) continue;
+        final delta = t.type == TransactionType.income
+            ? t.amount
+            : -t.amount;
+        progressByGoalId.update(
+          t.goalId!,
+          (prev) => prev + delta,
+          ifAbsent: () => delta,
+        );
+      }
+
+      final goals = goalsSnapshot.docs.map((doc) {
+        final goal = GoalModel.fromJson(doc.data());
+        final progress = progressByGoalId[goal.id] ?? 0.0;
+        return goal.copyWith(progress: progress);
+      }).toList();
+
+      final totalProgress = goals.fold<double>(0, (s, g) => s + g.progress);
+      final totalTarget = goals.fold<double>(0, (s, g) => s + g.targetAmount);
+      final completedCount = goals.where(
+        (g) => g.targetAmount > 0 && g.progress >= g.targetAmount,
+      ).length;
+
+      return GoalsModel(
+        goals: goals,
+        totalGoal: TotalGoalModel(
+          totalProgress: totalProgress,
+          totalTargetAmount: totalTarget,
+          goalsCount: goals.length,
+          completedCount: completedCount,
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to get goals: $e');
+    }
+  }
+
+  @override
+  Future<GoalModel> createGoal({required GoalModel goal}) async {
+    final uid = _requireUid();
+    try {
+      final docRef = _goalsRef(uid).doc();
+      final created = goal.copyWith(id: docRef.id);
+      await docRef.set(created.toJson());
+      return created;
+    } catch (e) {
+      throw Exception('Failed to create goal: $e');
+    }
+  }
+
+  @override
+  Future<GoalModel> updateGoal({required GoalModel goal}) async {
+    final uid = _requireUid();
+    try {
+      final docRef = _goalsRef(uid).doc(goal.id);
+      await docRef.update(goal.toJson());
+      return goal;
+    } catch (e) {
+      throw Exception('Failed to update goal: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteGoal(String id) async {
+    final uid = _requireUid();
+    try {
+      await _goalsRef(uid).doc(id).delete();
+    } catch (e) {
+      throw Exception('Failed to delete goal: $e');
+    }
+  }
+
+  @override
   Future<BudgetStatModel> getBudgetStats({required String periodKey}) async {
     final uid = _requireUid();
     try {
@@ -266,4 +356,6 @@ class WalletRepository implements WalletRepoImpl {
       throw Exception('Failed to get budget stats: $e');
     }
   }
+
+
 }

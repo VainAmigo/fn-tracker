@@ -4,6 +4,7 @@ class TransactionModel {
   final String id;
   final String? categoryId;
   final String? walletId;
+  final String? goalId;
   final double amount;
   final String note;
   final DateTime? createdAt;
@@ -15,6 +16,7 @@ class TransactionModel {
     required this.id,
     this.categoryId,
     this.walletId,
+    this.goalId,
     required this.amount,
     required this.note,
     this.createdAt,
@@ -28,6 +30,7 @@ class TransactionModel {
       'id': id,
       'categoryId': categoryId,
       'walletId': walletId,
+      'goalId': goalId,
       'amount': amount,
       'note': note,
       'createdAt': createdAt!.toIso8601String(),
@@ -51,6 +54,7 @@ class TransactionModel {
       id: json['id'],
       categoryId: json['categoryId'],
       walletId: json['walletId'],
+      goalId: json['goalId'],
       dayKey: json['dayKey'],
       periodKey: json['periodKey'],
       amount: json['amount'],

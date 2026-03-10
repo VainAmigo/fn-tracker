@@ -27,6 +27,18 @@ class AccountsTabWidget extends StatelessWidget {
             children: [WalletsListWidget(autoLoad: true)],
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
+          TitledSection(
+            title: 'Your goals',
+            action: PrimaryButton(
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRouter.createGoal),
+              text: 'New goal',
+              size: PrimaryButtonSize.xSmall,
+              rounded: true,
+              fullWidth: false,
+            ),
+            children: [GoalListWithTotalWidget(autoLoad: true, shrinkWrap: true)],
+          ),
         ],
       ),
     );

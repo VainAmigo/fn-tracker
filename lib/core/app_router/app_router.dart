@@ -19,6 +19,9 @@ final class AppRouter {
   static const createWallet = '/create-wallet';
   static const updateWallet = '/update-wallet';
 
+  static const createGoal = '/create-goal';
+  static const updateGoal = '/update-goal';
+
   static Route<void> onGenerateRoute(RouteSettings settings) {
     return switch (settings.name) {
       main => MaterialPageRoute(
@@ -62,6 +65,15 @@ final class AppRouter {
         settings: const RouteSettings(name: updateWallet),
         builder: (_) =>
             WalletFormView(wallet: settings.arguments as WalletModel),
+      ),
+      createGoal => MaterialPageRoute(
+        settings: const RouteSettings(name: createGoal),
+        builder: (_) => const GoalFormView(),
+      ),
+      updateGoal => MaterialPageRoute(
+        settings: const RouteSettings(name: updateGoal),
+        builder: (_) =>
+            GoalFormView(goal: settings.arguments as GoalModel),
       ),
       _ => throw Exception(
         'No builder specified for route named: [${settings.name}]',

@@ -19,6 +19,7 @@ class AddTransactionCubit extends Cubit<AddTransactionState> {
         id: '',
         categoryId: transaction.categoryId,
         walletId: transaction.walletId,
+        goalId: transaction.goalId,
         dayKey: transaction.dayKey,
         periodKey: transaction.periodKey,
         amount: transaction.amount,

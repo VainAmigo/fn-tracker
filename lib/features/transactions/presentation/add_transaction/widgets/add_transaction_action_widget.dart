@@ -8,7 +8,8 @@ class AddTransactionActionWidget extends StatefulWidget {
   const AddTransactionActionWidget({
     required this.selectedType,
     required this.selectedWallet,
-    required this.onWalletChanged,
+    required this.selectedGoal,
+    required this.onAccountSelected,
     required this.selectedDate,
     required this.onDateChanged,
     required this.selectedCategory,
@@ -20,7 +21,8 @@ class AddTransactionActionWidget extends StatefulWidget {
 
   final TransactionType selectedType;
   final WalletModel? selectedWallet;
-  final ValueChanged<WalletModel> onWalletChanged;
+  final GoalModel? selectedGoal;
+  final ValueChanged<Object> onAccountSelected;
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateChanged;
   final CategoryModel? selectedCategory;
@@ -51,9 +53,18 @@ class _AddTransactionActionWidgetState
     final yesterday = now.subtract(const Duration(days: 1));
     final shade = findShadeById(widget.selectedCategory?.colorId ?? '');
     final icon = findIconById(widget.selectedCategory?.iconId ?? '');
+    final hasGoal = widget.selectedGoal != null;
+    final accountName = hasGoal
+        ? widget.selectedGoal!.name
+        : widget.selectedWallet?.name ?? 'Wallet';
     final walletShade = findShadeById(widget.selectedWallet?.colorId ?? '');
     final walletIcon = findIconById(widget.selectedWallet?.iconId ?? '');
-    final walletColor = walletShade?.color ?? Colors.grey;
+    final accountColor = hasGoal
+        ? colorScheme.primary
+        : (walletShade?.color ?? Colors.grey);
+    final accountIcon = hasGoal
+        ? Icons.flag_rounded
+        : (walletIcon?.icon ?? Icons.account_balance_wallet);
 
     String dateTitle;
     if (selected == now) {
@@ -73,14 +84,16 @@ class _AddTransactionActionWidgetState
             Expanded(
               child: CategoryCard(
                 radius: CategoryCardRadius.single,
-                title: widget.selectedWallet?.name ?? 'Wallet',
-                subtitle: widget.selectedType == TransactionType.expense
-                    ? 'Take from'
-                    : 'Add to',
+                title: accountName,
+                subtitle: hasGoal
+                    ? 'Goal'
+                    : widget.selectedType == TransactionType.expense
+                        ? 'Take from'
+                        : 'Add to',
                 leading: Container(
                   height: AppSizing.heightS,
                   decoration: BoxDecoration(
-                    color: walletColor.withValues(alpha: 0.15),
+                    color: accountColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(
                       AppSizing.borderRadius8,
                     ),
@@ -88,9 +101,9 @@ class _AddTransactionActionWidgetState
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Icon(
-                      walletIcon?.icon ?? Icons.account_balance_wallet,
+                      accountIcon,
                       size: AppSizing.iconSizeM,
-                      color: walletColor,
+                      color: accountColor,
                     ),
                   ),
                 ),
@@ -99,7 +112,7 @@ class _AddTransactionActionWidgetState
                   color: Theme.of(context).colorScheme.onSurface,
                   size: AppSizing.iconSizeM,
                 ),
-                onTap: () => _showWalletPicker(context),
+                onTap: () => _showAccountsPicker(context),
               ),
             ),
             if (widget.selectedType == TransactionType.expense) ...[
@@ -214,15 +227,14 @@ class _AddTransactionActionWidgetState
     );
   }
 
-  Future<void> _showWalletPicker(BuildContext context) async {
-    final selected =
-        await AppBottomSheet.showFittedModalBottomSheet<WalletModel>(
-          context,
-          child: AddTransactionWalletsSheetWidget(),
-        );
+  Future<void> _showAccountsPicker(BuildContext context) async {
+    final selected = await AppBottomSheet.showFittedModalBottomSheet<Object>(
+      context,
+      child: AddTransactionAccountsSheetWidget(),
+    );
     if (!mounted) return;
     if (selected != null) {
-      widget.onWalletChanged(selected);
+      widget.onAccountSelected(selected);
     }
   }
 

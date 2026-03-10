@@ -84,6 +84,24 @@ class AppTextStyles {
     );
   }
 
+  static TextStyle text12w400(BuildContext context, {Color? color}) {
+    final theme = Theme.of(context);
+    return TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      color: color ?? theme.colorScheme.onSecondary,
+    );
+  }
+
+  static TextStyle text14w400(BuildContext context, {Color? color}) {
+    final theme = Theme.of(context);
+    return TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      color: color ?? theme.colorScheme.onSecondary,
+    );
+  }
+
   static TextStyle text16w400(BuildContext context, {Color? color}) {
     final theme = Theme.of(context);
     return TextStyle(

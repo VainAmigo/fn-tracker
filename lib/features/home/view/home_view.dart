@@ -40,6 +40,7 @@ class _HomeViewState extends State<HomeView> {
         TransactionPeriod.month,
       ),
       context.read<WalletCubit>().loadWallets(),
+      context.read<GoalsCubit>().loadGoals(),
       context.read<BudgetCubit>().loadBudgetStats(
         periodKey: start.periodKey,
       ),
@@ -67,6 +68,7 @@ class _HomeViewState extends State<HomeView> {
               );
               _loadStats();
               context.read<WalletCubit>().loadWallets();
+              context.read<GoalsCubit>().loadGoals();
               final periodKey = MonthRangeUtils.currentMonth().start.periodKey;
               context
                   .read<BudgetCubit>()
@@ -79,6 +81,7 @@ class _HomeViewState extends State<HomeView> {
             if (state is TransactionDeleted) {
               _loadStats();
               context.read<WalletCubit>().loadWallets();
+              context.read<GoalsCubit>().loadGoals();
               final periodKey = MonthRangeUtils.currentMonth().start.periodKey;
               context
                   .read<BudgetCubit>()

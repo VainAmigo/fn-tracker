@@ -6,7 +6,8 @@ import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AddTransactionView extends StatefulWidget {
-  const AddTransactionView({super.key});
+  const AddTransactionView({super.key, this.initialGoal});
+  final GoalModel? initialGoal;
 
   @override
   State<AddTransactionView> createState() => _AddTransactionViewState();
@@ -19,6 +20,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   CategoryModel? _selectedCategory;
   String _note = '';
   WalletModel? _selectedWallet;
+  GoalModel? _selectedGoal;
 
   @override
   void initState() {
@@ -26,9 +28,13 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     context.read<AddTransactionCubit>().reset();
     final walletsState = context.read<WalletCubit>().state;
     if (walletsState is WalletsLoaded) {
-      _selectedWallet = walletsState.wallets
-          .cast<WalletModel?>()
-          .firstWhere((w) => w!.isDefault, orElse: () => null);
+      _selectedWallet = walletsState.wallets.cast<WalletModel?>().firstWhere(
+        (w) => w!.isDefault,
+        orElse: () => null,
+      );
+    }
+    if (widget.initialGoal != null) {
+      _selectedGoal = widget.initialGoal;
     }
   }
 
@@ -87,10 +93,17 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                 const Spacer(),
                 AddTransactionActionWidget(
                   selectedWallet: _selectedWallet,
+                  selectedGoal: _selectedGoal,
                   selectedType: _selectedType,
-                  onWalletChanged: (wallet) {
+                  onAccountSelected: (account) {
                     setState(() {
-                      _selectedWallet = wallet;
+                      if (account is WalletModel) {
+                        _selectedWallet = account;
+                        _selectedGoal = null;
+                      } else if (account is GoalModel) {
+                        _selectedGoal = account;
+                        _selectedWallet = null;
+                      }
                     });
                   },
                   selectedDate: _selectedDate,
@@ -138,24 +151,29 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       ).showSnackBar(const SnackBar(content: Text('Amount cannot be empty')));
       return;
     }
-    if (_selectedType == TransactionType.expense && _selectedCategory == null) {
+    if (_selectedWallet == null && _selectedGoal == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Select a wallet or goal')));
+      return;
+    }
+    if (_selectedType == TransactionType.expense &&
+        _selectedCategory == null &&
+        _selectedGoal == null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Category cannot be empty')));
       return;
     }
-    if (_selectedType == TransactionType.income && _selectedWallet == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Wallet cannot be empty')));
-      return;
-    }
     final model = TransactionModel(
       id: '',
-      categoryId: _selectedType == TransactionType.income
+      categoryId: _selectedGoal != null
+          ? null
+          : _selectedType == TransactionType.income
           ? ''
           : _selectedCategory?.categoryId ?? '',
-      walletId: _selectedWallet?.id ?? '',
+      walletId: _selectedWallet?.id,
+      goalId: _selectedGoal?.id,
       dayKey: _selectedDate.dayKey,
       periodKey: _selectedDate.periodKey,
       note: _note,
