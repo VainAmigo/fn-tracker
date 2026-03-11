@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/theme/themes.dart';
 
 class AppMainView extends StatefulWidget {
   const AppMainView({super.key});
@@ -56,6 +57,21 @@ class _AppMainViewState extends State<AppMainView> {
       ],
       child: Scaffold(
         body: IndexedStack(index: _selectedIndex, children: _tabs),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizing.borderRadius100),
+          ),
+          elevation: 0,
+          onPressed: () =>
+              Navigator.of(context).pushNamed(AppRouter.addTransaction),
+          child: Icon(
+            Icons.add,
+            color: Theme.of(context).colorScheme.onPrimary,
+            size: AppSizing.iconSizeM,
+          ),
+        ),
         bottomNavigationBar: AppBottomNavWidget(
           destinations: mainBottomNavDestinations,
           currentIndex: _selectedIndex,

@@ -9,3 +9,6 @@
 ## add local transaction storage
 ## add logic for not internect connecion 
 ## create privacy policy(local, firebase storage, sheet)
+## быстрые категории
+## виджет на главный экран(быстрые категории, аналитика)
+## диаграммы для аналитики

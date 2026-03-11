@@ -19,47 +19,21 @@ class HomeTopActionWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            spacing: AppSizing.spaceBtwItems,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Spent',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    Text(
-                      today.formatMonthDay,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.onSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              PrimaryButton(
-                text: 'Deposit',
-                icon: Icons.add,
-                onPressed: () => Navigator.of(context).pushNamed(
-                  AppRouter.addTransaction,
-                ),
-                size: PrimaryButtonSize.medium,
-                paddingStyle: PrimaryButtonPaddingStyle.slim,
-                rounded: true,
-                fullWidth: false,
-                iconOnly: true,
-              ),
-            ],
+          Text(
+            'Spent',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w400,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          Text(
+            today.formatMonthDay,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
           ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           AmountWithSignWidget(
