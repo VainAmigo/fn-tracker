@@ -14,7 +14,20 @@ class HomeInfoListWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const BudgetStatWidget(),
+          TitledSection(
+            title: 'Quick Categories',
+            action: PrimaryButton(
+              text: 'Settings',
+              onPressed: () =>
+                  QuickCategoriesSettingsSheet.show(context),
+              size: PrimaryButtonSize.xSmall,
+              fullWidth: false,
+              rounded: true,
+            ),
+            children: [
+              const QuickCategoriesWidget(),
+            ],
+          ),
           TitledSection(
             title: 'Last Transactions',
             action: PrimaryButton(

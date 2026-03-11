@@ -1,5 +1,11 @@
 export 'cubit/categories_cubit.dart';
+export 'cubit/quick_categories_settings_cubit.dart';
+export 'cubit/quick_categories_settings_state.dart';
+export 'data/quick_categories_display_mode.dart';
 export 'view/category_form_view.dart';
 export 'widgets/category_list_widget.dart';
 export 'widgets/create_category_color_picker_widget.dart';
 export 'widgets/create_category_icon_picker_widget.dart';
+export 'widgets/quick_categories_widget.dart';
+export 'widgets/quick_categories_settings_sheet.dart';
+export 'widgets/quick_categories_pin_sheet.dart';

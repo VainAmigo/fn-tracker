@@ -107,7 +107,7 @@ class _HomeViewState extends State<HomeView> {
                         scrolledUnderElevation: 0,
                         surfaceTintColor: Colors.transparent,
                         shadowColor: Colors.transparent,
-                        expandedHeight: height * 0.7,
+                        expandedHeight: height * 0.6,
                         collapsedHeight: height * 0.15,
                         flexibleSpace: LayoutBuilder(
                           builder: (context, constraints) {

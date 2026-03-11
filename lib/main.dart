@@ -53,6 +53,9 @@ class _AppViewState extends State<AppView> {
           create: (context) =>
               CategoriesCubit(categoryRepo: categoryRepo),
         ),
+        BlocProvider<QuickCategoriesSettingsCubit>(
+          create: (context) => QuickCategoriesSettingsCubit(),
+        ),
         BlocProvider<TransactionsCubit>(
           create: (context) =>
               TransactionsCubit(transactionsRepo: TransactionsRepository()),

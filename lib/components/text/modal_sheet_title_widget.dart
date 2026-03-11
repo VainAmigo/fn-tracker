@@ -19,20 +19,25 @@ class ModalSheetTitleWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: AppTextStyles.modalSheetTitle(context)),
-            if (subtitle != null) ...[
-              const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-              Text(subtitle!, style: AppTextStyles.tabSubTitle(context)),
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: AppTextStyles.modalSheetTitle(context)),
+              if (subtitle != null) ...[
+                const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+                Text(
+                  subtitle!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.tabSubTitle(context),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
-        if (action != null) ...[
-          const Spacer(),
-          action!,
-        ],
+        if (action != null) ...[const Spacer(), action!],
       ],
     );
   }

@@ -54,6 +54,7 @@ final class AppRouter {
                 : null,
             initialWallet: args is WalletModel ? args : null,
             initialGoal: args is GoalModel ? args : null,
+            initialCategory: args is CategoryModel ? args : null,
           );
         },
       ),

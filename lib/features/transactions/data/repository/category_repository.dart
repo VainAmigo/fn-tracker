@@ -66,7 +66,9 @@ class CategoryRepository implements CategoryRepoImpl {
   }
 
   @override
-  Future<CategoryModel> updateCategory({required CategoryModel category}) async {
+  Future<CategoryModel> updateCategory({
+    required CategoryModel category,
+  }) async {
     final uid = _requireUid();
     try {
       final docRef = _categoriesRef(uid).doc(category.categoryId);
@@ -75,6 +77,7 @@ class CategoryRepository implements CategoryRepoImpl {
         'name': category.name,
         'colorId': category.colorId,
         'iconId': category.iconId,
+        'isQuick': category.isQuick,
         'limitValue': category.limitValue,
       };
 

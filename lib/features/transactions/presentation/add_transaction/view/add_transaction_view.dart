@@ -11,11 +11,13 @@ class AddTransactionView extends StatefulWidget {
     this.initialType,
     this.initialWallet,
     this.initialGoal,
+    this.initialCategory,
   });
 
   final TransactionType? initialType;
   final WalletModel? initialWallet;
   final GoalModel? initialGoal;
+  final CategoryModel? initialCategory;
 
   @override
   State<AddTransactionView> createState() => _AddTransactionViewState();
@@ -36,6 +38,9 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     context.read<AddTransactionCubit>().reset();
     if (widget.initialType != null) {
       _selectedType = widget.initialType!;
+    }
+    if (widget.initialCategory != null) {
+      _selectedCategory = widget.initialCategory;
     }
     if (widget.initialWallet != null) {
       _selectedWallet = widget.initialWallet;

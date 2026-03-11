@@ -60,7 +60,8 @@ class _CategoryFormViewState extends State<CategoryFormView> {
   }
 
   ({Set<String> colorIds, Set<String> iconIds}) _collectUsedIds(
-      BuildContext context) {
+    BuildContext context,
+  ) {
     final wallets = context.read<WalletCubit>().currentWallets;
     final categories = context.read<CategoriesCubit>().currentCategories;
 
@@ -173,8 +174,7 @@ class _CategoryFormViewState extends State<CategoryFormView> {
                 if (_isEditing) ...[
                   PrimaryButton(
                     text: 'Delete',
-                    backgroundColor:
-                        colorScheme.primary.withValues(alpha: 0.3),
+                    backgroundColor: colorScheme.primary.withValues(alpha: 0.3),
                     foregroundColor: colorScheme.primary,
                     size: PrimaryButtonSize.small,
                     rounded: true,
@@ -215,8 +215,7 @@ class _CategoryFormViewState extends State<CategoryFormView> {
     );
   }
 
-  void _openLimitSheet(
-      BuildContext context, Currency currency, String? limit) {
+  void _openLimitSheet(BuildContext context, Currency currency, String? limit) {
     AppBottomSheet.showFittedModalBottomSheet(
       context,
       child: Padding(
@@ -253,21 +252,22 @@ class _CategoryFormViewState extends State<CategoryFormView> {
   void _deleteCategory() {
     setState(() => _isSubmitting = true);
     context.read<CategoriesCubit>().deleteCategory(
-          categoryId: widget.category!.categoryId,
-        );
+      categoryId: widget.category!.categoryId,
+    );
   }
 
   void _submitCategory() {
     final name = _nameController.text;
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Name is required')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Name is required')));
       return;
     }
 
-    final double? limitValue =
-        _limit != null && _limit!.isNotEmpty ? double.parse(_limit!) : null;
+    final double? limitValue = _limit != null && _limit!.isNotEmpty
+        ? double.parse(_limit!)
+        : null;
 
     setState(() => _isSubmitting = true);
 
@@ -279,6 +279,7 @@ class _CategoryFormViewState extends State<CategoryFormView> {
         iconId: _selectedIcon.id,
         limitValue: limitValue,
         createdAt: widget.category!.createdAt,
+        isQuick: widget.category!.isQuick,
       );
       context.read<CategoriesCubit>().updateCategory(categoryModel: category);
     } else {
