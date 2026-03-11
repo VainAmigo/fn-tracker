@@ -23,11 +23,12 @@ class WalletTabBarWidget extends StatelessWidget {
       children: [
         TabTitleWidget(title: title),
         const SizedBox(height: AppSizing.spaceBtwElements),
-        SegmentedControl<WalletTab>(
-          segments: WalletTab.values.toSegmentItems(),
+        CustomTabWidget<WalletTab>(
+          items: WalletTab.values,
           selectedValue: selectedTab,
           onChanged: onChanged,
-          height: AppSizing.heightS,
+          labelBuilder: (tab) => tab.label,
+          leftPadding: 0,
         ),
       ],
     );
