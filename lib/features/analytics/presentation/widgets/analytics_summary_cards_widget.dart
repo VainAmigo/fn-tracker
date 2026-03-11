@@ -131,14 +131,8 @@ class _BudgetCard extends StatelessWidget {
 
     final barSegments = exceeded
         ? [
-            BarChartSegment(
-              value: spent > budget.amount * 2 ? spent - budget.amount : 0,
-              color: colorScheme.error,
-            ),
-            BarChartSegment(
-              value: spent > budget.amount * 2 ? 0 : budget.amount,
-              color: colorScheme.onSecondary,
-            ),
+            BarChartSegment(value: spent, color: colorScheme.error),
+            BarChartSegment(value: 0, color: colorScheme.onSecondary),
           ]
         : [
             BarChartSegment(value: spent, color: colorScheme.primary),

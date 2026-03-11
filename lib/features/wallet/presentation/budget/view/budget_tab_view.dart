@@ -30,55 +30,57 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
     final currency = context.watch<CurrencyProvider>().currency;
 
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          MonthPickerScrollWidget(onDateChange: _onDateChange),
-          const SizedBox(height: AppSizing.spaceBtwSections),
-          BlocBuilder<BudgetCubit, BudgetState>(
-            builder: (context, state) {
-              return switch (state) {
-                BudgetInitial() || BudgetLoading() => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                BudgetStatsLoaded(:final stats) =>
-                  stats.budget == null
-                      ? _NoBudgetPlaceholder(
-                          onCreatePressed: () =>
-                              _showBudgetSheet(currency: currency),
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            BudgetDonutStatWidget(
-                              budget: stats.budget!,
-                              totalForPeriod: stats.totalForPeriod,
-                              currency: currency,
-                              onEditBudgetPressed: () => _showBudgetSheet(
+      child: MonthPickerScrollWidget(
+        onDateChange: _onDateChange,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: AppSizing.spaceBtwSections),
+            BlocBuilder<BudgetCubit, BudgetState>(
+              builder: (context, state) {
+                return switch (state) {
+                  BudgetInitial() || BudgetLoading() => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  BudgetStatsLoaded(:final stats) =>
+                    stats.budget == null
+                        ? _NoBudgetPlaceholder(
+                            onCreatePressed: () =>
+                                _showBudgetSheet(currency: currency),
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              BudgetDonutStatWidget(
+                                budget: stats.budget!,
+                                totalForPeriod: stats.totalForPeriod,
                                 currency: currency,
-                                existingBudget: stats.budget,
+                                onEditBudgetPressed: () => _showBudgetSheet(
+                                  currency: currency,
+                                  existingBudget: stats.budget,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: AppSizing.spaceBtwSections),
-                            BudgetsSpendingCategoriesListWidget(
-                              categorySpending: stats.categorySpending,
-                              currency: currency,
-                            ),
-                          ],
-                        ),
-                BudgetError() => _BudgetErrorPlaceholder(
-                  onRetry: () {
-                    final (:start, :end) = MonthRangeUtils.currentMonth();
-                    context.read<BudgetCubit>().loadBudgetStats(
-                      periodKey: start.periodKey,
-                    );
-                  },
-                ),
-              };
-            },
-          ),
-        ],
+                              const SizedBox(height: AppSizing.spaceBtwSections),
+                              BudgetsSpendingCategoriesListWidget(
+                                categorySpending: stats.categorySpending,
+                                currency: currency,
+                              ),
+                            ],
+                          ),
+                  BudgetError() => _BudgetErrorPlaceholder(
+                    onRetry: () {
+                      final (:start, :end) = MonthRangeUtils.currentMonth();
+                      context.read<BudgetCubit>().loadBudgetStats(
+                        periodKey: start.periodKey,
+                      );
+                    },
+                  ),
+                };
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

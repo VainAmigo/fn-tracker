@@ -20,12 +20,15 @@ int _monthIndexFromDate(int year, int month) {
 /// месяц, по бокам — соседние. Год отображается над активным месяцем и меняется
 /// при переходе на другой год. Подходит для бюджета, отчётов и любых экранов
 /// с выбором месяца.
+///
+/// Поддерживает свайп по контенту [child] для смены месяца.
 class MonthPickerScrollWidget extends StatefulWidget {
   const MonthPickerScrollWidget({
     required this.onDateChange,
     super.key,
     this.initialYear,
     this.initialMonth,
+    this.child,
   });
 
   /// Вызывается при смене выбранного месяца (после завершения скролла).
@@ -37,14 +40,21 @@ class MonthPickerScrollWidget extends StatefulWidget {
   /// Начальный месяц (1–12). По умолчанию — текущий.
   final int? initialMonth;
 
+  /// Контент под пикером. Поддерживает свайп влево/вправо для смены месяца.
+  final Widget? child;
+
   @override
   State<MonthPickerScrollWidget> createState() => _MonthPickerScrollWidgetState();
 }
+
+/// Пикселей свайпа на один месяц (меньше = чувствительнее).
+const double _pixelsPerMonth = 60;
 
 class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
   late PageController _pageController;
   late int _currentIndex;
   int _totalPages = 0;
+  double _dragAccumulator = 0;
 
   int get _currentYear => _dateFromMonthIndex(_currentIndex).$1;
   int get _currentMonth => _dateFromMonthIndex(_currentIndex).$2;
@@ -81,12 +91,72 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
     _notifyDateChange();
   }
 
+  void _goToNextMonth() {
+    if (_currentIndex >= _totalPages - 1) return;
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _goToPrevMonth() {
+    if (_currentIndex <= 0) return;
+    _pageController.previousPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _animateToNextMonth() {
+    if (_currentIndex >= _totalPages - 1) return;
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void _animateToPrevMonth() {
+    if (_currentIndex <= 0) return;
+    _pageController.previousPage(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void _onHorizontalDragStart(DragStartDetails _) {
+    _dragAccumulator = 0;
+  }
+
+  void _onHorizontalDragUpdate(DragUpdateDetails details) {
+    _dragAccumulator += details.delta.dx;
+
+    while (_dragAccumulator <= -_pixelsPerMonth) {
+      _dragAccumulator += _pixelsPerMonth;
+      _animateToNextMonth();
+    }
+    while (_dragAccumulator >= _pixelsPerMonth) {
+      _dragAccumulator -= _pixelsPerMonth;
+      _animateToPrevMonth();
+    }
+  }
+
+  void _onHorizontalDragEnd(DragEndDetails details) {
+    const velocityThreshold = 50.0;
+    final velocity = details.primaryVelocity ?? 0;
+    if (velocity < -velocityThreshold) {
+      _goToNextMonth();
+    } else if (velocity > velocityThreshold) {
+      _goToPrevMonth();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Center(
           child: Text(
@@ -131,6 +201,14 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
             },
           ),
         ),
+        if (widget.child != null)
+          GestureDetector(
+            onHorizontalDragStart: _onHorizontalDragStart,
+            onHorizontalDragUpdate: _onHorizontalDragUpdate,
+            onHorizontalDragEnd: _onHorizontalDragEnd,
+            behavior: HitTestBehavior.translucent,
+            child: widget.child,
+          ),
       ],
     );
   }

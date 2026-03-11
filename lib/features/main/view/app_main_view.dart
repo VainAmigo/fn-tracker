@@ -77,9 +77,9 @@ class _AppMainViewState extends State<AppMainView> {
           currentIndex: _selectedIndex,
           onTap: (index) {
             setState(() => _selectedIndex = index);
-            if (index == 2) {
-              context.read<AnalyticsCubit>().loadAnalytics();
-            }
+            // if (index == 2) {
+            //   context.read<AnalyticsCubit>().loadAnalytics();
+            // }
           },
         ),
       ),

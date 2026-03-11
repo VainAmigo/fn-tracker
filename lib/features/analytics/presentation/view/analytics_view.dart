@@ -63,31 +63,31 @@ class _AnalyticsBody extends StatelessWidget {
           curr is AnalyticsInitial,
       builder: (context, state) {
         final cubit = context.read<AnalyticsCubit>();
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            MonthPickerScrollWidget(
-              initialYear: cubit.selectedYear,
-              initialMonth: cubit.selectedMonth,
-              onDateChange: (month, year) =>
-                  cubit.loadAnalyticsByMonth(month, year),
-            ),
-            const SizedBox(height: AppSizing.spaceBtwSections),
-            if (state is AnalyticsLoading)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(AppSizing.spaceBtwSections),
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            else if (state is AnalyticsError)
-              AnalyticsErrorPlaceholderWidget(
-                message: state.message,
-                onRetry: () => cubit.loadAnalytics(),
-              )
-            else if (state is AnalyticsLoaded)
-              AnalyticsContentWidget(data: state.data),
-          ],
+        return MonthPickerScrollWidget(
+          initialYear: cubit.selectedYear,
+          initialMonth: cubit.selectedMonth,
+          onDateChange: (month, year) =>
+              cubit.loadAnalyticsByMonth(month, year),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: AppSizing.spaceBtwSections),
+              if (state is AnalyticsLoading)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(AppSizing.spaceBtwSections),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              else if (state is AnalyticsError)
+                AnalyticsErrorPlaceholderWidget(
+                  message: state.message,
+                  onRetry: () => cubit.loadAnalytics(),
+                )
+              else if (state is AnalyticsLoaded)
+                AnalyticsContentWidget(data: state.data),
+            ],
+          ),
         );
       },
     );

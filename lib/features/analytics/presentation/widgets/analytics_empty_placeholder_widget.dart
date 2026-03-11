@@ -6,14 +6,17 @@ class AnalyticsEmptyPlaceholderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.3,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           vertical: AppSizing.spaceBtwSections,
         ),
-        child: Text(
-          'Нет данных за выбранный период',
-          style: AppTextStyles.text16w400(context),
+        child: Center(
+          child: Text(
+            'Нет данных за выбранный период',
+            style: AppTextStyles.text16w400(context),
+          ),
         ),
       ),
     );
