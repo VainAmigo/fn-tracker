@@ -44,6 +44,8 @@ class BudgetDonutStatWidget extends StatelessWidget {
             size: 300,
             strokeWidth: 44,
             segments: chartData.segments,
+            minSegmentValue: totalForPeriod * 0.02,
+            trackColor: colorScheme.surface,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
