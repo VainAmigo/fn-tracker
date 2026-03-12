@@ -32,6 +32,12 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   WalletModel? _selectedWallet;
   GoalModel? _selectedGoal;
 
+  /// For transfer: source and destination accounts
+  WalletModel? _selectedWalletFrom;
+  GoalModel? _selectedGoalFrom;
+  WalletModel? _selectedWalletTo;
+  GoalModel? _selectedGoalTo;
+
   @override
   void initState() {
     super.initState();
@@ -66,6 +72,11 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       icon: Icons.arrow_downward,
     ),
     SegmentItem<TransactionType>(
+      value: TransactionType.transfer,
+      label: 'Transfer',
+      icon: Icons.swap_horiz,
+    ),
+    SegmentItem<TransactionType>(
       value: TransactionType.income,
       label: 'Income',
       icon: Icons.arrow_upward,
@@ -81,7 +92,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     return BlocListener<AddTransactionCubit, AddTransactionState>(
       listener: (context, state) {
         if (state is AddTransactionSuccess) {
-          Navigator.of(context).pop(state.createdTransaction);
+          Navigator.of(context).pop(state.createdTransactions);
           return;
         }
 
@@ -107,6 +118,12 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                   selectedValue: _selectedType,
                   onChanged: (value) => setState(() {
                     _selectedType = value;
+                    if (value != TransactionType.transfer) {
+                      _selectedWalletFrom = null;
+                      _selectedGoalFrom = null;
+                      _selectedWalletTo = null;
+                      _selectedGoalTo = null;
+                    }
                   }),
                 ),
                 const SizedBox(height: AppSizing.spaceBtwSections),
@@ -124,6 +141,32 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                       } else if (account is GoalModel) {
                         _selectedGoal = account;
                         _selectedWallet = null;
+                      }
+                    });
+                  },
+                  selectedWalletFrom: _selectedWalletFrom,
+                  selectedGoalFrom: _selectedGoalFrom,
+                  selectedWalletTo: _selectedWalletTo,
+                  selectedGoalTo: _selectedGoalTo,
+                  onTransferFromSelected: (account) {
+                    setState(() {
+                      if (account is WalletModel) {
+                        _selectedWalletFrom = account;
+                        _selectedGoalFrom = null;
+                      } else if (account is GoalModel) {
+                        _selectedGoalFrom = account;
+                        _selectedWalletFrom = null;
+                      }
+                    });
+                  },
+                  onTransferToSelected: (account) {
+                    setState(() {
+                      if (account is WalletModel) {
+                        _selectedWalletTo = account;
+                        _selectedGoalTo = null;
+                      } else if (account is GoalModel) {
+                        _selectedGoalTo = account;
+                        _selectedWalletTo = null;
                       }
                     });
                   },
@@ -172,11 +215,35 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       ).showSnackBar(const SnackBar(content: Text('Amount cannot be empty')));
       return;
     }
-    if (_selectedWallet == null && _selectedGoal == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Select a wallet or goal')));
-      return;
+    if (_selectedType == TransactionType.transfer) {
+      final fromSelected =
+          _selectedWalletFrom != null || _selectedGoalFrom != null;
+      final toSelected = _selectedWalletTo != null || _selectedGoalTo != null;
+      if (!fromSelected || !toSelected) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Select both source and destination accounts'),
+          ),
+        );
+        return;
+      }
+      final fromId = _selectedWalletFrom?.id ?? _selectedGoalFrom?.id;
+      final toId = _selectedWalletTo?.id ?? _selectedGoalTo?.id;
+      if (fromId == toId) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Source and destination must be different'),
+          ),
+        );
+        return;
+      }
+    } else {
+      if (_selectedWallet == null && _selectedGoal == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Select a wallet or goal')),
+        );
+        return;
+      }
     }
     if (_selectedType == TransactionType.expense &&
         _selectedCategory == null &&
@@ -186,15 +253,27 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       ).showSnackBar(const SnackBar(content: Text('Category cannot be empty')));
       return;
     }
+    final (
+      walletId,
+      goalId,
+      transferToWalletId,
+      transferToGoalId,
+    ) = _selectedType == TransactionType.transfer
+        ? (
+            _selectedWalletFrom?.id,
+            _selectedGoalFrom?.id,
+            _selectedWalletTo?.id,
+            _selectedGoalTo?.id,
+          )
+        : (_selectedWallet?.id, _selectedGoal?.id, null, null);
+
     final model = TransactionModel(
       id: '',
-      categoryId: _selectedGoal != null
-          ? null
-          : _selectedType == TransactionType.income
-          ? ''
-          : _selectedCategory?.categoryId ?? '',
-      walletId: _selectedWallet?.id,
-      goalId: _selectedGoal?.id,
+      categoryId: _selectedCategory?.categoryId ?? '',
+      walletId: walletId,
+      goalId: goalId,
+      transferToWalletId: transferToWalletId,
+      transferToGoalId: transferToGoalId,
       dayKey: _selectedDate.dayKey,
       periodKey: _selectedDate.periodKey,
       note: _note,

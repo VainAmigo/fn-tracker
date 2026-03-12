@@ -40,8 +40,8 @@ class _AppMainViewState extends State<AppMainView> {
         BlocListener<AddTransactionCubit, AddTransactionState>(
           listener: (context, state) {
             if (state is AddTransactionSuccess) {
-              context.read<TransactionsCubit>().addTransactionLocally(
-                state.createdTransaction,
+              context.read<TransactionsCubit>().addTransactionsLocally(
+                state.createdTransactions,
               );
               _onDataUpdated(context);
             }

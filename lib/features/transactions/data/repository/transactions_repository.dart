@@ -51,6 +51,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
       TransactionIdType.category => 'categoryId',
       TransactionIdType.wallet => 'walletId',
       TransactionIdType.goal => 'goalId',
+      TransactionIdType.scheduledPayment => 'scheduledPaymentId',
     };
     try {
       final transactionsSnapshot = await _transactionsRef(uid)
@@ -82,12 +83,15 @@ class TransactionsRepository implements TransactionsRepoImpl {
         categoryId: transaction.categoryId,
         walletId: transaction.walletId,
         goalId: transaction.goalId,
+        scheduledPaymentId: transaction.scheduledPaymentId,
         dayKey: transaction.dayKey,
         periodKey: transaction.periodKey,
         amount: transaction.amount,
+        currency: transaction.currency,
         note: transaction.note,
         createdAt: createdAt.toDate(),
         type: transaction.type,
+        transferId: transaction.transferId,
       );
 
       await docRef.set({
@@ -95,12 +99,15 @@ class TransactionsRepository implements TransactionsRepoImpl {
         'categoryId': model.categoryId,
         'walletId': model.walletId,
         'goalId': model.goalId,
+        'scheduledPaymentId': model.scheduledPaymentId,
         'dayKey': model.dayKey,
         'periodKey': model.periodKey,
         'amount': model.amount,
+        'currency': model.currency,
         'note': model.note,
         'createdAt': createdAt,
         'type': model.type.toJson(),
+        'transferId': model.transferId,
       });
 
       return model;

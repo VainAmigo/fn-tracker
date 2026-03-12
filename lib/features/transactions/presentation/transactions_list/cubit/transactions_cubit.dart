@@ -65,11 +65,13 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     } catch (_) {}
   }
 
-  void addTransactionLocally(TransactionModel transaction) {
+  void addTransactionsLocally(List<TransactionModel> transactions) {
     final current = state;
     final existing = current is TransactionsLoaded
         ? current.transactions
         : <TransactionModel>[];
-    emit(TransactionsLoaded(transactions: [transaction, ...existing]));
+    emit(TransactionsLoaded(
+      transactions: [...transactions, ...existing],
+    ));
   }
 }

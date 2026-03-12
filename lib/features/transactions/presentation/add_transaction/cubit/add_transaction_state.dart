@@ -7,9 +7,9 @@ class AddTransactionInitial extends AddTransactionState {}
 class AddTransactionCreating extends AddTransactionState {}
 
 class AddTransactionSuccess extends AddTransactionState {
-  final TransactionModel createdTransaction;
+  final List<TransactionModel> createdTransactions;
 
-  AddTransactionSuccess({required this.createdTransaction});
+  AddTransactionSuccess({required this.createdTransactions});
 }
 
 class AddTransactionError extends AddTransactionState {

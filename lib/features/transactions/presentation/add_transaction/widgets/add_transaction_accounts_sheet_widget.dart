@@ -4,7 +4,23 @@ import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AddTransactionAccountsSheetWidget extends StatelessWidget {
-  const AddTransactionAccountsSheetWidget({super.key});
+  const AddTransactionAccountsSheetWidget({
+    super.key,
+    this.excludedAccount,
+  });
+
+  /// Account that cannot be selected (e.g. the "other" account in transfer)
+  final Object? excludedAccount;
+
+  static bool _isSameAccount(Object selected, Object excluded) {
+    if (selected is WalletModel && excluded is WalletModel) {
+      return selected.id == excluded.id;
+    }
+    if (selected is GoalModel && excluded is GoalModel) {
+      return selected.id == excluded.id;
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +46,15 @@ class AddTransactionAccountsSheetWidget extends StatelessWidget {
                 shrinkWrap: true,
                 cardStyle: CategoryCardStyle.filled,
                 onWalletSelected: (wallet) {
+                  if (excludedAccount != null &&
+                      _isSameAccount(wallet, excludedAccount!)) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Cannot select the same account'),
+                      ),
+                    );
+                    return;
+                  }
                   Navigator.of(context).pop(wallet);
                 },
               ),
@@ -44,6 +69,15 @@ class AddTransactionAccountsSheetWidget extends StatelessWidget {
                 autoLoad: true,
                 shrinkWrap: true,
                 onGoalSelected: (goal) {
+                  if (excludedAccount != null &&
+                      _isSameAccount(goal, excludedAccount!)) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Cannot select the same account'),
+                      ),
+                    );
+                    return;
+                  }
                   Navigator.of(context).pop(goal);
                 },
               ),

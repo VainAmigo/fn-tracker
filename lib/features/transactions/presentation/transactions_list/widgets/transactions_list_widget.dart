@@ -166,7 +166,7 @@ class _Body extends StatelessWidget {
             category?.name ?? goal?.name ?? tx.categoryId ?? wallet?.name ?? '',
         subtitle: _buildSubtitle(
           isGoalTransaction: isGoalTransaction,
-          note: tx.note,
+          note: tx.note ?? '',
           wallet: wallet,
         ),
         leading: Container(

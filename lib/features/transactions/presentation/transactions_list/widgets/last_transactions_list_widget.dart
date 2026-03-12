@@ -89,7 +89,9 @@ class _Body extends StatelessWidget {
               final category = !isGoalTransaction
                   ? categoryMap[tx.categoryId]
                   : null;
-              final wallet = tx.walletId != null ? walletMap[tx.walletId] : null;
+              final wallet = tx.walletId != null
+                  ? walletMap[tx.walletId]
+                  : null;
 
               final shade = category != null
                   ? findShadeById(category.colorId)
@@ -146,10 +148,14 @@ class _Body extends StatelessWidget {
                   child: const Icon(Icons.delete, color: Colors.white),
                 ),
                 child: CategoryCard(
-                  title: category?.name ?? goal?.name ?? wallet?.name ?? 'Unknown category',
+                  title:
+                      category?.name ??
+                      goal?.name ??
+                      wallet?.name ??
+                      'Unknown category',
                   subtitle: isGoalTransaction
                       ? 'Goal'
-                      : tx.note.isNotEmpty
+                      : tx.note != null && tx.note!.isNotEmpty
                       ? tx.note
                       : null,
                   leading: Container(

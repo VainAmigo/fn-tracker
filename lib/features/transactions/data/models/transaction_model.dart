@@ -2,13 +2,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TransactionModel {
   final String id;
+
   final String? categoryId;
   final String? walletId;
   final String? goalId;
+  final String? scheduledPaymentId;
+
+  final String? transferToWalletId;
+  final String? transferToGoalId;
+  final String? transferId;
+
   final double amount;
-  final String note;
+  final String? currency;
+
+  final String? note;
   final DateTime? createdAt;
+
   final TransactionType type;
+
   final String dayKey;
   final String periodKey;
 
@@ -17,8 +28,13 @@ class TransactionModel {
     this.categoryId,
     this.walletId,
     this.goalId,
+    this.scheduledPaymentId,
+    this.transferToWalletId,
+    this.transferToGoalId,
+    this.transferId,
     required this.amount,
-    required this.note,
+    this.currency,
+    this.note,
     this.createdAt,
     required this.type,
     required this.dayKey,
@@ -31,7 +47,10 @@ class TransactionModel {
       'categoryId': categoryId,
       'walletId': walletId,
       'goalId': goalId,
+      'scheduledPaymentId': scheduledPaymentId,
+      'transferId': transferId,
       'amount': amount,
+      'currency': currency,
       'note': note,
       'createdAt': createdAt!.toIso8601String(),
       'type': type.toJson(),
@@ -55,9 +74,12 @@ class TransactionModel {
       categoryId: json['categoryId'],
       walletId: json['walletId'],
       goalId: json['goalId'],
+      scheduledPaymentId: json['scheduledPaymentId'],
+      transferId: json['transferId'],
       dayKey: json['dayKey'],
       periodKey: json['periodKey'],
       amount: json['amount'],
+      currency: json['currency'],
       note: json['note'],
       createdAt: createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
       type: TransactionType.fromJson(json['type'] as String),
@@ -67,7 +89,8 @@ class TransactionModel {
 
 enum TransactionType {
   expense,
-  income;
+  income,
+  transfer;
 
   /// Возвращает строковое представление для сохранения в Firestore
   String toJson() => name.toUpperCase();
@@ -81,11 +104,7 @@ enum TransactionType {
   }
 }
 
-enum TransactionIdType {
-  category,
-  wallet,
-  goal;
-}
+enum TransactionIdType { category, wallet, goal, scheduledPayment }
 
 class HomePageStatModel {
   final double totalExpense;

@@ -11,6 +11,12 @@ class AddTransactionActionWidget extends StatefulWidget {
     required this.selectedWallet,
     required this.selectedGoal,
     required this.onAccountSelected,
+    this.selectedWalletFrom,
+    this.selectedGoalFrom,
+    this.selectedWalletTo,
+    this.selectedGoalTo,
+    this.onTransferFromSelected,
+    this.onTransferToSelected,
     required this.selectedDate,
     required this.onDateChanged,
     required this.selectedCategory,
@@ -24,6 +30,15 @@ class AddTransactionActionWidget extends StatefulWidget {
   final WalletModel? selectedWallet;
   final GoalModel? selectedGoal;
   final ValueChanged<Object> onAccountSelected;
+
+  /// For transfer: source account
+  final WalletModel? selectedWalletFrom;
+  final GoalModel? selectedGoalFrom;
+  /// For transfer: destination account
+  final WalletModel? selectedWalletTo;
+  final GoalModel? selectedGoalTo;
+  final ValueChanged<Object>? onTransferFromSelected;
+  final ValueChanged<Object>? onTransferToSelected;
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateChanged;
   final CategoryModel? selectedCategory;
@@ -55,9 +70,20 @@ class _AddTransactionActionWidgetState
     final shade = findShadeById(widget.selectedCategory?.colorId ?? '');
     final icon = findIconById(widget.selectedCategory?.iconId ?? '');
     final hasGoal = widget.selectedGoal != null;
+    final isTransfer = widget.selectedType == TransactionType.transfer;
+    final hasGoalFrom = widget.selectedGoalFrom != null;
+    final hasGoalTo = widget.selectedGoalTo != null;
+
     final accountName = hasGoal
         ? widget.selectedGoal!.name
         : widget.selectedWallet?.name ?? 'Wallet';
+    final accountNameFrom = hasGoalFrom
+        ? widget.selectedGoalFrom!.name
+        : widget.selectedWalletFrom?.name ?? 'Wallet';
+    final accountNameTo = hasGoalTo
+        ? widget.selectedGoalTo!.name
+        : widget.selectedWalletTo?.name ?? 'Wallet';
+
     final walletShade = findShadeById(widget.selectedWallet?.colorId ?? '');
     final walletIcon = findIconById(widget.selectedWallet?.iconId ?? '');
     final goalShade = findShadeById(widget.selectedGoal?.colorId ?? '');
@@ -68,6 +94,37 @@ class _AddTransactionActionWidgetState
     final accountIcon = hasGoal
         ? (goalIcon?.icon ?? Icons.flag_rounded)
         : (walletIcon?.icon ?? Icons.account_balance_wallet);
+
+    final walletFromShade =
+        findShadeById(widget.selectedWalletFrom?.colorId ?? '');
+    final walletFromIcon =
+        findIconById(widget.selectedWalletFrom?.iconId ?? '');
+    final goalFromShade =
+        findShadeById(widget.selectedGoalFrom?.colorId ?? '');
+    final goalFromIcon = findIconById(widget.selectedGoalFrom?.iconId ?? '');
+    final accountFromColor = hasGoalFrom
+        ? (goalFromShade?.color ?? colorScheme.primary)
+        : (walletFromShade?.color ?? Colors.grey);
+    final accountFromIcon = hasGoalFrom
+        ? (goalFromIcon?.icon ?? Icons.flag_rounded)
+        : (walletFromIcon?.icon ?? Icons.account_balance_wallet);
+
+    final walletToShade =
+        findShadeById(widget.selectedWalletTo?.colorId ?? '');
+    final walletToIcon = findIconById(widget.selectedWalletTo?.iconId ?? '');
+    final goalToShade = findShadeById(widget.selectedGoalTo?.colorId ?? '');
+    final goalToIcon = findIconById(widget.selectedGoalTo?.iconId ?? '');
+    final accountToColor = hasGoalTo
+        ? (goalToShade?.color ?? colorScheme.primary)
+        : (walletToShade?.color ?? Colors.grey);
+    final accountToIcon = hasGoalTo
+        ? (goalToIcon?.icon ?? Icons.flag_rounded)
+        : (walletToIcon?.icon ?? Icons.account_balance_wallet);
+
+    Object? transferFromAccount() =>
+        widget.selectedGoalFrom ?? widget.selectedWalletFrom;
+    Object? transferToAccount() =>
+        widget.selectedGoalTo ?? widget.selectedWalletTo;
 
     String dateTitle;
     if (selected == now) {
@@ -84,73 +141,85 @@ class _AddTransactionActionWidgetState
       children: [
         Row(
           children: [
-            Expanded(
-              child: CategoryCard(
-                radius: CategoryCardRadius.single,
-                title: accountName,
-                subtitle: hasGoal
-                    ? 'Goal'
-                    : widget.selectedType == TransactionType.expense
-                    ? 'Take from'
-                    : 'Add to',
-                leading: Container(
-                  height: AppSizing.heightS,
-                  decoration: BoxDecoration(
-                    color: accountColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(
-                      AppSizing.borderRadius8,
-                    ),
-                  ),
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Icon(
-                      accountIcon,
-                      size: AppSizing.iconSizeM,
-                      color: accountColor,
-                    ),
+            if (isTransfer) ...[
+              Expanded(
+                child: _buildAccountCard(
+                  context,
+                  title: accountNameFrom,
+                  subtitle: 'Transfer from',
+                  color: accountFromColor,
+                  icon: accountFromIcon,
+                  onTap: () => _showAccountsPicker(
+                    context,
+                    excludedAccount: transferToAccount(),
+                    onSelected: widget.onTransferFromSelected!,
                   ),
                 ),
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  size: AppSizing.iconSizeM,
-                ),
-                onTap: () => _showAccountsPicker(context),
               ),
-            ),
-            if (widget.selectedType == TransactionType.expense) ...[
               const SizedBox(width: AppSizing.spaceBtwItems),
               Expanded(
-                child: CategoryCard(
-                  radius: CategoryCardRadius.single,
-                  title: widget.selectedCategory?.name ?? 'Category',
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    color: Theme.of(context).colorScheme.onSurface,
-                    size: AppSizing.iconSizeM,
+                child: _buildAccountCard(
+                  context,
+                  title: accountNameTo,
+                  subtitle: 'Transfer to',
+                  color: accountToColor,
+                  icon: accountToIcon,
+                  onTap: () => _showAccountsPicker(
+                    context,
+                    excludedAccount: transferFromAccount(),
+                    onSelected: widget.onTransferToSelected!,
                   ),
-                  leading: Container(
-                    height: AppSizing.heightS,
-                    decoration: BoxDecoration(
-                      color:
-                          shade?.color.withValues(alpha: 0.15) ??
-                          Colors.grey.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(
-                        AppSizing.borderRadius8,
-                      ),
-                    ),
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Icon(
-                        icon?.icon ?? Icons.category,
-                        size: AppSizing.iconSizeM,
-                        color: shade?.color ?? Colors.grey,
-                      ),
-                    ),
-                  ),
-                  onTap: () => _showCategoryPicker(context),
                 ),
               ),
+            ] else ...[
+              Expanded(
+                child: _buildAccountCard(
+                  context,
+                  title: accountName,
+                  subtitle: hasGoal
+                      ? 'Goal'
+                      : widget.selectedType == TransactionType.expense
+                          ? 'Take from'
+                          : 'Add to',
+                  color: accountColor,
+                  icon: accountIcon,
+                  onTap: () => _showAccountsPicker(context),
+                ),
+              ),
+              if (widget.selectedType == TransactionType.expense) ...[
+                const SizedBox(width: AppSizing.spaceBtwItems),
+                Expanded(
+                  child: CategoryCard(
+                    radius: CategoryCardRadius.single,
+                    title: widget.selectedCategory?.name ?? 'Category',
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      size: AppSizing.iconSizeM,
+                    ),
+                    leading: Container(
+                      height: AppSizing.heightS,
+                      decoration: BoxDecoration(
+                        color:
+                            shade?.color.withValues(alpha: 0.15) ??
+                            Colors.grey.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(
+                          AppSizing.borderRadius8,
+                        ),
+                      ),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Icon(
+                          icon?.icon ?? Icons.category,
+                          size: AppSizing.iconSizeM,
+                          color: shade?.color ?? Colors.grey,
+                        ),
+                      ),
+                    ),
+                    onTap: () => _showCategoryPicker(context),
+                  ),
+                ),
+              ],
             ],
           ],
         ),
@@ -230,7 +299,43 @@ class _AddTransactionActionWidgetState
     );
   }
 
-  Future<void> _showAccountsPicker(BuildContext context) async {
+  Widget _buildAccountCard(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required Color color,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return CategoryCard(
+      radius: CategoryCardRadius.single,
+      title: title,
+      subtitle: subtitle,
+      leading: Container(
+        height: AppSizing.heightS,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+        ),
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Icon(icon, size: AppSizing.iconSizeM, color: color),
+        ),
+      ),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        color: Theme.of(context).colorScheme.onSurface,
+        size: AppSizing.iconSizeM,
+      ),
+      onTap: onTap,
+    );
+  }
+
+  Future<void> _showAccountsPicker(
+    BuildContext context, {
+    Object? excludedAccount,
+    ValueChanged<Object>? onSelected,
+  }) async {
     final walletCubit = context.read<WalletCubit>();
     final goalsCubit = context.read<GoalsCubit>();
     final selected = await AppBottomSheet.showFittedModalBottomSheet<Object>(
@@ -239,13 +344,19 @@ class _AddTransactionActionWidgetState
         value: walletCubit,
         child: BlocProvider<GoalsCubit>.value(
           value: goalsCubit,
-          child: AddTransactionAccountsSheetWidget(),
+          child: AddTransactionAccountsSheetWidget(
+            excludedAccount: excludedAccount,
+          ),
         ),
       ),
     );
     if (!mounted) return;
     if (selected != null) {
-      widget.onAccountSelected(selected);
+      if (onSelected != null) {
+        onSelected(selected);
+      } else {
+        widget.onAccountSelected(selected);
+      }
     }
   }
 

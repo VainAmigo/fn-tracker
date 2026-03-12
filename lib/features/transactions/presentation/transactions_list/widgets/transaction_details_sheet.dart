@@ -94,19 +94,20 @@ class TransactionDetailsSheet extends StatelessWidget {
             label: 'Category',
             value: name,
           ),
-          if (transaction.note.isNotEmpty) ...[
+          if (transaction.note != null && transaction.note!.isNotEmpty) ...[
             const SizedBox(height: AppSizing.spaceBtwItemsExtra),
             _DetailCard(
               leadingIcon: Icons.note_rounded,
               leadingColor: null,
               label: 'Description',
-              value: transaction.note,
+              value: transaction.note ?? '—',
             ),
           ],
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           _DetailCard(
             leadingIcon: wallet != null
-                ? (findIconById(wallet.iconId)?.icon ?? Icons.account_balance_wallet_rounded)
+                ? (findIconById(wallet.iconId)?.icon ??
+                      Icons.account_balance_wallet_rounded)
                 : Icons.account_balance_wallet_rounded,
             leadingColor: wallet != null
                 ? findShadeById(wallet.colorId)?.color
@@ -181,8 +182,9 @@ class _DetailCard extends StatelessWidget {
             height: AppSizing.heightS,
             width: AppSizing.heightS,
             decoration: BoxDecoration(
-              color: (leadingColor ?? colorScheme.onSurfaceVariant)
-                  .withValues(alpha: 0.15),
+              color: (leadingColor ?? colorScheme.onSurfaceVariant).withValues(
+                alpha: 0.15,
+              ),
               borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
             ),
             child: Icon(
@@ -205,9 +207,9 @@ class _DetailCard extends StatelessWidget {
                 ),
                 Text(
                   value,
-                  style: AppTextStyles.listTileTitle(context).copyWith(
-                    color: leadingColor,
-                  ),
+                  style: AppTextStyles.listTileTitle(
+                    context,
+                  ).copyWith(color: leadingColor),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
