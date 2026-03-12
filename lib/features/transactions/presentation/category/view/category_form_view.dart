@@ -85,7 +85,6 @@ class _CategoryFormViewState extends State<CategoryFormView> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = context.watch<CurrencyProvider>().currency;
     final colorScheme = Theme.of(context).colorScheme;
     final categoriesState = context.watch<CategoriesCubit>().state;
     final isLoading = _isSubmitting && categoriesState is CategoriesLoading;
@@ -143,15 +142,15 @@ class _CategoryFormViewState extends State<CategoryFormView> {
                           hintText: 'e.g. Groceries',
                           controller: _nameController,
                         ),
-                        CategoryCard(
+                        FormCardWidget(
                           title: _limit ?? 'no limit',
                           subtitle: 'Monthly limit',
-                          leading: Icon(
+                          icon: Icon(
                             Icons.data_usage_rounded,
                             color: colorScheme.onSecondary,
                           ),
                           onTap: () =>
-                              _openLimitSheet(context, currency, _limit),
+                              _openLimitSheet(context, _limit),
                         ),
                         CreateCategoryIconPickerWidget(
                           selectedIcon: _selectedIcon,
@@ -215,37 +214,15 @@ class _CategoryFormViewState extends State<CategoryFormView> {
     );
   }
 
-  void _openLimitSheet(BuildContext context, Currency currency, String? limit) {
-    AppBottomSheet.showFittedModalBottomSheet(
+  void _openLimitSheet(BuildContext context, String? limit) {
+    final initialAmount = limit != null && limit.isNotEmpty
+        ? double.tryParse(limit)
+        : null;
+    AmountFormModalSheet.show(
       context,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSizing.defaultPadding,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AmountInputWidget(
-              initialAmount: limit ?? '',
-              currency: currency,
-              onAmountChanged: (amount) {
-                setState(() {
-                  _limit = amount;
-                });
-              },
-            ),
-            PrimaryButton(
-              text: 'Save',
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              size: PrimaryButtonSize.medium,
-            ),
-            const SizedBox(height: AppSizing.spaceBtwSections),
-          ],
-        ),
-      ),
+      initialAmount: initialAmount,
+      saveLabel: 'Save',
+      onSave: (amount) => setState(() => _limit = amount.toString()),
     );
   }
 

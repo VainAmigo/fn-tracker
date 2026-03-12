@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
@@ -19,7 +18,7 @@ class _GoalFormViewState extends State<GoalFormView> {
   late CategoryIcon _selectedIcon;
   late CategoryShade _selectedShade;
   late TextEditingController _nameController;
-  late TextEditingController _targetAmountController;
+  double? _targetAmount;
   bool _isSubmitting = false;
   bool _defaultsInitialized = false;
 
@@ -31,9 +30,7 @@ class _GoalFormViewState extends State<GoalFormView> {
     final goal = widget.goal;
     if (goal != null) {
       _nameController = TextEditingController(text: goal.name);
-      _targetAmountController = TextEditingController(
-        text: goal.targetAmount.toStringAsFixed(0),
-      );
+      _targetAmount = goal.targetAmount;
       _selectedIcon =
           findIconById(goal.iconId) ?? categoryIconGroups[0].icons.first;
       _selectedShade =
@@ -41,7 +38,7 @@ class _GoalFormViewState extends State<GoalFormView> {
       _defaultsInitialized = true;
     } else {
       _nameController = TextEditingController();
-      _targetAmountController = TextEditingController();
+      _targetAmount = null;
       _selectedIcon = categoryIconGroups[0].icons.first;
       _selectedShade = categoryColorPalettes[0].shades.first;
     }
@@ -61,7 +58,6 @@ class _GoalFormViewState extends State<GoalFormView> {
   @override
   void dispose() {
     _nameController.dispose();
-    _targetAmountController.dispose();
     super.dispose();
   }
 
@@ -153,15 +149,23 @@ class _GoalFormViewState extends State<GoalFormView> {
                           hintText: 'e.g. Trip to Bali',
                           controller: _nameController,
                         ),
-                        CustomTextFormField(
-                          label: 'Target amount',
-                          hintText: 'e.g. 5000',
-                          controller: _targetAmountController,
-                          keyboardType: TextInputType.number,
-                          prefixText: '\$ ',
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
+                        FormCardWidget(
+                          title: _targetAmount != null
+                              ? AmountFormatter.format(_targetAmount!)
+                              : 'Target amount',
+                          subtitle: 'How much do you want to save?',
+                          icon: Icon(
+                            Icons.attach_money,
+                            size: AppSizing.iconSizeM,
+                            color: colorScheme.onSecondary,
+                          ),
+                          onTap: () => AmountFormModalSheet.show(
+                            context,
+                            initialAmount: _targetAmount,
+                            onSave: (amount) =>
+                                setState(() => _targetAmount = amount),
+                            saveLabel: 'Save',
+                          ),
                         ),
                         if (_isEditing) _buildProgressInfo(context),
                         CreateCategoryIconPickerWidget(
@@ -256,7 +260,7 @@ class _GoalFormViewState extends State<GoalFormView> {
 
   void _submitGoal() {
     final name = _nameController.text.trim();
-    final targetText = _targetAmountController.text.trim();
+    final targetAmount = _targetAmount;
 
     if (name.isEmpty) {
       ScaffoldMessenger.of(
@@ -265,7 +269,6 @@ class _GoalFormViewState extends State<GoalFormView> {
       return;
     }
 
-    final targetAmount = double.tryParse(targetText);
     if (targetAmount == null || targetAmount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Enter a valid target amount')),

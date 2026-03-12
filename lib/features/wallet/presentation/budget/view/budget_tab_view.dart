@@ -94,80 +94,25 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
     );
   }
 
-  String _formatAmountForInput(double amount) {
-    if (amount == amount.truncateToDouble()) {
-      return amount.truncate().toString();
-    }
-    return amount.toString();
-  }
-
   void _showBudgetSheet({
     required Currency currency,
     BudgetModel? existingBudget,
   }) {
-    String? newAmount = existingBudget != null
-        ? _formatAmountForInput(existingBudget.amount)
-        : null;
-
-    AppBottomSheet.showFittedModalBottomSheet(
+    AmountFormModalSheet.show(
       context,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSizing.defaultPadding,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AmountInputWidget(
-              initialAmount: existingBudget != null
-                  ? _formatAmountForInput(existingBudget.amount)
-                  : '',
-              currency: currency,
-              onAmountChanged: (amount) => newAmount = amount,
-            ),
-
-            if (existingBudget != null) ...[
-              PrimaryButton(
-                text: 'Delete Budget',
-                onPressed: () {
-                  context.read<BudgetCubit>().deleteBudget(existingBudget.id);
-                  Navigator.of(context).pop();
-                },
-                size: PrimaryButtonSize.xSmall,
-                rounded: true,
-                backgroundColor: Theme.of(
-                  context,
-                ).colorScheme.error.withValues(alpha: 0.3),
-                foregroundColor: Theme.of(context).colorScheme.error,
-              ),
-              const SizedBox(height: AppSizing.spaceBtwElements),
-            ],
-
-            PrimaryButton(
-              text: 'Save',
-              onPressed: () {
-                final parsed = double.tryParse(newAmount ?? '');
-                if (parsed == null || parsed <= 0) return;
-
-                if (existingBudget != null) {
-                  final updated = BudgetModel(
-                    id: existingBudget.id,
-                    amount: parsed,
-                  );
-                  context.read<BudgetCubit>().updateBudget(budget: updated);
-                } else {
-                  final created = BudgetModel(id: '', amount: parsed);
-                  context.read<BudgetCubit>().createBudget(budget: created);
-                }
-                Navigator.of(context).pop();
-              },
-              size: PrimaryButtonSize.medium,
-            ),
-            const SizedBox(height: AppSizing.spaceBtwSections),
-          ],
-        ),
-      ),
+      initialAmount: existingBudget?.amount,
+      saveLabel: 'Save',
+      onSave: (amount) {
+        if (existingBudget != null) {
+          context.read<BudgetCubit>().updateBudget(
+                budget: BudgetModel(id: existingBudget.id, amount: amount),
+              );
+        } else {
+          context.read<BudgetCubit>().createBudget(
+                budget: BudgetModel(id: '', amount: amount),
+              );
+        }
+      },
     );
   }
 }
