@@ -34,13 +34,6 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
     }
   }
 
-  CategoryCardRadius _radiusForIndex(int index, int total) {
-    if (total == 1) return CategoryCardRadius.single;
-    if (index == 0) return CategoryCardRadius.first;
-    if (index == total - 1) return CategoryCardRadius.last;
-    return CategoryCardRadius.middle;
-  }
-
   @override
   Widget build(BuildContext context) {
     final currency = context.watch<CurrencyProvider>().currency;
@@ -98,7 +91,7 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
               ),
             ),
             style: widget.cardStyle,
-            radius: _radiusForIndex(index, total),
+            radius: radiusForIndex(index, total),
             onTap: () =>
                 Navigator.of(context).pushNamed(AppRouter.createCategory),
           );
@@ -108,7 +101,7 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
         final shade = findShadeById(category.colorId);
         final icon = findIconById(category.iconId);
         final color = shade?.color ?? Colors.grey;
-        final radius = _radiusForIndex(index, total);
+        final radius = radiusForIndex(index, total);
 
         final card = CategoryCard(
           title: category.name,
@@ -155,26 +148,7 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
             padding: const EdgeInsets.only(right: 20),
             decoration: BoxDecoration(
               color: Colors.red,
-              borderRadius: switch (radius) {
-                CategoryCardRadius.single => BorderRadius.circular(
-                      AppSizing.borderRadius12,
-                    ),
-                CategoryCardRadius.first => const BorderRadius.only(
-                      topLeft: Radius.circular(AppSizing.borderRadius12),
-                      topRight: Radius.circular(AppSizing.borderRadius12),
-                      bottomLeft: Radius.circular(AppSizing.borderRadius4),
-                      bottomRight: Radius.circular(AppSizing.borderRadius4),
-                    ),
-                CategoryCardRadius.last => const BorderRadius.only(
-                      topLeft: Radius.circular(AppSizing.borderRadius4),
-                      topRight: Radius.circular(AppSizing.borderRadius4),
-                      bottomLeft: Radius.circular(AppSizing.borderRadius12),
-                      bottomRight: Radius.circular(AppSizing.borderRadius12),
-                    ),
-                CategoryCardRadius.middle => BorderRadius.circular(
-                      AppSizing.borderRadius4,
-                    ),
-              },
+              borderRadius: borderRadiusFor(radius),
             ),
             child: const Icon(Icons.delete, color: Colors.white),
           ),

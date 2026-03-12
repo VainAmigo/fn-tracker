@@ -96,7 +96,7 @@ class TransactionDetailsSheet extends StatelessWidget {
               icon: icon?.icon ?? Icons.category,
               color: color,
             ),
-            radius: CategoryCardRadius.first,
+            radius: CardRadius.first,
           ),
           if (transaction.note != null && transaction.note!.isNotEmpty) ...[
             const SizedBox(height: AppSizing.spaceBtwItemsExtra),
@@ -108,7 +108,7 @@ class TransactionDetailsSheet extends StatelessWidget {
                 icon: Icons.note_rounded,
                 color: null,
               ),
-              radius: CategoryCardRadius.middle,
+              radius: CardRadius.middle,
             ),
           ],
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
@@ -127,7 +127,7 @@ class TransactionDetailsSheet extends StatelessWidget {
                   ? findShadeById(wallet.colorId)?.color
                   : null,
             ),
-            radius: CategoryCardRadius.middle,
+            radius: CardRadius.middle,
           ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           CategoryCard(
@@ -138,7 +138,7 @@ class TransactionDetailsSheet extends StatelessWidget {
               icon: Icons.calendar_today_rounded,
               color: null,
             ),
-            radius: CategoryCardRadius.last,
+            radius: CardRadius.last,
           ),
         ],
       ),

@@ -32,7 +32,7 @@ class BudgetsSpendingCategoriesListWidget extends StatelessWidget {
               _SpendingCategoryCard(
                 spending: categorySpending[i],
                 currency: currency,
-                radius: _radiusForIndex(i, total),
+                radius: radiusForIndex(i, total),
               ),
             ],
           ],
@@ -41,12 +41,6 @@ class BudgetsSpendingCategoriesListWidget extends StatelessWidget {
     );
   }
 
-  CategoryCardRadius _radiusForIndex(int index, int total) {
-    if (total == 1) return CategoryCardRadius.single;
-    if (index == 0) return CategoryCardRadius.first;
-    if (index == total - 1) return CategoryCardRadius.last;
-    return CategoryCardRadius.middle;
-  }
 }
 
 class _SpendingCategoryCard extends StatelessWidget {
@@ -58,7 +52,7 @@ class _SpendingCategoryCard extends StatelessWidget {
 
   final CategorySpending spending;
   final Currency currency;
-  final CategoryCardRadius radius;
+  final CardRadius radius;
 
   @override
   Widget build(BuildContext context) {
@@ -75,26 +69,7 @@ class _SpendingCategoryCard extends StatelessWidget {
     final hasLimit = limit != null && limit > 0;
     final exceeded = hasLimit && spent > limit;
 
-    final borderRadius = switch (radius) {
-      CategoryCardRadius.first => BorderRadius.only(
-        topLeft: Radius.circular(AppSizing.borderRadius12),
-        topRight: Radius.circular(AppSizing.borderRadius12),
-        bottomLeft: Radius.circular(AppSizing.borderRadius4),
-        bottomRight: Radius.circular(AppSizing.borderRadius4),
-      ),
-      CategoryCardRadius.last => BorderRadius.only(
-        topLeft: Radius.circular(AppSizing.borderRadius4),
-        topRight: Radius.circular(AppSizing.borderRadius4),
-        bottomLeft: Radius.circular(AppSizing.borderRadius12),
-        bottomRight: Radius.circular(AppSizing.borderRadius12),
-      ),
-      CategoryCardRadius.middle => BorderRadius.circular(
-        AppSizing.borderRadius4,
-      ),
-      CategoryCardRadius.single => BorderRadius.circular(
-        AppSizing.borderRadius12,
-      ),
-    };
+    final borderRadius = borderRadiusFor(radius);
 
     return Container(
       padding: const EdgeInsets.all(AppSizing.spaceBtwElements),

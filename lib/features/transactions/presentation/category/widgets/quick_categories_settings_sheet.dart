@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
@@ -57,7 +58,7 @@ class QuickCategoriesSettingsSheet extends StatelessWidget {
                   ...List.generate(modes.length, (index) {
                     final mode = modes[index];
                     final isSelected = mode == currentMode;
-                    final radius = _radiusForIndex(index, modes.length);
+                    final radius = radiusForIndex(index, modes.length);
                     return Padding(
                       padding: const EdgeInsets.only(
                         bottom: AppSizing.spaceBtwItemsExtra,
@@ -114,11 +115,4 @@ class QuickCategoriesSettingsSheet extends StatelessWidget {
       ),
     );
   }
-}
-
-CategoryCardRadius _radiusForIndex(int index, int total) {
-  if (total == 1) return CategoryCardRadius.single;
-  if (index == 0) return CategoryCardRadius.first;
-  if (index == total - 1) return CategoryCardRadius.last;
-  return CategoryCardRadius.middle;
 }

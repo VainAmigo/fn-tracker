@@ -30,13 +30,6 @@ class _GoalsListWidgetState extends State<GoalsListWidget> {
     }
   }
 
-  CategoryCardRadius _radiusForIndex(int index, int total) {
-    if (total == 1) return CategoryCardRadius.single;
-    if (index == 0) return CategoryCardRadius.first;
-    if (index == total - 1) return CategoryCardRadius.last;
-    return CategoryCardRadius.middle;
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GoalsCubit, GoalsState>(
@@ -81,7 +74,7 @@ class _GoalsListWidgetState extends State<GoalsListWidget> {
                 ),
               ),
             ),
-            radius: _radiusForIndex(index, total),
+            radius: radiusForIndex(index, total),
             onTap: () => Navigator.of(context).pushNamed(AppRouter.createGoal),
           );
         }
@@ -110,7 +103,7 @@ class _GoalsListWidgetState extends State<GoalsListWidget> {
               ),
             ),
           ),
-          radius: _radiusForIndex(index, total),
+          radius: radiusForIndex(index, total),
           onTap: widget.onGoalSelected != null
               ? () => widget.onGoalSelected!(goal)
               : () => Navigator.of(context).pushNamed(

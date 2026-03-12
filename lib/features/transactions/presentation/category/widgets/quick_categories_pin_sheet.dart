@@ -182,7 +182,7 @@ class _QuickCategoriesPinSheetState extends State<QuickCategoriesPinSheet> {
                                   onReorder: _reorderPinned,
                                   itemBuilder: (context, index) {
                                     final category = pinnedCategories[index];
-                                    final radius = _radiusForIndex(
+                                    final radius = radiusForIndex(
                                       index,
                                       pinnedCategories.length,
                                     );
@@ -229,7 +229,7 @@ class _QuickCategoriesPinSheetState extends State<QuickCategoriesPinSheet> {
                                       category: category,
                                       isPinned: false,
                                       showDragHandle: false,
-                                      radius: _radiusForIndex(
+                                      radius: radiusForIndex(
                                         unpinnedCategories.indexOf(category),
                                         unpinnedCategories.length,
                                       ),
@@ -270,7 +270,7 @@ class _QuickCategoriesPinSheetState extends State<QuickCategoriesPinSheet> {
     required bool isPinned,
     required bool showDragHandle,
     int? reorderIndex,
-    required CategoryCardRadius radius,
+    required CardRadius radius,
     required VoidCallback onTap,
   }) {
     final shade = findShadeById(category.colorId);
@@ -328,11 +328,4 @@ class _QuickCategoriesPinSheetState extends State<QuickCategoriesPinSheet> {
 
     return card;
   }
-}
-
-CategoryCardRadius _radiusForIndex(int index, int total) {
-  if (total == 1) return CategoryCardRadius.single;
-  if (index == 0) return CategoryCardRadius.first;
-  if (index == total - 1) return CategoryCardRadius.last;
-  return CategoryCardRadius.middle;
 }

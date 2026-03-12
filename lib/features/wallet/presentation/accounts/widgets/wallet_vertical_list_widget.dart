@@ -33,13 +33,6 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
     }
   }
 
-  CategoryCardRadius _radiusForIndex(int index, int total) {
-    if (total == 1) return CategoryCardRadius.single;
-    if (index == 0) return CategoryCardRadius.first;
-    if (index == total - 1) return CategoryCardRadius.last;
-    return CategoryCardRadius.middle;
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<WalletCubit, WalletsState>(
@@ -98,7 +91,7 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
                   ),
                 ),
                 style: widget.cardStyle,
-                radius: _radiusForIndex(index, total),
+                radius: radiusForIndex(index, total),
                 onTap: () =>
                     Navigator.of(context).pushNamed(AppRouter.createWallet),
               );
@@ -129,7 +122,7 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
                 ),
               ),
               style: widget.cardStyle,
-              radius: _radiusForIndex(index, total),
+              radius: radiusForIndex(index, total),
               onTap: widget.onWalletSelected != null
                   ? () => widget.onWalletSelected!(wallet)
                   : null,

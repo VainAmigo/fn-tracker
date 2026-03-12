@@ -85,7 +85,7 @@ class _Body extends StatelessWidget {
                 goalMap: goalMap,
                 walletMap: walletMap,
                 currency: currency,
-                radius: _radiusForIndex(i, txList.length),
+                radius: radiusForIndex(i, txList.length),
               ),
             ],
           ],
@@ -101,7 +101,7 @@ class _Body extends StatelessWidget {
     required Map<String, GoalModel> goalMap,
     required Map<String, WalletModel> walletMap,
     required Currency currency,
-    required CategoryCardRadius radius,
+    required CardRadius radius,
   }) {
     final isGoalTransaction = tx.categoryId == null || tx.categoryId!.isEmpty;
     final goal = isGoalTransaction && tx.goalId != null
@@ -137,26 +137,7 @@ class _Body extends StatelessWidget {
         padding: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
           color: Colors.red,
-          borderRadius: switch (radius) {
-            CategoryCardRadius.single => BorderRadius.circular(
-              AppSizing.borderRadius12,
-            ),
-            CategoryCardRadius.first => const BorderRadius.only(
-              topLeft: Radius.circular(AppSizing.borderRadius12),
-              topRight: Radius.circular(AppSizing.borderRadius12),
-              bottomLeft: Radius.circular(AppSizing.borderRadius4),
-              bottomRight: Radius.circular(AppSizing.borderRadius4),
-            ),
-            CategoryCardRadius.last => const BorderRadius.only(
-              topLeft: Radius.circular(AppSizing.borderRadius4),
-              topRight: Radius.circular(AppSizing.borderRadius4),
-              bottomLeft: Radius.circular(AppSizing.borderRadius12),
-              bottomRight: Radius.circular(AppSizing.borderRadius12),
-            ),
-            CategoryCardRadius.middle => BorderRadius.circular(
-              AppSizing.borderRadius4,
-            ),
-          },
+          borderRadius: borderRadiusFor(radius),
         ),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
@@ -244,10 +225,4 @@ class _Body extends StatelessWidget {
     return base;
   }
 
-  CategoryCardRadius _radiusForIndex(int index, int total) {
-    if (total == 1) return CategoryCardRadius.single;
-    if (index == 0) return CategoryCardRadius.first;
-    if (index == total - 1) return CategoryCardRadius.last;
-    return CategoryCardRadius.middle;
-  }
 }

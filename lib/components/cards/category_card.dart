@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class CategoryCard extends StatelessWidget {
@@ -10,7 +11,7 @@ class CategoryCard extends StatelessWidget {
     this.trailing,
     this.onTap,
     this.style = CategoryCardStyle.filled,
-    this.radius = CategoryCardRadius.middle,
+    this.radius = CardRadius.middle,
   });
 
   final String title;
@@ -19,7 +20,7 @@ class CategoryCard extends StatelessWidget {
   final Widget? trailing;
   final Function()? onTap;
   final CategoryCardStyle style;
-  final CategoryCardRadius radius;
+  final CardRadius radius;
 
   @override
   Widget build(BuildContext context) {
@@ -40,26 +41,7 @@ class CategoryCard extends StatelessWidget {
           border: style == CategoryCardStyle.outlined
               ? Border.all(color: colorScheme.onSecondary, width: 1)
               : null,
-          borderRadius: switch (radius) {
-            CategoryCardRadius.first => BorderRadius.only(
-              topLeft: Radius.circular(AppSizing.borderRadius12),
-              topRight: Radius.circular(AppSizing.borderRadius12),
-              bottomLeft: Radius.circular(AppSizing.borderRadius4),
-              bottomRight: Radius.circular(AppSizing.borderRadius4),
-            ),
-            CategoryCardRadius.last => BorderRadius.only(
-              topLeft: Radius.circular(AppSizing.borderRadius4),
-              topRight: Radius.circular(AppSizing.borderRadius4),
-              bottomLeft: Radius.circular(AppSizing.borderRadius12),
-              bottomRight: Radius.circular(AppSizing.borderRadius12),
-            ),
-            CategoryCardRadius.middle => BorderRadius.circular(
-              AppSizing.borderRadius4,
-            ),
-            CategoryCardRadius.single => BorderRadius.circular(
-              AppSizing.borderRadius12,
-            ),
-          },
+          borderRadius: borderRadiusFor(radius),
         ),
         child: Row(
           children: [
@@ -95,7 +77,5 @@ class CategoryCard extends StatelessWidget {
     );
   }
 }
-
-enum CategoryCardRadius { first, last, middle, single }
 
 enum CategoryCardStyle { filled, outlined }

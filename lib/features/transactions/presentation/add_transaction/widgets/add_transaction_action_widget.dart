@@ -190,7 +190,7 @@ class _AddTransactionActionWidgetState
                 const SizedBox(width: AppSizing.spaceBtwItems),
                 Expanded(
                   child: CategoryCard(
-                    radius: CategoryCardRadius.single,
+                    radius: CardRadius.single,
                     title: widget.selectedCategory?.name ?? 'Category',
                     trailing: Icon(
                       Icons.arrow_forward_ios,
@@ -308,7 +308,7 @@ class _AddTransactionActionWidgetState
     required VoidCallback onTap,
   }) {
     return CategoryCard(
-      radius: CategoryCardRadius.single,
+      radius: CardRadius.single,
       title: title,
       subtitle: subtitle,
       leading: Container(
