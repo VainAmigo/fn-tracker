@@ -279,6 +279,8 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       note: _note,
       amount: _amount.isNotEmpty ? double.parse(_amount) : 0,
       type: _selectedType,
+      createdAt: DateTime.now(),
+      date: _selectedDate,
     );
 
     context.read<AddTransactionCubit>().addTransaction(transaction: model);

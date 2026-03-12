@@ -18,15 +18,12 @@ class HomeInfoListWidget extends StatelessWidget {
             title: 'Quick Categories',
             action: PrimaryButton(
               text: 'Settings',
-              onPressed: () =>
-                  QuickCategoriesSettingsSheet.show(context),
+              onPressed: () => QuickCategoriesSettingsSheet.show(context),
               size: PrimaryButtonSize.xSmall,
               fullWidth: false,
               rounded: true,
             ),
-            children: [
-              const QuickCategoriesWidget(),
-            ],
+            children: [const QuickCategoriesWidget()],
           ),
           TitledSection(
             title: 'Last Transactions',

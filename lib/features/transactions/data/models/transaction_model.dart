@@ -16,7 +16,8 @@ class TransactionModel {
   final String? currency;
 
   final String? note;
-  final DateTime? createdAt;
+  final DateTime createdAt; // date of the transaction creation
+  final DateTime date; // date of the transaction
 
   final TransactionType type;
 
@@ -35,7 +36,8 @@ class TransactionModel {
     required this.amount,
     this.currency,
     this.note,
-    this.createdAt,
+    required this.createdAt,
+    required this.date,
     required this.type,
     required this.dayKey,
     required this.periodKey,
@@ -52,7 +54,8 @@ class TransactionModel {
       'amount': amount,
       'currency': currency,
       'note': note,
-      'createdAt': createdAt!.toIso8601String(),
+      'createdAt': createdAt.toIso8601String(),
+      'date': date.toIso8601String(),
       'type': type.toJson(),
       'dayKey': dayKey,
       'periodKey': periodKey,
@@ -61,13 +64,14 @@ class TransactionModel {
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     final createdAtRaw = json['createdAt'];
-    final DateTime? createdAt = createdAtRaw is Timestamp
+    final DateTime createdAt = createdAtRaw is Timestamp
         ? createdAtRaw.toDate()
-        : createdAtRaw is DateTime
-        ? createdAtRaw
-        : createdAtRaw is String
-        ? DateTime.tryParse(createdAtRaw)
-        : null;
+        : DateTime.fromMillisecondsSinceEpoch(0);
+
+    final dateRaw = json['date'];
+    final DateTime date = dateRaw is Timestamp
+        ? dateRaw.toDate()
+        : DateTime.fromMillisecondsSinceEpoch(0);
 
     return TransactionModel(
       id: json['id'],
@@ -81,7 +85,8 @@ class TransactionModel {
       amount: json['amount'],
       currency: json['currency'],
       note: json['note'],
-      createdAt: createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+      createdAt: createdAt,
+      date: date,
       type: TransactionType.fromJson(json['type'] as String),
     );
   }

@@ -29,6 +29,8 @@ class AddTransactionCubit extends Cubit<AddTransactionState> {
           note: transaction.note,
           type: TransactionType.expense,
           transferId: transferId,
+          date: transaction.date,
+          createdAt: transaction.createdAt,
         );
 
         final incomeDraft = TransactionModel(
@@ -42,6 +44,8 @@ class AddTransactionCubit extends Cubit<AddTransactionState> {
           note: transaction.note,
           type: TransactionType.income,
           transferId: transferId,
+          date: transaction.date,
+          createdAt: transaction.createdAt,
         );
 
         final expense = await transactionsRepo.addTransaction(
@@ -63,6 +67,7 @@ class AddTransactionCubit extends Cubit<AddTransactionState> {
           amount: transaction.amount,
           note: transaction.note,
           createdAt: transaction.createdAt,
+          date: transaction.date,
           type: transaction.type,
         );
 

@@ -59,9 +59,8 @@ class _QuickCategoriesWidgetState extends State<QuickCategoriesWidget> {
                 }
 
                 if (items.isEmpty) {
-                  return _EmptyState(displayMode: displayMode);
+                  return const SizedBox.shrink();
                 }
-
                 return SizedBox(
                   height: AppSizing.heightL,
                   child: ListView.separated(
@@ -97,9 +96,9 @@ class _QuickCategoriesWidgetState extends State<QuickCategoriesWidget> {
   ) {
     return switch (mode) {
       QuickCategoriesDisplayMode.pinned => _getPinnedCategories(
-          categories,
-          pinnedOrder,
-        ),
+        categories,
+        pinnedOrder,
+      ),
       QuickCategoriesDisplayMode.recent => _getRecentCategories(
         categories,
         transactions,
@@ -206,35 +205,6 @@ class _CategoryChip extends StatelessWidget {
               color: color,
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.displayMode});
-
-  final QuickCategoriesDisplayMode displayMode;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      height: 56,
-      padding: const EdgeInsets.all(AppSizing.spaceBtwElements),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(AppSizing.borderRadius12),
-      ),
-      child: Center(
-        child: Text(
-          displayMode == QuickCategoriesDisplayMode.pinned
-              ? 'Pin categories in settings for quick access'
-              : 'Add transactions to see recent categories',
-          style: AppTextStyles.listTileSubtitle(context),
-          textAlign: TextAlign.center,
         ),
       ),
     );

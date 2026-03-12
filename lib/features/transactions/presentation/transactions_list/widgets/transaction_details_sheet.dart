@@ -88,39 +88,57 @@ class TransactionDetailsSheet extends StatelessWidget {
             child: Text(typeLabel, style: AppTextStyles.text14w400(context)),
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
-          _DetailCard(
-            leadingIcon: icon?.icon ?? Icons.category,
-            leadingColor: color,
-            label: 'Category',
-            value: name,
+          CategoryCard(
+            subtitle: 'Category',
+            title: name,
+            leading: _detailLeading(
+              context,
+              icon: icon?.icon ?? Icons.category,
+              color: color,
+            ),
+            radius: CategoryCardRadius.first,
           ),
           if (transaction.note != null && transaction.note!.isNotEmpty) ...[
             const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-            _DetailCard(
-              leadingIcon: Icons.note_rounded,
-              leadingColor: null,
-              label: 'Description',
-              value: transaction.note ?? '—',
+            CategoryCard(
+              subtitle: 'Description',
+              title: transaction.note ?? '—',
+              leading: _detailLeading(
+                context,
+                icon: Icons.note_rounded,
+                color: null,
+              ),
+              radius: CategoryCardRadius.middle,
             ),
           ],
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          _DetailCard(
-            leadingIcon: wallet != null
-                ? (findIconById(wallet.iconId)?.icon ??
-                      Icons.account_balance_wallet_rounded)
-                : Icons.account_balance_wallet_rounded,
-            leadingColor: wallet != null
-                ? findShadeById(wallet.colorId)?.color
-                : null,
-            label: transaction.type == TransactionType.income ? 'To' : 'From',
-            value: wallet?.name ?? '—',
+          CategoryCard(
+            subtitle: transaction.type == TransactionType.income
+                ? 'To'
+                : 'From',
+            title: wallet?.name ?? '—',
+            leading: _detailLeading(
+              context,
+              icon: wallet != null
+                  ? (findIconById(wallet.iconId)?.icon ??
+                        Icons.account_balance_wallet_rounded)
+                  : Icons.account_balance_wallet_rounded,
+              color: wallet != null
+                  ? findShadeById(wallet.colorId)?.color
+                  : null,
+            ),
+            radius: CategoryCardRadius.middle,
           ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          _DetailCard(
-            leadingIcon: Icons.calendar_today_rounded,
-            leadingColor: null,
-            label: 'Date',
-            value: transaction.createdAt?.formatDayMonthYearUpper ?? '—',
+          CategoryCard(
+            subtitle: 'Date',
+            title: transaction.date.formatDayMonthYearUpper,
+            leading: _detailLeading(
+              context,
+              icon: Icons.calendar_today_rounded,
+              color: null,
+            ),
+            radius: CategoryCardRadius.last,
           ),
         ],
       ),
@@ -149,75 +167,21 @@ class TransactionDetailsSheet extends StatelessWidget {
   }
 }
 
-class _DetailCard extends StatelessWidget {
-  const _DetailCard({
-    required this.leadingIcon,
-    required this.label,
-    required this.value,
-    this.leadingColor,
-  });
+Widget _detailLeading(
+  BuildContext context, {
+  required IconData icon,
+  Color? color,
+}) {
+  final colorScheme = Theme.of(context).colorScheme;
+  final iconColor = color ?? colorScheme.onSurfaceVariant;
 
-  final IconData leadingIcon;
-  final String label;
-  final String value;
-  final Color? leadingColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final iconColor = leadingColor ?? colorScheme.onSurfaceVariant;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizing.spaceBtwElements,
-        vertical: AppSizing.spaceBtwItemsExtra,
-      ),
-      decoration: BoxDecoration(
-        color: colorScheme.secondary,
-        borderRadius: BorderRadius.circular(AppSizing.borderRadius12),
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: AppSizing.heightS,
-            width: AppSizing.heightS,
-            decoration: BoxDecoration(
-              color: (leadingColor ?? colorScheme.onSurfaceVariant).withValues(
-                alpha: 0.15,
-              ),
-              borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
-            ),
-            child: Icon(
-              leadingIcon,
-              size: AppSizing.iconSizeM,
-              color: iconColor,
-            ),
-          ),
-          const SizedBox(width: AppSizing.spaceBtwItems),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  label,
-                  style: AppTextStyles.listTileSubtitle(context),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  value,
-                  style: AppTextStyles.listTileTitle(
-                    context,
-                  ).copyWith(color: leadingColor),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  return Container(
+    height: AppSizing.heightS,
+    width: AppSizing.heightS,
+    decoration: BoxDecoration(
+      color: (color ?? colorScheme.onSurfaceVariant).withValues(alpha: 0.15),
+      borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+    ),
+    child: Icon(icon, size: AppSizing.iconSizeM, color: iconColor),
+  );
 }

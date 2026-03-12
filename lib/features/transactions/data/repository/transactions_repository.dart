@@ -90,6 +90,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
         currency: transaction.currency,
         note: transaction.note,
         createdAt: createdAt.toDate(),
+        date: transaction.date,
         type: transaction.type,
         transferId: transaction.transferId,
       );
@@ -106,6 +107,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
         'currency': model.currency,
         'note': model.note,
         'createdAt': createdAt,
+        'date': model.date,
         'type': model.type.toJson(),
         'transferId': model.transferId,
       });
