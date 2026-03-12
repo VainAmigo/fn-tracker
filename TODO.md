@@ -2,7 +2,7 @@
 
 ## add croll to add transaction view
 ## настоить TransactionDetailsSheet
-
+## refactor budget to monthly weakly dayly 
 
 # FEATURE
 

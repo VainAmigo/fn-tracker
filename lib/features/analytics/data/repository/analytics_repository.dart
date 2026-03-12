@@ -52,6 +52,7 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
 
     final transactions = transactionsSnapshot.docs
         .map((doc) => TransactionModel.fromJson(doc.data()))
+        .where((t) => t.transferId == null)
         .toList();
 
     final categories = categoriesSnapshot.docs
@@ -87,16 +88,17 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
       }
     }
 
-    final categorySpending = spendingByCategoryId.entries
-        .where((e) => categoriesMap.containsKey(e.key))
-        .map(
-          (e) => CategorySpending(
-            category: categoriesMap[e.key]!,
-            amount: e.value,
-          ),
-        )
-        .toList()
-      ..sort((a, b) => b.amount.compareTo(a.amount));
+    final categorySpending =
+        spendingByCategoryId.entries
+            .where((e) => categoriesMap.containsKey(e.key))
+            .map(
+              (e) => CategorySpending(
+                category: categoriesMap[e.key]!,
+                amount: e.value,
+              ),
+            )
+            .toList()
+          ..sort((a, b) => b.amount.compareTo(a.amount));
 
     final monthlyTrend = periodKeysForTrend
         .map(

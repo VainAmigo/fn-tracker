@@ -17,12 +17,18 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
   void initState() {
     super.initState();
     final (:start, :end) = MonthRangeUtils.currentMonth();
-    context.read<BudgetCubit>().loadBudgetStats(periodKey: start.periodKey);
+    context.read<BudgetCubit>().loadBudgetStats(
+      startDayKey: start.dayKey,
+      endDayKey: end.dayKey,
+    );
   }
 
   void _onDateChange(Month month, int year) {
-    final periodKey = MonthRangeUtils.rangeFor(year, month).start.periodKey;
-    context.read<BudgetCubit>().loadBudgetStats(periodKey: periodKey);
+    final (:start, :end) = MonthRangeUtils.rangeFor(year, month);
+    context.read<BudgetCubit>().loadBudgetStats(
+      startDayKey: start.dayKey,
+      endDayKey: end.dayKey,
+    );
   }
 
   @override
@@ -61,7 +67,9 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                                   existingBudget: stats.budget,
                                 ),
                               ),
-                              const SizedBox(height: AppSizing.spaceBtwSections),
+                              const SizedBox(
+                                height: AppSizing.spaceBtwSections,
+                              ),
                               BudgetsSpendingCategoriesListWidget(
                                 categorySpending: stats.categorySpending,
                                 currency: currency,
@@ -72,7 +80,8 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                     onRetry: () {
                       final (:start, :end) = MonthRangeUtils.currentMonth();
                       context.read<BudgetCubit>().loadBudgetStats(
-                        periodKey: start.periodKey,
+                        startDayKey: start.dayKey,
+                        endDayKey: end.dayKey,
                       );
                     },
                   ),

@@ -159,6 +159,83 @@ class WalletRepository implements WalletRepoImpl {
   }
 
   @override
+  Future<BudgetStatModel> getBudgetStats({
+    required String startDayKey,
+    required String endDayKey,
+  }) async {
+    final uid = _requireUid();
+    try {
+      final results = await Future.wait([
+        _budgetsRef(uid).get(),
+        _transactionsRef(uid)
+            .where('dayKey', isGreaterThanOrEqualTo: startDayKey)
+            .where('dayKey', isLessThanOrEqualTo: endDayKey)
+            .orderBy('dayKey', descending: true)
+            .get(),
+        _categoriesRef(uid).orderBy('createdAt', descending: true).get(),
+      ]);
+
+      final budgetSnapshot = results[0];
+      final transactionsSnapshot = results[1];
+      final categoriesSnapshot = results[2];
+
+      final BudgetModel? budget = budgetSnapshot.docs.isEmpty
+          ? null
+          : BudgetModel.fromJson({
+              ...budgetSnapshot.docs.first.data(),
+              'id': budgetSnapshot.docs.first.id,
+            });
+
+      final transactions = transactionsSnapshot.docs
+          .map((doc) => TransactionModel.fromJson(doc.data()))
+          .where((t) => t.transferId == null)
+          .where((t) => t.type == TransactionType.expense)
+          .toList();
+
+      final totalForPeriod = transactions.fold<double>(
+        0.0,
+        (double sum, t) => sum + t.amount,
+      );
+
+      final categories = categoriesSnapshot.docs
+          .map((doc) => CategoryModel.fromJson(doc.data()))
+          .toList();
+
+      final Map<String, double> spendingByCategoryId = {};
+      for (final t in transactions) {
+        spendingByCategoryId.update(
+          t.categoryId ?? '',
+          (prev) => prev + t.amount,
+          ifAbsent: () => t.amount,
+        );
+      }
+
+      final categoriesMap = {for (final c in categories) c.categoryId: c};
+
+      final categorySpending =
+          spendingByCategoryId.entries
+              .where((e) => categoriesMap.containsKey(e.key))
+              .map(
+                (e) => CategorySpending(
+                  category: categoriesMap[e.key]!,
+                  amount: e.value,
+                ),
+              )
+              .toList()
+            ..sort((a, b) => b.amount.compareTo(a.amount));
+
+      return BudgetStatModel(
+        budget: budget,
+        transactions: transactions,
+        totalForPeriod: totalForPeriod,
+        categorySpending: categorySpending,
+      );
+    } catch (e) {
+      throw Exception('Failed to get budget stats: $e');
+    }
+  }
+
+  @override
   Future<BudgetModel> createBudget({required BudgetModel budget}) async {
     final uid = _requireUid();
     try {
@@ -276,82 +353,6 @@ class WalletRepository implements WalletRepoImpl {
       await _goalsRef(uid).doc(id).delete();
     } catch (e) {
       throw Exception('Failed to delete goal: $e');
-    }
-  }
-
-  @override
-  Future<BudgetStatModel> getBudgetStats({required String periodKey}) async {
-    final uid = _requireUid();
-    try {
-      final results = await Future.wait([
-        _budgetsRef(uid).get(),
-        _transactionsRef(uid)
-            .where('periodKey', isEqualTo: periodKey)
-            .orderBy('dayKey', descending: true)
-            .get(),
-        _categoriesRef(uid).orderBy('createdAt', descending: true).get(),
-      ]);
-
-      final budgetSnapshot = results[0];
-      final transactionsSnapshot = results[1];
-      final categoriesSnapshot = results[2];
-
-      final BudgetModel? budget = budgetSnapshot.docs.isEmpty
-          ? null
-          : BudgetModel.fromJson({
-              ...budgetSnapshot.docs.first.data(),
-              'id': budgetSnapshot.docs.first.id,
-            });
-
-      final expenseType = TransactionType.expense.toJson();
-
-      final transactions = transactionsSnapshot.docs
-          .map((doc) => TransactionModel.fromJson(doc.data()))
-          .where((t) => t.type == TransactionType.expense)
-          .toList();
-
-      final totalForPeriod = transactionsSnapshot.docs
-          .where((doc) => doc.data()['type'] == expenseType)
-          .fold<double>(
-            0.0,
-            (double sum, doc) => sum + (doc.data()['amount'] as num).toDouble(),
-          );
-
-      final categories = categoriesSnapshot.docs
-          .map((doc) => CategoryModel.fromJson(doc.data()))
-          .toList();
-
-      final Map<String, double> spendingByCategoryId = {};
-      for (final t in transactions) {
-        spendingByCategoryId.update(
-          t.categoryId ?? '',
-          (prev) => prev + t.amount,
-          ifAbsent: () => t.amount,
-        );
-      }
-
-      final categoriesMap = {for (final c in categories) c.categoryId: c};
-
-      final categorySpending =
-          spendingByCategoryId.entries
-              .where((e) => categoriesMap.containsKey(e.key))
-              .map(
-                (e) => CategorySpending(
-                  category: categoriesMap[e.key]!,
-                  amount: e.value,
-                ),
-              )
-              .toList()
-            ..sort((a, b) => b.amount.compareTo(a.amount));
-
-      return BudgetStatModel(
-        budget: budget,
-        transactions: transactions,
-        totalForPeriod: totalForPeriod,
-        categorySpending: categorySpending,
-      );
-    } catch (e) {
-      throw Exception('Failed to get budget stats: $e');
     }
   }
 }

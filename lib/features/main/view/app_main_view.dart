@@ -30,7 +30,10 @@ class _AppMainViewState extends State<AppMainView> {
     context.read<AnalyticsCubit>().loadAnalytics();
     context.read<WalletCubit>().loadWallets();
     context.read<GoalsCubit>().loadGoals();
-    context.read<BudgetCubit>().loadBudgetStats(periodKey: start.periodKey);
+    context.read<BudgetCubit>().loadBudgetStats(
+      startDayKey: start.dayKey,
+      endDayKey: end.dayKey,
+    );
   }
 
   @override
@@ -77,9 +80,6 @@ class _AppMainViewState extends State<AppMainView> {
           currentIndex: _selectedIndex,
           onTap: (index) {
             setState(() => _selectedIndex = index);
-            // if (index == 2) {
-            //   context.read<AnalyticsCubit>().loadAnalytics();
-            // }
           },
         ),
       ),

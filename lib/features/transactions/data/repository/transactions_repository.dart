@@ -143,6 +143,7 @@ class TransactionsRepository implements TransactionsRepoImpl {
 
       final transactions = snapshot.docs
           .map((doc) => TransactionModel.fromJson(doc.data()))
+          .where((t) => t.transferId == null)
           .where((t) => t.type == TransactionType.expense)
           .toList();
 

@@ -6,17 +6,23 @@ part 'budget_state.dart';
 class BudgetCubit extends Cubit<BudgetState> {
   final WalletRepoImpl walletRepo;
 
-  String? _lastPeriodKey;
+  String? _lastStartDayKey;
+  String? _lastEndDayKey;
 
   BudgetCubit({required this.walletRepo}) : super(BudgetInitial());
 
   Future<void> loadBudgetStats({
-    required String periodKey,
+    required String startDayKey,
+    required String endDayKey,
   }) async {
-    _lastPeriodKey = periodKey;
+    _lastStartDayKey = startDayKey;
+    _lastEndDayKey = endDayKey;
     emit(BudgetLoading());
     try {
-      final stats = await walletRepo.getBudgetStats(periodKey: periodKey);
+      final stats = await walletRepo.getBudgetStats(
+        startDayKey: startDayKey,
+        endDayKey: endDayKey,
+      );
       emit(BudgetStatsLoaded(stats));
     } catch (e) {
       emit(BudgetError(e.toString()));
@@ -54,9 +60,12 @@ class BudgetCubit extends Cubit<BudgetState> {
   }
 
   Future<void> _reloadStats() async {
-    if (_lastPeriodKey != null) {
-      final stats = await walletRepo.getBudgetStats(periodKey: _lastPeriodKey!);
+    if (_lastStartDayKey != null && _lastEndDayKey != null) {
+      final stats = await walletRepo.getBudgetStats(
+        startDayKey: _lastStartDayKey!,
+        endDayKey: _lastEndDayKey!,
+      );
       emit(BudgetStatsLoaded(stats));
     }
-  } 
+  }
 }

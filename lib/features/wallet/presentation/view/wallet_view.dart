@@ -23,7 +23,10 @@ class _WalletViewState extends State<WalletView> {
   Future<void> _onRefresh() async {
     final (:start, :end) = MonthRangeUtils.currentMonth();
     await Future.wait([
-      context.read<BudgetCubit>().loadBudgetStats(periodKey: start.periodKey),
+      context.read<BudgetCubit>().loadBudgetStats(
+        startDayKey: start.dayKey,
+        endDayKey: end.dayKey,
+      ),
       context.read<WalletCubit>().loadWallets(),
       context.read<GoalsCubit>().loadGoals(),
       context.read<CategoriesCubit>().loadCategories(),
@@ -41,7 +44,8 @@ class _WalletViewState extends State<WalletView> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               const tabBarHeight = 100.0;
-              final contentHeight = constraints.maxHeight -
+              final contentHeight =
+                  constraints.maxHeight -
                   tabBarHeight -
                   AppSizing.spaceBtwElements;
 
