@@ -33,7 +33,6 @@ class TransactionsRepository implements TransactionsRepoImpl {
 
       return transactionsSnapshot.docs
           .map((doc) => TransactionModel.fromJson(doc.data()))
-          .where((t) => t.type == TransactionType.expense)
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch transactions: $e');

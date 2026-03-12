@@ -63,6 +63,11 @@ class _Body extends StatelessWidget {
     final categoryMap = {for (final c in categories) c.categoryId: c};
     final goals = _extractGoals(context.watch<GoalsCubit>().state);
     final goalMap = {for (final g in goals) g.id: g};
+    final wallets = _extractWallets(context.watch<WalletCubit>().state);
+    final walletMap = {
+      for (final w in wallets)
+        if (w.id != null) w.id!: w,
+    };
 
     final lastItems = transactions.length > 10
         ? transactions.sublist(transactions.length - 10)
@@ -84,16 +89,21 @@ class _Body extends StatelessWidget {
               final category = !isGoalTransaction
                   ? categoryMap[tx.categoryId]
                   : null;
+              final wallet = tx.walletId != null ? walletMap[tx.walletId] : null;
 
               final shade = category != null
                   ? findShadeById(category.colorId)
                   : goal != null
                   ? findShadeById(goal.colorId)
+                  : wallet != null
+                  ? findShadeById(wallet.colorId)
                   : null;
               final icon = category != null
                   ? findIconById(category.iconId)
                   : goal != null
                   ? findIconById(goal.iconId)
+                  : wallet != null
+                  ? findIconById(wallet.iconId)
                   : null;
 
               final fallbackColor = Theme.of(context).colorScheme.onSecondary;
@@ -136,7 +146,7 @@ class _Body extends StatelessWidget {
                   child: const Icon(Icons.delete, color: Colors.white),
                 ),
                 child: CategoryCard(
-                  title: category?.name ?? goal?.name ?? 'Unknown category',
+                  title: category?.name ?? goal?.name ?? wallet?.name ?? 'Unknown category',
                   subtitle: isGoalTransaction
                       ? 'Goal'
                       : tx.note.isNotEmpty
@@ -178,6 +188,13 @@ class _Body extends StatelessWidget {
   List<CategoryModel> _extractCategories(CategoriesState state) {
     return switch (state) {
       CategoriesLoaded s => s.categories,
+      _ => const [],
+    };
+  }
+
+  List<WalletModel> _extractWallets(WalletsState state) {
+    return switch (state) {
+      WalletsLoaded s => s.wallets,
       _ => const [],
     };
   }

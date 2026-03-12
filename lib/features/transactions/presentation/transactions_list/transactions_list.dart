@@ -4,3 +4,4 @@ export 'cubit/transactions_cubit.dart';
 export 'models/transaction_period.dart';
 export 'widgets/transactions_list_widget.dart';
 export 'widgets/last_transactions_list_widget.dart';
+export 'widgets/transaction_details_sheet.dart';

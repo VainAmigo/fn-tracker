@@ -114,11 +114,15 @@ class _Body extends StatelessWidget {
         ? findShadeById(category.colorId)
         : goal != null
         ? findShadeById(goal.colorId)
+        : wallet != null
+        ? findShadeById(wallet.colorId)
         : null;
     final icon = category != null
         ? findIconById(category.iconId)
         : goal != null
         ? findIconById(goal.iconId)
+        : wallet != null
+        ? findIconById(wallet.iconId)
         : null;
     final color = shade?.color ?? Colors.grey;
 
@@ -157,6 +161,7 @@ class _Body extends StatelessWidget {
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       child: CategoryCard(
+        onTap: () => TransactionDetailsSheet.show(context, transaction: tx),
         title:
             category?.name ?? goal?.name ?? tx.categoryId ?? wallet?.name ?? '',
         subtitle: _buildSubtitle(
