@@ -18,6 +18,7 @@ class _WalletViewState extends State<WalletView> {
     WalletBudgetTabWidget(),
     AccountsTabWidget(),
     CategoriesTabView(),
+    ScheduledPaymentsTabView(),
   ];
 
   Future<void> _onRefresh() async {
@@ -41,46 +42,28 @@ class _WalletViewState extends State<WalletView> {
           padding: EdgeInsetsGeometry.symmetric(
             horizontal: AppSizing.defaultPadding,
           ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              const tabBarHeight = 100.0;
-              final contentHeight =
-                  constraints.maxHeight -
-                  tabBarHeight -
-                  AppSizing.spaceBtwElements;
-
-              return RefreshIndicator(
-                onRefresh: _onRefresh,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        WalletTabBarWidget(
-                          title: 'Your ballance and saves',
-                          selectedTab: _selectedTab,
-                          onChanged: (tab) =>
-                              setState(() => _selectedTab = tab),
-                        ),
-                        const SizedBox(height: AppSizing.spaceBtwElements),
-                        SizedBox(
-                          height: contentHeight,
-                          child: IndexedStack(
-                            index: _selectedTab.index,
-                            children: _tabBodies,
-                          ),
-                        ),
-                      ],
-                    ),
+          child: RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  WalletTabBarWidget(
+                    title: 'Your ballance and saves',
+                    selectedTab: _selectedTab,
+                    onChanged: (tab) =>
+                        setState(() => _selectedTab = tab),
                   ),
-                ),
-              );
-            },
+                  const SizedBox(height: AppSizing.spaceBtwElements),
+                  IndexedStack(
+                    index: _selectedTab.index,
+                    children: _tabBodies,
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
