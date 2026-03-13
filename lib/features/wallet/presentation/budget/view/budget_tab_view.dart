@@ -13,21 +13,10 @@ class WalletBudgetTabWidget extends StatefulWidget {
 }
 
 class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
-  @override
-  void initState() {
-    super.initState();
-    final (:start, :end) = MonthRangeUtils.currentMonth();
+  void _onPeriodChange(DatePickerPeriod period) {
     context.read<BudgetCubit>().loadBudgetStats(
-      startDayKey: start.dayKey,
-      endDayKey: end.dayKey,
-    );
-  }
-
-  void _onDateChange(Month month, int year) {
-    final (:start, :end) = MonthRangeUtils.rangeFor(year, month);
-    context.read<BudgetCubit>().loadBudgetStats(
-      startDayKey: start.dayKey,
-      endDayKey: end.dayKey,
+      startDayKey: period.startDayKey,
+      endDayKey: period.endDayKey,
     );
   }
 
@@ -37,7 +26,7 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
 
     return SingleChildScrollView(
       child: MonthPickerScrollWidget(
-        onDateChange: _onDateChange,
+        onPeriodChange: _onPeriodChange,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

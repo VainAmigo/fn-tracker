@@ -66,8 +66,7 @@ class _AnalyticsBody extends StatelessWidget {
         return MonthPickerScrollWidget(
           initialYear: cubit.selectedYear,
           initialMonth: cubit.selectedMonth,
-          onDateChange: (month, year) =>
-              cubit.loadAnalyticsByMonth(month, year),
+          onPeriodChange: (period) => cubit.loadAnalyticsByPeriod(period),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

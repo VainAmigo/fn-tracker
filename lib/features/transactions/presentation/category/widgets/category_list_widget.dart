@@ -68,7 +68,7 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
       shrinkWrap: widget.shrinkWrap,
       physics: widget.shrinkWrap ? const NeverScrollableScrollPhysics() : null,
       itemCount: total,
-      separatorBuilder: (_, __) =>
+      separatorBuilder: (_, _) =>
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
       itemBuilder: (context, index) {
         if (index == categories.length) {
@@ -140,8 +140,8 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
           direction: DismissDirection.endToStart,
           onDismissed: (_) {
             context.read<CategoriesCubit>().deleteCategory(
-                  categoryId: category.categoryId,
-                );
+              categoryId: category.categoryId,
+            );
           },
           background: Container(
             alignment: Alignment.centerRight,

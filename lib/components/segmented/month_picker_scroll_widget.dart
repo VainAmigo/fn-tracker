@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:fn_tracker/components/segmented/custom_tab_widget.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
+/// Режим пикера: год / месяц / неделя.
+enum PickerMode { yearly, monthly, weekly }
+
 /// Диапазон лет для прокрутки (включительно).
 const int _startYear = 2000;
-const int _endYear = 2100;
 
 int _monthIndexFromDate(int year, int month) {
   return (year - _startYear) * 12 + (month - 1);
@@ -16,23 +19,24 @@ int _monthIndexFromDate(int year, int month) {
   return (year, month);
 }
 
-/// Универсальный виджет горизонтальной прокрутки по месяцам: по центру активный
-/// месяц, по бокам — соседние. Год отображается над активным месяцем и меняется
-/// при переходе на другой год. Подходит для бюджета, отчётов и любых экранов
-/// с выбором месяца.
-///
-/// Поддерживает свайп по контенту [child] для смены месяца.
+DateTime _startOfWeek(DateTime d) {
+  return DateTime(d.year, d.month, d.day - (d.weekday - 1));
+}
+
+/// Универсальный виджет горизонтальной прокрутки по периодам: год, месяц или неделя.
+/// Табы для переключения режима; под активным периодом — [child] с поддержкой свайпа.
 class MonthPickerScrollWidget extends StatefulWidget {
   const MonthPickerScrollWidget({
-    required this.onDateChange,
+    required this.onPeriodChange,
     super.key,
     this.initialYear,
     this.initialMonth,
+    this.initialMode = PickerMode.monthly,
     this.child,
   });
 
-  /// Вызывается при смене выбранного месяца (после завершения скролла).
-  final void Function(Month month, int year) onDateChange;
+  /// Вызывается при смене выбранного периода (год / месяц / неделя).
+  final void Function(DatePickerPeriod period) onPeriodChange;
 
   /// Начальный год. По умолчанию — текущий.
   final int? initialYear;
@@ -40,39 +44,104 @@ class MonthPickerScrollWidget extends StatefulWidget {
   /// Начальный месяц (1–12). По умолчанию — текущий.
   final int? initialMonth;
 
-  /// Контент под пикером. Поддерживает свайп влево/вправо для смены месяца.
+  /// Начальный режим. По умолчанию — [PickerMode.monthly].
+  final PickerMode initialMode;
+
+  /// Контент под пикером. Поддерживает свайп влево/вправо для смены периода.
   final Widget? child;
 
   @override
-  State<MonthPickerScrollWidget> createState() => _MonthPickerScrollWidgetState();
+  State<MonthPickerScrollWidget> createState() =>
+      _MonthPickerScrollWidgetState();
 }
 
-/// Пикселей свайпа на один месяц (меньше = чувствительнее).
 const double _pixelsPerMonth = 60;
 
 class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
   late PageController _pageController;
-  late int _currentIndex;
-  int _totalPages = 0;
+  late PickerMode _mode;
+
+  int _yearIndex = 0;
+  int _monthIndex = 0;
+  int _weekIndex = 0;
+
+  int _yearCount = 0;
+  int _monthCount = 0;
+  int _weekCount = 0;
+
+  late DateTime _weeklyBaseStart;
+
   double _dragAccumulator = 0;
 
-  int get _currentYear => _dateFromMonthIndex(_currentIndex).$1;
-  int get _currentMonth => _dateFromMonthIndex(_currentIndex).$2;
+  static int get _nowYear => DateTime.now().year;
+
+  int get _currentYear => _startYear + _yearIndex;
+  (int year, int month) get _currentMonthPair =>
+      _dateFromMonthIndex(_monthIndex);
+  (DateTime start, DateTime end) get _currentWeekRange {
+    final start = _weeklyBaseStart.add(Duration(days: _weekIndex * 7));
+    final end = start.add(const Duration(days: 6));
+    return (start, end);
+  }
 
   @override
   void initState() {
     super.initState();
     final now = DateTime.now();
-    final year = widget.initialYear ?? now.year;
-    final month = widget.initialMonth ?? now.month;
-    _totalPages = _monthIndexFromDate(_endYear, 12) + 1;
-    _currentIndex = _monthIndexFromDate(year, month).clamp(0, _totalPages - 1);
-    _pageController = PageController(
-      initialPage: _currentIndex,
-      viewportFraction: 1 / 3,
+    _mode = widget.initialMode;
+
+    // Yearly: от _startYear до now + 2 года
+    _yearCount = _nowYear + 2 - _startYear + 1;
+    final year = (widget.initialYear ?? now.year).clamp(
+      _startYear,
+      _nowYear + 2,
     );
-    _notifyDateChange();
+    _yearIndex = year - _startYear;
+
+    // Monthly: от _startYear до конец (now + 1 год), назад без ограничений
+    final maxMonthIndex = _monthIndexFromDate(_nowYear + 1, 12);
+    _monthCount = maxMonthIndex + 1;
+    final yearM = widget.initialYear ?? now.year;
+    final monthM = (widget.initialMonth ?? now.month).clamp(1, 12);
+    _monthIndex = _monthIndexFromDate(yearM, monthM).clamp(0, maxMonthIndex);
+
+    // Weekly: 6 месяцев назад — 4 недели вперёд
+    _weeklyBaseStart = _startOfWeek(DateTime(now.year, now.month - 6, now.day));
+    final endWeekStart = _startOfWeek(now.add(const Duration(days: 28)));
+    _weekCount =
+        (endWeekStart.difference(_weeklyBaseStart).inDays / 7).floor() + 1;
+    final todayStart = _startOfWeek(now);
+    _weekIndex = (todayStart.difference(_weeklyBaseStart).inDays / 7)
+        .floor()
+        .clamp(0, _weekCount - 1);
+
+    _pageController = _createPageController();
+    _notifyPeriodChange();
   }
+
+  PageController _createPageController() {
+    final index = switch (_mode) {
+      PickerMode.yearly => _yearIndex,
+      PickerMode.monthly => _monthIndex,
+      PickerMode.weekly => _weekIndex,
+    };
+    return PageController(initialPage: index, viewportFraction: 1 / 3);
+  }
+
+  int get _currentPageIndex => switch (_mode) {
+    PickerMode.yearly => _yearIndex,
+    PickerMode.monthly => _monthIndex,
+    PickerMode.weekly => _weekIndex,
+  };
+
+  int get _totalPages => switch (_mode) {
+    PickerMode.yearly => _yearCount,
+    PickerMode.monthly => _monthCount,
+    PickerMode.weekly => _weekCount,
+  };
+
+  bool get _canGoNext => _currentPageIndex < _totalPages - 1;
+  bool get _canGoPrev => _currentPageIndex > 0;
 
   @override
   void dispose() {
@@ -80,43 +149,67 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
     super.dispose();
   }
 
-  void _notifyDateChange() {
-    final month = Month.fromValue(_currentMonth);
-    widget.onDateChange(month, _currentYear);
+  DatePickerPeriod get _currentPeriod => switch (_mode) {
+    PickerMode.yearly => YearlyPeriod(_currentYear),
+    PickerMode.monthly => MonthlyPeriod(
+      year: _currentMonthPair.$1,
+      month: Month.fromValue(_currentMonthPair.$2),
+    ),
+    PickerMode.weekly => WeeklyPeriod(
+      start: _currentWeekRange.$1,
+      end: _currentWeekRange.$2,
+    ),
+  };
+
+  void _notifyPeriodChange() {
+    widget.onPeriodChange(_currentPeriod);
   }
 
   void _onPageChanged(int index) {
-    if (index == _currentIndex) return;
-    setState(() => _currentIndex = index);
-    _notifyDateChange();
+    final prev = _currentPageIndex;
+    if (index == prev) return;
+    setState(() {
+      switch (_mode) {
+        case PickerMode.yearly:
+          _yearIndex = index;
+          break;
+        case PickerMode.monthly:
+          _monthIndex = index;
+          break;
+        case PickerMode.weekly:
+          _weekIndex = index;
+          break;
+      }
+    });
+    _notifyPeriodChange();
   }
 
-  void _goToNextMonth() {
-    if (_currentIndex >= _totalPages - 1) return;
+  void _goToNext() {
+    if (!_canGoNext) return;
     _pageController.nextPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }
 
-  void _goToPrevMonth() {
-    if (_currentIndex <= 0) return;
+  void _goToPrev() {
+    if (!_canGoPrev) return;
     _pageController.previousPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }
 
-  void _animateToNextMonth() {
-    if (_currentIndex >= _totalPages - 1) return;
+  void _animateToNext() {
+    if (!_canGoNext) return;
     _pageController.nextPage(
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeOut,
     );
   }
 
-  void _animateToPrevMonth() {
-    if (_currentIndex <= 0) return;
+  void _animateToPrev() {
+    if (!_canGoPrev) return;
     _pageController.previousPage(
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeOut,
@@ -129,14 +222,13 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
 
   void _onHorizontalDragUpdate(DragUpdateDetails details) {
     _dragAccumulator += details.delta.dx;
-
     while (_dragAccumulator <= -_pixelsPerMonth) {
       _dragAccumulator += _pixelsPerMonth;
-      _animateToNextMonth();
+      _animateToNext();
     }
     while (_dragAccumulator >= _pixelsPerMonth) {
       _dragAccumulator -= _pixelsPerMonth;
-      _animateToPrevMonth();
+      _animateToPrev();
     }
   }
 
@@ -144,10 +236,65 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
     const velocityThreshold = 50.0;
     final velocity = details.primaryVelocity ?? 0;
     if (velocity < -velocityThreshold) {
-      _goToNextMonth();
+      _goToNext();
     } else if (velocity > velocityThreshold) {
-      _goToPrevMonth();
+      _goToPrev();
     }
+  }
+
+  void _onModeChanged(PickerMode mode) {
+    if (mode == _mode) return;
+
+    _pageController.dispose();
+
+    setState(() {
+      final now = DateTime.now();
+
+      switch (mode) {
+        case PickerMode.yearly:
+          final year = (widget.initialYear ?? now.year).clamp(
+            _startYear,
+            _nowYear + 2,
+          );
+          _yearIndex = year - _startYear;
+          break;
+        case PickerMode.monthly:
+          final maxMonthIndex = _monthCount - 1;
+          // При переключении на месяцы всегда ставим текущий месяц, чтобы избежать сдвигов.
+          _monthIndex = _monthIndexFromDate(
+            now.year,
+            now.month,
+          ).clamp(0, maxMonthIndex);
+          break;
+        case PickerMode.weekly:
+          final todayStart = _startOfWeek(now);
+          _weekIndex = (todayStart.difference(_weeklyBaseStart).inDays / 7)
+              .floor()
+              .clamp(0, _weekCount - 1);
+          break;
+      }
+
+      _mode = mode;
+      _pageController = _createPageController();
+    });
+
+    // Гарантируем, что нужный элемент окажется по центру (два кадра — PageView успевает принять контроллер).
+    void scheduleJump() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          final index = _currentPageIndex.clamp(0, _totalPages - 1);
+          if (_pageController.hasClients) {
+            _pageController.jumpToPage(index);
+          }
+        });
+      });
+    }
+
+    scheduleJump();
+
+    _notifyPeriodChange();
   }
 
   @override
@@ -158,44 +305,64 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Center(
-          child: Text(
-            '$_currentYear',
-            style: AppTextStyles.segmentedButtonLabel(context),
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: CustomTabWidget<PickerMode>(
+                items: const [
+                  PickerMode.yearly,
+                  PickerMode.monthly,
+                  PickerMode.weekly,
+                ],
+                selectedValue: _mode,
+                onChanged: _onModeChanged,
+                labelBuilder: (mode) => switch (mode) {
+                  PickerMode.yearly => 'Yearly',
+                  PickerMode.monthly => 'Monthly',
+                  PickerMode.weekly => 'Weekly',
+                },
+                leftPadding: 0,
+              ),
+            ),
+            const SizedBox(width: AppSizing.spaceBtwItems),
+            Text(
+              _headerLabel(context),
+              style: AppTextStyles.text16w400(
+                context,
+              ).copyWith(color: colorScheme.onSecondary),
+            ),
+          ],
         ),
         SizedBox(
           height: AppSizing.heightS,
           child: PageView.builder(
+            key: ValueKey<PickerMode>(_mode),
             controller: _pageController,
             onPageChanged: _onPageChanged,
             itemCount: _totalPages,
             itemBuilder: (context, index) {
-              final (_, month) = _dateFromMonthIndex(index);
-              final isCenter = index == _currentIndex;
-              final monthEnum = Month.fromValue(month);
-
+              final isCenter = index == _currentPageIndex;
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: isCenter
                     ? null
                     : () => _pageController.animateToPage(
-                          index,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        ),
+                        index,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      ),
                 child: AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 150),
                   style: TextStyle(
-                    fontSize: isCenter ? 18 : 16,
+                    fontSize: isCenter ? 16 : 14,
                     fontWeight: isCenter ? FontWeight.w600 : FontWeight.w400,
                     color: isCenter
                         ? colorScheme.onSurface
                         : colorScheme.onSecondary,
                   ),
-                  child: Center(
-                    child: Text(monthEnum.localizedName(context)),
-                  ),
+                  child: Center(child: Text(_itemLabel(context, index))),
                 ),
               );
             },
@@ -207,9 +374,37 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
             onHorizontalDragUpdate: _onHorizontalDragUpdate,
             onHorizontalDragEnd: _onHorizontalDragEnd,
             behavior: HitTestBehavior.translucent,
-            child: widget.child,
+            child: widget.child!,
           ),
       ],
     );
+  }
+
+  String _headerLabel(BuildContext context) => switch (_mode) {
+    PickerMode.yearly => '$_currentYear',
+    PickerMode.monthly => '${_currentMonthPair.$1}',
+    PickerMode.weekly => '${_currentMonthPair.$1}',
+  };
+
+  String _itemLabel(BuildContext context, int index) {
+    return switch (_mode) {
+      PickerMode.yearly => '${_startYear + index}',
+      PickerMode.monthly => Month.fromValue(
+        _dateFromMonthIndex(index).$2,
+      ).localizedName(context),
+      PickerMode.weekly => _weekRangeShortLabel(
+        context,
+        _weeklyBaseStart.add(Duration(days: index * 7)),
+        _weeklyBaseStart.add(Duration(days: index * 7 + 6)),
+      ),
+    };
+  }
+
+  String _weekRangeShortLabel(
+    BuildContext context,
+    DateTime start,
+    DateTime end,
+  ) {
+    return '${start.formatDayMonthShort(context)} - ${end.formatDayMonthShort(context)}';
   }
 }
