@@ -18,7 +18,6 @@ class _WalletViewState extends State<WalletView> {
     WalletBudgetTabWidget(),
     AccountsTabWidget(),
     CategoriesTabView(),
-    ScheduledPaymentsTabView(),
   ];
 
   Future<void> _onRefresh() async {
@@ -57,10 +56,8 @@ class _WalletViewState extends State<WalletView> {
                         setState(() => _selectedTab = tab),
                   ),
                   const SizedBox(height: AppSizing.spaceBtwElements),
-                  IndexedStack(
-                    index: _selectedTab.index,
-                    children: _tabBodies,
-                  ),
+                  // Показываем только активный таб — высота экрана = высота его контента
+                  _tabBodies[_selectedTab.index],
                 ],
               ),
             ),

@@ -40,4 +40,32 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
     _selectedMonth = month.value;
     await loadAnalytics();
   }
+
+  Future<void> loadAnalyticsByPeriod(DatePickerPeriod period) async {
+    switch (period) {
+      case MonthlyPeriod(:final year, :final month):
+        _selectedYear = year;
+        _selectedMonth = month.value;
+        break;
+      case YearlyPeriod(:final year):
+        _selectedYear = year;
+        _selectedMonth = 1;
+        break;
+      case WeeklyPeriod(:final start):
+        _selectedYear = start.year;
+        _selectedMonth = start.month;
+        break;
+    }
+    try {
+      emit(AnalyticsLoading());
+      final data = await analyticsRepo.getAnalytics(
+        startDayKey: period.startDayKey,
+        endDayKey: period.endDayKey,
+        periodKeysForTrend: period.periodKeysForTrend,
+      );
+      emit(AnalyticsLoaded(data: data));
+    } catch (e) {
+      emit(AnalyticsError(message: e.toString()));
+    }
+  }
 }

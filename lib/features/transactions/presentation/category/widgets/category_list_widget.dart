@@ -140,8 +140,8 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
           direction: DismissDirection.endToStart,
           onDismissed: (_) {
             context.read<CategoriesCubit>().deleteCategory(
-                  categoryId: category.categoryId,
-                );
+              categoryId: category.categoryId,
+            );
           },
           background: Container(
             alignment: Alignment.centerRight,
