@@ -51,6 +51,84 @@ class AppLocalizationsKy extends AppLocalizations {
   String get december => 'Декабрь';
 
   @override
+  String get januaryShort => 'Янв';
+
+  @override
+  String get februaryShort => 'Фев';
+
+  @override
+  String get marchShort => 'Мар';
+
+  @override
+  String get aprilShort => 'Апр';
+
+  @override
+  String get mayShort => 'Май';
+
+  @override
+  String get juneShort => 'Июн';
+
+  @override
+  String get julyShort => 'Июл';
+
+  @override
+  String get augustShort => 'Авг';
+
+  @override
+  String get septemberShort => 'Сен';
+
+  @override
+  String get octoberShort => 'Окт';
+
+  @override
+  String get novemberShort => 'Ноя';
+
+  @override
+  String get decemberShort => 'Дек';
+
+  @override
+  String get monday => 'Дүйшөмбү';
+
+  @override
+  String get tuesday => 'Шейшемби';
+
+  @override
+  String get wednesday => 'Шаршемби';
+
+  @override
+  String get thursday => 'Бейшемби';
+
+  @override
+  String get friday => 'Жума';
+
+  @override
+  String get saturday => 'Ишемби';
+
+  @override
+  String get sunday => 'Жекшемби';
+
+  @override
+  String get mondayShort => 'Дүй';
+
+  @override
+  String get tuesdayShort => 'Шей';
+
+  @override
+  String get wednesdayShort => 'Шар';
+
+  @override
+  String get thursdayShort => 'Бей';
+
+  @override
+  String get fridayShort => 'Жум';
+
+  @override
+  String get saturdayShort => 'Ишм';
+
+  @override
+  String get sundayShort => 'Жек';
+
+  @override
   String get week => 'Жума';
 
   @override

@@ -4,6 +4,7 @@ export 'utils/card_radius_utils.dart';
 export 'utils/amount_formatter.dart';
 export 'utils/date_formatter.dart';
 export 'utils/month.dart';
+export 'utils/weekday.dart';
 export 'utils/month_range_utils.dart';
 export 'utils/date_keys_extention.dart';
 export 'app_groups/category_color_palettes.dart';

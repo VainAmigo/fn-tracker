@@ -13,6 +13,7 @@ class FormCardWidget extends StatelessWidget {
     this.borderRadius,
     this.height,
     this.onTap,
+    this.expandLabel = true,
   });
 
   final String title;
@@ -24,6 +25,9 @@ class FormCardWidget extends StatelessWidget {
   final BorderRadius? borderRadius;
   final void Function()? onTap;
   final double? height;
+
+  /// Если false, карточка занимает только ширину контента (для размещения в Row с другой карточкой на оставшееся место).
+  final bool expandLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -47,31 +51,7 @@ class FormCardWidget extends StatelessWidget {
               icon!,
               const SizedBox(width: AppSizing.spaceBtwItems),
             ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (subtitle != null)
-                    Text(
-                      subtitle!,
-                      style: AppTextStyles.text12w400(context),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  Text(
-                    title,
-                    style: AppTextStyles.text14w400(context).copyWith(
-                      color:
-                          foregroundColor ??
-                          Theme.of(context).colorScheme.onSurface,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
+            _buildLabel(context),
             if (trailing != null) ...[
               const SizedBox(width: AppSizing.spaceBtwItems),
               trailing!,
@@ -80,5 +60,32 @@ class FormCardWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildLabel(BuildContext context) {
+    final column = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (subtitle != null)
+          Text(
+            subtitle!,
+            style: AppTextStyles.text12w400(context),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        Text(
+          title,
+          style: AppTextStyles.text14w400(context).copyWith(
+            color:
+                foregroundColor ?? Theme.of(context).colorScheme.onSurface,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+    return expandLabel ? Expanded(child: column) : column;
   }
 }

@@ -49,4 +49,23 @@ enum Month {
       Month.december => l10n.december,
     };
   }
+
+  /// Локализованное сокращённое название месяца (Янв, Фев, …).
+  String localizedShortName(BuildContext context) {
+    final l10n = context.l10n;
+    return switch (this) {
+      Month.january => l10n.januaryShort,
+      Month.february => l10n.februaryShort,
+      Month.march => l10n.marchShort,
+      Month.april => l10n.aprilShort,
+      Month.may => l10n.mayShort,
+      Month.june => l10n.juneShort,
+      Month.july => l10n.julyShort,
+      Month.august => l10n.augustShort,
+      Month.september => l10n.septemberShort,
+      Month.october => l10n.octoberShort,
+      Month.november => l10n.novemberShort,
+      Month.december => l10n.decemberShort,
+    };
+  }
 }

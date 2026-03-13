@@ -184,6 +184,162 @@ abstract class AppLocalizations {
   /// **'December'**
   String get december;
 
+  /// No description provided for @januaryShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Jan'**
+  String get januaryShort;
+
+  /// No description provided for @februaryShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Feb'**
+  String get februaryShort;
+
+  /// No description provided for @marchShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Mar'**
+  String get marchShort;
+
+  /// No description provided for @aprilShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Apr'**
+  String get aprilShort;
+
+  /// No description provided for @mayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'May'**
+  String get mayShort;
+
+  /// No description provided for @juneShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Jun'**
+  String get juneShort;
+
+  /// No description provided for @julyShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Jul'**
+  String get julyShort;
+
+  /// No description provided for @augustShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Aug'**
+  String get augustShort;
+
+  /// No description provided for @septemberShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sep'**
+  String get septemberShort;
+
+  /// No description provided for @octoberShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Oct'**
+  String get octoberShort;
+
+  /// No description provided for @novemberShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Nov'**
+  String get novemberShort;
+
+  /// No description provided for @decemberShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Dec'**
+  String get decemberShort;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get sunday;
+
+  /// No description provided for @mondayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get mondayShort;
+
+  /// No description provided for @tuesdayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get tuesdayShort;
+
+  /// No description provided for @wednesdayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get wednesdayShort;
+
+  /// No description provided for @thursdayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get thursdayShort;
+
+  /// No description provided for @fridayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get fridayShort;
+
+  /// No description provided for @saturdayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get saturdayShort;
+
+  /// No description provided for @sundayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get sundayShort;
+
   /// No description provided for @week.
   ///
   /// In en, this message translates to:

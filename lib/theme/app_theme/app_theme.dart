@@ -9,23 +9,28 @@ class AppThemes {
       case AppPalette.mintGreen:
         return brightness == Brightness.light ? mintGreenLight : mintGreenDark;
       case AppPalette.sunsetBerry:
-        return brightness == Brightness.light ? sunsetBerryLight : sunsetBerryDark;
+        return brightness == Brightness.light
+            ? sunsetBerryLight
+            : sunsetBerryDark;
       case AppPalette.nordicFrost:
-        return brightness == Brightness.light ? nordicFrostLight : nordicFrostDark;
+        return brightness == Brightness.light
+            ? nordicFrostLight
+            : nordicFrostDark;
       case AppPalette.terracottaEarth:
-        return brightness == Brightness.light ? terracottaEarthLight : terracottaEarthDark;
+        return brightness == Brightness.light
+            ? terracottaEarthLight
+            : terracottaEarthDark;
     }
   }
 
   static ThemeData mintGreenLight = ThemeData(
     brightness: Brightness.light,
     primaryColor: Colors.blue,
+    appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
     scaffoldBackgroundColor: Color(0xFFFFFFFF),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Color(0xFF13EC5B),
-      contentTextStyle: TextStyle(
-        color: Color(0xFF111813),
-      ),
+      contentTextStyle: TextStyle(color: Color(0xFF111813)),
     ),
     colorScheme: ColorScheme.light(
       primary: Color(0xFF13EC5B),
@@ -41,11 +46,10 @@ class AppThemes {
   static ThemeData mintGreenDark = ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Color(0xFF102216),
+    appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Color(0xFF13EC5B),
-      contentTextStyle: TextStyle(
-        color: Color(0xFF102216),
-      ),
+      contentTextStyle: TextStyle(color: Color(0xFF102216)),
     ),
     colorScheme: ColorScheme.dark(
       primary: Color(0xFF13EC5B),
@@ -61,11 +65,10 @@ class AppThemes {
   static ThemeData sunsetBerryLight = ThemeData(
     brightness: Brightness.light,
     scaffoldBackgroundColor: Color(0xFFFFFFFF),
+    appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Color(0xFFFF7549),
-      contentTextStyle: TextStyle(
-        color: Color(0xFFFFFCFB),
-      ),
+      contentTextStyle: TextStyle(color: Color(0xFFFFFCFB)),
     ),
     colorScheme: ColorScheme.light(
       primary: Color(0xFFFF7549),
@@ -78,20 +81,19 @@ class AppThemes {
     ),
   );
 
-    static ThemeData sunsetBerryDark = ThemeData(
+  static ThemeData sunsetBerryDark = ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Color(0xFF1C0D18),
+    appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Color(0xFFFF845D),
-      contentTextStyle: TextStyle(
-        color: Color(0xFFFFFFFF),
-      ),
+      contentTextStyle: TextStyle(color: Color(0xFFFFFFFF)),
     ),
     colorScheme: ColorScheme.dark(
       primary: Color(0xFFFF845D),
       onPrimary: Color(0xFFFFFFFF),
       surface: Color(0xFF1C0D18),
-      onSurface: Color(0xFFE8E2DD), 
+      onSurface: Color(0xFFE8E2DD),
       secondary: Color(0xFF2C1E28),
       onSecondary: Color(0xFF675D61),
       tertiary: Color(0xFFFF2E80),
@@ -101,38 +103,36 @@ class AppThemes {
   static ThemeData nordicFrostLight = ThemeData(
     brightness: Brightness.light,
     scaffoldBackgroundColor: Color(0xFFF0F4F8),
+    appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Color(0xFF69C2F5),
-      contentTextStyle: TextStyle(
-        color: Color(0xFFFFFFFF),
-      ),
+      contentTextStyle: TextStyle(color: Color(0xFFFFFFFF)),
     ),
     colorScheme: ColorScheme.light(
-      primary: Color(0xFF69C2F5 ),
+      primary: Color(0xFF69C2F5),
       onPrimary: Color(0xFFFFFFFF),
       surface: Color(0xFFF0F4F8),
       onSurface: Color(0xFF2D3748),
-      secondary: Color.fromARGB(255, 216, 228, 240), 
+      secondary: Color.fromARGB(255, 216, 228, 240),
       onSecondary: Color.fromARGB(255, 147, 157, 173),
       tertiary: Color(0xFF3BC9DB),
     ),
   );
-  
+
   static ThemeData nordicFrostDark = ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Color(0xFF1A202C),
+    appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Color(0xFF53C5E9),
-      contentTextStyle: TextStyle(
-        color: Color(0xFF181521),
-      ),
+      contentTextStyle: TextStyle(color: Color(0xFF181521)),
     ),
     colorScheme: ColorScheme.dark(
       primary: Color(0xFF53C5E9),
       onPrimary: Color(0xFF181521),
       surface: Color(0xFF1A202C),
       onSurface: Color(0xFFFFFFFF),
-      secondary: Color(0xFF242C3A), 
+      secondary: Color(0xFF242C3A),
       onSecondary: Color(0xFF565D67),
       tertiary: Color(0xFF3BC9DB),
     ),
@@ -141,18 +141,17 @@ class AppThemes {
   static ThemeData terracottaEarthLight = ThemeData(
     brightness: Brightness.light,
     scaffoldBackgroundColor: Color(0xFFF7F2E9),
+    appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Color(0xFFDE775C),
-      contentTextStyle: TextStyle(
-        color: Color(0xFFFFFFFF),
-      ),
+      contentTextStyle: TextStyle(color: Color(0xFFFFFFFF)),
     ),
     colorScheme: ColorScheme.light(
       primary: Color(0xFFDE775C),
       onPrimary: Color(0xFFFFFFFF),
       surface: Color(0xFFF7F2E9),
       onSurface: Color(0xFF4A3728),
-      secondary: Color(0xFFEEE8DF), 
+      secondary: Color(0xFFEEE8DF),
       onSecondary: Color.fromARGB(255, 161, 152, 141),
       tertiary: Color(0xFFDF7457),
     ),
@@ -161,18 +160,17 @@ class AppThemes {
   static ThemeData terracottaEarthDark = ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Color(0xFF2D241E),
+    appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Color(0xFFCD6F4E),
-      contentTextStyle: TextStyle(
-        color: Color(0xFFF5EFE6),
-      ),
+      contentTextStyle: TextStyle(color: Color(0xFFF5EFE6)),
     ),
     colorScheme: ColorScheme.dark(
       primary: Color(0xFFCD6F4E),
       onPrimary: Color(0xFFF5EFE6),
       surface: Color(0xFF2D241E),
       onSurface: Color(0xFFF5EFE6),
-      secondary: Color(0xFF372F29), 
+      secondary: Color(0xFF372F29),
       onSecondary: Color(0xFF6A6257),
       tertiary: Color(0xFF8A9A5B),
     ),
