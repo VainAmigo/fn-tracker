@@ -84,7 +84,10 @@ class _AnalyticsBody extends StatelessWidget {
                   onRetry: () => cubit.loadAnalytics(),
                 )
               else if (state is AnalyticsLoaded)
-                AnalyticsContentWidget(data: state.data),
+                AnalyticsContentWidget(
+                  data: state.data,
+                  period: state.period,
+                ),
             ],
           ),
         );

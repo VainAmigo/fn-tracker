@@ -7,9 +7,10 @@ final class AnalyticsInitial extends AnalyticsState {}
 final class AnalyticsLoading extends AnalyticsState {}
 
 final class AnalyticsLoaded extends AnalyticsState {
-  AnalyticsLoaded({required this.data});
+  AnalyticsLoaded({required this.data, this.period});
 
   final AnalyticsPeriodModel data;
+  final DatePickerPeriod? period;
 }
 
 final class AnalyticsError extends AnalyticsState {

@@ -14,6 +14,7 @@ export 'text/tab_title_widget.dart';
 export 'chart/donut_chart.dart';
 export 'chart/gradient_line_chart.dart';
 export 'chart/segmented_bar.dart';
+export 'chart/weekly_stacked_bar_chart.dart';
 export 'section/titled_section.dart';
 export 'text/modal_sheet_title_widget.dart';
 export 'segmented/segmented_control.dart';

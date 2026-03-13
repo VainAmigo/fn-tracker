@@ -27,7 +27,6 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
   Future<AnalyticsPeriodModel> getAnalytics({
     required String startDayKey,
     required String endDayKey,
-    required List<String> periodKeysForTrend,
   }) async {
     final uid = _requireUid();
 
@@ -64,6 +63,7 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
     double totalExpense = 0;
     final Map<String, double> spendingByCategoryId = {};
     final Map<String, ({double income, double expense})> byPeriod = {};
+    final Map<int, Map<String, double>> spendingByWeekday = {};
 
     for (final t in transactions) {
       if (t.type == TransactionType.income) {
@@ -85,6 +85,14 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
           (v) => (income: v.income, expense: v.expense + t.amount),
           ifAbsent: () => (income: 0, expense: t.amount),
         );
+        final weekday = t.date.weekday;
+        spendingByWeekday
+            .putIfAbsent(weekday, () => {})
+            .update(
+              t.categoryId ?? '',
+              (prev) => prev + t.amount,
+              ifAbsent: () => t.amount,
+            );
       }
     }
 
@@ -100,21 +108,31 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
             .toList()
           ..sort((a, b) => b.amount.compareTo(a.amount));
 
-    final monthlyTrend = periodKeysForTrend
-        .map(
-          (pk) => MonthlyTrendItem(
-            periodKey: pk,
-            income: byPeriod[pk]?.income ?? 0,
-            expense: byPeriod[pk]?.expense ?? 0,
-          ),
-        )
-        .toList();
+    final weeklySpending = List.generate(7, (i) {
+      final weekday = i + 1;
+      final byCategory = spendingByWeekday[weekday] ?? {};
+      final dayCategorySpending =
+          byCategory.entries
+              .where((e) => categoriesMap.containsKey(e.key))
+              .map(
+                (e) => CategorySpending(
+                  category: categoriesMap[e.key]!,
+                  amount: e.value,
+                ),
+              )
+              .toList()
+            ..sort((a, b) => b.amount.compareTo(a.amount));
+      return DailySpending(
+        weekday: weekday,
+        categorySpending: dayCategorySpending,
+      );
+    });
 
     return AnalyticsPeriodModel(
       totalIncome: totalIncome,
       totalExpense: totalExpense,
       categorySpending: categorySpending,
-      monthlyTrend: monthlyTrend,
+      weeklySpending: weeklySpending,
       budget: budget,
     );
   }

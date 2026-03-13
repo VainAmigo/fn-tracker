@@ -4,20 +4,28 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class BarChartSegment {
+  const BarChartSegment({
+    required this.value,
+    required this.color,
+    this.icon,
+  });
+
   final double value;
   final Color color;
 
-  const BarChartSegment({required this.value, required this.color});
+  /// Иконка внутри сегмента (для stacked bar chart).
+  final IconData? icon;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is BarChartSegment &&
           value == other.value &&
-          color == other.color;
+          color == other.color &&
+          icon == other.icon;
 
   @override
-  int get hashCode => Object.hash(value, color);
+  int get hashCode => Object.hash(value, color, icon);
 }
 
 class SegmentedBar extends StatefulWidget {

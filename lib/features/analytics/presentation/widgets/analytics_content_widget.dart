@@ -1,18 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AnalyticsContentWidget extends StatelessWidget {
-  const AnalyticsContentWidget({required this.data, super.key});
+  const AnalyticsContentWidget({
+    required this.data,
+    this.period,
+    super.key,
+  });
 
   final AnalyticsPeriodModel data;
+  final DatePickerPeriod? period;
+
+  List<WeeklyBarData> _weeklyBarsFromData(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return data.weeklySpending
+        .map(
+          (d) => WeeklyBarData(
+            label: Weekday.fromValue(d.weekday).localizedShortName(context),
+            segments: d.categorySpending
+                .where((s) => s.amount > 0)
+                .map((s) {
+                  final shade = findShadeById(s.category.colorId);
+                  final icon = findIconById(s.category.iconId);
+                  final color = shade?.color ?? colorScheme.outline;
+                  return BarChartSegment(
+                    value: s.amount,
+                    color: color,
+                    icon: icon?.icon,
+                  );
+                })
+                .toList(),
+          ),
+        )
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     final currency = context.watch<CurrencyProvider>().currency;
     final formatter = CurrencyFormatter(currency);
+    final isWeekly = period is WeeklyPeriod;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,13 +56,27 @@ class AnalyticsContentWidget extends StatelessWidget {
           budget: data.budget,
         ),
         const SizedBox(height: AppSizing.spaceBtwSections),
-        if (data.categorySpending.isNotEmpty) ...[
+        if (isWeekly) ...[
+          TitledSection(
+            title: 'По дням недели',
+            children: [
+              WeeklyStackedBarChart(
+                bars: _weeklyBarsFromData(context),
+                height: 220,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSizing.spaceBtwSections),
+        ],
+        if (!isWeekly && data.categorySpending.isNotEmpty) ...[
           AnalyticsSpendingDonutWidget(
             categorySpending: data.categorySpending,
             totalExpense: data.totalExpense,
             formatter: formatter,
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
+        ],
+        if (data.categorySpending.isNotEmpty) ...[
           BudgetsSpendingCategoriesListWidget(
             categorySpending: data.categorySpending,
             currency: currency,

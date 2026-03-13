@@ -5,29 +5,24 @@ class AnalyticsPeriodModel {
   final double totalIncome;
   final double totalExpense;
   final List<CategorySpending> categorySpending;
-  final List<MonthlyTrendItem> monthlyTrend;
+  final List<DailySpending> weeklySpending;
   final BudgetModel? budget;
 
   const AnalyticsPeriodModel({
     required this.totalIncome,
     required this.totalExpense,
     required this.categorySpending,
-    required this.monthlyTrend,
+    required this.weeklySpending,
     this.budget,
   });
 
   double get balance => totalIncome - totalExpense;
 }
 
-/// Данные по одному месяцу для тренда.
-class MonthlyTrendItem {
-  final String periodKey;
-  final double income;
-  final double expense;
+/// Расходы по одному дню недели (для недельной диаграммы).
+class DailySpending {
+  final int weekday;
+  final List<CategorySpending> categorySpending;
 
-  const MonthlyTrendItem({
-    required this.periodKey,
-    required this.income,
-    required this.expense,
-  });
+  const DailySpending({required this.weekday, required this.categorySpending});
 }

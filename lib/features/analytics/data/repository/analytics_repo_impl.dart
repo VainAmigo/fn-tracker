@@ -4,6 +4,5 @@ abstract class AnalyticsRepoImpl {
   Future<AnalyticsPeriodModel> getAnalytics({
     required String startDayKey,
     required String endDayKey,
-    required List<String> periodKeysForTrend,
   });
 }
