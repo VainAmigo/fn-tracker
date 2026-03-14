@@ -6,7 +6,14 @@ import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class TransactionsListWidget extends StatelessWidget {
-  const TransactionsListWidget({super.key});
+  const TransactionsListWidget({
+    super.key,
+    this.filterHidden = true,
+  });
+
+  /// Скрывать транзакции скрытых кошельков и целей.
+  /// false — при просмотре истории конкретного кошелька/цели (пользователь уже ввёл PIN).
+  final bool filterHidden;
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +28,20 @@ class TransactionsListWidget extends StatelessWidget {
             title: 'No transactions',
             subtitle: 'You have no transactions yet',
           ),
-          TransactionsLoaded() => _Body(transactions: state.transactions),
+          TransactionsLoaded() => _Body(
+                transactions: state.transactions,
+                filterHidden: filterHidden,
+              ),
           TransactionDeleted() =>
             state.transactions.isEmpty
                 ? const EmptyCardWidget(
                     title: 'No transactions',
                     subtitle: 'You have no transactions yet',
                   )
-                : _Body(transactions: state.transactions),
+                : _Body(
+                    transactions: state.transactions,
+                    filterHidden: filterHidden,
+                  ),
           TransactionsError() => Center(child: Text(state.message)),
         };
       },
@@ -37,9 +50,13 @@ class TransactionsListWidget extends StatelessWidget {
 }
 
 class _Body extends StatelessWidget {
-  const _Body({required this.transactions});
+  const _Body({
+    required this.transactions,
+    this.filterHidden = true,
+  });
 
   final List<TransactionModel> transactions;
+  final bool filterHidden;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +72,10 @@ class _Body extends StatelessWidget {
     };
     final currency = context.watch<CurrencyProvider>().currency;
 
-    final grouped = _groupByDayKey(transactions);
+    final visibleTransactions = filterHidden
+        ? _filterHiddenTransactions(transactions, walletMap, goalMap)
+        : transactions;
+    final grouped = _groupByDayKey(visibleTransactions);
     final sortedKeys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
     return ListView.separated(
@@ -216,6 +236,20 @@ class _Body extends StatelessWidget {
       map.putIfAbsent(tx.dayKey, () => []).add(tx);
     }
     return map;
+  }
+
+  List<TransactionModel> _filterHiddenTransactions(
+    List<TransactionModel> transactions,
+    Map<String, WalletModel> walletMap,
+    Map<String, GoalModel> goalMap,
+  ) {
+    return transactions.where((tx) {
+      final wallet = tx.walletId != null ? walletMap[tx.walletId] : null;
+      final goal = tx.goalId != null ? goalMap[tx.goalId] : null;
+      if (wallet != null && wallet.isHidden) return false;
+      if (goal != null && goal.isHidden) return false;
+      return true;
+    }).toList();
   }
 
   List<CategoryModel> _extractCategories(CategoriesState state) {

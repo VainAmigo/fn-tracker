@@ -64,7 +64,12 @@ class _TransactionsListByidViewState extends State<TransactionsListByidView> {
                 onChanged: _onPeriodChanged,
               ),
               const SizedBox(height: AppSizing.spaceBtwElements),
-              const Expanded(child: TransactionsListWidget()),
+              Expanded(
+                child: TransactionsListWidget(
+                  filterHidden: widget.idType != TransactionIdType.wallet &&
+                      widget.idType != TransactionIdType.goal,
+                ),
+              ),
             ],
           ),
         ),
