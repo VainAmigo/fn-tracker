@@ -92,6 +92,7 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
       context,
       initialAmount: existingBudget?.amount,
       saveLabel: 'Save',
+      title: 'Edit budget',
       onSave: (amount) {
         if (existingBudget != null) {
           context.read<BudgetCubit>().updateBudget(
