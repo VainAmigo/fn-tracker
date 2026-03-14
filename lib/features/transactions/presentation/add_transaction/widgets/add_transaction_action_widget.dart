@@ -34,6 +34,7 @@ class AddTransactionActionWidget extends StatefulWidget {
   /// For transfer: source account
   final WalletModel? selectedWalletFrom;
   final GoalModel? selectedGoalFrom;
+
   /// For transfer: destination account
   final WalletModel? selectedWalletTo;
   final GoalModel? selectedGoalTo;
@@ -95,12 +96,13 @@ class _AddTransactionActionWidgetState
         ? (goalIcon?.icon ?? Icons.flag_rounded)
         : (walletIcon?.icon ?? Icons.account_balance_wallet);
 
-    final walletFromShade =
-        findShadeById(widget.selectedWalletFrom?.colorId ?? '');
-    final walletFromIcon =
-        findIconById(widget.selectedWalletFrom?.iconId ?? '');
-    final goalFromShade =
-        findShadeById(widget.selectedGoalFrom?.colorId ?? '');
+    final walletFromShade = findShadeById(
+      widget.selectedWalletFrom?.colorId ?? '',
+    );
+    final walletFromIcon = findIconById(
+      widget.selectedWalletFrom?.iconId ?? '',
+    );
+    final goalFromShade = findShadeById(widget.selectedGoalFrom?.colorId ?? '');
     final goalFromIcon = findIconById(widget.selectedGoalFrom?.iconId ?? '');
     final accountFromColor = hasGoalFrom
         ? (goalFromShade?.color ?? colorScheme.primary)
@@ -109,8 +111,7 @@ class _AddTransactionActionWidgetState
         ? (goalFromIcon?.icon ?? Icons.flag_rounded)
         : (walletFromIcon?.icon ?? Icons.account_balance_wallet);
 
-    final walletToShade =
-        findShadeById(widget.selectedWalletTo?.colorId ?? '');
+    final walletToShade = findShadeById(widget.selectedWalletTo?.colorId ?? '');
     final walletToIcon = findIconById(widget.selectedWalletTo?.iconId ?? '');
     final goalToShade = findShadeById(widget.selectedGoalTo?.colorId ?? '');
     final goalToIcon = findIconById(widget.selectedGoalTo?.iconId ?? '');
@@ -179,8 +180,8 @@ class _AddTransactionActionWidgetState
                   subtitle: hasGoal
                       ? 'Goal'
                       : widget.selectedType == TransactionType.expense
-                          ? 'Take from'
-                          : 'Add to',
+                      ? 'Take from'
+                      : 'Add to',
                   color: accountColor,
                   icon: accountIcon,
                   onTap: () => _showAccountsPicker(context),
@@ -387,37 +388,36 @@ class _AddTransactionActionWidgetState
   Future<void> _showNotePicker(BuildContext context) async {
     _noteController.text = widget.note;
 
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ModalSheetTitleWidget(
-                title: 'Add Note',
-                action: PrimaryButton(
-                  text: 'save',
-                  size: PrimaryButtonSize.xSmall,
-                  fullWidth: false,
-                  onPressed: () {
-                    final value = _noteController.text.trim();
-                    widget.onNoteChanged(value);
-                    Navigator.of(dialogContext).pop();
-                  },
-                ),
-              ),
-              const SizedBox(height: AppSizing.spaceBtwElements),
-              CustomTextFormField(
-                autofocus: true,
-                hintText: 'Enter your note',
-                controller: _noteController,
-              ),
-            ],
-          ),
-        );
-      },
+    await AppBottomSheet.showFittedModalBottomSheet(
+      context,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          bottom: AppSizing.bottomPadding,
+          left: AppSizing.defaultPadding,
+          right: AppSizing.defaultPadding,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ModalSheetTitleWidget(title: 'Add Note'),
+            const SizedBox(height: AppSizing.spaceBtwElements),
+            CustomTextFormField(
+              autofocus: true,
+              hintText: 'Enter your note',
+              controller: _noteController,
+            ),
+            const SizedBox(height: AppSizing.spaceBtwSections),
+            PrimaryButton(
+              text: 'Save',
+              onPressed: () {
+                widget.onNoteChanged(_noteController.text.trim());
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

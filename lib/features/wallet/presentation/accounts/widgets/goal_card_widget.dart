@@ -85,14 +85,14 @@ class GoalCardWidget extends StatelessWidget {
                 ),
                 isCompleted
                     ? Text(
-                        'Remaining: ${AmountFormatter.format(remaining)}',
-                        style: AppTextStyles.text14w400(context),
-                      )
-                    : Text(
                         'Completed',
                         style: AppTextStyles.text14w400(
                           context,
                         ).copyWith(color: colorScheme.onSurface),
+                      )
+                    : Text(
+                        'Remaining: ${AmountFormatter.format(remaining)}',
+                        style: AppTextStyles.text14w400(context),
                       ),
               ],
             ),
