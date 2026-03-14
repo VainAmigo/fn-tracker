@@ -67,13 +67,28 @@ class _Body extends StatelessWidget {
         final date = DateTime.parse(dayKey);
         final txList = grouped[dayKey]!;
 
+        final groupSum = _sumTransactions(txList);
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              date.formatDayMonthYearUpper,
-              style: AppTextStyles.sectionTitle(context),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  date.formatDayMonthYearUpper,
+                  style: AppTextStyles.sectionTitle(context),
+                ),
+                AmountTextWidget(
+                  amount: groupSum.abs(),
+                  type: groupSum >= 0 ? TransactionType.income : TransactionType.expense,
+                  showSignPrefix: true,
+                  style: AppTextStyles.sectionTitle(context),
+                ),
+              ],
             ),
             const SizedBox(height: AppSizing.spaceBtwItems),
             for (int i = 0; i < txList.length; i++) ...[
@@ -174,6 +189,23 @@ class _Body extends StatelessWidget {
         radius: radius,
       ),
     );
+  }
+
+  double _sumTransactions(List<TransactionModel> list) {
+    double sum = 0;
+    for (final tx in list) {
+      switch (tx.type) {
+        case TransactionType.income:
+          sum += tx.amount;
+          break;
+        case TransactionType.expense:
+          sum -= tx.amount;
+          break;
+        case TransactionType.transfer:
+          break;
+      }
+    }
+    return sum;
   }
 
   Map<String, List<TransactionModel>> _groupByDayKey(
