@@ -1,11 +1,7 @@
 # REFACTOR
 
-## add croll to add transaction view
-
-## убрать недельный тогда все будет по датам ????? надо подумать
-
 # FEATURE
-
+## добавить разделение для истории транзакции (все, категории, сбережения)
 ## add local transaction storage
 ## add HydratedBloc for cash states(wallet, categories, goals)
 ## add logic for not internect connecion 
@@ -15,3 +11,5 @@
 ## добавить раздел плановые платежи
 ## добавьть скрытие кашельков
 ## продумать логику для валют
+
+# BUG

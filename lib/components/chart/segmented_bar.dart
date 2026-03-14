@@ -95,7 +95,7 @@ class _SegmentedBarState extends State<SegmentedBar>
   @override
   Widget build(BuildContext context) {
     final trackColor =
-        widget.trackColor ?? Theme.of(context).colorScheme.surface;
+        widget.trackColor ?? Theme.of(context).colorScheme.secondary;
 
     return GestureDetector(
       onTapUp: widget.onSegmentTap != null

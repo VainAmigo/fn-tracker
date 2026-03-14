@@ -32,85 +32,87 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: AppSizing.spaceBtwSections),
-                Text(
-                  'Finance Tracker',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: AppSizing.spaceBtwSections),
+                  Text(
+                    'Finance Tracker',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSizing.spaceBtwItems),
-                Text(
-                  'Войдите, чтобы продолжить',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  const SizedBox(height: AppSizing.spaceBtwItems),
+                  Text(
+                    'Войдите, чтобы продолжить',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSizing.spaceBtwSections),
-
-                CustomTextFormField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  label: 'Email',
-                  validator: AuthValidationUtils.email,
-                ),
-
-                PasswordTextField(
-                  controller: passwordController,
-                  validator: AuthValidationUtils.password,
-                  label: 'Password',
-                  passwordVisibilityNotifier: _passwordVisibilityNotifier,
-                ),
-
-                const SizedBox(height: AppSizing.spaceBtwSections),
-
-                BlocConsumer<AuthCubit, AuthState>(
-                  listener: (context, state) {
-                    if (state is Authenticated) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        AppRouter.main,
-                        (route) => false,
+                  const SizedBox(height: AppSizing.spaceBtwSections),
+          
+                  CustomTextFormField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    label: 'Email',
+                    validator: AuthValidationUtils.email,
+                  ),
+          
+                  PasswordTextField(
+                    controller: passwordController,
+                    validator: AuthValidationUtils.password,
+                    label: 'Password',
+                    passwordVisibilityNotifier: _passwordVisibilityNotifier,
+                  ),
+          
+                  const SizedBox(height: AppSizing.spaceBtwSections),
+          
+                  BlocConsumer<AuthCubit, AuthState>(
+                    listener: (context, state) {
+                      if (state is Authenticated) {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          AppRouter.main,
+                          (route) => false,
+                        );
+                      } else if (state is AuthError) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(state.message)));
+                      }
+                    },
+                    builder: (context, state) {
+                      final isLoading = state is AuthLoading;
+          
+                      return PrimaryButton(
+                        onPressed: isLoading ? null : _login,
+                        text: 'Login',
                       );
-                    } else if (state is AuthError) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(state.message)));
-                    }
-                  },
-                  builder: (context, state) {
-                    final isLoading = state is AuthLoading;
-
-                    return PrimaryButton(
-                      onPressed: isLoading ? null : _login,
-                      text: 'Login',
-                    );
-                  },
-                ),
-
-                const SizedBox(height: AppSizing.spaceBtwItems),
-
-                PrimaryButton(
-                  text: 'Нет аккаунта? Регистрация',
-                  onPressed: () =>
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        AppRouter.register,
-                        (route) => false,
-                      ),
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  foregroundColor: Theme.of(context).colorScheme.primary,
-                  size: PrimaryButtonSize.xSmall,
-                  rounded: true,
-                ),
-              ],
+                    },
+                  ),
+          
+                  const SizedBox(height: AppSizing.spaceBtwItems),
+          
+                  PrimaryButton(
+                    text: 'Нет аккаунта? Регистрация',
+                    onPressed: () =>
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          AppRouter.register,
+                          (route) => false,
+                        ),
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    foregroundColor: Theme.of(context).colorScheme.primary,
+                    size: PrimaryButtonSize.xSmall,
+                    rounded: true,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
