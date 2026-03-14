@@ -26,9 +26,7 @@ class CategoriesTabView extends StatelessWidget {
             children: [
               CategoryListWidget(
                 onCategorySelected: (category) {
-                  Navigator.of(
-                    context,
-                  ).pushNamed(AppRouter.updateCategory, arguments: category);
+                  _onCategorySelected(context, category);
                 },
                 autoLoad: true,
                 shrinkWrap: true,
@@ -36,6 +34,18 @@ class CategoriesTabView extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _onCategorySelected(BuildContext context, CategoryModel category) {
+    AppBottomSheet.showFittedModalBottomSheet(
+      context,
+      child: CategoriesDetailModalSheetWidget(
+        category: category,
+        onEdit: () => Navigator.of(
+          context,
+        ).pushNamed(AppRouter.updateCategory, arguments: category),
       ),
     );
   }
