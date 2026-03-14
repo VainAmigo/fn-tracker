@@ -18,6 +18,7 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isCompleted = goal.progress >= goal.targetAmount;
 
     return Container(
       padding: const EdgeInsets.all(AppSizing.defaultPadding),
@@ -92,7 +93,7 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
               ),
               Flexible(
                 child: PrimaryButton(
-                  text: 'Deposit',
+                  text: isCompleted ? 'Completed' : 'Deposit',
                   icon: Icons.add,
                   size: PrimaryButtonSize.large,
                   rounded: true,

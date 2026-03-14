@@ -20,7 +20,7 @@ class GoalCardWidget extends StatelessWidget {
       0.0,
       double.infinity,
     );
-    final isCompleted = goal.progress > goal.targetAmount;
+    final isCompleted = goal.progress >= goal.targetAmount;
 
     return GestureDetector(
       onTap: onTap,

@@ -20,10 +20,7 @@ class AddTransactionCategorySheetWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Choose category',
-            style: AppTextStyles.modalSheetTitle(context),
-          ),
+          ModalSheetTitleWidget(title: 'Choose category'),
           const SizedBox(height: AppSizing.spaceBtwElements),
 
           Flexible(

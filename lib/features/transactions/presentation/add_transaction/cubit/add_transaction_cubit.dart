@@ -4,7 +4,7 @@ import 'package:fn_tracker/features/features.dart';
 part 'add_transaction_state.dart';
 
 class AddTransactionCubit extends Cubit<AddTransactionState> {
-  final TransactionsRepoImpl transactionsRepo;
+  final TransactionsRepository transactionsRepo;
 
   AddTransactionCubit({required this.transactionsRepo})
     : super(AddTransactionInitial());
@@ -16,69 +16,60 @@ class AddTransactionCubit extends Cubit<AddTransactionState> {
 
     try {
       if (transaction.type == TransactionType.transfer) {
-        final transferId = 'transfer_${DateTime.now().microsecondsSinceEpoch}';
-
-        final expenseDraft = TransactionModel(
-          id: '',
-          categoryId: null,
-          walletId: transaction.walletId,
-          goalId: transaction.goalId,
-          dayKey: transaction.dayKey,
-          periodKey: transaction.periodKey,
-          amount: transaction.amount,
-          note: transaction.note,
-          type: TransactionType.expense,
-          transferId: transferId,
-          date: transaction.date,
-          createdAt: transaction.createdAt,
+        final (expense, income) = await _createTransferTransactions(
+          transaction,
         );
-
-        final incomeDraft = TransactionModel(
-          id: '',
-          categoryId: null,
-          walletId: transaction.transferToWalletId,
-          goalId: transaction.transferToGoalId,
-          dayKey: transaction.dayKey,
-          periodKey: transaction.periodKey,
-          amount: transaction.amount,
-          note: transaction.note,
-          type: TransactionType.income,
-          transferId: transferId,
-          date: transaction.date,
-          createdAt: transaction.createdAt,
-        );
-
-        final expense = await transactionsRepo.addTransaction(
-          transaction: expenseDraft,
-        );
-        final income = await transactionsRepo.addTransaction(
-          transaction: incomeDraft,
-        );
-
         emit(AddTransactionSuccess(createdTransactions: [expense, income]));
       } else {
-        final draft = TransactionModel(
-          id: '',
-          categoryId: transaction.categoryId,
-          walletId: transaction.walletId,
-          goalId: transaction.goalId,
-          dayKey: transaction.dayKey,
-          periodKey: transaction.periodKey,
-          amount: transaction.amount,
-          note: transaction.note,
-          createdAt: transaction.createdAt,
-          date: transaction.date,
-          type: transaction.type,
-        );
-
         final created = await transactionsRepo.addTransaction(
-          transaction: draft,
+          transaction: transaction,
         );
-
         emit(AddTransactionSuccess(createdTransactions: [created]));
       }
     } catch (e) {
       emit(AddTransactionError(message: e.toString()));
     }
+  }
+
+  Future<(TransactionModel, TransactionModel)> _createTransferTransactions(
+    TransactionModel t,
+  ) async {
+    final transferId = 'transfer_${DateTime.now().microsecondsSinceEpoch}';
+
+    final expense = await transactionsRepo.addTransaction(
+      transaction: TransactionModel(
+        id: '',
+        categoryId: null,
+        walletId: t.walletId,
+        goalId: t.goalId,
+        dayKey: t.dayKey,
+        periodKey: t.periodKey,
+        amount: t.amount,
+        note: t.note,
+        type: TransactionType.expense,
+        transferId: transferId,
+        date: t.date,
+        createdAt: t.createdAt,
+      ),
+    );
+
+    final income = await transactionsRepo.addTransaction(
+      transaction: TransactionModel(
+        id: '',
+        categoryId: null,
+        walletId: t.transferToWalletId,
+        goalId: t.transferToGoalId,
+        dayKey: t.dayKey,
+        periodKey: t.periodKey,
+        amount: t.amount,
+        note: t.note,
+        type: TransactionType.income,
+        transferId: transferId,
+        date: t.date,
+        createdAt: t.createdAt,
+      ),
+    );
+
+    return (expense, income);
   }
 }

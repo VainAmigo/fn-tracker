@@ -5,7 +5,7 @@ import 'package:fn_tracker/features/features.dart';
 part 'transactions_state.dart';
 
 class TransactionsCubit extends Cubit<TransactionsState> {
-  final TransactionsRepoImpl transactionsRepo;
+  final TransactionsRepository transactionsRepo;
 
   TransactionsCubit({required this.transactionsRepo})
     : super(TransactionsInitial());

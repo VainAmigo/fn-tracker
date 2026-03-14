@@ -62,6 +62,23 @@ class _AddTransactionActionWidgetState
     super.dispose();
   }
 
+  ({String name, Color color, IconData icon}) _accountInfo(
+    WalletModel? wallet,
+    GoalModel? goal,
+    ColorScheme colorScheme,
+  ) {
+    final hasGoal = goal != null;
+    final colorId = goal?.colorId ?? wallet?.colorId ?? '';
+    final iconId = goal?.iconId ?? wallet?.iconId ?? '';
+    final shade = findShadeById(colorId);
+    final icon = findIconById(iconId);
+    return (
+      name: hasGoal ? goal.name : (wallet?.name ?? 'Wallet'),
+      color: shade?.color ?? (hasGoal ? colorScheme.primary : Colors.grey),
+      icon: icon?.icon ?? (hasGoal ? Icons.flag_rounded : Icons.account_balance_wallet),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -70,57 +87,23 @@ class _AddTransactionActionWidgetState
     final yesterday = now.subtract(const Duration(days: 1));
     final shade = findShadeById(widget.selectedCategory?.colorId ?? '');
     final icon = findIconById(widget.selectedCategory?.iconId ?? '');
-    final hasGoal = widget.selectedGoal != null;
     final isTransfer = widget.selectedType == TransactionType.transfer;
-    final hasGoalFrom = widget.selectedGoalFrom != null;
-    final hasGoalTo = widget.selectedGoalTo != null;
 
-    final accountName = hasGoal
-        ? widget.selectedGoal!.name
-        : widget.selectedWallet?.name ?? 'Wallet';
-    final accountNameFrom = hasGoalFrom
-        ? widget.selectedGoalFrom!.name
-        : widget.selectedWalletFrom?.name ?? 'Wallet';
-    final accountNameTo = hasGoalTo
-        ? widget.selectedGoalTo!.name
-        : widget.selectedWalletTo?.name ?? 'Wallet';
-
-    final walletShade = findShadeById(widget.selectedWallet?.colorId ?? '');
-    final walletIcon = findIconById(widget.selectedWallet?.iconId ?? '');
-    final goalShade = findShadeById(widget.selectedGoal?.colorId ?? '');
-    final goalIcon = findIconById(widget.selectedGoal?.iconId ?? '');
-    final accountColor = hasGoal
-        ? (goalShade?.color ?? colorScheme.primary)
-        : (walletShade?.color ?? Colors.grey);
-    final accountIcon = hasGoal
-        ? (goalIcon?.icon ?? Icons.flag_rounded)
-        : (walletIcon?.icon ?? Icons.account_balance_wallet);
-
-    final walletFromShade = findShadeById(
-      widget.selectedWalletFrom?.colorId ?? '',
+    final account = _accountInfo(
+      widget.selectedWallet,
+      widget.selectedGoal,
+      colorScheme,
     );
-    final walletFromIcon = findIconById(
-      widget.selectedWalletFrom?.iconId ?? '',
+    final accountFrom = _accountInfo(
+      widget.selectedWalletFrom,
+      widget.selectedGoalFrom,
+      colorScheme,
     );
-    final goalFromShade = findShadeById(widget.selectedGoalFrom?.colorId ?? '');
-    final goalFromIcon = findIconById(widget.selectedGoalFrom?.iconId ?? '');
-    final accountFromColor = hasGoalFrom
-        ? (goalFromShade?.color ?? colorScheme.primary)
-        : (walletFromShade?.color ?? Colors.grey);
-    final accountFromIcon = hasGoalFrom
-        ? (goalFromIcon?.icon ?? Icons.flag_rounded)
-        : (walletFromIcon?.icon ?? Icons.account_balance_wallet);
-
-    final walletToShade = findShadeById(widget.selectedWalletTo?.colorId ?? '');
-    final walletToIcon = findIconById(widget.selectedWalletTo?.iconId ?? '');
-    final goalToShade = findShadeById(widget.selectedGoalTo?.colorId ?? '');
-    final goalToIcon = findIconById(widget.selectedGoalTo?.iconId ?? '');
-    final accountToColor = hasGoalTo
-        ? (goalToShade?.color ?? colorScheme.primary)
-        : (walletToShade?.color ?? Colors.grey);
-    final accountToIcon = hasGoalTo
-        ? (goalToIcon?.icon ?? Icons.flag_rounded)
-        : (walletToIcon?.icon ?? Icons.account_balance_wallet);
+    final accountTo = _accountInfo(
+      widget.selectedWalletTo,
+      widget.selectedGoalTo,
+      colorScheme,
+    );
 
     Object? transferFromAccount() =>
         widget.selectedGoalFrom ?? widget.selectedWalletFrom;
@@ -146,10 +129,10 @@ class _AddTransactionActionWidgetState
               Expanded(
                 child: _buildAccountCard(
                   context,
-                  title: accountNameFrom,
+                  title: accountFrom.name,
                   subtitle: 'Transfer from',
-                  color: accountFromColor,
-                  icon: accountFromIcon,
+                  color: accountFrom.color,
+                  icon: accountFrom.icon,
                   onTap: () => _showAccountsPicker(
                     context,
                     excludedAccount: transferToAccount(),
@@ -161,10 +144,10 @@ class _AddTransactionActionWidgetState
               Expanded(
                 child: _buildAccountCard(
                   context,
-                  title: accountNameTo,
+                  title: accountTo.name,
                   subtitle: 'Transfer to',
-                  color: accountToColor,
-                  icon: accountToIcon,
+                  color: accountTo.color,
+                  icon: accountTo.icon,
                   onTap: () => _showAccountsPicker(
                     context,
                     excludedAccount: transferFromAccount(),
@@ -176,14 +159,14 @@ class _AddTransactionActionWidgetState
               Expanded(
                 child: _buildAccountCard(
                   context,
-                  title: accountName,
-                  subtitle: hasGoal
+                  title: account.name,
+                  subtitle: widget.selectedGoal != null
                       ? 'Goal'
                       : widget.selectedType == TransactionType.expense
                       ? 'Take from'
                       : 'Add to',
-                  color: accountColor,
-                  icon: accountIcon,
+                  color: account.color,
+                  icon: account.icon,
                   onTap: () => _showAccountsPicker(context),
                 ),
               ),

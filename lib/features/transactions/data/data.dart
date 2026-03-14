@@ -1,5 +1,5 @@
-export 'repository/transactions_repo_impl.dart';
 export 'repository/transactions_repository.dart';
+export 'repository/transactions_repository_impl.dart';
 export 'repository/category_repo_impl.dart';
 export 'repository/category_repository.dart';
 

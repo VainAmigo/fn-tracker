@@ -4,7 +4,7 @@ import 'package:fn_tracker/features/features.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  final TransactionsRepoImpl transactionsRepo;
+  final TransactionsRepository transactionsRepo;
 
   HomeCubit({required this.transactionsRepo}) : super(HomeInitial());
 
