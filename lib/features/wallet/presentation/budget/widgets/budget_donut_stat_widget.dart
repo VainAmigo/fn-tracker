@@ -39,31 +39,34 @@ class BudgetDonutStatWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Center(
-          child: DonutChart(
-            size: 300,
-            strokeWidth: 44,
-            segments: chartData.segments,
-            minSegmentValue: totalForPeriod * 0.02,
-            trackColor: colorScheme.surface,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  exceeded ? 'Overspent' : 'Spent',
-                  style: AppTextStyles.text16w400(context),
-                ),
-                Text(
-                  formatter.format(totalForPeriod),
-                  style: AppTextStyles.text36w600(
-                    context,
-                  ).copyWith(color: chartData.accentColor),
-                ),
-                Text(
-                  exceeded ? 'Budget exceeded' : '$remainingPercent% remaining',
-                  style: AppTextStyles.tabSubTitle(context),
-                ),
-              ],
+        GestureDetector(
+          onTap: onEditBudgetPressed,
+          child: Center(
+            child: DonutChart(
+              size: 300,
+              strokeWidth: 44,
+              segments: chartData.segments,
+              minSegmentValue: totalForPeriod * 0.02,
+              trackColor: colorScheme.surface,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    exceeded ? 'Overspent' : 'Spent',
+                    style: AppTextStyles.text16w400(context),
+                  ),
+                  Text(
+                    formatter.format(totalForPeriod),
+                    style: AppTextStyles.text36w600(
+                      context,
+                    ).copyWith(color: chartData.accentColor),
+                  ),
+                  Text(
+                    exceeded ? 'Budget exceeded' : '$remainingPercent% remaining',
+                    style: AppTextStyles.tabSubTitle(context),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -91,15 +94,14 @@ class BudgetDonutStatWidget extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: AppSizing.spaceBtwElements),
-        PrimaryButton(
-          text: 'Edit budget',
-          size: PrimaryButtonSize.xSmall,
-          rounded: true,
-          backgroundColor: Colors.transparent,
-          foregroundColor: colorScheme.primary,
-          onPressed: onEditBudgetPressed,
-        ),
+        // PrimaryButton(
+        //   text: 'Edit budget',
+        //   size: PrimaryButtonSize.xSmall,
+        //   rounded: true,
+        //   backgroundColor: Colors.transparent,
+        //   foregroundColor: colorScheme.primary,
+        //   onPressed: onEditBudgetPressed,
+        // ),
       ],
     );
   }
