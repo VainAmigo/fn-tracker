@@ -9,10 +9,12 @@ class WalletsListWidget extends StatefulWidget {
     super.key,
     this.autoLoad = false,
     required this.onWalletSelected,
+    this.onHiddenCardsSelected,
   });
 
   final bool autoLoad;
-  final ValueChanged onWalletSelected;
+  final ValueChanged<WalletModel> onWalletSelected;
+  final VoidCallback? onHiddenCardsSelected;
 
   @override
   State<WalletsListWidget> createState() => _WalletsListWidgetState();
@@ -41,6 +43,7 @@ class _WalletsListWidgetState extends State<WalletsListWidget> {
           WalletsLoaded() => _Body(
             wallets: state.wallets,
             onWalletSelected: widget.onWalletSelected,
+            onHiddenCardsSelected: widget.onHiddenCardsSelected,
           ),
           WalletsError() => Center(child: Text(state.message)),
         };
@@ -50,14 +53,22 @@ class _WalletsListWidgetState extends State<WalletsListWidget> {
 }
 
 class _Body extends StatelessWidget {
-  const _Body({required this.wallets, required this.onWalletSelected});
+  const _Body({
+    required this.wallets,
+    required this.onWalletSelected,
+    this.onHiddenCardsSelected,
+  });
 
   final List<WalletModel> wallets;
-  final ValueChanged<Object> onWalletSelected;
+  final ValueChanged<WalletModel> onWalletSelected;
+  final VoidCallback? onHiddenCardsSelected;
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width * 0.7;
+    final visibleWallets = wallets.where((w) => !w.isHidden).toList();
+    final hiddenWallets = wallets.where((w) => w.isHidden).toList();
+    final hasHidden = hiddenWallets.isNotEmpty;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -65,13 +76,29 @@ class _Body extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            for (int i = 0; i < wallets.length; i++) ...[
+            for (int i = 0; i < visibleWallets.length; i++) ...[
               if (i > 0) const SizedBox(width: AppSizing.spaceBtwItems),
               SizedBox(
                 width: width,
                 child: GestureDetector(
-                  onTap: () => onWalletSelected(wallets[i]),
-                  child: WalletCardWidget(wallet: wallets[i], isEnabled: false),
+                  onTap: () => onWalletSelected(visibleWallets[i]),
+                  child: WalletCardWidget(
+                    wallet: visibleWallets[i],
+                    isEnabled: false,
+                  ),
+                ),
+              ),
+            ],
+            if (hasHidden) ...[
+              if (visibleWallets.isNotEmpty)
+                const SizedBox(width: AppSizing.spaceBtwItems),
+              SizedBox(
+                width: width,
+                child: GestureDetector(
+                  onTap: onHiddenCardsSelected,
+                  child: _HiddenCardsPlaceholder(
+                    count: hiddenWallets.length,
+                  ),
                 ),
               ),
             ],
@@ -79,5 +106,54 @@ class _Body extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _HiddenCardsPlaceholder extends StatelessWidget {
+  const _HiddenCardsPlaceholder({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSizing.defaultPadding),
+      decoration: BoxDecoration(
+        color: colorScheme.secondary,
+        borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.visibility_off,
+            size: AppSizing.iconSizeS,
+            color: colorScheme.onSecondary,
+          ),
+          const SizedBox(height: AppSizing.spaceBtwItems),
+          Text(
+            'Скрытые карточки',
+            style: AppTextStyles.text20w600(context),
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: AppSizing.spaceBtwElements),
+          Text(
+            '$count ${_pluralize(count)}',
+            style: AppTextStyles.text16w400(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _pluralize(int n) {
+    if (n % 10 == 1 && n % 100 != 11) return 'карточка';
+    if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) {
+      return 'карточки';
+    }
+    return 'карточек';
   }
 }

@@ -26,4 +26,6 @@ export 'cards/selectable_card.dart';
 
 export 'form/text_form_field.dart';
 export 'form/password_form_text_field.dart';
+export 'form/password_form_modal_sheet.dart';
+export 'form/change_pin_form_modal_sheet.dart';
 export 'form/form_card_widget.dart';

@@ -286,6 +286,8 @@ class _GoalFormViewState extends State<GoalFormView> {
       progress: widget.goal?.progress ?? 0,
       targetAmount: targetAmount,
       createdAt: widget.goal?.createdAt ?? DateTime.now(),
+      hideAmount: widget.goal?.hideAmount ?? false,
+      isHidden: widget.goal?.isHidden ?? false,
     );
 
     if (_isEditing) {

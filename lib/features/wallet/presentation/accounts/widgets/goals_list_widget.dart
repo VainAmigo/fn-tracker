@@ -11,11 +11,13 @@ class GoalsListWidget extends StatefulWidget {
     this.autoLoad = false,
     this.shrinkWrap = false,
     this.onGoalSelected,
+    this.includeHidden = false,
   });
 
   final bool autoLoad;
   final bool shrinkWrap;
   final ValueChanged<GoalModel>? onGoalSelected;
+  final bool includeHidden;
 
   @override
   State<GoalsListWidget> createState() => _GoalsListWidgetState();
@@ -38,7 +40,14 @@ class _GoalsListWidgetState extends State<GoalsListWidget> {
           GoalsInitial() => const SizedBox.shrink(),
           GoalsLoading() => const Center(child: CircularProgressIndicator()),
           GoalsEmpty() => const SizedBox.shrink(),
-          GoalsLoaded() => _buildList(context, state.goalsModel.goals),
+          GoalsLoaded() => _buildList(
+                context,
+                widget.includeHidden
+                    ? state.goalsModel.goals
+                    : state.goalsModel.goals
+                        .where((g) => !g.isHidden)
+                        .toList(),
+              ),
           GoalsError() => Center(child: Text(state.message)),
         };
       },

@@ -77,23 +77,31 @@ class GoalCardWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                AmountDividerWidget(
-                  leftAmount: goal.progress,
-                  rightAmount: goal.targetAmount,
-                  dividerType: DividerType.slash,
-                  styel: AppTextStyles.text14w400(context),
-                ),
-                isCompleted
+                goal.hideAmount
                     ? Text(
-                        'Completed',
-                        style: AppTextStyles.text14w400(
-                          context,
-                        ).copyWith(color: colorScheme.onSurface),
+                        '••••',
+                        style: AppTextStyles.text14w400(context)
+                            .copyWith(letterSpacing: 2),
                       )
-                    : Text(
-                        'Remaining: ${AmountFormatter.format(remaining)}',
-                        style: AppTextStyles.text14w400(context),
+                    : AmountDividerWidget(
+                        leftAmount: goal.progress,
+                        rightAmount: goal.targetAmount,
+                        dividerType: DividerType.slash,
+                        styel: AppTextStyles.text14w400(context),
                       ),
+                goal.hideAmount
+                    ? const SizedBox.shrink()
+                    : isCompleted
+                        ? Text(
+                            'Completed',
+                            style: AppTextStyles.text14w400(
+                              context,
+                            ).copyWith(color: colorScheme.onSurface),
+                          )
+                        : Text(
+                            'Remaining: ${AmountFormatter.format(remaining)}',
+                            style: AppTextStyles.text14w400(context),
+                          ),
               ],
             ),
           ],

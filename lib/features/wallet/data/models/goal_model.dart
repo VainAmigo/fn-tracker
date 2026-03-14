@@ -36,6 +36,8 @@ class GoalModel {
   final double progress;
   final double targetAmount;
   final DateTime createdAt;
+  final bool hideAmount;
+  final bool isHidden;
 
   GoalModel({
     required this.id,
@@ -45,6 +47,8 @@ class GoalModel {
     required this.progress,
     required this.targetAmount,
     required this.createdAt,
+    this.hideAmount = false,
+    this.isHidden = false,
   });
 
   Map<String, dynamic> toJson() {
@@ -56,6 +60,8 @@ class GoalModel {
       'progress': progress,
       'targetAmount': targetAmount,
       'createdAt': createdAt.toIso8601String(),
+      'hideAmount': hideAmount,
+      'isHidden': isHidden,
     };
   }
 
@@ -67,6 +73,8 @@ class GoalModel {
     double? progress,
     double? targetAmount,
     DateTime? createdAt,
+    bool? hideAmount,
+    bool? isHidden,
   }) {
     return GoalModel(
       id: id ?? this.id,
@@ -76,6 +84,8 @@ class GoalModel {
       progress: progress ?? this.progress,
       targetAmount: targetAmount ?? this.targetAmount,
       createdAt: createdAt ?? this.createdAt,
+      hideAmount: hideAmount ?? this.hideAmount,
+      isHidden: isHidden ?? this.isHidden,
     );
   }
 
@@ -95,6 +105,8 @@ class GoalModel {
       progress: (json['progress'] as num?)?.toDouble() ?? 0,
       targetAmount: (json['targetAmount'] as num).toDouble(),
       createdAt: createdAt,
+      hideAmount: json['hideAmount'] as bool? ?? false,
+      isHidden: json['isHidden'] as bool? ?? false,
     );
   }
 }

@@ -11,11 +11,15 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
     required this.wallet,
     required this.onEdit,
     this.onDefaultChanged,
+    required this.onHideAmountChanged,
+    required this.onHideWalletChanged,
   });
 
   final WalletModel wallet;
   final VoidCallback onEdit;
   final VoidCallback? onDefaultChanged;
+  final void Function(bool hideAmount) onHideAmountChanged;
+  final Future<void> Function(bool isHidden) onHideWalletChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +45,27 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
             wallet: wallet,
             onDefaultChanged: onDefaultChanged,
             isEnabled: true,
+          ),
+          const SizedBox(height: AppSizing.spaceBtwItems),
+          SwitchListTile(
+            title: Text(
+              'Скрыть сумму',
+              style: AppTextStyles.text16w400(context),
+            ),
+            value: wallet.hideAmount,
+            onChanged: (_) => onHideAmountChanged(!wallet.hideAmount),
+          ),
+          SwitchListTile(
+            title: Text(
+              'Скрыть кошелёк',
+              style: AppTextStyles.text16w400(context),
+            ),
+            subtitle: Text(
+              'Будет виден только в блоке «Скрытые карточки»',
+              style: AppTextStyles.text14w400(context),
+            ),
+            value: wallet.isHidden,
+            onChanged: (_) => onHideWalletChanged(!wallet.isHidden),
           ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           PrimaryButton(

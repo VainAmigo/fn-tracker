@@ -210,6 +210,8 @@ class _WalletFormViewState extends State<WalletFormView> {
       iconId: _selectedIcon.id,
       balance: widget.wallet?.balance,
       isDefault: _isDefault,
+      hideAmount: widget.wallet?.hideAmount ?? false,
+      isHidden: widget.wallet?.isHidden ?? false,
     );
 
     if (_isEditing) {

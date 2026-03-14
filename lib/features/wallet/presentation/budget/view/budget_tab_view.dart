@@ -77,6 +77,7 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                 };
               },
             ),
+            const SizedBox(height: AppSizing.bottomPadding),
           ],
         ),
       ),

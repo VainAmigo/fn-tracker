@@ -1,3 +1,4 @@
+export 'repository/hidden_wallets_service.dart';
 export 'models/budget_model.dart';
 export 'models/budget_stat_model.dart';
 export 'models/wallet_model.dart';

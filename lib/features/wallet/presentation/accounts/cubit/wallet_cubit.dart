@@ -68,13 +68,31 @@ class WalletCubit extends HydratedCubit<WalletsState> {
 
   Future<void> updateWallet({required WalletModel wallet}) async {
     final previous = _currentWallets;
+    final wasDefaultAndNowHidden = wallet.isHidden &&
+        previous.any((w) => w.id == wallet.id && w.isDefault);
     emit(WalletsLoading());
-    final updatedWallet = await walletRepo.updateWallet(wallet: wallet);
-    final updatedList = previous.map((w) {
+    var updatedWallet = await walletRepo.updateWallet(wallet: wallet);
+    var updatedList = previous.map((w) {
       if (w.id == updatedWallet.id) return updatedWallet;
       if (wallet.isDefault) return w.copyWith(isDefault: false);
       return w;
     }).toList();
+
+    if (wasDefaultAndNowHidden) {
+      final firstVisible = updatedList
+          .where((w) => !w.isHidden && w.id != updatedWallet.id)
+          .firstOrNull;
+      if (firstVisible != null) {
+        updatedWallet = updatedWallet.copyWith(isDefault: false);
+        updatedList = updatedList.map((w) {
+          if (w.id == updatedWallet.id) return updatedWallet;
+          if (w.id == firstVisible.id) return w.copyWith(isDefault: true);
+          return w.copyWith(isDefault: false);
+        }).toList();
+        await walletRepo.updateWallet(wallet: firstVisible.copyWith(isDefault: true));
+      }
+    }
+
     emit(WalletsLoaded(wallets: updatedList));
   }
 

@@ -10,10 +10,14 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
     super.key,
     required this.goal,
     required this.onEdit,
+    required this.onHideAmountChanged,
+    required this.onHideGoalChanged,
   });
 
   final GoalModel goal;
   final VoidCallback onEdit;
+  final void Function(bool hideAmount) onHideAmountChanged;
+  final Future<void> Function(bool isHidden) onHideGoalChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +42,27 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           GoalCardWidget(goal: goal),
+          const SizedBox(height: AppSizing.spaceBtwItems),
+          SwitchListTile(
+            title: Text(
+              'Скрыть сумму',
+              style: AppTextStyles.text16w400(context),
+            ),
+            value: goal.hideAmount,
+            onChanged: (_) => onHideAmountChanged(!goal.hideAmount),
+          ),
+          SwitchListTile(
+            title: Text(
+              'Скрыть цель',
+              style: AppTextStyles.text16w400(context),
+            ),
+            subtitle: Text(
+              'Будет видна только в блоке «Скрытые карточки»',
+              style: AppTextStyles.text14w400(context),
+            ),
+            value: goal.isHidden,
+            onChanged: (_) => onHideGoalChanged(!goal.isHidden),
+          ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           PrimaryButton(
             text: 'History',
