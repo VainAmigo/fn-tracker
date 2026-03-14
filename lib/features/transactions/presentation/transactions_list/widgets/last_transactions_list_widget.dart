@@ -69,9 +69,14 @@ class _Body extends StatelessWidget {
         if (w.id != null) w.id!: w,
     };
 
-    final lastItems = transactions.length > 10
-        ? transactions.sublist(transactions.length - 10)
-        : transactions;
+    final visibleTransactions = _filterHiddenTransactions(
+      transactions,
+      walletMap,
+      goalMap,
+    );
+    final lastItems = visibleTransactions.length > 10
+        ? visibleTransactions.sublist(visibleTransactions.length - 10)
+        : visibleTransactions;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -113,22 +118,7 @@ class _Body extends StatelessWidget {
 
               final radius = radiusForIndex(index, lastItems.length);
 
-              return Dismissible(
-                key: Key(tx.id),
-                direction: DismissDirection.endToStart,
-                onDismissed: (_) {
-                  context.read<TransactionsCubit>().deleteTransaction(tx.id);
-                },
-                background: Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: borderRadiusFor(radius),
-                  ),
-                  child: const Icon(Icons.delete, color: Colors.white),
-                ),
-                child: CategoryCard(
+              return CategoryCard(
                   title:
                       category?.name ??
                       goal?.name ??
@@ -163,13 +153,26 @@ class _Body extends StatelessWidget {
                     style: AppTextStyles.listTileTitle(context),
                   ),
                   radius: radius,
-                ),
-              );
+                );
             },
           ),
         ],
       ],
     );
+  }
+
+  List<TransactionModel> _filterHiddenTransactions(
+    List<TransactionModel> transactions,
+    Map<String, WalletModel> walletMap,
+    Map<String, GoalModel> goalMap,
+  ) {
+    return transactions.where((tx) {
+      final wallet = tx.walletId != null ? walletMap[tx.walletId] : null;
+      final goal = tx.goalId != null ? goalMap[tx.goalId] : null;
+      if (wallet != null && wallet.isHidden) return false;
+      if (goal != null && goal.isHidden) return false;
+      return true;
+    }).toList();
   }
 
   List<CategoryModel> _extractCategories(CategoriesState state) {

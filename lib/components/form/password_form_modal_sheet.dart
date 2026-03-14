@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-/// Модальное окно для ввода PIN/пароля (для доступа к скрытым кошелькам).
+/// Модальное окно для ввода PIN (для доступа к скрытым кошелькам).
+/// Использует цифровую клавиатуру вместо текстового поля.
 class PasswordFormModalSheet extends StatefulWidget {
   const PasswordFormModalSheet({
     super.key,
@@ -52,34 +53,45 @@ class PasswordFormModalSheet extends StatefulWidget {
 }
 
 class _PasswordFormModalSheetState extends State<PasswordFormModalSheet> {
-  final _controller = TextEditingController();
-  final _confirmController = TextEditingController();
-  final _passwordVisibilityNotifier = PasswordVisibilityNotifier();
+  String _pin = '';
+  String _confirmPin = '';
+  int _focusedField = 0;
   String? _errorText;
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    _confirmController.dispose();
-    _passwordVisibilityNotifier.dispose();
-    super.dispose();
+  void _onKeyPressed(String key) {
+    setState(() {
+      _errorText = null;
+      if (key == 'backspace') {
+        if (_focusedField == 0) {
+          if (_pin.isNotEmpty) _pin = _pin.substring(0, _pin.length - 1);
+        } else {
+          if (_confirmPin.isNotEmpty) {
+            _confirmPin = _confirmPin.substring(0, _confirmPin.length - 1);
+          }
+        }
+      } else if (key != '.') {
+        if (_focusedField == 0) {
+          _pin += key;
+        } else {
+          _confirmPin += key;
+        }
+      }
+    });
   }
 
   Future<void> _submit() async {
-    final pin = _controller.text.trim();
-    if (pin.isEmpty) {
+    if (_pin.isEmpty) {
       setState(() => _errorText = 'Введите PIN');
       return;
     }
     if (widget.isSetMode) {
-      final confirm = _confirmController.text.trim();
-      if (confirm != pin) {
+      if (_confirmPin != _pin) {
         setState(() => _errorText = 'PIN не совпадает');
         return;
       }
     }
     setState(() => _errorText = null);
-    final success = await widget.onSubmit(pin);
+    final success = await widget.onSubmit(_pin);
     if (!mounted) return;
     if (success) Navigator.of(context).pop(true);
   }
@@ -111,19 +123,19 @@ class _PasswordFormModalSheetState extends State<PasswordFormModalSheet> {
             ),
             const SizedBox(height: AppSizing.spaceBtwItems),
           ],
-          PasswordTextField(
-            controller: _controller,
-            passwordVisibilityNotifier: _passwordVisibilityNotifier,
+          _PinDisplay(
             label: 'PIN',
-            onChanged: (_) => setState(() => _errorText = null),
+            value: _pin,
+            isFocused: _focusedField == 0,
+            onTap: () => setState(() => _focusedField = 0),
           ),
           if (widget.isSetMode) ...[
             const SizedBox(height: AppSizing.spaceBtwItems),
-            PasswordTextField(
-              controller: _confirmController,
-              passwordVisibilityNotifier: _passwordVisibilityNotifier,
+            _PinDisplay(
               label: 'Подтвердите PIN',
-              onChanged: (_) => setState(() => _errorText = null),
+              value: _confirmPin,
+              isFocused: _focusedField == 1,
+              onTap: () => setState(() => _focusedField = 1),
             ),
           ],
           if (_errorText != null) ...[
@@ -137,12 +149,70 @@ class _PasswordFormModalSheetState extends State<PasswordFormModalSheet> {
             ),
           ],
           const SizedBox(height: AppSizing.spaceBtwElements),
+          AmountKeyboard(onKeyPressed: _onKeyPressed),
+          const SizedBox(height: AppSizing.spaceBtwElements),
           PrimaryButton(
             text: widget.isSetMode ? widget.confirmLabel : widget.submitLabel,
             onPressed: () => _submit(),
             size: PrimaryButtonSize.medium,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PinDisplay extends StatelessWidget {
+  const _PinDisplay({
+    required this.label,
+    required this.value,
+    required this.isFocused,
+    required this.onTap,
+  });
+
+  final String label;
+  final String value;
+  final bool isFocused;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizing.spaceBtwElements,
+          vertical: AppSizing.spaceBtwItemsExtra,
+        ),
+        decoration: BoxDecoration(
+          color: colorScheme.secondary,
+          borderRadius: BorderRadius.circular(AppSizing.borderRadius12),
+          border: Border.all(
+            color: isFocused ? colorScheme.primary : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: AppTextStyles.text14w400(
+                context,
+                color: colorScheme.onSecondary,
+              ),
+            ),
+            const SizedBox(height: AppSizing.spaceBtwItems),
+            Text(
+              value.isEmpty ? '—' : '•' * value.length,
+              style: AppTextStyles.text20w600(context).copyWith(
+                letterSpacing: 4,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
