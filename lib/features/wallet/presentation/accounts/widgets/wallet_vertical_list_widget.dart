@@ -12,9 +12,11 @@ class WalletVerticalListWidget extends StatefulWidget {
     this.cardStyle = CategoryCardStyle.filled,
     this.shrinkWrap = false,
     this.autoLoad = false,
+    this.includeHidden = false,
   });
 
   final ValueChanged<WalletModel>? onWalletSelected;
+  final bool includeHidden;
   final CategoryCardStyle cardStyle;
   final bool shrinkWrap;
   final bool autoLoad;
@@ -50,11 +52,14 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
           );
         }
 
-        final wallets = switch (state) {
+        var wallets = switch (state) {
           WalletsLoaded s => s.wallets,
           WalletsEmpty() => const <WalletModel>[],
           _ => const <WalletModel>[],
         };
+        if (!widget.includeHidden) {
+          wallets = wallets.where((w) => !w.isHidden).toList();
+        }
 
         if (wallets.isEmpty) {
           return const Center(child: Text('Кошельков пока нет'));
@@ -104,7 +109,7 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
 
             return CategoryCard(
               title: wallet.name,
-              subtitle: wallet.balance?.toString(),
+              subtitle: wallet.hideAmount ? '••••' : wallet.balance?.toString(),
               leading: Container(
                 height: AppSizing.heightS,
                 decoration: BoxDecoration(

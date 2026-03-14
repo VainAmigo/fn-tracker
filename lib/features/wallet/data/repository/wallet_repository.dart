@@ -38,13 +38,7 @@ class WalletRepository implements WalletRepoImpl {
 
       final docRef = _walletsRef(uid).doc();
       final created = wallet.copyWith(id: docRef.id, isDefault: isFirst);
-      await docRef.set({
-        'id': docRef.id,
-        'name': created.name,
-        'colorId': created.colorId,
-        'iconId': created.iconId,
-        'isDefault': created.isDefault,
-      });
+      await docRef.set(created.toJson());
       return created;
     } catch (e) {
       throw Exception('Failed to add wallet: $e');

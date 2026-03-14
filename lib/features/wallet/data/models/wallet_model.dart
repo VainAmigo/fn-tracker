@@ -6,6 +6,12 @@ class WalletModel {
   final double? balance;
   final bool isDefault;
 
+  /// Скрыть только сумму (карточка видна, баланс показывается как ••••).
+  final bool hideAmount;
+
+  /// Скрыть весь кошелёк (показывается только в блоке «Скрытые карточки»).
+  final bool isHidden;
+
   WalletModel({
     this.id,
     required this.name,
@@ -13,6 +19,8 @@ class WalletModel {
     required this.iconId,
     this.balance,
     required this.isDefault,
+    this.hideAmount = false,
+    this.isHidden = false,
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +31,8 @@ class WalletModel {
       'iconId': iconId,
       'balance': balance,
       'isDefault': isDefault,
+      'hideAmount': hideAmount,
+      'isHidden': isHidden,
     };
   }
 
@@ -33,6 +43,8 @@ class WalletModel {
     String? iconId,
     double? balance,
     bool? isDefault,
+    bool? hideAmount,
+    bool? isHidden,
   }) {
     return WalletModel(
       id: id ?? this.id,
@@ -41,6 +53,8 @@ class WalletModel {
       iconId: iconId ?? this.iconId,
       balance: balance ?? this.balance,
       isDefault: isDefault ?? this.isDefault,
+      hideAmount: hideAmount ?? this.hideAmount,
+      isHidden: isHidden ?? this.isHidden,
     );
   }
 
@@ -51,7 +65,9 @@ class WalletModel {
       colorId: json['colorId'],
       iconId: json['iconId'],
       balance: (json['balance'] as num?)?.toDouble(),
-      isDefault: json['isDefault'] as bool,
+      isDefault: json['isDefault'] as bool? ?? false,
+      hideAmount: json['hideAmount'] as bool? ?? false,
+      isHidden: json['isHidden'] as bool? ?? false,
     );
   }
 }

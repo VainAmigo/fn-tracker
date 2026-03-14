@@ -66,10 +66,17 @@ class WalletCardWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
-          AmountWithSignWidget(
-            amount: wallet.balance ?? 0,
-            preset: AmountTextPreset.large,
-          ),
+          wallet.hideAmount
+              ? Text(
+                  '••••',
+                  style: AppTextStyles.text20w600(context).copyWith(
+                    letterSpacing: 4,
+                  ),
+                )
+              : AmountWithSignWidget(
+                  amount: wallet.balance ?? 0,
+                  preset: AmountTextPreset.large,
+                ),
         ],
       ),
     );

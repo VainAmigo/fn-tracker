@@ -103,9 +103,12 @@ class GoalsCubit extends HydratedCubit<GoalsState> {
   }
 
   GoalsModel _buildGoalsModel(List<GoalModel> goals) {
-    final totalProgress = goals.fold<double>(0, (s, g) => s + g.progress);
-    final totalTarget = goals.fold<double>(0, (s, g) => s + g.targetAmount);
-    final completedCount = goals.where(
+    final visibleGoals = goals.where((g) => !g.isHidden).toList();
+    final totalProgress =
+        visibleGoals.fold<double>(0, (s, g) => s + g.progress);
+    final totalTarget =
+        visibleGoals.fold<double>(0, (s, g) => s + g.targetAmount);
+    final completedCount = visibleGoals.where(
       (g) => g.targetAmount > 0 && g.progress >= g.targetAmount,
     ).length;
     return GoalsModel(
@@ -113,7 +116,7 @@ class GoalsCubit extends HydratedCubit<GoalsState> {
       totalGoal: TotalGoalModel(
         totalProgress: totalProgress,
         totalTargetAmount: totalTarget,
-        goalsCount: goals.length,
+        goalsCount: visibleGoals.length,
         completedCount: completedCount,
       ),
     );
