@@ -208,49 +208,32 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     );
   }
 
-  void _onSavePressed() {
-    if (_amount.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Amount cannot be empty')));
-      return;
-    }
+  String? _validateInputs() {
+    if (_amount.isEmpty) return 'Amount cannot be empty';
     if (_selectedType == TransactionType.transfer) {
-      final fromSelected =
-          _selectedWalletFrom != null || _selectedGoalFrom != null;
-      final toSelected = _selectedWalletTo != null || _selectedGoalTo != null;
-      if (!fromSelected || !toSelected) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Select both source and destination accounts'),
-          ),
-        );
-        return;
-      }
+      final from = _selectedWalletFrom != null || _selectedGoalFrom != null;
+      final to = _selectedWalletTo != null || _selectedGoalTo != null;
+      if (!from || !to) return 'Select both source and destination accounts';
       final fromId = _selectedWalletFrom?.id ?? _selectedGoalFrom?.id;
       final toId = _selectedWalletTo?.id ?? _selectedGoalTo?.id;
-      if (fromId == toId) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Source and destination must be different'),
-          ),
-        );
-        return;
-      }
+      if (fromId == toId) return 'Source and destination must be different';
     } else {
       if (_selectedWallet == null && _selectedGoal == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Select a wallet or goal')),
-        );
-        return;
+        return 'Select a wallet or goal';
       }
     }
     if (_selectedType == TransactionType.expense &&
         _selectedCategory == null &&
         _selectedGoal == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Category cannot be empty')));
+      return 'Category cannot be empty';
+    }
+    return null;
+  }
+
+  void _onSavePressed() {
+    final error = _validateInputs();
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
       return;
     }
     final (

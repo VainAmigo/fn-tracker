@@ -40,9 +40,7 @@ class _AnalyticsViewState extends State<AnalyticsView> {
                     style: AppTextStyles.tabTitle(context),
                   ),
                 ),
-                SliverToBoxAdapter(
-                  child: _AnalyticsBody(),
-                ),
+                SliverToBoxAdapter(child: _AnalyticsBody()),
               ],
             ),
           ),
@@ -84,10 +82,7 @@ class _AnalyticsBody extends StatelessWidget {
                   onRetry: () => cubit.loadAnalytics(),
                 )
               else if (state is AnalyticsLoaded)
-                AnalyticsContentWidget(
-                  data: state.data,
-                  period: state.period,
-                ),
+                AnalyticsContentWidget(data: state.data, period: state.period),
             ],
           ),
         );

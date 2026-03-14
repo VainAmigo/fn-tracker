@@ -29,6 +29,7 @@ class _AppViewState extends State<AppView> {
     final walletRepo = WalletRepository();
     final categoryRepo = CategoryRepository();
 
+    final transactionsRepo = TransactionsRepositoryImpl();
     final dataSeeder = DefaultDataSeeder(
       tasks: [
         WalletSeedTask(
@@ -57,18 +58,18 @@ class _AppViewState extends State<AppView> {
         ),
         BlocProvider<TransactionsCubit>(
           create: (context) =>
-              TransactionsCubit(transactionsRepo: TransactionsRepository()),
+              TransactionsCubit(transactionsRepo: transactionsRepo),
         ),
         BlocProvider<AddTransactionCubit>(
           create: (context) =>
-              AddTransactionCubit(transactionsRepo: TransactionsRepository()),
+              AddTransactionCubit(transactionsRepo: transactionsRepo),
         ),
         BlocProvider<BudgetCubit>(
           create: (context) => BudgetCubit(walletRepo: walletRepo),
         ),
         BlocProvider<HomeCubit>(
           create: (context) =>
-              HomeCubit(transactionsRepo: TransactionsRepository()),
+              HomeCubit(transactionsRepo: transactionsRepo),
         ),
         BlocProvider<WalletCubit>(
           create: (context) => WalletCubit(walletRepo: walletRepo),
