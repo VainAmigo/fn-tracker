@@ -1,48 +1,45 @@
-import 'dart:convert';
-
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/transactions/presentation/category/data/quick_categories_display_mode.dart';
 import 'package:fn_tracker/features/transactions/presentation/category/cubit/quick_categories_settings_state.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-const _keyDisplayMode = 'quick_categories_display_mode';
-const _keyPinnedOrder = 'quick_categories_pinned_order';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class QuickCategoriesSettingsCubit
-    extends Cubit<QuickCategoriesSettingsState> {
+    extends HydratedCubit<QuickCategoriesSettingsState> {
   QuickCategoriesSettingsCubit()
-      : super(QuickCategoriesSettingsState(
+      : super(const QuickCategoriesSettingsState(
           displayMode: QuickCategoriesDisplayMode.recent,
-        )) {
-    _load();
-  }
+        ));
 
-  Future<void> _load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final modeStored = prefs.getString(_keyDisplayMode);
-    final orderStored = prefs.getString(_keyPinnedOrder);
+  @override
+  String get storagePrefix => 'QuickCategoriesSettingsCubit';
 
-    final displayMode = modeStored != null
-        ? QuickCategoriesDisplayMode.fromString(modeStored)
-        : QuickCategoriesDisplayMode.recent;
-
-    List<String> pinnedOrder = const [];
-    if (orderStored != null) {
-      try {
-        final decoded = jsonDecode(orderStored) as List<dynamic>;
-        pinnedOrder = decoded.cast<String>();
-      } catch (_) {}
-    }
-
-    emit(QuickCategoriesSettingsState(
+  @override
+  QuickCategoriesSettingsState? fromJson(Map<String, dynamic> json) {
+    final displayMode = QuickCategoriesDisplayMode.fromString(
+      json['displayMode'] as String? ?? 'recent',
+    );
+    final pinnedOrder = (json['pinnedOrder'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList() ??
+        const [];
+    return QuickCategoriesSettingsState(
       displayMode: displayMode,
       pinnedOrder: pinnedOrder,
-    ));
+    );
   }
 
+  @override
+  Map<String, dynamic>? toJson(QuickCategoriesSettingsState state) {
+    return {
+      'displayMode': state.displayMode.name,
+      'pinnedOrder': state.pinnedOrder,
+    };
+  }
+
+  void clearForLogout() => emit(const QuickCategoriesSettingsState(
+        displayMode: QuickCategoriesDisplayMode.recent,
+      ));
+
   Future<void> setDisplayMode(QuickCategoriesDisplayMode mode) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyDisplayMode, mode.name);
     emit(QuickCategoriesSettingsState(
       displayMode: mode,
       pinnedOrder: state.pinnedOrder,
@@ -50,8 +47,6 @@ class QuickCategoriesSettingsCubit
   }
 
   Future<void> setPinnedOrder(List<String> order) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyPinnedOrder, jsonEncode(order));
     emit(QuickCategoriesSettingsState(
       displayMode: state.displayMode,
       pinnedOrder: order,

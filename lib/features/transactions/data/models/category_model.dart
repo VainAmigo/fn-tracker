@@ -23,7 +23,7 @@ class CategoryModel {
     return {
       'categoryId': categoryId,
       'colorId': colorId,
-      'createdAt': createdAt!.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
       'isQuick': isQuick ?? false,
       'iconId': iconId,
       'limitValue': limitValue,

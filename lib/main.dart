@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/firebase_options.dart';
 import 'package:fn_tracker/core/core.dart';
@@ -12,6 +15,13 @@ import 'theme/themes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+        ? HydratedStorageDirectory.web
+        : HydratedStorageDirectory((await getTemporaryDirectory()).path),
+  );
+
   runApp(const AppView());
 }
 
@@ -88,7 +98,19 @@ class _AppViewState extends State<AppView> {
           ChangeNotifierProvider(create: (_) => LocaleProvider()),
           ChangeNotifierProvider(create: (_) => CurrencyProvider()),
         ],
-        child: FnTracker(),
+        child: BlocListener<AuthCubit, AuthState>(
+          listenWhen: (prev, curr) =>
+              prev is Authenticated && curr is Unauthenticated,
+          listener: (context, state) async {
+            await HydratedBloc.storage.clear();
+            if (!context.mounted) return;
+            context.read<WalletCubit>().clearForLogout();
+            context.read<GoalsCubit>().clearForLogout();
+            context.read<CategoriesCubit>().clearForLogout();
+            context.read<QuickCategoriesSettingsCubit>().clearForLogout();
+          },
+          child: const FnTracker(),
+        ),
       ),
     );
   }

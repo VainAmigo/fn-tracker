@@ -1,12 +1,48 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/wallet/wallet.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 part 'wallet_state.dart';
 
-class WalletCubit extends Cubit<WalletsState> {
+class WalletCubit extends HydratedCubit<WalletsState> {
   final WalletRepoImpl walletRepo;
 
   WalletCubit({required this.walletRepo}) : super(WalletsInitial());
+
+  @override
+  String get storagePrefix => 'WalletCubit';
+
+  @override
+  WalletsState? fromJson(Map<String, dynamic> json) {
+    final type = json['_type'] as String?;
+    return switch (type) {
+      'loaded' => WalletsLoaded(
+          wallets: (json['wallets'] as List)
+              .map((e) => WalletModel.fromJson(e as Map<String, dynamic>))
+              .toList(),
+        ),
+      'empty' => WalletsEmpty(),
+      _ => null,
+    };
+  }
+
+  @override
+  Map<String, dynamic>? toJson(WalletsState state) {
+    if (state is WalletsLoading ||
+        state is WalletsInitial ||
+        state is WalletsError) {
+      return null; // Do not persist — keep previous cached state
+    }
+    if (state is WalletsEmpty) return {'_type': 'empty'};
+    if (state is WalletsLoaded) {
+      return {
+        '_type': 'loaded',
+        'wallets': state.wallets.map((w) => w.toJson()).toList(),
+      };
+    }
+    return null;
+  }
+
+  void clearForLogout() => emit(WalletsInitial());
 
   Future<void> loadWallets() async {
     emit(WalletsLoading());

@@ -1,12 +1,48 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 part 'categories_state.dart';
 
-class CategoriesCubit extends Cubit<CategoriesState> {
+class CategoriesCubit extends HydratedCubit<CategoriesState> {
   final CategoryRepoImpl categoryRepo;
 
   CategoriesCubit({required this.categoryRepo}) : super(CategoriesInitial());
+
+  @override
+  String get storagePrefix => 'CategoriesCubit';
+
+  @override
+  CategoriesState? fromJson(Map<String, dynamic> json) {
+    final type = json['_type'] as String?;
+    return switch (type) {
+      'loaded' => CategoriesLoaded(
+          categories: (json['categories'] as List)
+              .map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
+              .toList(),
+        ),
+      'empty' => CategoriesEmpty(),
+      _ => null,
+    };
+  }
+
+  @override
+  Map<String, dynamic>? toJson(CategoriesState state) {
+    if (state is CategoriesLoading ||
+        state is CategoriesInitial ||
+        state is CategoriesError) {
+      return null; // Do not persist — keep previous cached state
+    }
+    if (state is CategoriesEmpty) return {'_type': 'empty'};
+    if (state is CategoriesLoaded) {
+      return {
+        '_type': 'loaded',
+        'categories': state.categories.map((c) => c.toJson()).toList(),
+      };
+    }
+    return null;
+  }
+
+  void clearForLogout() => emit(CategoriesInitial());
 
   Future<void> loadCategories() async {
     try {
