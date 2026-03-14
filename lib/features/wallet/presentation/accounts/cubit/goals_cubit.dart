@@ -1,12 +1,46 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/wallet/wallet.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 part 'goals_state.dart';
 
-class GoalsCubit extends Cubit<GoalsState> {
+class GoalsCubit extends HydratedCubit<GoalsState> {
   final WalletRepoImpl walletRepo;
 
   GoalsCubit({required this.walletRepo}) : super(GoalsInitial());
+
+  @override
+  String get storagePrefix => 'GoalsCubit';
+
+  @override
+  GoalsState? fromJson(Map<String, dynamic> json) {
+    final type = json['_type'] as String?;
+    return switch (type) {
+      'loaded' => GoalsLoaded(
+          goalsModel: GoalsModel.fromJson(json['goalsModel'] as Map<String, dynamic>),
+        ),
+      'empty' => GoalsEmpty(),
+      _ => null,
+    };
+  }
+
+  @override
+  Map<String, dynamic>? toJson(GoalsState state) {
+    if (state is GoalsLoading ||
+        state is GoalsInitial ||
+        state is GoalsError) {
+      return null; // Do not persist — keep previous cached state
+    }
+    if (state is GoalsEmpty) return {'_type': 'empty'};
+    if (state is GoalsLoaded) {
+      return {
+        '_type': 'loaded',
+        'goalsModel': state.goalsModel.toJson(),
+      };
+    }
+    return null;
+  }
+
+  void clearForLogout() => emit(GoalsInitial());
 
   GoalsModel? get _currentGoalsModel =>
       state is GoalsLoaded ? (state as GoalsLoaded).goalsModel : null;

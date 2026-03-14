@@ -20,7 +20,9 @@ class GoalsModel {
 
   factory GoalsModel.fromJson(Map<String, dynamic> json) {
     return GoalsModel(
-      goals: json['goals'].map((goal) => GoalModel.fromJson(goal)).toList(),
+      goals: (json['goals'] as List<dynamic>)
+          .map((e) => GoalModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
       totalGoal: TotalGoalModel.fromJson(json['totalGoal']),
     );
   }
