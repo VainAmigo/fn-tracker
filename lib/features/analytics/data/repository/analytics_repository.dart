@@ -23,6 +23,12 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
   CollectionReference<Map<String, dynamic>> _budgetsRef(String uid) =>
       firebaseFirestore.collection('users').doc(uid).collection('budget');
 
+  CollectionReference<Map<String, dynamic>> _walletsRef(String uid) =>
+      firebaseFirestore.collection('users').doc(uid).collection('wallets');
+
+  CollectionReference<Map<String, dynamic>> _goalsRef(String uid) =>
+      firebaseFirestore.collection('users').doc(uid).collection('goals');
+
   @override
   Future<AnalyticsPeriodModel> getAnalytics({
     required String startDayKey,
@@ -37,11 +43,24 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
           .get(),
       _categoriesRef(uid).orderBy('createdAt', descending: true).get(),
       _budgetsRef(uid).get(),
+      _walletsRef(uid).get(),
+      _goalsRef(uid).get(),
     ]);
 
     final transactionsSnapshot = results[0];
     final categoriesSnapshot = results[1];
     final budgetSnapshot = results[2];
+    final walletsSnapshot = results[3];
+    final goalsSnapshot = results[4];
+
+    final hiddenWalletIds = walletsSnapshot.docs
+        .where((d) => d.data()['isHidden'] == true)
+        .map((d) => d.id)
+        .toSet();
+    final hiddenGoalIds = goalsSnapshot.docs
+        .where((d) => d.data()['isHidden'] == true)
+        .map((d) => d.id)
+        .toSet();
 
     BudgetModel? budget;
     if (budgetSnapshot.docs.isNotEmpty) {
@@ -49,10 +68,20 @@ class AnalyticsRepository implements AnalyticsRepoImpl {
       budget = BudgetModel.fromJson({...doc.data(), 'id': doc.id});
     }
 
-    final transactions = transactionsSnapshot.docs
+    final allTransactions = transactionsSnapshot.docs
         .map((doc) => TransactionModel.fromJson(doc.data()))
         .where((t) => t.transferId == null)
         .toList();
+
+    final transactions = allTransactions.where((t) {
+      if (t.walletId != null && hiddenWalletIds.contains(t.walletId)) {
+        return false;
+      }
+      if (t.goalId != null && hiddenGoalIds.contains(t.goalId)) {
+        return false;
+      }
+      return true;
+    }).toList();
 
     final categories = categoriesSnapshot.docs
         .map((doc) => CategoryModel.fromJson(doc.data()))

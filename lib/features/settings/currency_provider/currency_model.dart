@@ -34,6 +34,15 @@ class Currency {
 
   static const List<Currency> availableCurrencies = [
     Currency(
+      code: 'KGS',
+      symbol: 'c',
+      symbolPosition: SymbolPosition.right,
+      decimalSeparator: DecimalSeparator.comma,
+      thousandsSeparator: ThousandsSeparator.space,
+      decimalPlaces: 2,
+      name: 'Кыргыз сом',
+    ),
+    Currency(
       code: 'USD',
       symbol: '\$',
       symbolPosition: SymbolPosition.left,
