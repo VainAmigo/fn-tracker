@@ -104,10 +104,8 @@ class ScheduledPaymentCard extends StatelessWidget {
 
   String _formatFrequency(ScheduledPaymentModel p) {
     switch (p.frequency) {
-      case ScheduledPaymentFrequency.once:
-        return 'Один раз';
-      case ScheduledPaymentFrequency.daily:
-        return 'Ежедневно';
+      case ScheduledPaymentFrequency.day:
+        return 'Day';
       case ScheduledPaymentFrequency.weekly:
         return 'Еженедельно';
       case ScheduledPaymentFrequency.monthly:

@@ -61,12 +61,9 @@ class ScheduledFrequencyPickerWidget extends StatelessWidget {
                       context, c, ScheduledPaymentFrequency.weekly, 'Weekly')),
               Expanded(
                   child: _card(
-                      context, c, ScheduledPaymentFrequency.daily, 'Daily')),
+                      context, c, ScheduledPaymentFrequency.day, 'Day')),
             ],
           ),
-          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          _card(context, c, ScheduledPaymentFrequency.once, 'Once',
-              height: AppSizing.heightS),
         ],
       ),
     );

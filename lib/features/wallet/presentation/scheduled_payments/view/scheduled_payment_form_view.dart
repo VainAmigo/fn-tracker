@@ -23,21 +23,18 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
 
   late ScheduledPaymentFrequency _frequency;
 
-  /// Дата/день платежа (одиночный — для daily/yearly).
+  /// Дата/день платежа (одиночный — для day/yearly).
   DateTime? _paymentDate;
 
   /// Несколько дат для мультивыбора (weekly — дни недели, monthly — числа месяца).
   List<DateTime> _paymentDates = [];
-
-  /// Для daily: каждые N дней (интервал повторения).
-  int _dailyInterval = 1;
 
   @override
   void initState() {
     super.initState();
     _selectedIcon = categoryIconGroups[0].icons.first;
     _selectedShade = categoryColorPalettes[0].shades.first;
-    _frequency = ScheduledPaymentFrequency.daily;
+    _frequency = ScheduledPaymentFrequency.day;
   }
 
   @override
@@ -113,7 +110,6 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                                   _frequency = value;
                                   _paymentDate = null;
                                   _paymentDates = [];
-                                  _dailyInterval = 1;
                                 });
                               },
                             ),
@@ -172,8 +168,6 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
     );
   }
 
-  bool get _isDaily =>
-      _frequency == ScheduledPaymentFrequency.daily;
   bool get _isMultiSelect =>
       _frequency == ScheduledPaymentFrequency.weekly ||
       _frequency == ScheduledPaymentFrequency.monthly ||
@@ -186,7 +180,6 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
       initialDate:
           _paymentDates.isNotEmpty ? _paymentDates.first : _paymentDate,
       initialDates: _isMultiSelect ? _paymentDates : null,
-      initialDailyInterval: _isDaily ? _dailyInterval : null,
       onDateSelected: (value) {
         setState(() {
           _paymentDate = value;
@@ -198,15 +191,6 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
               setState(() {
                 _paymentDates = list;
                 _paymentDate = list.isNotEmpty ? list.first : null;
-              });
-            }
-          : null,
-      onDailyScheduleSelected: _isDaily
-          ? (interval, startDate) {
-              setState(() {
-                _dailyInterval = interval;
-                _paymentDate = startDate;
-                _paymentDates = [startDate];
               });
             }
           : null,
@@ -235,8 +219,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
 
   String _frequencyTitle(BuildContext context) {
     return switch (_frequency) {
-      ScheduledPaymentFrequency.once => 'Once',
-      ScheduledPaymentFrequency.daily => 'Daily',
+      ScheduledPaymentFrequency.day => 'Day',
       ScheduledPaymentFrequency.weekly => 'Weekly',
       ScheduledPaymentFrequency.monthly => 'Monthly',
       ScheduledPaymentFrequency.yearly => 'Yearly',
@@ -250,28 +233,28 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
             .map((d) => Weekday.fromDateTime(d).localizedName(context))
             .join(', '),
         ScheduledPaymentFrequency.monthly =>
-          _paymentDates.map((d) => d.day.toString()).join(', '),
+          _paymentDates
+              .map((d) =>
+                  d.day == DateTime(d.year, d.month + 1, 0).day
+                      ? 'End of month'
+                      : d.day.toString())
+              .join(', '),
         ScheduledPaymentFrequency.yearly =>
           _paymentDates.map((d) => d.formatMonthDay).join(', '),
         _ => 'Date',
       };
     }
-    if (_isDaily) {
-      final intervalText =
-          _dailyInterval == 1 ? 'Every day' : 'Every $_dailyInterval days';
-      return _paymentDate != null
-          ? '$intervalText from ${_paymentDate!.formatDotDate}'
-          : intervalText;
-    }
     if (_paymentDate == null) return 'Date';
     final d = _paymentDate!;
     return switch (_frequency) {
-      ScheduledPaymentFrequency.once => d.formatDotDate,
+      ScheduledPaymentFrequency.day => d.formatDotDate,
       ScheduledPaymentFrequency.weekly =>
         Weekday.fromDateTime(d).localizedName(context),
-      ScheduledPaymentFrequency.monthly => '${d.day}',
+      ScheduledPaymentFrequency.monthly =>
+        d.day == DateTime(d.year, d.month + 1, 0).day
+            ? 'End of month'
+            : '${d.day}',
       ScheduledPaymentFrequency.yearly => d.formatMonthDay,
-      ScheduledPaymentFrequency.daily => d.formatDotDate,
     };
   }
 }

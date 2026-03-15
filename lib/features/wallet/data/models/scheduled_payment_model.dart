@@ -1,7 +1,6 @@
 /// Частота планового платежа.
 enum ScheduledPaymentFrequency {
-  once('Один раз'),
-  daily('Ежедневно'),
+  day('Day'),
   weekly('Еженедельно'),
   monthly('Ежемесячно'),
   yearly('Ежегодно');

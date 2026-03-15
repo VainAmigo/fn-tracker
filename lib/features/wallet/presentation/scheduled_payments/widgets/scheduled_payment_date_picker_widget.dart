@@ -7,7 +7,6 @@ import 'package:fn_tracker/theme/themes.dart';
 /// Виджет выбора даты/дня в зависимости от частоты платежа.
 /// Для [ScheduledPaymentFrequency.weekly] и [monthly] поддерживается
 /// мультивыбор (несколько дней недели / чисел месяца).
-/// Для [ScheduledPaymentFrequency.daily] — выбор интервала «каждые X дней» и даты начала.
 class ScheduledPaymentDatePickerWidget extends StatefulWidget {
   const ScheduledPaymentDatePickerWidget({
     required this.frequency,
@@ -15,8 +14,6 @@ class ScheduledPaymentDatePickerWidget extends StatefulWidget {
     required this.onDateSelected,
     this.initialDates,
     this.onDatesSelected,
-    this.initialDailyInterval,
-    this.onDailyScheduleSelected,
     super.key,
   });
 
@@ -30,13 +27,6 @@ class ScheduledPaymentDatePickerWidget extends StatefulWidget {
   /// Колбэк при мультивыборе (weekly — дни недели, monthly — числа месяца, yearly — список дат в году).
   final ValueChanged<List<DateTime>>? onDatesSelected;
 
-  /// Начальный интервал для daily (каждые X дней). Используется с [onDailyScheduleSelected].
-  final int? initialDailyInterval;
-
-  /// Колбэк для daily: интервал в днях и дата начала платежей.
-  final void Function(int intervalDays, DateTime startDate)?
-  onDailyScheduleSelected;
-
   static Future<void> show(
     BuildContext context, {
     required ScheduledPaymentFrequency frequency,
@@ -44,9 +34,6 @@ class ScheduledPaymentDatePickerWidget extends StatefulWidget {
     required ValueChanged<DateTime> onDateSelected,
     List<DateTime>? initialDates,
     ValueChanged<List<DateTime>>? onDatesSelected,
-    int? initialDailyInterval,
-    void Function(int intervalDays, DateTime startDate)?
-    onDailyScheduleSelected,
   }) {
     return AppBottomSheet.showFittedModalBottomSheet(
       context,
@@ -57,8 +44,6 @@ class ScheduledPaymentDatePickerWidget extends StatefulWidget {
         onDateSelected: onDateSelected,
         initialDates: initialDates,
         onDatesSelected: onDatesSelected,
-        initialDailyInterval: initialDailyInterval,
-        onDailyScheduleSelected: onDailyScheduleSelected,
       ),
     );
   }
@@ -76,13 +61,14 @@ class _ScheduledPaymentDatePickerWidgetState
   /// Выбранные даты для yearly (месяц+день, год — опорный для сортировки).
   List<DateTime> _selectedYearlyDates = [];
 
-  /// Интервал для daily: каждые N дней.
-  int _dailyInterval = 1;
+  /// PageController для monthly: скролл по числам 1–28 и «конец месяца».
+  PageController? _monthlyDayPageController;
 
-  /// Выбранная дата начала для daily (null = не выбрана, использовать initial).
-  DateTime? _dailyStartDate;
+  /// Специальное значение для «конец месяца» (день 31 в DateTime).
+  static const int _endOfMonthDay = 31;
 
-  late PageController _dailyIntervalPageController;
+  static bool _isLastDayOfMonth(DateTime d) =>
+      d.day == DateTime(d.year, d.month + 1, 0).day;
 
   bool get _isMultiSelect =>
       widget.onDatesSelected != null &&
@@ -104,9 +90,15 @@ class _ScheduledPaymentDatePickerWidgetState
     }
     if (widget.frequency == ScheduledPaymentFrequency.monthly) {
       _selectedMonthDays =
-          widget.initialDates?.map((d) => d.day.clamp(1, 28)).toSet() ??
+          widget.initialDates
+              ?.map((d) => _isLastDayOfMonth(d) ? _endOfMonthDay : d.day)
+              .toSet() ??
           (widget.initialDate != null
-              ? {widget.initialDate!.day.clamp(1, 28)}
+              ? {
+                  _isLastDayOfMonth(widget.initialDate!)
+                      ? _endOfMonthDay
+                      : widget.initialDate!.day,
+                }
               : <int>{});
     } else {
       _selectedMonthDays = <int>{};
@@ -133,40 +125,29 @@ class _ScheduledPaymentDatePickerWidgetState
         return c != 0 ? c : a.day.compareTo(b.day);
       });
     }
-    if (widget.frequency == ScheduledPaymentFrequency.daily &&
-        widget.onDailyScheduleSelected != null) {
-      _dailyInterval = (widget.initialDailyInterval ?? 1).clamp(
-        1,
-        _dailyIntervalMax,
-      );
-      _dailyStartDate = widget.initialDate != null
-          ? DateUtils.dateOnly(widget.initialDate!)
-          : null;
-      _dailyIntervalPageController = PageController(
-        initialPage: _dailyInterval - 1,
+    if (widget.frequency == ScheduledPaymentFrequency.monthly) {
+      final initialDay = _selectedMonthDays.isNotEmpty
+          ? _selectedMonthDays.first
+          : (widget.initialDate?.day.clamp(1, 28) ?? 1);
+      final initialPage = initialDay == _endOfMonthDay ? 28 : (initialDay - 1);
+      _monthlyDayPageController = PageController(
+        initialPage: initialPage.clamp(0, 28),
         viewportFraction: 1 / 3,
       );
     }
-    if (widget.frequency == ScheduledPaymentFrequency.once) {
-      _onceSelectedDate = widget.initialDate != null
+    if (widget.frequency == ScheduledPaymentFrequency.day) {
+      _daySelectedDate = widget.initialDate != null
           ? DateUtils.dateOnly(widget.initialDate!)
           : DateUtils.dateOnly(DateTime.now());
     }
   }
 
-  bool get _isDailyWithSchedule =>
-      widget.frequency == ScheduledPaymentFrequency.daily &&
-      widget.onDailyScheduleSelected != null;
-
-  /// Выбранная дата для once (одноразовый платёж).
-  DateTime? _onceSelectedDate;
+  /// Выбранная дата для day (одноразовый платёж).
+  DateTime? _daySelectedDate;
 
   @override
   void dispose() {
-    if (widget.frequency == ScheduledPaymentFrequency.daily &&
-        widget.onDailyScheduleSelected != null) {
-      _dailyIntervalPageController.dispose();
-    }
+    _monthlyDayPageController?.dispose();
     super.dispose();
   }
 
@@ -185,21 +166,19 @@ class _ScheduledPaymentDatePickerWidgetState
           ModalSheetTitleWidget(title: _sheetTitle(context)),
           const SizedBox(height: AppSizing.spaceBtwSections),
           switch (widget.frequency) {
-            ScheduledPaymentFrequency.once => _buildOncePicker(context),
-            ScheduledPaymentFrequency.daily => _buildDailyPicker(context),
+            ScheduledPaymentFrequency.day => _buildDayPicker(context),
             ScheduledPaymentFrequency.weekly => _buildWeeklyPicker(context),
             ScheduledPaymentFrequency.monthly => _buildMonthlyPicker(context),
             ScheduledPaymentFrequency.yearly => _buildYearlyPicker(context),
           },
           if (_isMultiSelect ||
-              _isDailyWithSchedule ||
-              widget.frequency == ScheduledPaymentFrequency.once) ...[
+              widget.frequency == ScheduledPaymentFrequency.day) ...[
             const SizedBox(height: AppSizing.spaceBtwSections),
             PrimaryButton(
               text: 'Done',
-              onPressed: widget.frequency == ScheduledPaymentFrequency.once
-                  ? _onOnceSave
-                  : (_isDailyWithSchedule ? _onDailyDone : _onMultiSelectDone),
+              onPressed: widget.frequency == ScheduledPaymentFrequency.day
+                  ? _onDaySave
+                  : _onMultiSelectDone,
               size: PrimaryButtonSize.medium,
               rounded: true,
             ),
@@ -211,9 +190,7 @@ class _ScheduledPaymentDatePickerWidgetState
 
   String _sheetTitle(BuildContext context) {
     return switch (widget.frequency) {
-      ScheduledPaymentFrequency.once => 'Once',
-      ScheduledPaymentFrequency.daily =>
-        widget.onDailyScheduleSelected != null ? 'Every X days' : 'Start date',
+      ScheduledPaymentFrequency.day => 'Day',
       ScheduledPaymentFrequency.weekly =>
         _isMultiSelect ? 'Days of week' : 'Day of week',
       ScheduledPaymentFrequency.monthly =>
@@ -223,17 +200,9 @@ class _ScheduledPaymentDatePickerWidgetState
     };
   }
 
-  void _onDailyDone() {
-    final startDate = DateUtils.dateOnly(
-      _dailyStartDate ?? widget.initialDate ?? DateTime.now(),
-    );
-    widget.onDailyScheduleSelected!(_dailyInterval, startDate);
-    Navigator.of(context).pop();
-  }
-
-  void _onOnceSave() {
-    if (_onceSelectedDate != null) {
-      widget.onDateSelected(_onceSelectedDate!);
+  void _onDaySave() {
+    if (_daySelectedDate != null) {
+      widget.onDateSelected(_daySelectedDate!);
       Navigator.of(context).pop();
     }
   }
@@ -257,9 +226,9 @@ class _ScheduledPaymentDatePickerWidgetState
     Navigator.of(context).pop();
   }
 
-  /// Модалка выбора даты для одноразового платежа + кнопка сохранения.
-  Widget _buildOncePicker(BuildContext context) {
-    final ref = _onceSelectedDate ?? widget.initialDate ?? DateTime.now();
+  /// Модалка выбора даты для day (одноразовый платёж) + кнопка сохранения.
+  Widget _buildDayPicker(BuildContext context) {
+    final ref = _daySelectedDate ?? widget.initialDate ?? DateTime.now();
     final dateOnly = DateUtils.dateOnly(ref);
     final colorScheme = Theme.of(context).colorScheme;
     return Column(
@@ -278,7 +247,7 @@ class _ScheduledPaymentDatePickerWidgetState
             );
             if (!context.mounted) return;
             if (picked != null) {
-              setState(() => _onceSelectedDate = DateUtils.dateOnly(picked));
+              setState(() => _daySelectedDate = DateUtils.dateOnly(picked));
             }
           },
           size: PrimaryButtonSize.large,
@@ -288,119 +257,6 @@ class _ScheduledPaymentDatePickerWidgetState
         ),
       ],
     );
-  }
-
-  Widget _buildDailyPicker(BuildContext context) {
-    if (widget.onDailyScheduleSelected != null) {
-      return _buildDailyIntervalPicker(context);
-    }
-    final ref = widget.initialDate ?? DateTime.now();
-    final dateOnly = DateUtils.dateOnly(ref);
-    return PrimaryButton(
-      text: 'Choose date',
-      onPressed: () async {
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: dateOnly,
-          firstDate: dateOnly,
-          lastDate: DateTime(dateOnly.year + 2, 12, 31),
-        );
-        if (!context.mounted) return;
-        if (picked != null) {
-          widget.onDateSelected(picked);
-          Navigator.of(context).pop();
-        }
-      },
-      size: PrimaryButtonSize.large,
-      icon: Icons.calendar_month,
-      backgroundColor: Theme.of(context).colorScheme.secondary,
-      foregroundColor: Theme.of(context).colorScheme.onSurface,
-    );
-  }
-
-  static const int _dailyIntervalMax = 90;
-
-  /// Горизонтальный скролл выбора «каждые X дней» и кнопка выбора даты начала.
-  Widget _buildDailyIntervalPicker(BuildContext context) {
-    final ref = widget.initialDate ?? DateTime.now();
-    final dateOnly = DateUtils.dateOnly(ref);
-    final colorScheme = Theme.of(context).colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Repeat every',
-          style: AppTextStyles.text14w400(
-            context,
-          ).copyWith(color: colorScheme.onSurfaceVariant),
-        ),
-        const SizedBox(height: AppSizing.spaceBtwItems),
-        SizedBox(
-          height: AppSizing.heightS,
-          child: PageView.builder(
-            controller: _dailyIntervalPageController,
-            onPageChanged: (index) {
-              setState(() => _dailyInterval = index + 1);
-            },
-            itemCount: _dailyIntervalMax,
-            itemBuilder: (context, index) {
-              final n = index + 1;
-              final isCenter = index == _dailyInterval - 1;
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: isCenter
-                    ? null
-                    : () => _dailyIntervalPageController.animateToPage(
-                        index,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      ),
-                child: AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 150),
-                  style: TextStyle(
-                    fontSize: isCenter ? 18 : 16,
-                    fontWeight: isCenter ? FontWeight.w600 : FontWeight.w400,
-                    color: isCenter
-                        ? colorScheme.onSurface
-                        : colorScheme.onSecondary,
-                  ),
-                  child: Center(child: Text(n == 1 ? '1 day' : '$n days')),
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: AppSizing.spaceBtwSections),
-        PrimaryButton(
-          text: _dailyStartDateButtonLabel(dateOnly),
-          onPressed: () async {
-            final initial = _dailyStartDate ?? dateOnly;
-            final picked = await showDatePicker(
-              context: context,
-              initialDate: initial,
-              firstDate: dateOnly,
-              lastDate: DateTime(dateOnly.year + 2, 12, 31),
-            );
-            if (!context.mounted) return;
-            if (picked != null) {
-              setState(() => _dailyStartDate = DateUtils.dateOnly(picked));
-            }
-          },
-          size: PrimaryButtonSize.large,
-          icon: Icons.calendar_month,
-          backgroundColor: colorScheme.secondary,
-          foregroundColor: colorScheme.onSurface,
-        ),
-      ],
-    );
-  }
-
-  String _dailyStartDateButtonLabel(DateTime defaultDate) {
-    final d = DateUtils.dateOnly(
-      _dailyStartDate ?? widget.initialDate ?? defaultDate,
-    );
-    return 'Start date: ${d.formatDotDate}';
   }
 
   Widget _buildWeeklyPicker(BuildContext context) {
@@ -454,21 +310,32 @@ class _ScheduledPaymentDatePickerWidgetState
     );
   }
 
-  /// Пресеты дней месяца: число и подпись.
-  static const List<({int day, String label})> _monthDayPresets = [
-    (day: 1, label: 'Every 1st day of the month'),
-    (day: 5, label: 'Every 5th day of the month'),
-    (day: 10, label: 'Every 10th day of the month'),
-    (day: 15, label: 'Every 15th day of the month'),
-    (day: 20, label: 'Every 20th day of the month'),
-    (day: 25, label: 'Every 25th day of the month'),
-    (day: 28, label: 'Every 28th day of the month'),
-  ];
+  /// Текущий выбранный день месяца из скролла (1–28 или 31 для конца месяца).
+  int get _monthlyScrollDay {
+    if (_monthlyDayPageController == null ||
+        !_monthlyDayPageController!.hasClients) {
+      return _selectedMonthDays.isNotEmpty
+          ? _selectedMonthDays.first
+          : (widget.initialDate?.day.clamp(1, 28) ?? 1);
+    }
+    final page = _monthlyDayPageController!.page?.round() ?? 0;
+    return page < 28 ? page + 1 : _endOfMonthDay;
+  }
 
-  /// Список дней месяца: [FormCardWidget] с отступами и логикой радиусов [CardRadius].
+  static String _monthDayLabel(int day) {
+    if (day == _endOfMonthDay) return 'End of month';
+    return switch (day) {
+      1 => '1st',
+      2 => '2nd',
+      3 => '3rd',
+      _ => '${day}th',
+    };
+  }
+
+  /// Горизонтальный скролл выбора дня месяца (1–28, конец месяца).
   Widget _buildMonthlyPicker(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final total = _monthDayPresets.length;
+    const itemCount = 29; // 1–28 + end of month
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -480,45 +347,65 @@ class _ScheduledPaymentDatePickerWidgetState
             context,
           ).copyWith(color: colorScheme.onSurfaceVariant),
         ),
+        Text(
+          _selectedMonthDays.isNotEmpty
+              ? 'Selected days: ${_selectedMonthDays.map(_monthDayLabel).join(', ')}'
+              : 'Press to select days',
+          style: AppTextStyles.text14w400(context),
+        ),
         const SizedBox(height: AppSizing.spaceBtwItems),
-        ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: total,
-          separatorBuilder: (_, _) =>
-              const SizedBox(height: AppSizing.spaceBtwItems),
-          itemBuilder: (context, index) {
-            final preset = _monthDayPresets[index];
-            final day = preset.day;
-            final isSelected = _isMultiSelect
-                ? _selectedMonthDays.contains(day)
-                : widget.initialDate != null &&
-                      widget.initialDate!.day.clamp(1, 28) == day;
-            return FormCardWidget(
-              title: preset.label,
-              backgroundColor: isSelected
-                  ? colorScheme.primary
-                  : colorScheme.secondary,
-              foregroundColor: isSelected
-                  ? colorScheme.onPrimary
-                  : colorScheme.onSurface,
-              borderRadius: borderRadiusFor(radiusForIndex(index, total)),
-              onTap: () {
-                if (_isMultiSelect) {
-                  setState(() {
-                    if (_selectedMonthDays.contains(day)) {
-                      _selectedMonthDays.remove(day);
-                    } else {
-                      _selectedMonthDays.add(day);
-                    }
-                  });
-                } else {
-                  widget.onDateSelected(_nextDayOfMonth(day));
-                  Navigator.of(context).pop();
-                }
-              },
-            );
-          },
+        SizedBox(
+          height: AppSizing.heightS,
+          child: PageView.builder(
+            controller: _monthlyDayPageController,
+            onPageChanged: (_) => setState(() {}),
+            itemCount: itemCount,
+            itemBuilder: (context, index) {
+              final day = index < 28 ? index + 1 : _endOfMonthDay;
+              final isCenter = day == _monthlyScrollDay;
+              final isSelected = _isMultiSelect
+                  ? _selectedMonthDays.contains(day)
+                  : isCenter;
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  if (_isMultiSelect) {
+                    setState(() {
+                      if (_selectedMonthDays.contains(day)) {
+                        _selectedMonthDays.remove(day);
+                      } else {
+                        _selectedMonthDays.add(day);
+                      }
+                    });
+                  } else if (isCenter) {
+                    widget.onDateSelected(_nextDayOfMonth(day));
+                    Navigator.of(context).pop();
+                  } else {
+                    _monthlyDayPageController?.animateToPage(
+                      index,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                },
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 150),
+                  style: TextStyle(
+                    fontSize: isCenter ? 18 : 16,
+                    fontWeight: (isCenter || isSelected)
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                    color: isSelected
+                        ? colorScheme.primary
+                        : (isCenter
+                              ? colorScheme.onSurface
+                              : colorScheme.onSecondary),
+                  ),
+                  child: Center(child: Text(_monthDayLabel(day))),
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
@@ -661,6 +548,14 @@ class _ScheduledPaymentDatePickerWidgetState
 
   static DateTime _nextDayOfMonth(int day) {
     final now = DateTime.now();
+    if (day == _endOfMonthDay) {
+      // Последний день месяца: DateTime(year, month+1, 0)
+      var d = DateTime(now.year, now.month + 1, 0);
+      if (d.isBefore(now)) {
+        d = DateTime(now.year, now.month + 2, 0);
+      }
+      return DateUtils.dateOnly(d);
+    }
     var d = DateTime(now.year, now.month, day.clamp(1, 28));
     if (d.isBefore(now)) {
       d = DateTime(now.year, now.month + 1, day.clamp(1, 28));
