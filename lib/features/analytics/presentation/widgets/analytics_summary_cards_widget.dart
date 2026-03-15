@@ -27,77 +27,45 @@ class AnalyticsSummaryCardsWidget extends StatelessWidget {
 
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: _AnalyticsStatCard(
-                label: 'Доход',
-                value: totalIncome,
-                icon: Icons.arrow_downward_rounded,
-                color: colorScheme.primary,
-              ),
-            ),
-            const SizedBox(width: AppSizing.spaceBtwItemsExtra),
-            Expanded(
-              child: _AnalyticsStatCard(
-                label: 'Расход',
-                value: totalExpense,
-                icon: Icons.arrow_upward_rounded,
-                color: colorScheme.error,
-              ),
-            ),
-          ],
+        Container(
+          padding: const EdgeInsets.all(AppSizing.defaultPadding),
+          decoration: BoxDecoration(
+            color: colorScheme.secondary,
+            borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildCard('Доход', totalIncome, context),
+              const SizedBox(width: AppSizing.spaceBtwItemsExtra),
+              _buildCard('Расход', totalExpense, context),
+              const SizedBox(width: AppSizing.spaceBtwItemsExtra),
+              _buildCard('Баланс', balance, context),
+            ],
+          ),
         ),
-        const SizedBox(height: AppSizing.spaceBtwItemsExtra),
         if (hasBudget) ...[
-          _BudgetCard(
-            budget: budget!,
+          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+          _BudgetCard(budget: budget!,
             spent: totalExpense,
             formatter: formatter,
           ),
         ],
-        const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-        _BalanceCard(balance: balance, formatter: formatter),
+          
       ],
     );
   }
-}
 
-class _BalanceCard extends StatelessWidget {
-  const _BalanceCard({required this.balance, required this.formatter});
-
-  final double balance;
-  final CurrencyFormatter formatter;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.all(AppSizing.defaultPadding),
-      decoration: BoxDecoration(
-        color: colorScheme.secondary,
-        borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildCard(String label, double value, BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.account_balance_wallet_outlined,
-                size: AppSizing.iconSizeM,
-                color: colorScheme.primary,
-              ),
-              const SizedBox(width: AppSizing.spaceBtwItems),
-              Text('Баланс', style: AppTextStyles.sectionTitle(context)),
-            ],
-          ),
+          Text(label, style: AppTextStyles.text12w400(context)),
           AmountTextWidget(
-            amount: balance,
-            style: AppTextStyles.text20w600(context).copyWith(
-              color: balance >= 0 ? colorScheme.primary : colorScheme.error,
-            ),
+            amount: value,
+            style: AppTextStyles.text20w600(context),
           ),
         ],
       ),
@@ -189,51 +157,6 @@ class _BudgetCard extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AnalyticsStatCard extends StatelessWidget {
-  const _AnalyticsStatCard({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.color,
-  });
-
-  final String label;
-  final double value;
-  final IconData icon;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.all(AppSizing.defaultPadding),
-      decoration: BoxDecoration(
-        color: colorScheme.secondary,
-        borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: AppSizing.iconSizeM, color: color),
-              const SizedBox(width: AppSizing.spaceBtwItems),
-              Text(label, style: AppTextStyles.sectionTitle(context)),
-            ],
-          ),
-          const SizedBox(height: AppSizing.spaceBtwItems),
-          AmountTextWidget(
-            amount: value,
-            style: AppTextStyles.text20w600(context),
           ),
         ],
       ),
