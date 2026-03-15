@@ -2,12 +2,12 @@
 
 # FEATURE
 ## добавить разделение для истории транзакции (все, категории, сбережения)
-## add local transaction storage
-## add logic for not internect connecion 
 ## create privacy policy(local, firebase storage, sheet)
 ## виджет на главный экран(быстрые категории, аналитика)
 ## диаграммы для аналитики
 ## добавить раздел плановые платежи
 ## продумать логику для валют
+
+## при COMPLETE GOAL создается expence по этой GOAL и так закрывается цель
 
 # BUG
