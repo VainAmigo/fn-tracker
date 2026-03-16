@@ -82,9 +82,16 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           BlocListener<GoalsCubit, GoalsState>(
+            listenWhen: (prev, curr) =>
+                curr is GoalsLoaded || curr is GoalsError,
             listener: (context, state) {
               if (state is GoalsLoaded) {
                 Navigator.of(context).pop();
+              }
+              if (state is GoalsError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.message)),
+                );
               }
             },
             child: PrimaryButton(
@@ -92,8 +99,18 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
               icon: Icons.delete,
               size: PrimaryButtonSize.medium,
               rounded: false,
-              onPressed: () {
-                context.read<GoalsCubit>().deleteGoal(goalId: goal.id);
+              onPressed: () async {
+                final result = await showDeleteEntityDialog(
+                  context,
+                  title: 'Удалить цель?',
+                  message:
+                      'Удалить цель «${goal.name}»? Выберите способ удаления.',
+                );
+                if (!context.mounted || result == null || result == DeleteEntityResult.cancel) return;
+                context.read<GoalsCubit>().deleteGoal(
+                      goalId: goal.id,
+                      deleteTransactions: result == DeleteEntityResult.deleteFull,
+                    );
               },
             ),
           ),
@@ -182,9 +199,16 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
             spacing: AppSizing.spaceBtwItemsExtra,
             children: [
               BlocListener<GoalsCubit, GoalsState>(
+                listenWhen: (prev, curr) =>
+                    curr is GoalsLoaded || curr is GoalsError,
                 listener: (context, state) {
                   if (state is GoalsLoaded) {
                     Navigator.of(context).pop();
+                  }
+                  if (state is GoalsError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message)),
+                    );
                   }
                 },
                 child: PrimaryButton(
@@ -195,8 +219,19 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                   size: PrimaryButtonSize.large,
                   paddingStyle: PrimaryButtonPaddingStyle.slim,
                   rounded: true,
-                  onPressed: () {
-                    context.read<GoalsCubit>().deleteGoal(goalId: goal.id);
+                  onPressed: () async {
+                    final result = await showDeleteEntityDialog(
+                      context,
+                      title: 'Удалить цель?',
+                      message:
+                          'Удалить цель «${goal.name}»? Выберите способ удаления.',
+                    );
+                    if (!context.mounted || result == null || result == DeleteEntityResult.cancel) return;
+                    context.read<GoalsCubit>().deleteGoal(
+                          goalId: goal.id,
+                          deleteTransactions:
+                              result == DeleteEntityResult.deleteFull,
+                        );
                   },
                 ),
               ),

@@ -129,6 +129,88 @@ class TransactionsRepositoryImpl implements TransactionsRepository {
   }
 
   @override
+  Future<void> deleteTransactionsByWalletId(String walletId) async {
+    if (walletId.isEmpty) return;
+    final uid = _requireUid();
+    try {
+      final allSnapshot = await _transactionsRef(uid).get();
+      final toDelete = <DocumentReference<Map<String, dynamic>>>[];
+      final transferIdsToFind = <String>{};
+
+      for (final doc in allSnapshot.docs) {
+        final data = doc.data();
+        final docWalletId = data['walletId'] as String?;
+        if (docWalletId == walletId) {
+          toDelete.add(doc.reference);
+          final tid = data['transferId'] as String?;
+          if (tid != null && tid.isNotEmpty) transferIdsToFind.add(tid);
+        }
+      }
+
+      for (final doc in allSnapshot.docs) {
+        final tid = doc.data()['transferId'] as String?;
+        if (tid != null &&
+            transferIdsToFind.contains(tid) &&
+            !toDelete.any((r) => r.id == doc.id)) {
+          toDelete.add(doc.reference);
+        }
+      }
+
+      for (var i = 0; i < toDelete.length; i += 450) {
+        final batch = firebaseFirestore.batch();
+        final end = (i + 450).clamp(0, toDelete.length);
+        for (var j = i; j < end; j++) {
+          batch.delete(toDelete[j]);
+        }
+        await batch.commit();
+      }
+    } catch (e) {
+      throw Exception('Failed to delete transactions by wallet: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteTransactionsByGoalId(String goalId) async {
+    if (goalId.isEmpty) return;
+    final uid = _requireUid();
+    try {
+      final allSnapshot = await _transactionsRef(uid).get();
+      final toDelete = <DocumentReference<Map<String, dynamic>>>[];
+      final transferIdsToFind = <String>{};
+
+      for (final doc in allSnapshot.docs) {
+        final data = doc.data();
+        final docGoalId = data['goalId'] as String?;
+        if (docGoalId == goalId) {
+          toDelete.add(doc.reference);
+          final tid = data['transferId'] as String?;
+          if (tid != null && tid.isNotEmpty) transferIdsToFind.add(tid);
+        }
+      }
+
+      for (final doc in allSnapshot.docs) {
+        final tid = doc.data()['transferId'] as String?;
+        if (tid != null &&
+            transferIdsToFind.contains(tid) &&
+            !toDelete.any((r) => r.id == doc.id)) {
+          toDelete.add(doc.reference);
+        }
+      }
+
+      for (var i = 0; i < toDelete.length; i += 450) {
+        final batch = firebaseFirestore.batch();
+        final end = (i + 450).clamp(0, toDelete.length);
+        for (var j = i; j < end; j++) {
+          batch.delete(toDelete[j]);
+        }
+        await batch.commit();
+      }
+    } catch (e) {
+      throw Exception('Failed to delete transactions by goal: $e');
+    }
+  }
+
+  @override
   Future<HomePageStatModel> getHomePageStats({
     required String startDayKey,
     required String endDayKey,

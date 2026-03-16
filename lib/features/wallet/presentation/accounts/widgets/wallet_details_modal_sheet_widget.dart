@@ -87,9 +87,16 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
             spacing: AppSizing.spaceBtwItemsExtra,
             children: [
               BlocListener<WalletCubit, WalletsState>(
+                listenWhen: (prev, curr) =>
+                    curr is WalletsLoaded || curr is WalletsError,
                 listener: (context, state) {
                   if (state is WalletsLoaded) {
                     Navigator.of(context).pop();
+                  }
+                  if (state is WalletsError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message)),
+                    );
                   }
                 },
                 child: PrimaryButton(
@@ -100,10 +107,19 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
                   size: PrimaryButtonSize.large,
                   paddingStyle: PrimaryButtonPaddingStyle.slim,
                   rounded: true,
-                  onPressed: () {
-                    context.read<WalletCubit>().deleteWallet(
-                      walletId: wallet.id!,
+                  onPressed: () async {
+                    final result = await showDeleteEntityDialog(
+                      context,
+                      title: 'Удалить кошелёк?',
+                      message:
+                          'Удалить кошелёк «${wallet.name}»? Выберите способ удаления.',
                     );
+                    if (!context.mounted || result == null || result == DeleteEntityResult.cancel) return;
+                    context.read<WalletCubit>().deleteWallet(
+                          walletId: wallet.id!,
+                          deleteTransactions:
+                              result == DeleteEntityResult.deleteFull,
+                        );
                   },
                 ),
               ),

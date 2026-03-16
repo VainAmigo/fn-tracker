@@ -96,11 +96,14 @@ class WalletCubit extends HydratedCubit<WalletsState> {
     emit(WalletsLoaded(wallets: updatedList));
   }
 
-  Future<void> deleteWallet({required String walletId}) async {
+  Future<void> deleteWallet({
+    required String walletId,
+    required bool deleteTransactions,
+  }) async {
     final previous = _currentWallets;
     final wasDefault = previous.any((w) => w.id == walletId && w.isDefault);
     emit(WalletsLoading());
-    await walletRepo.deleteWallet(walletId);
+    await walletRepo.deleteWallet(walletId, deleteTransactions: deleteTransactions);
     var updatedList = previous.where((w) => w.id != walletId).toList();
     if (wasDefault && updatedList.isNotEmpty) {
       updatedList = [

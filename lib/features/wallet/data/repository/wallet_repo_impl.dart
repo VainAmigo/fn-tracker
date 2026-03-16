@@ -12,12 +12,12 @@ abstract class WalletRepoImpl {
 
   Future<WalletModel> addWallet({required WalletModel wallet});
   Future<WalletModel> updateWallet({required WalletModel wallet});
-  Future<void> deleteWallet(String id);
+  Future<void> deleteWallet(String id, {required bool deleteTransactions});
   Future<List<WalletModel>> getWallets();
   Future<void> setDefaultWallet(String walletId);
 
   Future<GoalsModel> getGoals();
   Future<GoalModel> createGoal({required GoalModel goal});
   Future<GoalModel> updateGoal({required GoalModel goal});
-  Future<void> deleteGoal(String id);
+  Future<void> deleteGoal(String id, {required bool deleteTransactions});
 }
