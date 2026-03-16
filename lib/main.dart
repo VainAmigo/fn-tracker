@@ -36,10 +36,9 @@ class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     final firebaseAuthRepo = FirebaseAuthRepo();
-    final walletRepo = WalletRepository();
-    final categoryRepo = CategoryRepository();
-
     final transactionsRepo = TransactionsRepositoryImpl();
+    final walletRepo = WalletRepository(transactionsRepo: transactionsRepo);
+    final categoryRepo = CategoryRepository();
     final dataSeeder = DefaultDataSeeder(
       tasks: [
         WalletSeedTask(

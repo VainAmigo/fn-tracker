@@ -3,8 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fn_tracker/features/features.dart';
 
 class WalletRepository implements WalletRepoImpl {
+  WalletRepository({TransactionsRepository? transactionsRepo})
+      : _transactionsRepo = transactionsRepo ?? TransactionsRepositoryImpl();
+
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  final TransactionsRepository _transactionsRepo;
 
   String _requireUid() {
     final user = firebaseAuth.currentUser;
@@ -67,9 +71,12 @@ class WalletRepository implements WalletRepoImpl {
   }
 
   @override
-  Future<void> deleteWallet(String id) async {
+  Future<void> deleteWallet(String id, {required bool deleteTransactions}) async {
     final uid = _requireUid();
     try {
+      if (deleteTransactions) {
+        await _transactionsRepo.deleteTransactionsByWalletId(id);
+      }
       final walletDoc = await _walletsRef(uid).doc(id).get();
       final wasDefault = walletDoc.data()?['isDefault'] == true;
 
@@ -346,9 +353,12 @@ class WalletRepository implements WalletRepoImpl {
   }
 
   @override
-  Future<void> deleteGoal(String id) async {
+  Future<void> deleteGoal(String id, {required bool deleteTransactions}) async {
     final uid = _requireUid();
     try {
+      if (deleteTransactions) {
+        await _transactionsRepo.deleteTransactionsByGoalId(id);
+      }
       await _goalsRef(uid).doc(id).delete();
     } catch (e) {
       throw Exception('Failed to delete goal: $e');

@@ -128,11 +128,14 @@ class GoalsCubit extends HydratedCubit<GoalsState> {
     }
   }
 
-  Future<void> deleteGoal({required String goalId}) async {
+  Future<void> deleteGoal({
+    required String goalId,
+    required bool deleteTransactions,
+  }) async {
     final previous = currentGoals;
     emit(GoalsLoading());
     try {
-      await walletRepo.deleteGoal(goalId);
+      await walletRepo.deleteGoal(goalId, deleteTransactions: deleteTransactions);
       final updatedList = previous.where((g) => g.id != goalId).toList();
       if (updatedList.isEmpty) {
         emit(GoalsEmpty());
