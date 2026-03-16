@@ -20,4 +20,13 @@ abstract class WalletRepoImpl {
   Future<GoalModel> createGoal({required GoalModel goal});
   Future<GoalModel> updateGoal({required GoalModel goal});
   Future<void> deleteGoal(String id);
+
+  Future<List<ScheduledPaymentModel>> getScheduledPayments();
+  Future<ScheduledPaymentModel> createScheduledPayment({
+    required ScheduledPaymentModel payment,
+  });
+  Future<ScheduledPaymentModel> updateScheduledPayment({
+    required ScheduledPaymentModel payment,
+  });
+  Future<void> deleteScheduledPayment(String id);
 }

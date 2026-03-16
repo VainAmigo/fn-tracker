@@ -12,12 +12,14 @@ class AddTransactionView extends StatefulWidget {
     this.initialWallet,
     this.initialGoal,
     this.initialCategory,
+    this.initialScheduledPayment,
   });
 
   final TransactionType? initialType;
   final WalletModel? initialWallet;
   final GoalModel? initialGoal;
   final CategoryModel? initialCategory;
+  final ScheduledPaymentModel? initialScheduledPayment;
 
   @override
   State<AddTransactionView> createState() => _AddTransactionViewState();
@@ -42,25 +44,62 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   void initState() {
     super.initState();
     context.read<AddTransactionCubit>().reset();
-    if (widget.initialType != null) {
-      _selectedType = widget.initialType!;
-    }
-    if (widget.initialCategory != null) {
-      _selectedCategory = widget.initialCategory;
-    }
-    if (widget.initialWallet != null) {
-      _selectedWallet = widget.initialWallet;
-      _selectedGoal = null;
-    } else if (widget.initialGoal != null) {
-      _selectedGoal = widget.initialGoal;
-      _selectedWallet = null;
-    } else {
+    final sp = widget.initialScheduledPayment;
+    if (sp != null) {
+      final isIncome = sp.type == ScheduledPaymentType.regularIncome;
+      _selectedType = isIncome
+          ? TransactionType.income
+          : TransactionType.expense;
+      _amount = sp.amount.toStringAsFixed(0);
+      _selectedDate = sp.nextDate;
+      if (isIncome) _selectedCategory = null;
+
       final walletsState = context.read<WalletCubit>().state;
-      if (walletsState is WalletsLoaded) {
+      if (walletsState is WalletsLoaded && sp.walletId != null) {
         _selectedWallet = walletsState.wallets.cast<WalletModel?>().firstWhere(
-          (w) => w!.isDefault,
-          orElse: () => null,
-        );
+              (w) => w!.id == sp.walletId,
+              orElse: () => null,
+            );
+        _selectedGoal = null;
+      }
+      if (sp.goalId != null) {
+        final goals = context.read<GoalsCubit>().currentGoals;
+        _selectedGoal = goals.cast<GoalModel?>().firstWhere(
+              (g) => g!.id == sp.goalId,
+              orElse: () => null,
+            );
+        if (_selectedGoal != null) _selectedWallet = null;
+      }
+      if (!isIncome) {
+        final categories = context.read<CategoriesCubit>().currentCategories;
+        if (sp.categoryId != null) {
+          _selectedCategory = categories.cast<CategoryModel?>().firstWhere(
+                (c) => c!.categoryId == sp.categoryId,
+                orElse: () => null,
+              );
+        }
+      }
+    } else {
+      if (widget.initialType != null) {
+        _selectedType = widget.initialType!;
+      }
+      if (widget.initialCategory != null) {
+        _selectedCategory = widget.initialCategory;
+      }
+      if (widget.initialWallet != null) {
+        _selectedWallet = widget.initialWallet;
+        _selectedGoal = null;
+      } else if (widget.initialGoal != null) {
+        _selectedGoal = widget.initialGoal;
+        _selectedWallet = null;
+      } else {
+        final walletsState = context.read<WalletCubit>().state;
+        if (walletsState is WalletsLoaded) {
+          _selectedWallet = walletsState.wallets.cast<WalletModel?>().firstWhere(
+            (w) => w!.isDefault,
+            orElse: () => null,
+          );
+        }
       }
     }
   }
@@ -267,11 +306,13 @@ class _AddTransactionViewState extends State<AddTransactionView> {
           )
         : (_selectedWallet?.id, _selectedGoal?.id, null, null);
 
+    final sp = widget.initialScheduledPayment;
     final model = TransactionModel(
       id: '',
       categoryId: _selectedCategory?.categoryId ?? '',
       walletId: walletId,
       goalId: goalId,
+      scheduledPaymentId: sp?.id,
       transferToWalletId: transferToWalletId,
       transferToGoalId: transferToGoalId,
       dayKey: _selectedDate.dayKey,

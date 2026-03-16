@@ -63,7 +63,7 @@ class _GoalListWithTotalWidgetState extends State<GoalListWithTotalWidget> {
               ? const NeverScrollableScrollPhysics()
               : null,
           itemCount: goals.length + 1,
-          separatorBuilder: (_, __) =>
+          separatorBuilder: (_, _) =>
               const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           itemBuilder: (context, index) {
             if (index == 0) {

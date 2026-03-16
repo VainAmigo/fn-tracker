@@ -58,6 +58,7 @@ final class AppRouter {
             initialWallet: args is WalletModel ? args : null,
             initialGoal: args is GoalModel ? args : null,
             initialCategory: args is CategoryModel ? args : null,
+            initialScheduledPayment: args is ScheduledPaymentModel ? args : null,
           );
         },
       ),
@@ -110,7 +111,9 @@ final class AppRouter {
           name: updateScheduledPayment,
           arguments: settings.arguments,
         ),
-        builder: (_) => ScheduledPaymentFormView(),
+        builder: (_) => ScheduledPaymentFormView(
+          payment: settings.arguments as ScheduledPaymentModel?,
+        ),
       ),
       _ => throw Exception(
         'No builder specified for route named: [${settings.name}]',

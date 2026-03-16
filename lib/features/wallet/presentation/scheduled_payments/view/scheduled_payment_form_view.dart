@@ -6,7 +6,9 @@ import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class ScheduledPaymentFormView extends StatefulWidget {
-  const ScheduledPaymentFormView({super.key});
+  const ScheduledPaymentFormView({super.key, this.payment});
+
+  final ScheduledPaymentModel? payment;
 
   @override
   State<ScheduledPaymentFormView> createState() =>
@@ -18,24 +20,32 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
   late CategoryShade _selectedShade;
   bool _defaultsInitialized = false;
 
+  final TextEditingController _nameController = TextEditingController();
+
   /// Сумма платежа; null — ещё не задана.
   double? _paymentAmount;
 
   late ScheduledPaymentFrequency _frequency;
   ScheduledPaymentType _paymentType = ScheduledPaymentType.subscription;
 
-  /// Дата/день платежа (одиночный — для day/yearly).
+  /// Дата/день платежа (одиночный — для oneTime).
   DateTime? _paymentDate;
 
   /// Несколько дат для мультивыбора (monthly — числа месяца, yearly — даты в году).
   List<DateTime> _paymentDates = [];
 
   bool _remindMeEnabled = false;
-  ScheduledReminderOption _remindMeOption =
-      ScheduledReminderOption.oneDayBefore;
+  ScheduledReminderOption? _remindMeOption;
+  int _reminderHour = 9;
+  int _reminderMinute = 0;
+
+  bool _autoCreateTransaction = true;
 
   /// Выбранный кошелёк для списания.
   WalletModel? _selectedWallet;
+
+  /// Выбранная цель (для regularIncome).
+  GoalModel? _selectedGoal;
 
   /// Выбранная категория расхода.
   CategoryModel? _selectedCategory;
@@ -45,7 +55,54 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
     super.initState();
     _selectedIcon = categoryIconGroups[0].icons.first;
     _selectedShade = categoryColorPalettes[0].shades.first;
-    _frequency = ScheduledPaymentFrequency.day;
+    _frequency = ScheduledPaymentFrequency.oneTime;
+    final p = widget.payment;
+    if (p != null) {
+      _nameController.text = p.name;
+      _paymentAmount = p.amount;
+      _frequency = p.frequency;
+      _paymentType = p.type;
+      _remindMeEnabled = p.reminderEnabled;
+      _remindMeOption = p.reminderOption;
+      _reminderHour = p.reminderHour ?? 9;
+      _reminderMinute = p.reminderMinute ?? 0;
+      _autoCreateTransaction = p.autoCreateTransaction;
+      _paymentDate = p.paymentDate;
+      _paymentDates = _datesFromModel(p);
+      _selectedIcon = findIconById(p.iconId) ?? _selectedIcon;
+      _selectedShade = findShadeById(p.colorId) ?? _selectedShade;
+    }
+  }
+
+  List<DateTime> _datesFromModel(ScheduledPaymentModel p) {
+    if (p.monthDays != null && p.monthDays!.isNotEmpty) {
+      const endOfMonth = 31;
+      final now = DateTime.now();
+      return p.monthDays!.map((d) {
+        if (d == endOfMonth) {
+          return DateTime(now.year, now.month + 1, 0);
+        }
+        return DateTime(now.year, now.month, d);
+      }).toList();
+    }
+    if (p.yearlyDates != null && p.yearlyDates!.isNotEmpty) {
+      final now = DateTime.now();
+      return p.yearlyDates!.map((md) {
+        final parts = md.split('-');
+        if (parts.length != 2) return DateTime(now.year, 1, 1);
+        final m = int.tryParse(parts[0]) ?? 1;
+        final d = int.tryParse(parts[1]) ?? 1;
+        return DateTime(now.year, m, d.clamp(1, 28));
+      }).toList();
+    }
+    if (p.paymentDate != null) return [p.paymentDate!];
+    return [];
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -54,14 +111,46 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
     if (!_defaultsInitialized) {
       _defaultsInitialized = true;
       final usedIds = _collectUsedIds(context);
-      _selectedIcon = firstUnusedIcon(usedIds.iconIds);
-      _selectedShade = firstUnusedShade(usedIds.colorIds);
+      final p = widget.payment;
+      if (p == null) {
+        _selectedIcon = firstUnusedIcon(usedIds.iconIds);
+        _selectedShade = firstUnusedShade(usedIds.colorIds);
+      }
       final walletsState = context.read<WalletCubit>().state;
       if (walletsState is WalletsLoaded) {
-        _selectedWallet = walletsState.wallets.cast<WalletModel?>().firstWhere(
-          (w) => w!.isDefault,
+        final wallets = walletsState.wallets;
+        if (p != null && p.walletId != null) {
+          _selectedWallet =
+              wallets.cast<WalletModel?>().firstWhere(
+                (w) => w!.id == p.walletId,
+                orElse: () => null,
+              ) ??
+              wallets.cast<WalletModel?>().firstWhere(
+                (w) => w!.isDefault,
+                orElse: () => null,
+              );
+          _selectedGoal = null;
+        } else {
+          _selectedWallet = wallets.cast<WalletModel?>().firstWhere(
+            (w) => w!.isDefault,
+            orElse: () => null,
+          );
+        }
+      }
+      final categories = context.read<CategoriesCubit>().currentCategories;
+      if (p != null && p.categoryId != null) {
+        _selectedCategory = categories.cast<CategoryModel?>().firstWhere(
+          (c) => c!.categoryId == p.categoryId,
           orElse: () => null,
         );
+      }
+      final goals = context.read<GoalsCubit>().currentGoals;
+      if (p != null && p.goalId != null) {
+        _selectedGoal = goals.cast<GoalModel?>().firstWhere(
+          (g) => g!.id == p.goalId,
+          orElse: () => null,
+        );
+        if (_selectedGoal != null) _selectedWallet = null;
       }
     }
   }
@@ -91,8 +180,9 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                           _buildPreview(context),
                           Expanded(
                             child: CustomTextFormField(
-                              label: 'Payment name',
-                              hintText: 'e.g. Rent',
+                              controller: _nameController,
+                              label: 'Название',
+                              hintText: 'например, Аренда',
                             ),
                           ),
                         ],
@@ -155,6 +245,13 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                           ),
                         ],
                       ),
+                      if (_previewNextDate != null) ...[
+                        const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+                        Text(
+                          'Следующий платёж: ${_previewNextDate!.formatDotDate}',
+                          style: AppTextStyles.text14w400(context),
+                        ),
+                      ],
                       const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                       FormCardWidget(
                         title: _paymentType.label,
@@ -167,16 +264,24 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                         onTap: () => ScheduledPaymentTypePickerWidget.show(
                           context,
                           initialType: _paymentType,
-                          onTypeSelected: (value) =>
-                              setState(() => _paymentType = value),
+                          onTypeSelected: (value) {
+                            setState(() {
+                              _paymentType = value;
+                              if (value == ScheduledPaymentType.regularIncome) {
+                                _selectedCategory = null;
+                              }
+                            });
+                          },
                         ),
                       ),
                       const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                       FormCardWidget(
-                        title: _remindMeEnabled
-                            ? _remindMeOption.label
+                        title: _remindMeEnabled && _remindMeOption != null
+                            ? _remindMeOption!.label
                             : 'Remind me',
-                        subtitle: 'When should I remind you?',
+                        subtitle: _remindMeEnabled && _remindMeOption != null
+                            ? '${_remindMeOption!.label} в ${_reminderHour.toString().padLeft(2, '0')}:${_reminderMinute.toString().padLeft(2, '0')}'
+                            : 'When should I remind you?',
                         icon: Icon(
                           Icons.notifications,
                           size: AppSizing.iconSizeM,
@@ -195,27 +300,38 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                         onTap: () => _openReminderPicker(context),
                       ),
                       const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-                      Row(
-                        spacing: AppSizing.spaceBtwItemsExtra,
-                        children: [
-                          Expanded(
-                            child: FormCardWidget(
-                              title: _selectedWallet?.name ?? 'Wallet',
-                              subtitle: 'Выберите кошелёк',
-                              icon: _buildWalletIcon(colorScheme),
-                              onTap: () => _openWalletPicker(context),
+                      _paymentType == ScheduledPaymentType.regularIncome
+                          ? FormCardWidget(
+                              title: _selectedGoal?.name ??
+                                  _selectedWallet?.name ??
+                                  'Кошелёк или цель',
+                              subtitle: 'Выберите кошелёк или цель',
+                              icon: _buildAccountIcon(colorScheme),
+                              onTap: () => _openAccountPicker(context),
+                            )
+                          : Row(
+                              spacing: AppSizing.spaceBtwItemsExtra,
+                              children: [
+                                Expanded(
+                                  child: FormCardWidget(
+                                    title: _selectedGoal?.name ??
+                                        _selectedWallet?.name ??
+                                        'Wallet',
+                                    subtitle: 'Выберите кошелёк',
+                                    icon: _buildAccountIcon(colorScheme),
+                                    onTap: () => _openAccountPicker(context),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: FormCardWidget(
+                                    title: _selectedCategory?.name ?? 'Category',
+                                    subtitle: 'Выберите категорию',
+                                    icon: _buildCategoryIcon(colorScheme),
+                                    onTap: () => _openCategoryPicker(context),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          Expanded(
-                            child: FormCardWidget(
-                              title: _selectedCategory?.name ?? 'Category',
-                              subtitle: 'Выберите категорию',
-                              icon: _buildCategoryIcon(colorScheme),
-                              onTap: () => _openCategoryPicker(context),
-                            ),
-                          ),
-                        ],
-                      ),
                       const SizedBox(height: AppSizing.spaceBtwItems),
                       Row(
                         children: [
@@ -225,7 +341,11 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                               style: AppTextStyles.text14w400(context),
                             ),
                           ),
-                          Switch(value: true, onChanged: (value) {}),
+                          Switch(
+                            value: _autoCreateTransaction,
+                            onChanged: (value) =>
+                                setState(() => _autoCreateTransaction = value),
+                          ),
                         ],
                       ),
                       const SizedBox(height: AppSizing.spaceBtwItemsExtra),
@@ -247,7 +367,10 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                 ),
               ),
               const SizedBox(height: AppSizing.spaceBtwElements),
-              PrimaryButton(text: 'Create'),
+              PrimaryButton(
+                text: widget.payment != null ? 'Сохранить' : 'Создать',
+                onPressed: _isSaving ? null : _save,
+              ),
               const SizedBox(height: AppSizing.spaceBtwElements),
             ],
           ),
@@ -260,14 +383,180 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
       _frequency == ScheduledPaymentFrequency.monthly ||
       _frequency == ScheduledPaymentFrequency.yearly;
 
+  DateTime? get _previewNextDate =>
+      ScheduledPaymentDateService.calculateNextDate(
+        frequency: _frequency,
+        paymentDate: _paymentDate,
+        monthDays: _monthDaysFromDates,
+        yearlyDates: _yearlyDatesFromDates,
+      );
+
+  List<int>? get _monthDaysFromDates {
+    if (_frequency != ScheduledPaymentFrequency.monthly ||
+        _paymentDates.isEmpty) {
+      return null;
+    }
+    const endOfMonth = 31;
+    return _paymentDates
+        .map((d) {
+          if (d.day == DateTime(d.year, d.month + 1, 0).day) return endOfMonth;
+          return d.day;
+        })
+        .toSet()
+        .toList();
+  }
+
+  List<String>? get _yearlyDatesFromDates {
+    if (_frequency != ScheduledPaymentFrequency.yearly || _paymentDates.isEmpty) {
+      return null;
+    }
+    return _paymentDates
+        .map(
+          (d) =>
+              '${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}',
+        )
+        .toSet()
+        .toList();
+  }
+
+  bool _isSaving = false;
+
+  Future<void> _save() async {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Введите название')));
+      return;
+    }
+    if (_paymentAmount == null || _paymentAmount! <= 0) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Укажите сумму')));
+      return;
+    }
+    if (_paymentType == ScheduledPaymentType.regularIncome) {
+      if (_selectedWallet == null && _selectedGoal == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Выберите кошелёк или цель')),
+        );
+        return;
+      }
+    } else {
+      if (_selectedWallet == null && _selectedGoal == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Выберите кошелёк')));
+        return;
+      }
+      if (_selectedCategory == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Выберите категорию')));
+        return;
+      }
+    }
+    if (_frequency == ScheduledPaymentFrequency.oneTime &&
+        _paymentDate == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Выберите дату')));
+      return;
+    }
+    if (_isMultiSelect && _paymentDates.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Выберите дату или дни')));
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    final nextDate = ScheduledPaymentDateService.calculateNextDate(
+      frequency: _frequency,
+      paymentDate: _paymentDate,
+      monthDays: _monthDaysFromDates,
+      yearlyDates: _yearlyDatesFromDates,
+    );
+    if (nextDate == null && _frequency == ScheduledPaymentFrequency.oneTime) {
+      setState(() => _isSaving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Дата платежа должна быть в будущем')),
+      );
+      return;
+    }
+
+    final model = ScheduledPaymentModel(
+      id: widget.payment?.id ?? '',
+      name: name,
+      amount: _paymentAmount!,
+      nextDate: nextDate ?? DateTime.now(),
+      iconId: _selectedIcon.id,
+      colorId: _selectedShade.id,
+      type: _paymentType,
+      frequency: _frequency,
+      autoCreateTransaction: _autoCreateTransaction,
+      isPaused: widget.payment?.isPaused ?? false,
+      walletId: _selectedWallet?.id,
+      goalId: _selectedGoal?.id,
+      categoryId: _paymentType == ScheduledPaymentType.regularIncome
+          ? null
+          : _selectedCategory?.categoryId,
+      reminderEnabled: _remindMeEnabled,
+      reminderOption: _remindMeEnabled ? _remindMeOption : null,
+      reminderHour: _remindMeEnabled ? _reminderHour : null,
+      reminderMinute: _remindMeEnabled ? _reminderMinute : null,
+      paymentDate: _frequency == ScheduledPaymentFrequency.oneTime
+          ? _paymentDate
+          : null,
+      monthDays: _monthDaysFromDates,
+      yearlyDates: _yearlyDatesFromDates,
+    );
+
+    final cubit = context.read<ScheduledPaymentsCubit>();
+    try {
+      if (widget.payment != null) {
+        await cubit.updatePayment(model);
+        if (_remindMeEnabled) {
+          await NotificationService.scheduleReminder(model);
+        } else {
+          await NotificationService.cancelReminder(model.id);
+        }
+      } else {
+        await cubit.createPayment(model);
+        if (_remindMeEnabled && cubit.currentPayments.isNotEmpty) {
+          final created = cubit.currentPayments.first;
+          await NotificationService.scheduleReminder(created);
+        }
+      }
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+    }
+  }
+
   void _openReminderPicker(BuildContext context) {
     ScheduledReminderPickerWidget.show(
       context,
       initialOption: _remindMeOption,
+      initialHour: _reminderHour,
+      initialMinute: _reminderMinute,
       onOptionSelected: (option) {
         setState(() {
           _remindMeEnabled = true;
           _remindMeOption = option;
+        });
+      },
+      onTimeSelected: (hour, minute) {
+        setState(() {
+          _remindMeEnabled = true;
+          _reminderHour = hour;
+          _reminderMinute = minute;
         });
       },
     );
@@ -300,8 +589,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
         height: AppSizing.heightS,
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.15),
-          borderRadius:
-              BorderRadius.circular(AppSizing.borderRadius8),
+          borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
         ),
         child: AspectRatio(
           aspectRatio: 1,
@@ -318,6 +606,30 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
       size: AppSizing.iconSizeM,
       color: colorScheme.onSecondary,
     );
+  }
+
+  Widget _buildAccountIcon(ColorScheme colorScheme) {
+    if (_selectedGoal != null) {
+      final shade = findShadeById(_selectedGoal!.colorId);
+      final icon = findIconById(_selectedGoal!.iconId);
+      final color = shade?.color ?? colorScheme.onSecondary;
+      return Container(
+        height: AppSizing.heightS,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+        ),
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Icon(
+            icon?.icon ?? Icons.flag_rounded,
+            size: AppSizing.iconSizeM,
+            color: color,
+          ),
+        ),
+      );
+    }
+    return _buildWalletIcon(colorScheme);
   }
 
   Widget _buildWalletIcon(ColorScheme colorScheme) {
@@ -361,42 +673,36 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
     }
   }
 
-  Future<void> _openWalletPicker(BuildContext context) async {
-    final selected =
-        await AppBottomSheet.showFittedModalBottomSheet<WalletModel>(
-          context,
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          child: Padding(
-            padding: const EdgeInsets.only(
-              left: AppSizing.defaultPadding,
-              right: AppSizing.defaultPadding,
-              bottom: AppSizing.bottomPadding,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const ModalSheetTitleWidget(title: 'Выберите кошелёк'),
-                const SizedBox(height: AppSizing.spaceBtwSections),
-                WalletVerticalListWidget(
-                  shrinkWrap: true,
-                  autoLoad: true,
-                  cardStyle: CategoryCardStyle.filled,
-                  onWalletSelected: (wallet) =>
-                      Navigator.of(context).pop(wallet),
-                ),
-              ],
-            ),
-          ),
-        );
+  Future<void> _openAccountPicker(BuildContext context) async {
+    final walletCubit = context.read<WalletCubit>();
+    final goalsCubit = context.read<GoalsCubit>();
+    final selected = await AppBottomSheet.showFittedModalBottomSheet<Object>(
+      context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      child: BlocProvider<WalletCubit>.value(
+        value: walletCubit,
+        child: BlocProvider<GoalsCubit>.value(
+          value: goalsCubit,
+          child: const AddTransactionAccountsSheetWidget(),
+        ),
+      ),
+    );
     if (!context.mounted) return;
     if (selected != null) {
-      setState(() => _selectedWallet = selected);
+      setState(() {
+        if (selected is WalletModel) {
+          _selectedWallet = selected;
+          _selectedGoal = null;
+        } else if (selected is GoalModel) {
+          _selectedGoal = selected;
+          _selectedWallet = null;
+        }
+      });
     }
   }
 
   Future<void> _openDatePicker(BuildContext context) async {
-    if (_frequency == ScheduledPaymentFrequency.day) {
+    if (_frequency == ScheduledPaymentFrequency.oneTime) {
       final now = DateTime.now();
       final initial = _paymentDate ?? now;
       final picked = await showDatePicker(
@@ -460,9 +766,9 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
 
   String _frequencyTitle(BuildContext context) {
     return switch (_frequency) {
-      ScheduledPaymentFrequency.day => 'Day',
-      ScheduledPaymentFrequency.monthly => 'Monthly',
-      ScheduledPaymentFrequency.yearly => 'Yearly',
+      ScheduledPaymentFrequency.oneTime => 'Единожды',
+      ScheduledPaymentFrequency.monthly => 'Ежемесячно',
+      ScheduledPaymentFrequency.yearly => 'Ежегодно',
     };
   }
 
@@ -485,7 +791,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
     if (_paymentDate == null) return 'Date';
     final d = _paymentDate!;
     return switch (_frequency) {
-      ScheduledPaymentFrequency.day => d.formatDotDate,
+      ScheduledPaymentFrequency.oneTime => d.formatDotDate,
       ScheduledPaymentFrequency.monthly =>
         d.day == DateTime(d.year, d.month + 1, 0).day
             ? 'End of month'

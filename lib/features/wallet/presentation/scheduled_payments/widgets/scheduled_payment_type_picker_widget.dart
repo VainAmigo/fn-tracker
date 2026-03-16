@@ -51,6 +51,8 @@ class ScheduledPaymentTypePickerWidget extends StatelessWidget {
           _card(context, c, ScheduledPaymentType.subscription),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           _card(context, c, ScheduledPaymentType.regular),
+          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+          _card(context, c, ScheduledPaymentType.regularIncome),
         ],
       ),
     );

@@ -17,12 +17,26 @@ class ScheduledPaymentCard extends StatelessWidget {
   final VoidCallback? onTap;
   final CardRadius radius;
 
+  bool get _isUrgent {
+    final today = DateTime.now();
+    final d = payment.nextDate;
+    if (d.year == today.year && d.month == today.month && d.day == today.day) {
+      return true;
+    }
+    final tomorrow = today.add(const Duration(days: 1));
+    return d.year == tomorrow.year &&
+        d.month == tomorrow.month &&
+        d.day == tomorrow.day;
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final shade = findShadeById(payment.colorId);
     final iconData = findIconById(payment.iconId);
     final color = shade?.color ?? colorScheme.primary;
+    final borderColor =
+        _isUrgent ? colorScheme.primary.withValues(alpha: 0.5) : null;
 
     return GestureDetector(
       onTap: onTap,
@@ -34,6 +48,9 @@ class ScheduledPaymentCard extends StatelessWidget {
             radius,
             mainRadius: AppSizing.borderRadius16,
           ),
+          border: borderColor != null
+              ? Border.all(color: borderColor, width: 1.5)
+              : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,10 +107,19 @@ class ScheduledPaymentCard extends StatelessWidget {
                   color: colorScheme.onSecondary,
                 ),
                 const SizedBox(width: AppSizing.spaceBtwItemsExtra),
+                // Цветовая индикация срочности — подсветка карточки, если платёж сегодня/завтра (например, оранжевый/красный акцент).
                 Text(
                   'Следующий платёж: ${payment.nextDate.formatDotDate}',
                   style: AppTextStyles.text12w400(context),
                 ),
+                const Spacer(),
+                if (payment.isPaused)
+                  Text(
+                    'Приостановлено',
+                    style: AppTextStyles.text12w400(context).copyWith(
+                      color: colorScheme.onSecondary,
+                    ),
+                  ),
               ],
             ),
           ],
@@ -104,8 +130,8 @@ class ScheduledPaymentCard extends StatelessWidget {
 
   String _formatFrequency(ScheduledPaymentModel p) {
     switch (p.frequency) {
-      case ScheduledPaymentFrequency.day:
-        return 'Day';
+      case ScheduledPaymentFrequency.oneTime:
+        return 'Единожды';
       case ScheduledPaymentFrequency.monthly:
         return 'Ежемесячно';
       case ScheduledPaymentFrequency.yearly:

@@ -48,12 +48,17 @@ class ScheduledFrequencyPickerWidget extends StatelessWidget {
         children: [
           const ModalSheetTitleWidget(title: 'Payment frequency'),
           const SizedBox(height: AppSizing.spaceBtwSections),
-          _card(context, c, ScheduledPaymentFrequency.yearly, 'Yearly',
-              height: AppSizing.heightL),
+          _card(
+            context,
+            c,
+            ScheduledPaymentFrequency.yearly,
+            'Ежегодно',
+            height: AppSizing.heightL,
+          ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          _card(context, c, ScheduledPaymentFrequency.monthly, 'Monthly'),
+          _card(context, c, ScheduledPaymentFrequency.monthly, 'Ежемесячно'),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          _card(context, c, ScheduledPaymentFrequency.day, 'Day'),
+          _card(context, c, ScheduledPaymentFrequency.oneTime, 'Единожды'),
         ],
       ),
     );
@@ -85,9 +90,9 @@ class ScheduledFrequencyPickerWidget extends StatelessWidget {
         child: Center(
           child: Text(
             title,
-            style: AppTextStyles.text16w400(context).copyWith(
-              color: isSelected ? c.onPrimary : c.onSecondary,
-            ),
+            style: AppTextStyles.text16w400(
+              context,
+            ).copyWith(color: isSelected ? c.onPrimary : c.onSecondary),
           ),
         ),
       ),

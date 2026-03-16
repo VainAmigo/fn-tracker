@@ -5,3 +5,5 @@ export 'models/goal_model.dart';
 export 'models/scheduled_payment_model.dart';
 export 'repository/wallet_repository.dart';
 export 'repository/wallet_repo_impl.dart';
+export 'services/scheduled_payment_date_service.dart';
+export 'services/scheduled_payment_auto_create_service.dart';

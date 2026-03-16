@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/features/wallet/data/services/scheduled_payment_date_service.dart';
 import 'package:fn_tracker/theme/themes.dart';
 import 'package:fn_tracker/features/wallet/data/models/scheduled_payment_model.dart';
 
@@ -11,19 +12,26 @@ class ScheduledPaymentsCalendarView extends StatelessWidget {
     required this.payments,
     required this.selectedYear,
     required this.selectedMonth,
+    this.onDayTap,
   });
 
   final List<ScheduledPaymentModel> payments;
   final int selectedYear;
   final int selectedMonth;
 
+  /// Вызывается при тапе по дню. Передаёт день и список платежей на этот день.
+  final void Function(int day, List<ScheduledPaymentModel> dayPayments)?
+      onDayTap;
+
   Map<int, List<ScheduledPaymentModel>> _getPaymentsByDay() {
     final result = <int, List<ScheduledPaymentModel>>{};
     for (final p in payments) {
-      final day = p.nextDate.day;
-      final month = p.nextDate.month;
-      final year = p.nextDate.year;
-      if (month == selectedMonth && year == selectedYear) {
+      final days = ScheduledPaymentDateService.getDaysInMonthForPayment(
+        p,
+        selectedYear,
+        selectedMonth,
+      );
+      for (final day in days) {
         result.putIfAbsent(day, () => []).add(p);
       }
     }
@@ -66,8 +74,12 @@ class ScheduledPaymentsCalendarView extends StatelessWidget {
                 selectedMonth == DateTime.now().month &&
                 selectedYear == DateTime.now().year;
 
-            return Container(
-              decoration: BoxDecoration(
+            return GestureDetector(
+              onTap: hasPayments
+                  ? () => onDayTap?.call(day, dayPayments)
+                  : null,
+              child: Container(
+                decoration: BoxDecoration(
                 color: hasPayments
                     ? colorScheme.primary.withValues(alpha: 0.15)
                     : (isToday
@@ -107,7 +119,8 @@ class ScheduledPaymentsCalendarView extends StatelessWidget {
                     ),
                 ],
               ),
-            );
+            ),
+          );
           },
         ),
       ],

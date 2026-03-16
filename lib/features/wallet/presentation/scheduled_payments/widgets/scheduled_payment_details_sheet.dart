@@ -81,9 +81,11 @@ class ScheduledPaymentDetailsSheet extends StatelessWidget {
               ),
               Expanded(
                 child: PrimaryButton(
-                  text: 'Оплатить',
+                  text: payment.type == ScheduledPaymentType.regularIncome
+                      ? 'Зачислить'
+                      : 'Оплатить',
                   size: PrimaryButtonSize.large,
-                  onPressed: () {},
+                  onPressed: onCreatePaymentNow,
                 ),
               ),
             ],

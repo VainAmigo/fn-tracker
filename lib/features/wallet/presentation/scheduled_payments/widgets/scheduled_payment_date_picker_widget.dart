@@ -124,7 +124,7 @@ class _ScheduledPaymentDatePickerWidgetState
         viewportFraction: 1 / 3,
       );
     }
-    if (widget.frequency == ScheduledPaymentFrequency.day) {
+    if (widget.frequency == ScheduledPaymentFrequency.oneTime) {
       _daySelectedDate = widget.initialDate != null
           ? DateUtils.dateOnly(widget.initialDate!)
           : DateUtils.dateOnly(DateTime.now());
@@ -158,16 +158,16 @@ class _ScheduledPaymentDatePickerWidgetState
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
           switch (widget.frequency) {
-            ScheduledPaymentFrequency.day => _buildDayPicker(context),
+            ScheduledPaymentFrequency.oneTime => _buildDayPicker(context),
             ScheduledPaymentFrequency.monthly => _buildMonthlyPicker(context),
             ScheduledPaymentFrequency.yearly => _buildYearlyPicker(context),
           },
           if (_isMultiSelect ||
-              widget.frequency == ScheduledPaymentFrequency.day) ...[
+              widget.frequency == ScheduledPaymentFrequency.oneTime) ...[
             const SizedBox(height: AppSizing.spaceBtwSections),
             PrimaryButton(
               text: 'Done',
-              onPressed: widget.frequency == ScheduledPaymentFrequency.day
+              onPressed: widget.frequency == ScheduledPaymentFrequency.oneTime
                   ? _onDaySave
                   : _onMultiSelectDone,
               size: PrimaryButtonSize.medium,
@@ -181,7 +181,7 @@ class _ScheduledPaymentDatePickerWidgetState
 
   String _sheetTitle(BuildContext context) {
     return switch (widget.frequency) {
-      ScheduledPaymentFrequency.day => 'Day',
+      ScheduledPaymentFrequency.oneTime => 'Единожды',
       ScheduledPaymentFrequency.monthly =>
         _isMultiSelect ? 'Days of month' : 'Day of month',
       ScheduledPaymentFrequency.yearly =>
@@ -191,7 +191,7 @@ class _ScheduledPaymentDatePickerWidgetState
 
   String _sheetSubtitle(BuildContext context) {
     return switch (widget.frequency) {
-      ScheduledPaymentFrequency.day => 'Select for one-time payment',
+      ScheduledPaymentFrequency.oneTime => 'Выберите дату для одноразового платежа',
       ScheduledPaymentFrequency.monthly =>
         _isMultiSelect
             ? 'Payment will be made on selected days of month every month'

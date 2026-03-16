@@ -14,6 +14,23 @@ class AppMainView extends StatefulWidget {
 class _AppMainViewState extends State<AppMainView> {
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _runAutoCreate());
+  }
+
+  Future<void> _runAutoCreate() async {
+    final walletRepo = context.read<WalletCubit>().walletRepo;
+    final transactionsRepo = context.read<TransactionsCubit>().transactionsRepo;
+    final service = ScheduledPaymentAutoCreateService(
+      walletRepo: walletRepo,
+      transactionsRepo: transactionsRepo,
+    );
+    await service.checkAndCreateForToday();
+    if (mounted) _onDataUpdated(context);
+  }
+
   static const _tabs = [
     HomeView(),
     WalletView(),

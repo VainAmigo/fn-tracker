@@ -12,6 +12,7 @@ import 'theme/themes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await NotificationService.initialize();
   runApp(const AppView());
 }
 
@@ -79,6 +80,10 @@ class _AppViewState extends State<AppView> {
         BlocProvider<AnalyticsCubit>(
           create: (context) =>
               AnalyticsCubit(analyticsRepo: AnalyticsRepository()),
+        ),
+        BlocProvider<ScheduledPaymentsCubit>(
+          create: (context) =>
+              ScheduledPaymentsCubit(walletRepo: walletRepo)..loadPayments(),
         ),
       ],
       child: MultiProvider(
