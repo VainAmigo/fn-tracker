@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
-import 'package:fn_tracker/theme/themes.dart';
 
 class WalletTabBarWidget extends StatelessWidget {
   const WalletTabBarWidget({
@@ -22,7 +21,6 @@ class WalletTabBarWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         TabTitleWidget(title: title),
-        const SizedBox(height: AppSizing.spaceBtwElements),
         CustomTabWidget<WalletTab>(
           items: WalletTab.values,
           selectedValue: selectedTab,

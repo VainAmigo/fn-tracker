@@ -91,17 +91,18 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
     AmountFormModalSheet.show(
       context,
       initialAmount: existingBudget?.amount,
+      enableCalculator: true,
       saveLabel: 'Save',
       title: 'Edit budget',
       onSave: (amount) {
         if (existingBudget != null) {
           context.read<BudgetCubit>().updateBudget(
-                budget: BudgetModel(id: existingBudget.id, amount: amount),
-              );
+            budget: BudgetModel(id: existingBudget.id, amount: amount),
+          );
         } else {
           context.read<BudgetCubit>().createBudget(
-                budget: BudgetModel(id: '', amount: amount),
-              );
+            budget: BudgetModel(id: '', amount: amount),
+          );
         }
       },
     );

@@ -13,12 +13,14 @@ class AmountFormModalSheet extends StatefulWidget {
     this.onSave,
     this.saveLabel = 'Save',
     this.title,
+    this.enableCalculator = false,
   });
 
   final double? initialAmount;
   final void Function(double amount)? onSave;
   final String saveLabel;
   final String? title;
+  final bool enableCalculator;
 
   /// Показать sheet для ввода/редактирования суммы.
   ///
@@ -30,6 +32,7 @@ class AmountFormModalSheet extends StatefulWidget {
     void Function(double amount)? onSave,
     String saveLabel = 'Save',
     String? title,
+    bool enableCalculator = false,
   }) {
     return AppBottomSheet.showFittedModalBottomSheet<void>(
       context,
@@ -40,6 +43,7 @@ class AmountFormModalSheet extends StatefulWidget {
         onSave: onSave,
         saveLabel: saveLabel,
         title: title,
+        enableCalculator: enableCalculator,
       ),
     );
   }
@@ -89,6 +93,7 @@ class _AmountFormModalSheetState extends State<AmountFormModalSheet> {
             const SizedBox(height: AppSizing.spaceBtwItems),
           ],
           AmountInputWidget(
+            enableCalculator: widget.enableCalculator,
             initialAmount: _amountText,
             currency: currency,
             onAmountChanged: (amount) => setState(() => _amountText = amount),
