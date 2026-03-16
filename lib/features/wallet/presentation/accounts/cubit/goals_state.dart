@@ -19,3 +19,9 @@ class GoalsError extends GoalsState {
 
   GoalsError({required this.message});
 }
+
+class GoalsCompleteGoalSuccess extends GoalsState {
+  final TransactionModel transaction;
+
+  GoalsCompleteGoalSuccess({required this.transaction});
+}

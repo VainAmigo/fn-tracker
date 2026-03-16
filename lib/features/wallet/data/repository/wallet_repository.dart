@@ -303,9 +303,8 @@ class WalletRepository implements WalletRepoImpl {
 
       final totalProgress = goals.fold<double>(0, (s, g) => s + g.progress);
       final totalTarget = goals.fold<double>(0, (s, g) => s + g.targetAmount);
-      final completedCount = goals
-          .where((g) => g.targetAmount > 0 && g.progress >= g.targetAmount)
-          .length;
+      final completedCount =
+          goals.where((g) => g.isCompleted).length;
 
       return GoalsModel(
         goals: goals,
