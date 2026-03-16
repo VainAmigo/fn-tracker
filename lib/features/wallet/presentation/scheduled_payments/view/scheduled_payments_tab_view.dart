@@ -104,8 +104,8 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
                 _selectedTab == _ScheduledPaymentsTab.subscriptions
                     ? subscriptions
                     : _selectedTab == _ScheduledPaymentsTab.regular
-                        ? regularPayments
-                        : regularIncomePayments,
+                    ? regularPayments
+                    : regularIncomePayments,
               ),
               const SizedBox(height: AppSizing.spaceBtwSections),
             ],
@@ -120,6 +120,7 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
     List<ScheduledPaymentModel> list,
   ) {
     final total = list.length;
+    final totalWithAdd = total + 1;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,22 +128,17 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
       children: [
         ...list.asMap().entries.map(
           (entry) => Padding(
-            padding: EdgeInsets.only(
-              bottom: entry.key < total - 1 ? AppSizing.spaceBtwItemsExtra : 0,
-            ),
+            padding: EdgeInsets.only(bottom: AppSizing.spaceBtwItemsExtra),
             child: ScheduledPaymentCard(
               payment: entry.value,
               onTap: () => _showDetails(entry.value),
-              radius: radiusForIndex(entry.key, total),
+              radius: radiusForIndex(entry.key, totalWithAdd),
             ),
           ),
         ),
-        PrimaryButton(
-          onPressed: () => _openForm(),
-          text: 'Добавить',
-          size: PrimaryButtonSize.xSmall,
-          rounded: true,
-          fullWidth: false,
+        _AddPaymentCard(
+          radius: radiusForIndex(total, totalWithAdd),
+          onTap: _openForm,
         ),
       ],
     );
@@ -237,5 +233,52 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
         _calendarMonth = month.value;
       });
     });
+  }
+}
+
+class _AddPaymentCard extends StatelessWidget {
+  const _AddPaymentCard({required this.radius, required this.onTap});
+
+  final CardRadius radius;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(AppSizing.defaultPadding),
+        decoration: BoxDecoration(
+          color: colorScheme.secondary,
+          borderRadius: borderRadiusFor(
+            radius,
+            mainRadius: AppSizing.borderRadius16,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              height: AppSizing.heightS,
+              decoration: BoxDecoration(
+                color: colorScheme.onSecondary.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+              ),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Icon(
+                  Icons.add,
+                  size: AppSizing.iconSizeS,
+                  color: colorScheme.onSecondary,
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSizing.spaceBtwItems),
+            Text('Добавить', style: AppTextStyles.text16w400(context)),
+          ],
+        ),
+      ),
+    );
   }
 }
