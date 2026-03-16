@@ -520,7 +520,8 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
         height: AppSizing.heightS,
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+          borderRadius:
+              BorderRadius.circular(AppSizing.borderRadius8),
         ),
         child: AspectRatio(
           aspectRatio: 1,
