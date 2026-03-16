@@ -39,6 +39,8 @@ class _GoalsListWidgetState extends State<GoalsListWidget> {
         return switch (state) {
           GoalsInitial() => const SizedBox.shrink(),
           GoalsLoading() => const Center(child: CircularProgressIndicator()),
+          GoalsCompleteGoalSuccess() =>
+            const Center(child: CircularProgressIndicator()),
           GoalsEmpty() => const SizedBox.shrink(),
           GoalsLoaded() => _buildList(
                 context,

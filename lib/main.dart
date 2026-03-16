@@ -85,7 +85,10 @@ class _AppViewState extends State<AppView> {
           create: (context) => WalletCubit(walletRepo: walletRepo),
         ),
         BlocProvider<GoalsCubit>(
-          create: (context) => GoalsCubit(walletRepo: walletRepo),
+          create: (context) => GoalsCubit(
+            walletRepo: walletRepo,
+            transactionsRepo: transactionsRepo,
+          ),
         ),
         BlocProvider<AnalyticsCubit>(
           create: (context) =>

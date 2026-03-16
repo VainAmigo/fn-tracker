@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/features/wallet/presentation/accounts/widgets/goal_tab.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class GoalListWithTotalWidget extends StatefulWidget {
@@ -25,6 +26,8 @@ class GoalListWithTotalWidget extends StatefulWidget {
 }
 
 class _GoalListWithTotalWidgetState extends State<GoalListWithTotalWidget> {
+  GoalTab _selectedTab = GoalTab.inProgress;
+
   @override
   void initState() {
     super.initState();
@@ -64,36 +67,64 @@ class _GoalListWithTotalWidgetState extends State<GoalListWithTotalWidget> {
         final hiddenGoals = goalsModel.goals.where((g) => g.isHidden).toList();
         final hasHidden = hiddenGoals.isNotEmpty;
 
-        return ListView.separated(
-          shrinkWrap: widget.shrinkWrap,
-          physics: widget.shrinkWrap
-              ? const NeverScrollableScrollPhysics()
-              : null,
-          itemCount: visibleGoals.length + (hasHidden ? 2 : 1),
-          separatorBuilder: (_, _) =>
-              const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return GoalTotalCardWidget(total: goalsModel.totalGoal);
-            }
-            if (hasHidden && index == visibleGoals.length + 1) {
-              return _HiddenGoalsPlaceholder(
-                count: hiddenGoals.length,
-                onTap: widget.onHiddenCardsSelected,
-              );
-            }
+        final filteredGoals = _selectedTab == GoalTab.inProgress
+            ? visibleGoals.where((g) => !g.isCompleted).toList()
+            : visibleGoals.where((g) => g.isCompleted).toList();
 
-            final goal = visibleGoals[index - 1];
-            return GoalCardWidget(
-              goal: goal,
-              onTap: widget.onGoalSelected != null
-                  ? () => widget.onGoalSelected!(goal)
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GoalTotalCardWidget(total: goalsModel.totalGoal),
+            const SizedBox(height: AppSizing.spaceBtwElements),
+            CustomTabWidget<GoalTab>(
+              items: GoalTab.values,
+              selectedValue: _selectedTab,
+              onChanged: (tab) => setState(() => _selectedTab = tab),
+              labelBuilder: (tab) => tab.label,
+              leftPadding: 0,
+            ),
+            const SizedBox(height: AppSizing.spaceBtwElements),
+            ListView.separated(
+              shrinkWrap: widget.shrinkWrap,
+              physics: widget.shrinkWrap
+                  ? const NeverScrollableScrollPhysics()
                   : null,
-            );
-          },
+              itemCount: _listItemCount(
+                filteredGoals: filteredGoals,
+                hasHidden: hasHidden,
+              ),
+              separatorBuilder: (_, _) =>
+                  const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+              itemBuilder: (context, index) {
+                if (hasHidden && index == filteredGoals.length) {
+                  return _HiddenGoalsPlaceholder(
+                    count: hiddenGoals.length,
+                    onTap: widget.onHiddenCardsSelected,
+                  );
+                }
+                final goal = filteredGoals[index];
+                return GoalCardWidget(
+                  goal: goal,
+                  onTap: widget.onGoalSelected != null
+                      ? () => widget.onGoalSelected!(goal)
+                      : null,
+                );
+              },
+            ),
+          ],
         );
       },
     );
+  }
+
+  int _listItemCount({
+    required List<GoalModel> filteredGoals,
+    required bool hasHidden,
+  }) {
+    var count = filteredGoals.length;
+    if (hasHidden) count += 1;
+    return count;
   }
 }
 

@@ -38,6 +38,12 @@ class GoalModel {
   final DateTime createdAt;
   final bool hideAmount;
   final bool isHidden;
+  /// Цель завершена: пользователь нажал Complete и создана expense-транзакция.
+  final bool isCompleted;
+  /// Дата завершения цели.
+  final DateTime? completedAt;
+  /// Сумма на момент завершения (до expense-транзакции).
+  final double? completedAmount;
 
   GoalModel({
     required this.id,
@@ -49,6 +55,9 @@ class GoalModel {
     required this.createdAt,
     this.hideAmount = false,
     this.isHidden = false,
+    this.isCompleted = false,
+    this.completedAt,
+    this.completedAmount,
   });
 
   Map<String, dynamic> toJson() {
@@ -62,6 +71,9 @@ class GoalModel {
       'createdAt': createdAt.toIso8601String(),
       'hideAmount': hideAmount,
       'isHidden': isHidden,
+      'isCompleted': isCompleted,
+      'completedAt': completedAt?.toIso8601String(),
+      'completedAmount': completedAmount,
     };
   }
 
@@ -75,6 +87,9 @@ class GoalModel {
     DateTime? createdAt,
     bool? hideAmount,
     bool? isHidden,
+    bool? isCompleted,
+    DateTime? completedAt,
+    double? completedAmount,
   }) {
     return GoalModel(
       id: id ?? this.id,
@@ -86,6 +101,9 @@ class GoalModel {
       createdAt: createdAt ?? this.createdAt,
       hideAmount: hideAmount ?? this.hideAmount,
       isHidden: isHidden ?? this.isHidden,
+      isCompleted: isCompleted ?? this.isCompleted,
+      completedAt: completedAt ?? this.completedAt,
+      completedAmount: completedAmount ?? this.completedAmount,
     );
   }
 
@@ -107,6 +125,11 @@ class GoalModel {
       createdAt: createdAt,
       hideAmount: json['hideAmount'] as bool? ?? false,
       isHidden: json['isHidden'] as bool? ?? false,
+      isCompleted: json['isCompleted'] as bool? ?? false,
+      completedAt: json['completedAt'] != null
+          ? DateTime.tryParse(json['completedAt'] as String)
+          : null,
+      completedAmount: (json['completedAmount'] as num?)?.toDouble(),
     );
   }
 }

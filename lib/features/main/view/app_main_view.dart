@@ -57,6 +57,16 @@ class _AppMainViewState extends State<AppMainView> {
             }
           },
         ),
+        BlocListener<GoalsCubit, GoalsState>(
+          listener: (context, state) {
+            if (state is GoalsCompleteGoalSuccess) {
+              context.read<TransactionsCubit>().addTransactionsLocally(
+                [state.transaction],
+              );
+              _onDataUpdated(context);
+            }
+          },
+        ),
       ],
       child: Scaffold(
         body: IndexedStack(index: _selectedIndex, children: _tabs),

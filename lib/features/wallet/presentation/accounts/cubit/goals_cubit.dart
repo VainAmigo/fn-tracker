@@ -1,3 +1,5 @@
+import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/features/transactions/transactions.dart';
 import 'package:fn_tracker/features/wallet/wallet.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
@@ -5,8 +7,12 @@ part 'goals_state.dart';
 
 class GoalsCubit extends HydratedCubit<GoalsState> {
   final WalletRepoImpl walletRepo;
+  final TransactionsRepository transactionsRepo;
 
-  GoalsCubit({required this.walletRepo}) : super(GoalsInitial());
+  GoalsCubit({
+    required this.walletRepo,
+    required this.transactionsRepo,
+  }) : super(GoalsInitial());
 
   @override
   String get storagePrefix => 'GoalsCubit';
@@ -27,7 +33,8 @@ class GoalsCubit extends HydratedCubit<GoalsState> {
   Map<String, dynamic>? toJson(GoalsState state) {
     if (state is GoalsLoading ||
         state is GoalsInitial ||
-        state is GoalsError) {
+        state is GoalsError ||
+        state is GoalsCompleteGoalSuccess) {
       return null; // Do not persist — keep previous cached state
     }
     if (state is GoalsEmpty) return {'_type': 'empty'};
@@ -86,6 +93,41 @@ class GoalsCubit extends HydratedCubit<GoalsState> {
     }
   }
 
+  Future<void> completeGoal({required GoalModel goal}) async {
+    if (goal.progress <= 0) return;
+    emit(GoalsLoading());
+    try {
+      final now = DateTime.now();
+      final transaction = TransactionModel(
+        id: '',
+        categoryId: '',
+        walletId: null,
+        goalId: goal.id,
+        amount: goal.progress,
+        type: TransactionType.expense,
+        createdAt: now,
+        date: now,
+        dayKey: now.dayKey,
+        periodKey: now.periodKey,
+        note: 'Goal completed: ${goal.name}',
+      );
+      final created = await transactionsRepo.addTransaction(
+        transaction: transaction,
+      );
+      await walletRepo.updateGoal(
+        goal: goal.copyWith(
+          isCompleted: true,
+          completedAt: now,
+          completedAmount: goal.progress,
+        ),
+      );
+      emit(GoalsCompleteGoalSuccess(transaction: created));
+      await loadGoals();
+    } catch (e) {
+      emit(GoalsError(message: e.toString()));
+    }
+  }
+
   Future<void> deleteGoal({required String goalId}) async {
     final previous = currentGoals;
     emit(GoalsLoading());
@@ -108,9 +150,7 @@ class GoalsCubit extends HydratedCubit<GoalsState> {
         visibleGoals.fold<double>(0, (s, g) => s + g.progress);
     final totalTarget =
         visibleGoals.fold<double>(0, (s, g) => s + g.targetAmount);
-    final completedCount = visibleGoals.where(
-      (g) => g.targetAmount > 0 && g.progress >= g.targetAmount,
-    ).length;
+    final completedCount = visibleGoals.where((g) => g.isCompleted).length;
     return GoalsModel(
       goals: goals,
       totalGoal: TotalGoalModel(

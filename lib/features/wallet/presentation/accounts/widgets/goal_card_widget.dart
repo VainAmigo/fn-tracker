@@ -16,11 +16,75 @@ class GoalCardWidget extends StatelessWidget {
     final shade = findShadeById(goal.colorId);
     final iconData = findIconById(goal.iconId);
     final color = shade?.color ?? colorScheme.primary;
+
+    final icon = iconData?.icon ?? Icons.flag_rounded;
+    if (goal.isCompleted) {
+      return _buildCompletedCard(context, colorScheme, color, icon);
+    }
+    return _buildInProgressCard(context, colorScheme, color, icon);
+  }
+
+  Widget _buildCompletedCard(
+    BuildContext context,
+    ColorScheme colorScheme,
+    Color color,
+    IconData icon,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(AppSizing.defaultPadding),
+        decoration: BoxDecoration(
+          color: colorScheme.secondary,
+          borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          spacing: AppSizing.spaceBtwElements,
+          children: [
+            Container(
+              height: AppSizing.heightS,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+              ),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Icon(
+                  icon,
+                  size: AppSizing.iconSizeS,
+                  color: color,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Text(
+                goal.name,
+                style: AppTextStyles.text20w600(context),
+              ),
+            ),
+            Text(
+              'Завершено',
+              style: AppTextStyles.text14w400(context)
+                  .copyWith(color: colorScheme.onSurface),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInProgressCard(
+    BuildContext context,
+    ColorScheme colorScheme,
+    Color color,
+    IconData icon,
+  ) {
     final remaining = (goal.targetAmount - goal.progress).clamp(
       0.0,
       double.infinity,
     );
-    final isCompleted = goal.progress >= goal.targetAmount;
+    final targetReached = goal.progress >= goal.targetAmount;
 
     return GestureDetector(
       onTap: onTap,
@@ -48,7 +112,7 @@ class GoalCardWidget extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Icon(
-                      iconData?.icon ?? Icons.flag_rounded,
+                      icon,
                       size: AppSizing.iconSizeS,
                       color: color,
                     ),
@@ -91,9 +155,9 @@ class GoalCardWidget extends StatelessWidget {
                       ),
                 goal.hideAmount
                     ? const SizedBox.shrink()
-                    : isCompleted
+                    : targetReached
                         ? Text(
-                            'Completed',
+                            'Complete',
                             style: AppTextStyles.text14w400(
                               context,
                             ).copyWith(color: colorScheme.onSurface),
