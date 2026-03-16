@@ -4,6 +4,8 @@
 ## настоить TransactionDetailsSheet
 ## refactor budget to monthly weakly dayly 
 
+## убрать недельный тогда все будет по датам ????? надо подумать
+
 # FEATURE
 
 ## add local transaction storage

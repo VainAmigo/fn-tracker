@@ -5,8 +5,8 @@ import 'package:fn_tracker/features/wallet/data/models/scheduled_payment_model.d
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Виджет выбора даты/дня в зависимости от частоты платежа.
-/// Для [ScheduledPaymentFrequency.weekly] и [monthly] поддерживается
-/// мультивыбор (несколько дней недели / чисел месяца).
+/// Для [ScheduledPaymentFrequency.monthly] и [yearly] поддерживается
+/// мультивыбор (несколько чисел месяца / дат в году).
 class ScheduledPaymentDatePickerWidget extends StatefulWidget {
   const ScheduledPaymentDatePickerWidget({
     required this.frequency,
@@ -21,10 +21,10 @@ class ScheduledPaymentDatePickerWidget extends StatefulWidget {
   final DateTime? initialDate;
   final ValueChanged<DateTime> onDateSelected;
 
-  /// Начальный список выбранных дат (для мультивыбора weekly/monthly/yearly).
+  /// Начальный список выбранных дат (для мультивыбора monthly/yearly).
   final List<DateTime>? initialDates;
 
-  /// Колбэк при мультивыборе (weekly — дни недели, monthly — числа месяца, yearly — список дат в году).
+  /// Колбэк при мультивыборе (monthly — числа месяца, yearly — список дат в году).
   final ValueChanged<List<DateTime>>? onDatesSelected;
 
   static Future<void> show(
@@ -55,7 +55,6 @@ class ScheduledPaymentDatePickerWidget extends StatefulWidget {
 
 class _ScheduledPaymentDatePickerWidgetState
     extends State<ScheduledPaymentDatePickerWidget> {
-  late Set<Weekday> _selectedWeekdays;
   late Set<int> _selectedMonthDays;
 
   /// Выбранные даты для yearly (месяц+день, год — опорный для сортировки).
@@ -72,22 +71,12 @@ class _ScheduledPaymentDatePickerWidgetState
 
   bool get _isMultiSelect =>
       widget.onDatesSelected != null &&
-      (widget.frequency == ScheduledPaymentFrequency.weekly ||
-          widget.frequency == ScheduledPaymentFrequency.monthly ||
+      (widget.frequency == ScheduledPaymentFrequency.monthly ||
           widget.frequency == ScheduledPaymentFrequency.yearly);
 
   @override
   void initState() {
     super.initState();
-    if (widget.frequency == ScheduledPaymentFrequency.weekly) {
-      _selectedWeekdays =
-          widget.initialDates?.map((d) => Weekday.fromDateTime(d)).toSet() ??
-          (widget.initialDate != null
-              ? {Weekday.fromDateTime(widget.initialDate!)}
-              : <Weekday>{});
-    } else {
-      _selectedWeekdays = <Weekday>{};
-    }
     if (widget.frequency == ScheduledPaymentFrequency.monthly) {
       _selectedMonthDays =
           widget.initialDates
@@ -163,11 +152,13 @@ class _ScheduledPaymentDatePickerWidgetState
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ModalSheetTitleWidget(title: _sheetTitle(context)),
+          ModalSheetTitleWidget(
+            title: _sheetTitle(context),
+            subtitle: _sheetSubtitle(context),
+          ),
           const SizedBox(height: AppSizing.spaceBtwSections),
           switch (widget.frequency) {
             ScheduledPaymentFrequency.day => _buildDayPicker(context),
-            ScheduledPaymentFrequency.weekly => _buildWeeklyPicker(context),
             ScheduledPaymentFrequency.monthly => _buildMonthlyPicker(context),
             ScheduledPaymentFrequency.yearly => _buildYearlyPicker(context),
           },
@@ -191,12 +182,24 @@ class _ScheduledPaymentDatePickerWidgetState
   String _sheetTitle(BuildContext context) {
     return switch (widget.frequency) {
       ScheduledPaymentFrequency.day => 'Day',
-      ScheduledPaymentFrequency.weekly =>
-        _isMultiSelect ? 'Days of week' : 'Day of week',
       ScheduledPaymentFrequency.monthly =>
         _isMultiSelect ? 'Days of month' : 'Day of month',
       ScheduledPaymentFrequency.yearly =>
         _isMultiSelect ? 'Payment dates in year' : 'Date (month & day)',
+    };
+  }
+
+  String _sheetSubtitle(BuildContext context) {
+    return switch (widget.frequency) {
+      ScheduledPaymentFrequency.day => 'Select for one-time payment',
+      ScheduledPaymentFrequency.monthly =>
+        _isMultiSelect
+            ? 'Payment will be made on selected days of month every month'
+            : 'Payment will be made on selected day of month every month',
+      ScheduledPaymentFrequency.yearly =>
+        _isMultiSelect
+            ? 'Payment will be made on selected dates every year'
+            : 'Payment will be made on selected date (month & day) every year',
     };
   }
 
@@ -209,9 +212,6 @@ class _ScheduledPaymentDatePickerWidgetState
 
   void _onMultiSelectDone() {
     final list = switch (widget.frequency) {
-      ScheduledPaymentFrequency.weekly =>
-        _selectedWeekdays.map(_nextWeekday).toList()
-          ..sort((a, b) => a.compareTo(b)),
       ScheduledPaymentFrequency.monthly =>
         _selectedMonthDays.map(_nextDayOfMonth).toList()
           ..sort((a, b) => a.compareTo(b)),
@@ -256,57 +256,6 @@ class _ScheduledPaymentDatePickerWidgetState
           foregroundColor: colorScheme.onSurface,
         ),
       ],
-    );
-  }
-
-  Widget _buildWeeklyPicker(BuildContext context) {
-    return SizedBox(
-      height: AppSizing.heightL,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: 7,
-        separatorBuilder: (_, _) =>
-            const SizedBox(width: AppSizing.spaceBtwItemsExtra),
-        itemBuilder: (context, index) {
-          final weekday = Weekday.values[index];
-          final isSelected = _isMultiSelect
-              ? _selectedWeekdays.contains(weekday)
-              : widget.initialDate != null &&
-                    Weekday.fromDateTime(widget.initialDate!) == weekday;
-          return AspectRatio(
-            aspectRatio: 1,
-            child: SelectableCard(
-              isSelected: isSelected,
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              selectedBackgroundColor: Theme.of(context).colorScheme.primary,
-              onTap: () {
-                if (_isMultiSelect) {
-                  setState(() {
-                    if (_selectedWeekdays.contains(weekday)) {
-                      _selectedWeekdays.remove(weekday);
-                    } else {
-                      _selectedWeekdays.add(weekday);
-                    }
-                  });
-                } else {
-                  widget.onDateSelected(_nextWeekday(weekday));
-                  Navigator.of(context).pop();
-                }
-              },
-              child: Center(
-                child: Text(
-                  weekday.localizedShortName(context),
-                  style: AppTextStyles.text16w400(context).copyWith(
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.onPrimary
-                        : Theme.of(context).colorScheme.onSecondary,
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 
@@ -534,16 +483,6 @@ class _ScheduledPaymentDatePickerWidgetState
         });
       }
     }
-  }
-
-  static DateTime _nextWeekday(Weekday weekday) {
-    final now = DateUtils.dateOnly(DateTime.now());
-    var d = now;
-    for (var i = 0; i < 7; i++) {
-      if (Weekday.fromDateTime(d) == weekday) return d;
-      d = d.add(const Duration(days: 1));
-    }
-    return now;
   }
 
   static DateTime _nextDayOfMonth(int day) {

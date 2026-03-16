@@ -1,7 +1,15 @@
+/// Тип планового платежа.
+enum ScheduledPaymentType {
+  subscription('Подписка'),
+  regular('Регулярный платёж');
+
+  const ScheduledPaymentType(this.label);
+  final String label;
+}
+
 /// Частота планового платежа.
 enum ScheduledPaymentFrequency {
   day('Day'),
-  weekly('Еженедельно'),
   monthly('Ежемесячно'),
   yearly('Ежегодно');
 
@@ -18,6 +26,7 @@ class ScheduledPaymentModel {
     required this.nextDate,
     required this.iconId,
     required this.colorId,
+    required this.type,
     required this.frequency,
     this.frequencyInterval,
     required this.autoCreateTransaction,
@@ -30,6 +39,7 @@ class ScheduledPaymentModel {
   final DateTime nextDate;
   final String iconId;
   final String colorId;
+  final ScheduledPaymentType type;
   final ScheduledPaymentFrequency frequency;
   final int? frequencyInterval;
   final bool autoCreateTransaction;

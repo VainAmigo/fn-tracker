@@ -3,33 +3,33 @@ import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/wallet/data/models/scheduled_payment_model.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-class ScheduledFrequencyPickerWidget extends StatelessWidget {
-  const ScheduledFrequencyPickerWidget({
-    required this.initialFrequency,
-    required this.onFrequencySelected,
+class ScheduledPaymentTypePickerWidget extends StatelessWidget {
+  const ScheduledPaymentTypePickerWidget({
+    required this.initialType,
+    required this.onTypeSelected,
     super.key,
   });
 
-  final ScheduledPaymentFrequency initialFrequency;
-  final ValueChanged<ScheduledPaymentFrequency> onFrequencySelected;
+  final ScheduledPaymentType initialType;
+  final ValueChanged<ScheduledPaymentType> onTypeSelected;
 
   static Future<void> show(
     BuildContext context, {
-    required ScheduledPaymentFrequency initialFrequency,
-    required ValueChanged<ScheduledPaymentFrequency> onFrequencySelected,
+    required ScheduledPaymentType initialType,
+    required ValueChanged<ScheduledPaymentType> onTypeSelected,
   }) {
     return AppBottomSheet.showFittedModalBottomSheet(
       context,
       backgroundColor: Theme.of(context).colorScheme.surface,
-      child: ScheduledFrequencyPickerWidget(
-        initialFrequency: initialFrequency,
-        onFrequencySelected: onFrequencySelected,
+      child: ScheduledPaymentTypePickerWidget(
+        initialType: initialType,
+        onTypeSelected: onTypeSelected,
       ),
     );
   }
 
-  void _select(BuildContext context, ScheduledPaymentFrequency value) {
-    onFrequencySelected(value);
+  void _select(BuildContext context, ScheduledPaymentType value) {
+    onTypeSelected(value);
     Navigator.of(context).pop();
   }
 
@@ -46,14 +46,11 @@ class ScheduledFrequencyPickerWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const ModalSheetTitleWidget(title: 'Payment frequency'),
+          const ModalSheetTitleWidget(title: 'Type of scheduled payment'),
           const SizedBox(height: AppSizing.spaceBtwSections),
-          _card(context, c, ScheduledPaymentFrequency.yearly, 'Yearly',
-              height: AppSizing.heightL),
+          _card(context, c, ScheduledPaymentType.subscription),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          _card(context, c, ScheduledPaymentFrequency.monthly, 'Monthly'),
-          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          _card(context, c, ScheduledPaymentFrequency.day, 'Day'),
+          _card(context, c, ScheduledPaymentType.regular),
         ],
       ),
     );
@@ -62,16 +59,14 @@ class ScheduledFrequencyPickerWidget extends StatelessWidget {
   Widget _card(
     BuildContext context,
     ColorScheme c,
-    ScheduledPaymentFrequency frequency,
-    String title, {
-    double? height,
-  }) {
-    final isSelected = initialFrequency == frequency;
+    ScheduledPaymentType type,
+  ) {
+    final isSelected = initialType == type;
     return InkWell(
-      onTap: () => _select(context, frequency),
+      onTap: () => _select(context, type),
       borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
       child: Container(
-        height: height ?? AppSizing.heightM,
+        height: AppSizing.heightM,
         padding: const EdgeInsets.symmetric(
           horizontal: AppSizing.spaceBtwElements,
           vertical: AppSizing.spaceBtwItemsExtra,
@@ -84,7 +79,7 @@ class ScheduledFrequencyPickerWidget extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            title,
+            type.label,
             style: AppTextStyles.text16w400(context).copyWith(
               color: isSelected ? c.onPrimary : c.onSecondary,
             ),

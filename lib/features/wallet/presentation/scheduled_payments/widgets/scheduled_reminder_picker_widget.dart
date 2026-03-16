@@ -1,35 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
-import 'package:fn_tracker/features/wallet/data/models/scheduled_payment_model.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-class ScheduledFrequencyPickerWidget extends StatelessWidget {
-  const ScheduledFrequencyPickerWidget({
-    required this.initialFrequency,
-    required this.onFrequencySelected,
+/// Вариант напоминания о плановом платеже.
+enum ScheduledReminderOption {
+  onTheDay('On the day'),
+  oneDayBefore('1 day before'),
+  twoDaysBefore('2 days before'),
+  threeDaysBefore('3 days before'),
+  oneWeekBefore('1 week before');
+
+  const ScheduledReminderOption(this.label);
+  final String label;
+}
+
+class ScheduledReminderPickerWidget extends StatelessWidget {
+  const ScheduledReminderPickerWidget({
+    required this.initialOption,
+    required this.onOptionSelected,
     super.key,
   });
 
-  final ScheduledPaymentFrequency initialFrequency;
-  final ValueChanged<ScheduledPaymentFrequency> onFrequencySelected;
+  final ScheduledReminderOption initialOption;
+  final ValueChanged<ScheduledReminderOption> onOptionSelected;
 
   static Future<void> show(
     BuildContext context, {
-    required ScheduledPaymentFrequency initialFrequency,
-    required ValueChanged<ScheduledPaymentFrequency> onFrequencySelected,
+    required ScheduledReminderOption initialOption,
+    required ValueChanged<ScheduledReminderOption> onOptionSelected,
   }) {
     return AppBottomSheet.showFittedModalBottomSheet(
       context,
       backgroundColor: Theme.of(context).colorScheme.surface,
-      child: ScheduledFrequencyPickerWidget(
-        initialFrequency: initialFrequency,
-        onFrequencySelected: onFrequencySelected,
+      child: ScheduledReminderPickerWidget(
+        initialOption: initialOption,
+        onOptionSelected: onOptionSelected,
       ),
     );
   }
 
-  void _select(BuildContext context, ScheduledPaymentFrequency value) {
-    onFrequencySelected(value);
+  void _select(BuildContext context, ScheduledReminderOption value) {
+    onOptionSelected(value);
     Navigator.of(context).pop();
   }
 
@@ -46,14 +57,14 @@ class ScheduledFrequencyPickerWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const ModalSheetTitleWidget(title: 'Payment frequency'),
+          const ModalSheetTitleWidget(title: 'When to remind'),
           const SizedBox(height: AppSizing.spaceBtwSections),
-          _card(context, c, ScheduledPaymentFrequency.yearly, 'Yearly',
-              height: AppSizing.heightL),
-          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          _card(context, c, ScheduledPaymentFrequency.monthly, 'Monthly'),
-          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          _card(context, c, ScheduledPaymentFrequency.day, 'Day'),
+          ...ScheduledReminderOption.values.map(
+            (option) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSizing.spaceBtwItemsExtra),
+              child: _card(context, c, option),
+            ),
+          ),
         ],
       ),
     );
@@ -62,16 +73,14 @@ class ScheduledFrequencyPickerWidget extends StatelessWidget {
   Widget _card(
     BuildContext context,
     ColorScheme c,
-    ScheduledPaymentFrequency frequency,
-    String title, {
-    double? height,
-  }) {
-    final isSelected = initialFrequency == frequency;
+    ScheduledReminderOption option,
+  ) {
+    final isSelected = initialOption == option;
     return InkWell(
-      onTap: () => _select(context, frequency),
+      onTap: () => _select(context, option),
       borderRadius: BorderRadius.circular(AppSizing.borderRadius16),
       child: Container(
-        height: height ?? AppSizing.heightM,
+        height: AppSizing.heightM,
         padding: const EdgeInsets.symmetric(
           horizontal: AppSizing.spaceBtwElements,
           vertical: AppSizing.spaceBtwItemsExtra,
@@ -84,7 +93,7 @@ class ScheduledFrequencyPickerWidget extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            title,
+            option.label,
             style: AppTextStyles.text16w400(context).copyWith(
               color: isSelected ? c.onPrimary : c.onSecondary,
             ),

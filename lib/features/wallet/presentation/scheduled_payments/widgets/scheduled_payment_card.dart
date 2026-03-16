@@ -106,8 +106,6 @@ class ScheduledPaymentCard extends StatelessWidget {
     switch (p.frequency) {
       case ScheduledPaymentFrequency.day:
         return 'Day';
-      case ScheduledPaymentFrequency.weekly:
-        return 'Еженедельно';
       case ScheduledPaymentFrequency.monthly:
         return 'Ежемесячно';
       case ScheduledPaymentFrequency.yearly:
