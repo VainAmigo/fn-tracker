@@ -28,7 +28,12 @@ class _AppMainViewState extends State<AppMainView> {
       transactionsRepo: transactionsRepo,
     );
     await service.checkAndCreateForToday();
-    if (mounted) _onDataUpdated(context);
+    if (mounted) {
+      context.read<TransactionsCubit>().loadTransactionsByPeriod(
+        TransactionPeriod.month,
+      );
+      _onDataUpdated(context);
+    }
   }
 
   static const _tabs = [

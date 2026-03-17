@@ -34,11 +34,6 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
   /// Несколько дат для мультивыбора (monthly — числа месяца, yearly — даты в году).
   List<DateTime> _paymentDates = [];
 
-  bool _remindMeEnabled = false;
-  ScheduledReminderOption? _remindMeOption;
-  int _reminderHour = 9;
-  int _reminderMinute = 0;
-
   bool _autoCreateTransaction = true;
 
   /// Выбранный кошелёк для списания.
@@ -62,10 +57,6 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
       _paymentAmount = p.amount;
       _frequency = p.frequency;
       _paymentType = p.type;
-      _remindMeEnabled = p.reminderEnabled;
-      _remindMeOption = p.reminderOption;
-      _reminderHour = p.reminderHour ?? 9;
-      _reminderMinute = p.reminderMinute ?? 0;
       _autoCreateTransaction = p.autoCreateTransaction;
       _paymentDate = p.paymentDate;
       _paymentDates = _datesFromModel(p);
@@ -275,31 +266,6 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                         ),
                       ),
                       const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-                      FormCardWidget(
-                        title: _remindMeEnabled && _remindMeOption != null
-                            ? _remindMeOption!.label
-                            : 'Remind me',
-                        subtitle: _remindMeEnabled && _remindMeOption != null
-                            ? '${_remindMeOption!.label} в ${_reminderHour.toString().padLeft(2, '0')}:${_reminderMinute.toString().padLeft(2, '0')}'
-                            : 'When should I remind you?',
-                        icon: Icon(
-                          Icons.notifications,
-                          size: AppSizing.iconSizeM,
-                          color: colorScheme.onSecondary,
-                        ),
-                        trailing: Switch(
-                          value: _remindMeEnabled,
-                          onChanged: (value) {
-                            if (value) {
-                              _openReminderPicker(context);
-                            } else {
-                              setState(() => _remindMeEnabled = false);
-                            }
-                          },
-                        ),
-                        onTap: () => _openReminderPicker(context),
-                      ),
-                      const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                       _paymentType == ScheduledPaymentType.regularIncome
                           ? FormCardWidget(
                               title: _selectedGoal?.name ??
@@ -502,10 +468,6 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
       categoryId: _paymentType == ScheduledPaymentType.regularIncome
           ? null
           : _selectedCategory?.categoryId,
-      reminderEnabled: _remindMeEnabled,
-      reminderOption: _remindMeEnabled ? _remindMeOption : null,
-      reminderHour: _remindMeEnabled ? _reminderHour : null,
-      reminderMinute: _remindMeEnabled ? _reminderMinute : null,
       paymentDate: _frequency == ScheduledPaymentFrequency.oneTime
           ? _paymentDate
           : null,
@@ -517,17 +479,8 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
     try {
       if (widget.payment != null) {
         await cubit.updatePayment(model);
-        if (_remindMeEnabled) {
-          await NotificationService.scheduleReminder(model);
-        } else {
-          await NotificationService.cancelReminder(model.id);
-        }
       } else {
         await cubit.createPayment(model);
-        if (_remindMeEnabled && cubit.currentPayments.isNotEmpty) {
-          final created = cubit.currentPayments.first;
-          await NotificationService.scheduleReminder(created);
-        }
       }
       if (!mounted) return;
       Navigator.of(context).pop();
@@ -538,28 +491,6 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
         context,
       ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
     }
-  }
-
-  void _openReminderPicker(BuildContext context) {
-    ScheduledReminderPickerWidget.show(
-      context,
-      initialOption: _remindMeOption,
-      initialHour: _reminderHour,
-      initialMinute: _reminderMinute,
-      onOptionSelected: (option) {
-        setState(() {
-          _remindMeEnabled = true;
-          _remindMeOption = option;
-        });
-      },
-      onTimeSelected: (hour, minute) {
-        setState(() {
-          _remindMeEnabled = true;
-          _reminderHour = hour;
-          _reminderMinute = minute;
-        });
-      },
-    );
   }
 
   Widget _buildPreview(BuildContext context) {

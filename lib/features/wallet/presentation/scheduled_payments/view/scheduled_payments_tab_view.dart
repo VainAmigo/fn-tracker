@@ -212,7 +212,6 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
         onDelete: () async {
           Navigator.of(context).pop();
           await cubit.deletePayment(payment.id);
-          await NotificationService.cancelReminder(payment.id);
         },
         onCreatePaymentNow: () {
           Navigator.of(context).pop();

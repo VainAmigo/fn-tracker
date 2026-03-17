@@ -1,17 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Вариант напоминания о плановом платеже.
-enum ScheduledReminderOption {
-  onTheDay('On the day'),
-  oneDayBefore('1 day before'),
-  twoDaysBefore('2 days before'),
-  threeDaysBefore('3 days before'),
-  oneWeekBefore('1 week before');
-
-  const ScheduledReminderOption(this.label);
-  final String label;
-}
-
 /// Тип планового платежа.
 enum ScheduledPaymentType {
   subscription('Подписка'),
@@ -67,10 +55,6 @@ class ScheduledPaymentModel {
     this.walletId,
     this.goalId,
     this.categoryId,
-    this.reminderEnabled = false,
-    this.reminderOption,
-    this.reminderHour,
-    this.reminderMinute,
     this.paymentDate,
     this.monthDays,
     this.yearlyDates,
@@ -92,10 +76,6 @@ class ScheduledPaymentModel {
   final String? walletId;
   final String? goalId;
   final String? categoryId;
-  final bool reminderEnabled;
-  final ScheduledReminderOption? reminderOption;
-  final int? reminderHour;
-  final int? reminderMinute;
   final DateTime? paymentDate;
   final List<int>? monthDays;
   final List<String>? yearlyDates;
@@ -117,10 +97,6 @@ class ScheduledPaymentModel {
     String? walletId,
     String? goalId,
     String? categoryId,
-    bool? reminderEnabled,
-    ScheduledReminderOption? reminderOption,
-    int? reminderHour,
-    int? reminderMinute,
     DateTime? paymentDate,
     List<int>? monthDays,
     List<String>? yearlyDates,
@@ -143,10 +119,6 @@ class ScheduledPaymentModel {
       walletId: walletId ?? this.walletId,
       goalId: goalId ?? this.goalId,
       categoryId: categoryId ?? this.categoryId,
-      reminderEnabled: reminderEnabled ?? this.reminderEnabled,
-      reminderOption: reminderOption ?? this.reminderOption,
-      reminderHour: reminderHour ?? this.reminderHour,
-      reminderMinute: reminderMinute ?? this.reminderMinute,
       paymentDate: paymentDate ?? this.paymentDate,
       monthDays: monthDays ?? this.monthDays,
       yearlyDates: yearlyDates ?? this.yearlyDates,
@@ -171,10 +143,6 @@ class ScheduledPaymentModel {
       'walletId': walletId,
       'goalId': goalId,
       'categoryId': categoryId,
-      'reminderEnabled': reminderEnabled,
-      'reminderOption': reminderOption?.name,
-      'reminderHour': reminderHour,
-      'reminderMinute': reminderMinute,
       'paymentDate':
           paymentDate != null ? Timestamp.fromDate(paymentDate!) : null,
       'monthDays': monthDays,
@@ -223,18 +191,6 @@ class ScheduledPaymentModel {
         ? (yearlyDatesRaw).map((e) => e.toString()).toList()
         : null;
 
-    final reminderOptionRaw = json['reminderOption'] as String?;
-    ScheduledReminderOption? reminderOption;
-    if (reminderOptionRaw != null) {
-      try {
-        reminderOption = ScheduledReminderOption.values.firstWhere(
-          (e) => e.name == reminderOptionRaw,
-        );
-      } catch (_) {
-        reminderOption = null;
-      }
-    }
-
     return ScheduledPaymentModel(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -252,10 +208,6 @@ class ScheduledPaymentModel {
       walletId: json['walletId'] as String?,
       goalId: json['goalId'] as String?,
       categoryId: json['categoryId'] as String?,
-      reminderEnabled: json['reminderEnabled'] as bool? ?? false,
-      reminderOption: reminderOption,
-      reminderHour: (json['reminderHour'] as num?)?.toInt(),
-      reminderMinute: (json['reminderMinute'] as num?)?.toInt(),
       paymentDate: paymentDate,
       monthDays: monthDays,
       yearlyDates: yearlyDates,
