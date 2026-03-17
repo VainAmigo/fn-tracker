@@ -4,7 +4,7 @@ import 'package:fn_tracker/features/features.dart';
 
 class WalletRepository implements WalletRepoImpl {
   WalletRepository({TransactionsRepository? transactionsRepo})
-      : _transactionsRepo = transactionsRepo ?? TransactionsRepositoryImpl();
+    : _transactionsRepo = transactionsRepo ?? TransactionsRepositoryImpl();
 
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -32,6 +32,12 @@ class WalletRepository implements WalletRepoImpl {
 
   CollectionReference<Map<String, dynamic>> _goalsRef(String uid) =>
       firebaseFirestore.collection('users').doc(uid).collection('goals');
+
+  CollectionReference<Map<String, dynamic>> _scheduledPaymentsRef(String uid) =>
+      firebaseFirestore
+          .collection('users')
+          .doc(uid)
+          .collection('scheduled_payments');
 
   @override
   Future<WalletModel> addWallet({required WalletModel wallet}) async {
@@ -65,7 +71,10 @@ class WalletRepository implements WalletRepoImpl {
   }
 
   @override
-  Future<void> deleteWallet(String id, {required bool deleteTransactions}) async {
+  Future<void> deleteWallet(
+    String id, {
+    required bool deleteTransactions,
+  }) async {
     final uid = _requireUid();
     try {
       if (deleteTransactions) {
@@ -304,8 +313,7 @@ class WalletRepository implements WalletRepoImpl {
 
       final totalProgress = goals.fold<double>(0, (s, g) => s + g.progress);
       final totalTarget = goals.fold<double>(0, (s, g) => s + g.targetAmount);
-      final completedCount =
-          goals.where((g) => g.isCompleted).length;
+      final completedCount = goals.where((g) => g.isCompleted).length;
 
       return GoalsModel(
         goals: goals,
@@ -356,6 +364,96 @@ class WalletRepository implements WalletRepoImpl {
       await _goalsRef(uid).doc(id).delete();
     } catch (e) {
       throw Exception('Failed to delete goal: $e');
+    }
+  }
+
+  @override
+  Future<List<ScheduledPaymentModel>> getScheduledPayments() async {
+    final uid = _requireUid();
+    try {
+      final snapshot = await _scheduledPaymentsRef(uid).get();
+      final models = <ScheduledPaymentModel>[];
+      for (final doc in snapshot.docs) {
+        final data = {...doc.data(), 'id': doc.id};
+        final model = ScheduledPaymentModel.fromJson(data);
+        final nextDate = ScheduledPaymentDateService.computeNextDateForModel(
+          model,
+        );
+        if (nextDate != null) {
+          models.add(model.copyWith(nextDate: nextDate));
+        } else if (model.frequency == ScheduledPaymentFrequency.oneTime) {
+          continue;
+        } else {
+          models.add(model);
+        }
+      }
+      models.sort(
+        (a, b) =>
+            (b.createdAt ?? b.nextDate).compareTo(a.createdAt ?? a.nextDate),
+      );
+      return models;
+    } catch (e) {
+      throw Exception('Failed to get scheduled payments: $e');
+    }
+  }
+
+  @override
+  Future<ScheduledPaymentModel> createScheduledPayment({
+    required ScheduledPaymentModel payment,
+  }) async {
+    final uid = _requireUid();
+    try {
+      final docRef = _scheduledPaymentsRef(uid).doc();
+      final now = DateTime.now();
+      final nextDate = ScheduledPaymentDateService.calculateNextDate(
+        frequency: payment.frequency,
+        paymentDate: payment.paymentDate,
+        monthDays: payment.monthDays,
+        yearlyDates: payment.yearlyDates,
+      );
+      final created = payment.copyWith(
+        id: docRef.id,
+        nextDate: nextDate ?? payment.nextDate,
+        createdAt: now,
+        updatedAt: now,
+      );
+      await docRef.set(created.toJson());
+      return created;
+    } catch (e) {
+      throw Exception('Failed to create scheduled payment: $e');
+    }
+  }
+
+  @override
+  Future<ScheduledPaymentModel> updateScheduledPayment({
+    required ScheduledPaymentModel payment,
+  }) async {
+    final uid = _requireUid();
+    try {
+      final nextDate = ScheduledPaymentDateService.calculateNextDate(
+        frequency: payment.frequency,
+        paymentDate: payment.paymentDate,
+        monthDays: payment.monthDays,
+        yearlyDates: payment.yearlyDates,
+      );
+      final updated = payment.copyWith(
+        nextDate: nextDate ?? payment.nextDate,
+        updatedAt: DateTime.now(),
+      );
+      await _scheduledPaymentsRef(uid).doc(payment.id).update(updated.toJson());
+      return updated;
+    } catch (e) {
+      throw Exception('Failed to update scheduled payment: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteScheduledPayment(String id) async {
+    final uid = _requireUid();
+    try {
+      await _scheduledPaymentsRef(uid).doc(id).delete();
+    } catch (e) {
+      throw Exception('Failed to delete scheduled payment: $e');
     }
   }
 }

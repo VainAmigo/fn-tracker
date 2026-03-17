@@ -23,6 +23,9 @@ final class AppRouter {
   static const createGoal = '/create-goal';
   static const updateGoal = '/update-goal';
 
+  static const createScheduledPayment = '/create-scheduled-payment';
+  static const updateScheduledPayment = '/update-scheduled-payment';
+
   static Route<void> onGenerateRoute(RouteSettings settings) {
     return switch (settings.name) {
       main => MaterialPageRoute(
@@ -97,6 +100,19 @@ final class AppRouter {
       updateGoal => MaterialPageRoute(
         settings: const RouteSettings(name: updateGoal),
         builder: (_) => GoalFormView(goal: settings.arguments as GoalModel),
+      ),
+      createScheduledPayment => MaterialPageRoute(
+        settings: const RouteSettings(name: createScheduledPayment),
+        builder: (_) => const ScheduledPaymentFormView(),
+      ),
+      updateScheduledPayment => MaterialPageRoute(
+        settings: RouteSettings(
+          name: updateScheduledPayment,
+          arguments: settings.arguments,
+        ),
+        builder: (_) => ScheduledPaymentFormView(
+          payment: settings.arguments as ScheduledPaymentModel?,
+        ),
       ),
       _ => throw Exception(
         'No builder specified for route named: [${settings.name}]',

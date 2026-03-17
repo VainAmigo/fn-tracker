@@ -18,6 +18,7 @@ class _WalletViewState extends State<WalletView> {
     WalletBudgetTabWidget(),
     AccountsTabWidget(),
     CategoriesTabView(),
+    ScheduledPaymentsTabView(),
   ];
 
   Future<void> _onRefresh() async {
