@@ -20,6 +20,7 @@ class _CategoryFormViewState extends State<CategoryFormView> {
   late TextEditingController _nameController;
   late String? _limit;
   bool _isSubmitting = false;
+  bool _isDeleting = false;
   bool _defaultsInitialized = false;
 
   bool get _isEditing => widget.category != null;
@@ -95,19 +96,20 @@ class _CategoryFormViewState extends State<CategoryFormView> {
         if (!_isSubmitting) return;
         if (state is CategoriesLoaded || state is CategoriesEmpty) {
           _isSubmitting = false;
+          final message = _isDeleting
+              ? 'Category deleted'
+              : _isEditing
+                  ? 'Category updated successfully'
+                  : 'Category created successfully';
+          _isDeleting = false;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                _isEditing
-                    ? 'Category updated successfully'
-                    : 'Category created successfully',
-              ),
-            ),
+            SnackBar(content: Text(message)),
           );
           Navigator.of(context).pop();
         }
         if (state is CategoriesError) {
           _isSubmitting = false;
+          _isDeleting = false;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -226,11 +228,26 @@ class _CategoryFormViewState extends State<CategoryFormView> {
     );
   }
 
-  void _deleteCategory() {
-    setState(() => _isSubmitting = true);
-    context.read<CategoriesCubit>().deleteCategory(
-      categoryId: widget.category!.categoryId,
+  Future<void> _deleteCategory() async {
+    final result = await showDeleteEntityDialog(
+      context,
+      title: 'Удалить категорию?',
+      message:
+          'Удалить категорию «${widget.category!.name}»? Выберите способ удаления.',
     );
+    if (!mounted ||
+        result == null ||
+        result == DeleteEntityResult.cancel) {
+      return;
+    }
+    setState(() {
+      _isSubmitting = true;
+      _isDeleting = true;
+    });
+    context.read<CategoriesCubit>().deleteCategory(
+          categoryId: widget.category!.categoryId,
+          deleteTransactions: result == DeleteEntityResult.deleteFull,
+        );
   }
 
   void _submitCategory() {

@@ -5,8 +5,12 @@ part 'categories_state.dart';
 
 class CategoriesCubit extends HydratedCubit<CategoriesState> {
   final CategoryRepoImpl categoryRepo;
+  final TransactionsRepository transactionsRepo;
 
-  CategoriesCubit({required this.categoryRepo}) : super(CategoriesInitial());
+  CategoriesCubit({
+    required this.categoryRepo,
+    required this.transactionsRepo,
+  }) : super(CategoriesInitial());
 
   @override
   String get storagePrefix => 'CategoriesCubit';
@@ -104,11 +108,17 @@ class CategoriesCubit extends HydratedCubit<CategoriesState> {
     }
   }
 
-  Future<void> deleteCategory({required String categoryId}) async {
+  Future<void> deleteCategory({
+    required String categoryId,
+    required bool deleteTransactions,
+  }) async {
     final previous = _currentCategories;
     emit(CategoriesLoading());
 
     try {
+      if (deleteTransactions) {
+        await transactionsRepo.deleteTransactionsByCategoryId(categoryId);
+      }
       await categoryRepo.deleteCategory(categoryId: categoryId);
 
       final updatedCategories =

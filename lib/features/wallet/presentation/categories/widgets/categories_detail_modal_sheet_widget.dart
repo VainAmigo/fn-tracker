@@ -86,9 +86,16 @@ class CategoriesDetailModalSheetWidget extends StatelessWidget {
             spacing: AppSizing.spaceBtwItemsExtra,
             children: [
               BlocListener<CategoriesCubit, CategoriesState>(
+                listenWhen: (prev, curr) =>
+                    curr is CategoriesLoaded || curr is CategoriesError,
                 listener: (context, state) {
                   if (state is CategoriesLoaded) {
                     Navigator.of(context).pop();
+                  }
+                  if (state is CategoriesError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message)),
+                    );
                   }
                 },
                 child: PrimaryButton(
@@ -99,10 +106,23 @@ class CategoriesDetailModalSheetWidget extends StatelessWidget {
                   size: PrimaryButtonSize.large,
                   paddingStyle: PrimaryButtonPaddingStyle.slim,
                   rounded: true,
-                  onPressed: () {
-                    context.read<CategoriesCubit>().deleteCategory(
-                      categoryId: category.categoryId,
+                  onPressed: () async {
+                    final result = await showDeleteEntityDialog(
+                      context,
+                      title: 'Удалить категорию?',
+                      message:
+                          'Удалить категорию «${category.name}»? Выберите способ удаления.',
                     );
+                    if (!context.mounted ||
+                        result == null ||
+                        result == DeleteEntityResult.cancel) {
+                      return;
+                    }
+                    context.read<CategoriesCubit>().deleteCategory(
+                          categoryId: category.categoryId,
+                          deleteTransactions:
+                              result == DeleteEntityResult.deleteFull,
+                        );
                   },
                 ),
               ),

@@ -165,49 +165,4 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get noTransactionsSubtitle => 'Сизде азырынча транзакциялар жок';
-
-  @override
-  String get unknownCategory => 'Белгисиз категория';
-
-  @override
-  String get goal => 'Максат';
-
-  @override
-  String get category => 'Категория';
-
-  @override
-  String get description => 'Сыпаттама';
-
-  @override
-  String get date => 'Дата';
-
-  @override
-  String get from => 'Кайдан';
-
-  @override
-  String get to => 'Кайда';
-
-  @override
-  String get today => 'Бүгүн';
-
-  @override
-  String get yesterday => 'Кечээ';
-
-  @override
-  String get addNote => 'Эскертүү кошуу';
-
-  @override
-  String get save => 'Сактоо';
-
-  @override
-  String get takeFrom => 'Алуу';
-
-  @override
-  String get addTo => 'Кошуу';
-
-  @override
-  String get transferFrom => 'Которуу кайдан';
-
-  @override
-  String get transferTo => 'Которуу кайда';
 }

@@ -207,6 +207,31 @@ class TransactionsRepositoryImpl
   }
 
   @override
+  Future<void> deleteTransactionsByCategoryId(String categoryId) async {
+    if (categoryId.isEmpty) return;
+    final uid = requireUid();
+    try {
+      final allSnapshot = await _transactionsRef(uid).get();
+      final toDelete = <DocumentReference<Map<String, dynamic>>>[];
+      for (final doc in allSnapshot.docs) {
+        if (doc.data()['categoryId'] == categoryId) {
+          toDelete.add(doc.reference);
+        }
+      }
+      for (var i = 0; i < toDelete.length; i += 450) {
+        final batch = firebaseFirestore.batch();
+        final end = (i + 450).clamp(0, toDelete.length);
+        for (var j = i; j < end; j++) {
+          batch.delete(toDelete[j]);
+        }
+        await batch.commit();
+      }
+    } catch (e) {
+      throw Exception('Failed to delete transactions by category: $e');
+    }
+  }
+
+  @override
   Future<HomePageStatModel> getHomePageStats({
     required String startDayKey,
     required String endDayKey,

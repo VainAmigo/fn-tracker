@@ -53,20 +53,5 @@
     "deleteEntityPartialHint": "Жарым-жартылай өчүрүү — максат/капчыкты өчүрүү, транзакциялар сакталат.",
     "deleteEntityFullHint": "Толугу менен өчүрүү — баардык байланышкан транзакциялар менен бирге өчүрүү.",
     "noTransactions": "Транзакциялар жок",
-    "noTransactionsSubtitle": "Сизде азырынча транзакциялар жок",
-    "unknownCategory": "Белгисиз категория",
-    "goal": "Максат",
-    "category": "Категория",
-    "description": "Сыпаттама",
-    "date": "Дата",
-    "from": "Кайдан",
-    "to": "Кайда",
-    "today": "Бүгүн",
-    "yesterday": "Кечээ",
-    "addNote": "Эскертүү кошуу",
-    "save": "Сактоо",
-    "takeFrom": "Алуу",
-    "addTo": "Кошуу",
-    "transferFrom": "Которуу кайдан",
-    "transferTo": "Которуу кайда"
+    "noTransactionsSubtitle": "Сизде азырынча транзакциялар жок"
 }

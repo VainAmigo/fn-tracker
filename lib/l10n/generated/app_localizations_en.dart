@@ -165,49 +165,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noTransactionsSubtitle => 'You have no transactions yet';
-
-  @override
-  String get unknownCategory => 'Unknown category';
-
-  @override
-  String get goal => 'Goal';
-
-  @override
-  String get category => 'Category';
-
-  @override
-  String get description => 'Description';
-
-  @override
-  String get date => 'Date';
-
-  @override
-  String get from => 'From';
-
-  @override
-  String get to => 'To';
-
-  @override
-  String get today => 'Today';
-
-  @override
-  String get yesterday => 'Yesterday';
-
-  @override
-  String get addNote => 'Add note';
-
-  @override
-  String get save => 'Save';
-
-  @override
-  String get takeFrom => 'Take from';
-
-  @override
-  String get addTo => 'Add to';
-
-  @override
-  String get transferFrom => 'Transfer from';
-
-  @override
-  String get transferTo => 'Transfer to';
 }

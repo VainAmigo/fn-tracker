@@ -27,4 +27,6 @@ abstract class TransactionsRepository {
   Future<void> deleteTransactionsByWalletId(String walletId);
 
   Future<void> deleteTransactionsByGoalId(String goalId);
+
+  Future<void> deleteTransactionsByCategoryId(String categoryId);
 }

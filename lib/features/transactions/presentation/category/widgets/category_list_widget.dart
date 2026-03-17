@@ -26,6 +26,8 @@ class CategoryListWidget extends StatefulWidget {
 }
 
 class _CategoryListWidgetState extends State<CategoryListWidget> {
+  DeleteEntityResult? _pendingDeleteResult;
+
   @override
   void initState() {
     super.initState();
@@ -138,10 +140,28 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
         return Dismissible(
           key: Key(category.categoryId),
           direction: DismissDirection.endToStart,
-          onDismissed: (_) {
-            context.read<CategoriesCubit>().deleteCategory(
-              categoryId: category.categoryId,
+          confirmDismiss: (_) async {
+            final result = await showDeleteEntityDialog(
+              context,
+              title: 'Удалить категорию?',
+              message:
+                  'Удалить категорию «${category.name}»? Выберите способ удаления.',
             );
+            if (result == null || result == DeleteEntityResult.cancel) {
+              return false;
+            }
+            _pendingDeleteResult = result;
+            return true;
+          },
+          onDismissed: (_) {
+            final result = _pendingDeleteResult;
+            _pendingDeleteResult = null;
+            if (result != null && result != DeleteEntityResult.cancel) {
+              context.read<CategoriesCubit>().deleteCategory(
+                    categoryId: category.categoryId,
+                    deleteTransactions: result == DeleteEntityResult.deleteFull,
+                  );
+            }
           },
           background: Container(
             alignment: Alignment.centerRight,

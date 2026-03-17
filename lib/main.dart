@@ -60,7 +60,10 @@ class _AppViewState extends State<AppView> {
                 ..checkAuth(),
         ),
         BlocProvider<CategoriesCubit>(
-          create: (context) => CategoriesCubit(categoryRepo: categoryRepo),
+          create: (context) => CategoriesCubit(
+            categoryRepo: categoryRepo,
+            transactionsRepo: transactionsRepo,
+          ),
         ),
         BlocProvider<QuickCategoriesSettingsCubit>(
           create: (context) => QuickCategoriesSettingsCubit(),
