@@ -13,10 +13,24 @@ class WalletBudgetTabWidget extends StatefulWidget {
 }
 
 class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
+  DatePickerPeriod? _currentPeriod;
+
   void _onPeriodChange(DatePickerPeriod period) {
     context.read<BudgetCubit>().loadBudgetStats(
       startDayKey: period.startDayKey,
       endDayKey: period.endDayKey,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() => _currentPeriod = period);
+    });
+  }
+
+  DatePickerPeriod _periodOrDefault() {
+    if (_currentPeriod != null) return _currentPeriod!;
+    final (:start, :end) = MonthRangeUtils.currentMonth();
+    return MonthlyPeriod(
+      year: start.year,
+      month: Month.fromDateTime(start),
     );
   }
 
@@ -49,12 +63,23 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                             children: [
                               BudgetDonutStatWidget(
                                 budget: stats.budget!,
+                                period: _periodOrDefault(),
                                 totalForPeriod: stats.totalForPeriod,
                                 currency: currency,
-                                onEditBudgetPressed: () => _showBudgetSheet(
+                                onBudgetTap: () => _showBudgetDetailsSheet(
+                                  budget: stats.budget!,
+                                  totalForPeriod: stats.totalForPeriod,
                                   currency: currency,
-                                  existingBudget: stats.budget,
                                 ),
+                              ),
+                              const SizedBox(
+                                height: AppSizing.spaceBtwItems,
+                              ),
+                              BudgetTipsWidget(
+                                budget: stats.budget!,
+                                period: _periodOrDefault(),
+                                totalForPeriod: stats.totalForPeriod,
+                                currency: currency,
                               ),
                               const SizedBox(
                                 height: AppSizing.spaceBtwSections,
@@ -84,24 +109,51 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
     );
   }
 
+  void _showBudgetDetailsSheet({
+    required BudgetModel budget,
+    required double totalForPeriod,
+    required Currency currency,
+  }) {
+    final period = _periodOrDefault();
+    BudgetDetailsSheet.show(
+      context,
+      budget: budget,
+      totalForPeriod: totalForPeriod,
+      currency: currency,
+      period: period,
+      onEdit: () => _showBudgetSheet(
+        currency: currency,
+        existingBudget: budget,
+      ),
+    );
+  }
+
   void _showBudgetSheet({
     required Currency currency,
     BudgetModel? existingBudget,
   }) {
-    AmountFormModalSheet.show(
+    BudgetFormModalSheet.show(
       context,
       initialAmount: existingBudget?.amount,
-      enableCalculator: true,
+      initialType: existingBudget?.type ?? BudgetType.monthly,
       saveLabel: 'Save',
-      title: 'Edit budget',
-      onSave: (amount) {
+      title: existingBudget != null ? 'Edit budget' : 'Create budget',
+      onSave: (amount, type) {
         if (existingBudget != null) {
           context.read<BudgetCubit>().updateBudget(
-            budget: BudgetModel(id: existingBudget.id, amount: amount),
+            budget: BudgetModel(
+              id: existingBudget.id,
+              amount: amount,
+              type: type,
+            ),
           );
         } else {
           context.read<BudgetCubit>().createBudget(
-            budget: BudgetModel(id: '', amount: amount),
+            budget: BudgetModel(
+              id: '',
+              amount: amount,
+              type: type,
+            ),
           );
         }
       },

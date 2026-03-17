@@ -8,39 +8,44 @@ class BudgetDonutStatWidget extends StatelessWidget {
   const BudgetDonutStatWidget({
     super.key,
     required this.budget,
+    required this.period,
     required this.totalForPeriod,
     required this.currency,
-    required this.onEditBudgetPressed,
+    required this.onBudgetTap,
   });
 
   final BudgetModel budget;
+  final DatePickerPeriod period;
   final double totalForPeriod;
   final Currency currency;
-  final VoidCallback onEditBudgetPressed;
+  final VoidCallback onBudgetTap;
 
   @override
   Widget build(BuildContext context) {
     final formatter = CurrencyFormatter(currency);
     final colorScheme = Theme.of(context).colorScheme;
+    final budgetForPeriod =
+        BudgetDisplayUtils.budgetForDisplayPeriod(budget, period);
 
     final chartData = BudgetChartData.from(
-      budget: budget.amount,
+      budget: budgetForPeriod,
       spent: totalForPeriod,
       colorScheme: colorScheme,
     );
 
-    final exceeded = totalForPeriod > budget.amount;
-    final remainingPercent =
-        ((budget.amount - totalForPeriod) / budget.amount * 100)
+    final exceeded = totalForPeriod > budgetForPeriod;
+    final remainingPercent = budgetForPeriod > 0
+        ? ((budgetForPeriod - totalForPeriod) / budgetForPeriod * 100)
             .clamp(0, 100)
-            .toStringAsFixed(0);
+            .toStringAsFixed(0)
+        : '0';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
-          onTap: onEditBudgetPressed,
+          onTap: onBudgetTap,
           child: Center(
             child: DonutChart(
               size: 300,
@@ -90,18 +95,10 @@ class BudgetDonutStatWidget extends StatelessWidget {
             ),
             _StatColumn(
               label: 'Budget',
-              value: budget.amount,
+              value: budgetForPeriod,
             ),
           ],
         ),
-        // PrimaryButton(
-        //   text: 'Edit budget',
-        //   size: PrimaryButtonSize.xSmall,
-        //   rounded: true,
-        //   backgroundColor: Colors.transparent,
-        //   foregroundColor: colorScheme.primary,
-        //   onPressed: onEditBudgetPressed,
-        // ),
       ],
     );
   }

@@ -14,6 +14,12 @@ sealed class DatePickerPeriod {
 
   /// Ключи периодов для тренда (например, месяцы). Для аналитики.
   List<String> get periodKeysForTrend;
+
+  /// Начало периода как [DateTime].
+  DateTime get startDate;
+
+  /// Конец периода как [DateTime].
+  DateTime get endDate;
 }
 
 /// Выбран год.
@@ -33,6 +39,12 @@ final class YearlyPeriod extends DatePickerPeriod {
         12,
         (i) => DateTime(year, i + 1, 1).periodKey,
       );
+
+  @override
+  DateTime get startDate => DateTime(year, 1, 1);
+
+  @override
+  DateTime get endDate => DateTime(year, 12, 31);
 }
 
 /// Выбран месяц.
@@ -56,6 +68,12 @@ final class MonthlyPeriod extends DatePickerPeriod {
 
   @override
   List<String> get periodKeysForTrend => [DateTime(year, month.value, 1).periodKey];
+
+  @override
+  DateTime get startDate => DateTime(year, month.value, 1);
+
+  @override
+  DateTime get endDate => DateTime(year, month.value + 1, 0, 23, 59, 59);
 }
 
 /// Выбрана неделя (понедельник — воскресенье).
@@ -73,4 +91,10 @@ final class WeeklyPeriod extends DatePickerPeriod {
 
   @override
   List<String> get periodKeysForTrend => [start.periodKey];
+
+  @override
+  DateTime get startDate => start;
+
+  @override
+  DateTime get endDate => end;
 }

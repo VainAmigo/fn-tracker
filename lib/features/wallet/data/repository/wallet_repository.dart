@@ -3,9 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 
-class WalletRepository
-    with FirestoreUserContext
-    implements WalletRepoImpl {
+class WalletRepository with FirestoreUserContext implements WalletRepoImpl {
   WalletRepository({TransactionsRepository? transactionsRepo})
     : _transactionsRepo = transactionsRepo ?? TransactionsRepositoryImpl();
 
@@ -149,19 +147,6 @@ class WalletRepository
   }
 
   @override
-  Future<BudgetModel?> getBudget() async {
-    final uid = requireUid();
-    try {
-      final snapshot = await _budgetsRef(uid).get();
-      if (snapshot.docs.isEmpty) return null;
-      final doc = snapshot.docs.first;
-      return BudgetModel.fromJson({...doc.data(), 'id': doc.id});
-    } catch (e) {
-      throw Exception('Failed to get budget: $e');
-    }
-  }
-
-  @override
   Future<BudgetStatModel> getBudgetStats({
     required String startDayKey,
     required String endDayKey,
@@ -244,9 +229,17 @@ class WalletRepository
     try {
       final docRef = _budgetsRef(uid).doc();
       await docRef.set(
-        BudgetModel(id: docRef.id, amount: budget.amount).toJson(),
+        BudgetModel(
+          id: docRef.id,
+          amount: budget.amount,
+          type: budget.type,
+        ).toJson(),
       );
-      return BudgetModel(id: docRef.id, amount: budget.amount);
+      return BudgetModel(
+        id: docRef.id,
+        amount: budget.amount,
+        type: budget.type,
+      );
     } catch (e) {
       throw Exception('Failed to create budget: $e');
     }
