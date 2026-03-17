@@ -12,4 +12,3 @@ export 'app_groups/category_color_palettes.dart';
 export 'app_groups/category_icon_groups.dart';
 export 'seed/default_data_seeder.dart';
 export 'seed/default_seed_data.dart';
-export 'notifications/notification_service.dart';
