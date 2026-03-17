@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
-import 'package:fn_tracker/features/wallet/data/models/scheduled_payment_model.dart';
-import 'package:fn_tracker/features/wallet/presentation/scheduled_payments/scheduled_payments.dart';
-import '../widgets/scheduled_payment_card.dart';
-import '../widgets/scheduled_payment_details_sheet.dart';
-import '../widgets/scheduled_payments_calendar_view.dart';
 
 enum _ScheduledPaymentsTab { subscriptions, regular, regularIncome }
 
