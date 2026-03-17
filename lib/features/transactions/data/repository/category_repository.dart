@@ -1,26 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 
-class CategoryRepository implements CategoryRepoImpl {
+class CategoryRepository
+    with FirestoreUserContext
+    implements CategoryRepoImpl {
+  @override
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-  String _requireUid() {
-    final user = firebaseAuth.currentUser;
-    if (user == null) {
-      throw Exception('User is not authenticated');
-    }
-    return user.uid;
-  }
-
   CollectionReference<Map<String, dynamic>> _categoriesRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('categories');
+      FirestorePaths.categoriesRef(firebaseFirestore, uid);
 
   @override
   Future<List<CategoryModel>> getUserCategories() async {
     try {
-      final uid = _requireUid();
+      final uid = requireUid();
 
       final categoriesSnapshot = await _categoriesRef(
         uid,
@@ -36,7 +32,7 @@ class CategoryRepository implements CategoryRepoImpl {
 
   @override
   Future<CategoryModel> addCategory({CategoryModel? category}) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final now = Timestamp.now();
       final docRef = _categoriesRef(uid).doc();
@@ -69,7 +65,7 @@ class CategoryRepository implements CategoryRepoImpl {
   Future<CategoryModel> updateCategory({
     required CategoryModel category,
   }) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final docRef = _categoriesRef(uid).doc(category.categoryId);
 
@@ -92,7 +88,7 @@ class CategoryRepository implements CategoryRepoImpl {
 
   @override
   Future<void> deleteCategory({required String categoryId}) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       await _categoriesRef(uid).doc(categoryId).delete();
     } catch (e) {

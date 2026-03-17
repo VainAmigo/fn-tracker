@@ -1,4 +1,6 @@
 export 'app_router/app_router.dart';
+export 'firestore/firestore.dart';
+export 'utils/bloc_state_extractors.dart';
 export 'utils/auth_validation_utils.dart';
 export 'utils/card_radius_utils.dart';
 export 'utils/amount_formatter.dart';

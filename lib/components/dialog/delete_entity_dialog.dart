@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fn_tracker/l10n/generated/app_localizations.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Результат выбора в диалоге удаления сущности (цель, кошелёк).
@@ -18,27 +19,29 @@ Future<DeleteEntityResult?> showDeleteEntityDialog(
   required String title,
   String? message,
 }) {
+  final l10n = AppLocalizations.of(context);
   return showDialog<DeleteEntityResult>(
     context: context,
     builder: (context) {
       final colorScheme = Theme.of(context).colorScheme;
+      final content = '${message != null ? '$message\n\n' : ''}'
+          '${l10n.deleteEntityPartialHint}\n\n'
+          '${l10n.deleteEntityFullHint}';
       return AlertDialog(
         title: Text(title),
         content: Text(
-          '${message != null ? '$message\n\n' : ''}'
-          'Удалить частично — удалить цель/кошелёк, транзакции сохранятся.\n\n'
-          'Удалить полностью — удалить вместе со всеми связанными транзакциями.',
+          content,
           style: AppTextStyles.text14w400(context),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(DeleteEntityResult.cancel),
-            child: const Text('Отмена'),
+            child: Text(l10n.deleteEntityCancel),
           ),
           TextButton(
             onPressed: () =>
                 Navigator.of(context).pop(DeleteEntityResult.deletePartial),
-            child: const Text('Удалить частично'),
+            child: Text(l10n.deleteEntityPartial),
           ),
           FilledButton(
             onPressed: () =>
@@ -46,7 +49,7 @@ Future<DeleteEntityResult?> showDeleteEntityDialog(
             style: FilledButton.styleFrom(
               backgroundColor: colorScheme.error,
             ),
-            child: const Text('Удалить полностью'),
+            child: Text(l10n.deleteEntityFull),
           ),
         ],
       );

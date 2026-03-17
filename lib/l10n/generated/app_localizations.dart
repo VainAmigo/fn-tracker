@@ -369,6 +369,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Income'**
   String get income;
+
+  /// No description provided for @deleteEntityCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get deleteEntityCancel;
+
+  /// No description provided for @deleteEntityPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete partially'**
+  String get deleteEntityPartial;
+
+  /// No description provided for @deleteEntityFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete fully'**
+  String get deleteEntityFull;
+
+  /// No description provided for @deleteEntityPartialHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete partially — remove the goal/wallet, transactions will be preserved.'**
+  String get deleteEntityPartialHint;
+
+  /// No description provided for @deleteEntityFullHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete fully — remove together with all related transactions.'**
+  String get deleteEntityFullHint;
+
+  /// No description provided for @noTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions'**
+  String get noTransactions;
+
+  /// No description provided for @noTransactionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no transactions yet'**
+  String get noTransactionsSubtitle;
+
+  /// No description provided for @unknownCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown category'**
+  String get unknownCategory;
+
+  /// No description provided for @goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get goal;
+
+  /// No description provided for @category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get category;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @from.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get from;
+
+  /// No description provided for @to.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get to;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @addNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Add note'**
+  String get addNote;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @takeFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Take from'**
+  String get takeFrom;
+
+  /// No description provided for @addTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to'**
+  String get addTo;
+
+  /// No description provided for @transferFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer from'**
+  String get transferFrom;
+
+  /// No description provided for @transferTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer to'**
+  String get transferTo;
 }
 
 class _AppLocalizationsDelegate

@@ -4,8 +4,8 @@ import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-class TransactionsListByidView extends StatefulWidget {
-  const TransactionsListByidView({
+class TransactionsListByIdView extends StatefulWidget {
+  const TransactionsListByIdView({
     super.key,
     required this.idType,
     required this.id,
@@ -15,11 +15,11 @@ class TransactionsListByidView extends StatefulWidget {
   final String id;
 
   @override
-  State<TransactionsListByidView> createState() =>
-      _TransactionsListByidViewState();
+  State<TransactionsListByIdView> createState() =>
+      _TransactionsListByIdViewState();
 }
 
-class _TransactionsListByidViewState extends State<TransactionsListByidView> {
+class _TransactionsListByIdViewState extends State<TransactionsListByIdView> {
   TransactionPeriod _selectedPeriod = TransactionPeriod.month;
 
   @override

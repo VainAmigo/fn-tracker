@@ -142,4 +142,72 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get income => 'Доход';
+
+  @override
+  String get deleteEntityCancel => 'Отмена';
+
+  @override
+  String get deleteEntityPartial => 'Удалить частично';
+
+  @override
+  String get deleteEntityFull => 'Удалить полностью';
+
+  @override
+  String get deleteEntityPartialHint =>
+      'Удалить частично — удалить цель/кошелёк, транзакции сохранятся.';
+
+  @override
+  String get deleteEntityFullHint =>
+      'Удалить полностью — удалить вместе со всеми связанными транзакциями.';
+
+  @override
+  String get noTransactions => 'Нет транзакций';
+
+  @override
+  String get noTransactionsSubtitle => 'У вас пока нет транзакций';
+
+  @override
+  String get unknownCategory => 'Неизвестная категория';
+
+  @override
+  String get goal => 'Цель';
+
+  @override
+  String get category => 'Категория';
+
+  @override
+  String get description => 'Описание';
+
+  @override
+  String get date => 'Дата';
+
+  @override
+  String get from => 'Откуда';
+
+  @override
+  String get to => 'Куда';
+
+  @override
+  String get today => 'Сегодня';
+
+  @override
+  String get yesterday => 'Вчера';
+
+  @override
+  String get addNote => 'Добавить заметку';
+
+  @override
+  String get save => 'Сохранить';
+
+  @override
+  String get takeFrom => 'Списать с';
+
+  @override
+  String get addTo => 'Добавить в';
+
+  @override
+  String get transferFrom => 'Перевести из';
+
+  @override
+  String get transferTo => 'Перевести в';
 }

@@ -73,7 +73,7 @@ final class AppRouter {
         settings: const RouteSettings(name: transactionsById),
         builder: (_) {
           final args = settings.arguments as Map<String, dynamic>;
-          return TransactionsListByidView(
+          return TransactionsListByIdView(
             idType: args['idType'] as TransactionIdType,
             id: args['id'] as String,
           );

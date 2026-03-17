@@ -1,21 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 
-class TransactionsRepositoryImpl implements TransactionsRepository {
+class TransactionsRepositoryImpl
+    with FirestoreUserContext
+    implements TransactionsRepository {
+  @override
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-  String _requireUid() {
-    final user = firebaseAuth.currentUser;
-    if (user == null) {
-      throw Exception('User is not authenticated');
-    }
-    return user.uid;
-  }
-
   CollectionReference<Map<String, dynamic>> _transactionsRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('transactions');
+      FirestorePaths.transactionsRef(firebaseFirestore, uid);
 
   @override
   Future<List<TransactionModel>> getUserTransactionsByPeriod({
@@ -23,7 +19,7 @@ class TransactionsRepositoryImpl implements TransactionsRepository {
     required String end,
   }) async {
     try {
-      final uid = _requireUid();
+      final uid = requireUid();
 
       final transactionsSnapshot = await _transactionsRef(uid)
           .where('dayKey', isGreaterThanOrEqualTo: start)
@@ -46,7 +42,7 @@ class TransactionsRepositoryImpl implements TransactionsRepository {
     required String id,
     required TransactionIdType idType,
   }) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     final idFieldName = switch (idType) {
       TransactionIdType.category => 'categoryId',
       TransactionIdType.wallet => 'walletId',
@@ -73,7 +69,7 @@ class TransactionsRepositoryImpl implements TransactionsRepository {
   Future<TransactionModel> addTransaction({
     required TransactionModel transaction,
   }) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final createdAt = Timestamp.now();
       final docRef = _transactionsRef(uid).doc();
@@ -120,7 +116,7 @@ class TransactionsRepositoryImpl implements TransactionsRepository {
 
   @override
   Future<void> deleteTransaction({required String id}) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       await _transactionsRef(uid).doc(id).delete();
     } catch (e) {
@@ -131,7 +127,7 @@ class TransactionsRepositoryImpl implements TransactionsRepository {
   @override
   Future<void> deleteTransactionsByWalletId(String walletId) async {
     if (walletId.isEmpty) return;
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final allSnapshot = await _transactionsRef(uid).get();
       final toDelete = <DocumentReference<Map<String, dynamic>>>[];
@@ -172,7 +168,7 @@ class TransactionsRepositoryImpl implements TransactionsRepository {
   @override
   Future<void> deleteTransactionsByGoalId(String goalId) async {
     if (goalId.isEmpty) return;
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final allSnapshot = await _transactionsRef(uid).get();
       final toDelete = <DocumentReference<Map<String, dynamic>>>[];
@@ -216,7 +212,7 @@ class TransactionsRepositoryImpl implements TransactionsRepository {
     required String endDayKey,
   }) async {
     try {
-      final uid = _requireUid();
+      final uid = requireUid();
       final snapshot = await _transactionsRef(uid)
           .where('dayKey', isGreaterThanOrEqualTo: startDayKey)
           .where('dayKey', isLessThanOrEqualTo: endDayKey)

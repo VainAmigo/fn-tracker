@@ -1,47 +1,40 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 
-class WalletRepository implements WalletRepoImpl {
+class WalletRepository
+    with FirestoreUserContext
+    implements WalletRepoImpl {
   WalletRepository({TransactionsRepository? transactionsRepo})
     : _transactionsRepo = transactionsRepo ?? TransactionsRepositoryImpl();
 
+  @override
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final TransactionsRepository _transactionsRepo;
 
-  String _requireUid() {
-    final user = firebaseAuth.currentUser;
-    if (user == null) {
-      throw Exception('User is not authenticated');
-    }
-    return user.uid;
-  }
-
   CollectionReference<Map<String, dynamic>> _budgetsRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('budget');
+      FirestorePaths.budgetRef(firebaseFirestore, uid);
 
   CollectionReference<Map<String, dynamic>> _transactionsRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('transactions');
+      FirestorePaths.transactionsRef(firebaseFirestore, uid);
 
   CollectionReference<Map<String, dynamic>> _categoriesRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('categories');
+      FirestorePaths.categoriesRef(firebaseFirestore, uid);
 
   CollectionReference<Map<String, dynamic>> _walletsRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('wallets');
+      FirestorePaths.walletsRef(firebaseFirestore, uid);
 
   CollectionReference<Map<String, dynamic>> _goalsRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('goals');
+      FirestorePaths.goalsRef(firebaseFirestore, uid);
 
   CollectionReference<Map<String, dynamic>> _scheduledPaymentsRef(String uid) =>
-      firebaseFirestore
-          .collection('users')
-          .doc(uid)
-          .collection('scheduled_payments');
+      FirestorePaths.scheduledPaymentsRef(firebaseFirestore, uid);
 
   @override
   Future<WalletModel> addWallet({required WalletModel wallet}) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final existing = await _walletsRef(uid).get();
       final isFirst = existing.docs.isEmpty;
@@ -57,7 +50,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<WalletModel> updateWallet({required WalletModel wallet}) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       if (wallet.isDefault) {
         await setDefaultWallet(wallet.id!);
@@ -75,7 +68,7 @@ class WalletRepository implements WalletRepoImpl {
     String id, {
     required bool deleteTransactions,
   }) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       if (deleteTransactions) {
         await _transactionsRepo.deleteTransactionsByWalletId(id);
@@ -98,7 +91,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<void> setDefaultWallet(String walletId) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final snapshot = await _walletsRef(uid).get();
       final batch = firebaseFirestore.batch();
@@ -113,7 +106,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<List<WalletModel>> getWallets() async {
-    final uid = _requireUid();
+    final uid = requireUid();
 
     try {
       final results = await Future.wait([
@@ -157,7 +150,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<BudgetModel?> getBudget() async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final snapshot = await _budgetsRef(uid).get();
       if (snapshot.docs.isEmpty) return null;
@@ -173,7 +166,7 @@ class WalletRepository implements WalletRepoImpl {
     required String startDayKey,
     required String endDayKey,
   }) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final results = await Future.wait([
         _budgetsRef(uid).get(),
@@ -247,7 +240,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<BudgetModel> createBudget({required BudgetModel budget}) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final docRef = _budgetsRef(uid).doc();
       await docRef.set(
@@ -261,7 +254,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<BudgetModel> updateBudget({required BudgetModel budget}) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final docRef = _budgetsRef(uid).doc(budget.id);
       await docRef.update(budget.toJson());
@@ -273,7 +266,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<void> deleteBudget(String id) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       await _budgetsRef(uid).doc(id).delete();
     } catch (e) {
@@ -283,7 +276,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<GoalsModel> getGoals() async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final results = await Future.wait([
         _goalsRef(uid).get(),
@@ -331,7 +324,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<GoalModel> createGoal({required GoalModel goal}) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final docRef = _goalsRef(uid).doc();
       final created = goal.copyWith(id: docRef.id);
@@ -344,7 +337,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<GoalModel> updateGoal({required GoalModel goal}) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final docRef = _goalsRef(uid).doc(goal.id);
       await docRef.update(goal.toJson());
@@ -356,7 +349,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<void> deleteGoal(String id, {required bool deleteTransactions}) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       if (deleteTransactions) {
         await _transactionsRepo.deleteTransactionsByGoalId(id);
@@ -369,7 +362,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<List<ScheduledPaymentModel>> getScheduledPayments() async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final snapshot = await _scheduledPaymentsRef(uid).get();
       final models = <ScheduledPaymentModel>[];
@@ -401,7 +394,7 @@ class WalletRepository implements WalletRepoImpl {
   Future<ScheduledPaymentModel> createScheduledPayment({
     required ScheduledPaymentModel payment,
   }) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final docRef = _scheduledPaymentsRef(uid).doc();
       final now = DateTime.now();
@@ -428,7 +421,7 @@ class WalletRepository implements WalletRepoImpl {
   Future<ScheduledPaymentModel> updateScheduledPayment({
     required ScheduledPaymentModel payment,
   }) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       final nextDate = ScheduledPaymentDateService.calculateNextDate(
         frequency: payment.frequency,
@@ -449,7 +442,7 @@ class WalletRepository implements WalletRepoImpl {
 
   @override
   Future<void> deleteScheduledPayment(String id) async {
-    final uid = _requireUid();
+    final uid = requireUid();
     try {
       await _scheduledPaymentsRef(uid).doc(id).delete();
     } catch (e) {

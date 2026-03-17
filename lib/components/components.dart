@@ -3,6 +3,7 @@ export 'amount_input/amount_input_widget.dart';
 export 'amount_input/amount_keyboard.dart';
 export 'amount_input/amount_input_modal_sheet.dart';
 export 'cards/empty_card_widget.dart';
+export 'cards/empty_transactions_widget.dart';
 export 'dialog/app_bottom_sheets.dart';
 export 'dialog/delete_entity_dialog.dart';
 export 'navigation/app_bottom_nav.dart';

@@ -1,40 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 
-class AnalyticsRepository implements AnalyticsRepoImpl {
+class AnalyticsRepository
+    with FirestoreUserContext
+    implements AnalyticsRepoImpl {
+  @override
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-  String _requireUid() {
-    final user = firebaseAuth.currentUser;
-    if (user == null) {
-      throw Exception('User is not authenticated');
-    }
-    return user.uid;
-  }
-
   CollectionReference<Map<String, dynamic>> _transactionsRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('transactions');
+      FirestorePaths.transactionsRef(firebaseFirestore, uid);
 
   CollectionReference<Map<String, dynamic>> _categoriesRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('categories');
+      FirestorePaths.categoriesRef(firebaseFirestore, uid);
 
   CollectionReference<Map<String, dynamic>> _budgetsRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('budget');
+      FirestorePaths.budgetRef(firebaseFirestore, uid);
 
   CollectionReference<Map<String, dynamic>> _walletsRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('wallets');
+      FirestorePaths.walletsRef(firebaseFirestore, uid);
 
   CollectionReference<Map<String, dynamic>> _goalsRef(String uid) =>
-      firebaseFirestore.collection('users').doc(uid).collection('goals');
+      FirestorePaths.goalsRef(firebaseFirestore, uid);
 
   @override
   Future<AnalyticsPeriodModel> getAnalytics({
     required String startDayKey,
     required String endDayKey,
   }) async {
-    final uid = _requireUid();
+    final uid = requireUid();
 
     final results = await Future.wait([
       _transactionsRef(uid)

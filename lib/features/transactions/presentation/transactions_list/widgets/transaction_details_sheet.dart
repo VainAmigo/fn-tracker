@@ -25,11 +25,11 @@ class TransactionDetailsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categoriesState = context.watch<CategoriesCubit>().state;
-    final categories = _extractCategories(categoriesState);
+    final categories = BlocStateExtractors.extractCategories(categoriesState);
     final categoryMap = {for (final c in categories) c.categoryId: c};
-    final goals = _extractGoals(context.watch<GoalsCubit>().state);
+    final goals = BlocStateExtractors.extractGoals(context.watch<GoalsCubit>().state);
     final goalMap = {for (final g in goals) g.id: g};
-    final wallets = _extractWallets(context.watch<WalletCubit>().state);
+    final wallets = BlocStateExtractors.extractWallets(context.watch<WalletCubit>().state);
     final walletMap = {
       for (final w in wallets)
         if (w.id != null) w.id!: w,
@@ -145,26 +145,6 @@ class TransactionDetailsSheet extends StatelessWidget {
     );
   }
 
-  List<CategoryModel> _extractCategories(CategoriesState state) {
-    return switch (state) {
-      CategoriesLoaded s => s.categories,
-      _ => const [],
-    };
-  }
-
-  List<GoalModel> _extractGoals(GoalsState state) {
-    return switch (state) {
-      GoalsLoaded s => s.goalsModel.goals,
-      _ => const [],
-    };
-  }
-
-  List<WalletModel> _extractWallets(WalletsState state) {
-    return switch (state) {
-      WalletsLoaded s => s.wallets,
-      _ => const [],
-    };
-  }
 }
 
 Widget _detailLeading(
