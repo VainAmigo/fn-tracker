@@ -1,13 +1,70 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 part 'scheduled_payments_state.dart';
 
-class ScheduledPaymentsCubit extends Cubit<ScheduledPaymentsState> {
+class ScheduledPaymentsCubit extends HydratedCubit<ScheduledPaymentsState> {
   ScheduledPaymentsCubit({required this.walletRepo})
-    : super(ScheduledPaymentsInitial());
+      : super(ScheduledPaymentsInitial());
 
   final WalletRepoImpl walletRepo;
+
+  @override
+  String get storagePrefix => 'ScheduledPaymentsCubit';
+
+  @override
+  ScheduledPaymentsState? fromJson(Map<String, dynamic> json) {
+    final type = json['_type'] as String?;
+    if (type == 'loaded') {
+      final payments = (json['payments'] as List)
+          .map((e) => ScheduledPaymentModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+      return ScheduledPaymentsLoaded(payments: payments);
+    }
+    return null;
+  }
+
+  @override
+  Map<String, dynamic>? toJson(ScheduledPaymentsState state) {
+    if (state is ScheduledPaymentsLoading ||
+        state is ScheduledPaymentsInitial ||
+        state is ScheduledPaymentsError) {
+      return null; // Do not persist — keep previous cached state
+    }
+    if (state is ScheduledPaymentsLoaded) {
+      return {
+        '_type': 'loaded',
+        'payments': state.payments.map(_paymentToJson).toList(),
+      };
+    }
+    return null;
+  }
+
+  Map<String, dynamic> _paymentToJson(ScheduledPaymentModel p) {
+    return {
+      'id': p.id,
+      'name': p.name,
+      'amount': p.amount,
+      'nextDate': p.nextDate.toIso8601String(),
+      'iconId': p.iconId,
+      'colorId': p.colorId,
+      'type': p.type.toJson(),
+      'frequency': p.frequency.toJson(),
+      'frequencyInterval': p.frequencyInterval,
+      'autoCreateTransaction': p.autoCreateTransaction,
+      'isPaused': p.isPaused,
+      'walletId': p.walletId,
+      'goalId': p.goalId,
+      'categoryId': p.categoryId,
+      'paymentDate': p.paymentDate?.toIso8601String(),
+      'monthDays': p.monthDays,
+      'yearlyDates': p.yearlyDates,
+      'createdAt': p.createdAt?.toIso8601String(),
+      'updatedAt': p.updatedAt?.toIso8601String(),
+    };
+  }
+
+  void clearForLogout() => emit(ScheduledPaymentsInitial());
 
   Future<void> loadPayments() async {
     emit(ScheduledPaymentsLoading());

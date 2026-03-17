@@ -115,6 +115,7 @@ class _AppViewState extends State<AppView> {
             context.read<GoalsCubit>().clearForLogout();
             context.read<CategoriesCubit>().clearForLogout();
             context.read<QuickCategoriesSettingsCubit>().clearForLogout();
+            context.read<ScheduledPaymentsCubit>().clearForLogout();
           },
           child: const FnTracker(),
         ),
