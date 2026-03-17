@@ -5,7 +5,7 @@ part 'scheduled_payments_state.dart';
 
 class ScheduledPaymentsCubit extends Cubit<ScheduledPaymentsState> {
   ScheduledPaymentsCubit({required this.walletRepo})
-      : super(ScheduledPaymentsInitial());
+    : super(ScheduledPaymentsInitial());
 
   final WalletRepoImpl walletRepo;
 
@@ -20,41 +20,50 @@ class ScheduledPaymentsCubit extends Cubit<ScheduledPaymentsState> {
   }
 
   Future<void> createPayment(ScheduledPaymentModel payment) async {
-    final current = state;
-    if (current is! ScheduledPaymentsLoaded) return;
     try {
       final created = await walletRepo.createScheduledPayment(payment: payment);
-      emit(ScheduledPaymentsLoaded(
-        payments: [created, ...current.payments],
-      ));
+      final current = state;
+      if (current is ScheduledPaymentsLoaded) {
+        emit(ScheduledPaymentsLoaded(payments: [created, ...current.payments]));
+      } else {
+        emit(ScheduledPaymentsLoaded(payments: [created]));
+      }
     } catch (e) {
       emit(ScheduledPaymentsError(message: e.toString()));
     }
   }
 
   Future<void> updatePayment(ScheduledPaymentModel payment) async {
-    final current = state;
-    if (current is! ScheduledPaymentsLoaded) return;
     try {
       final updated = await walletRepo.updateScheduledPayment(payment: payment);
-      final list = current.payments.map((p) {
-        if (p.id == updated.id) return updated;
-        return p;
-      }).toList();
-      emit(ScheduledPaymentsLoaded(payments: list));
+      final current = state;
+      if (current is ScheduledPaymentsLoaded) {
+        final list = current.payments.map((p) {
+          if (p.id == updated.id) return updated;
+          return p;
+        }).toList();
+        emit(ScheduledPaymentsLoaded(payments: list));
+      } else {
+        emit(ScheduledPaymentsLoaded(payments: [updated]));
+      }
     } catch (e) {
       emit(ScheduledPaymentsError(message: e.toString()));
     }
   }
 
   Future<void> deletePayment(String id) async {
-    final current = state;
-    if (current is! ScheduledPaymentsLoaded) return;
     try {
       await walletRepo.deleteScheduledPayment(id);
-      emit(ScheduledPaymentsLoaded(
-        payments: current.payments.where((p) => p.id != id).toList(),
-      ));
+      final current = state;
+      if (current is ScheduledPaymentsLoaded) {
+        emit(
+          ScheduledPaymentsLoaded(
+            payments: current.payments.where((p) => p.id != id).toList(),
+          ),
+        );
+      } else {
+        emit(ScheduledPaymentsLoaded(payments: []));
+      }
     } catch (e) {
       emit(ScheduledPaymentsError(message: e.toString()));
     }
@@ -69,6 +78,6 @@ class ScheduledPaymentsCubit extends Cubit<ScheduledPaymentsState> {
 
   List<ScheduledPaymentModel> get currentPayments =>
       state is ScheduledPaymentsLoaded
-          ? (state as ScheduledPaymentsLoaded).payments
-          : [];
+      ? (state as ScheduledPaymentsLoaded).payments
+      : [];
 }

@@ -31,6 +31,7 @@ class _WalletViewState extends State<WalletView> {
       context.read<WalletCubit>().loadWallets(),
       context.read<GoalsCubit>().loadGoals(),
       context.read<CategoriesCubit>().loadCategories(),
+      context.read<ScheduledPaymentsCubit>().loadPayments(),
     ]);
   }
 

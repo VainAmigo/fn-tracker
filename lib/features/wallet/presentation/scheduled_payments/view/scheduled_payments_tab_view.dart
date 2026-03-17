@@ -29,6 +29,16 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
   int _calendarMonth = DateTime.now().month;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<ScheduledPaymentsCubit>().loadPayments();
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<ScheduledPaymentsCubit, ScheduledPaymentsState>(
       builder: (context, state) {
@@ -80,6 +90,7 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
                 initialYear: _calendarYear,
                 initialMonth: _calendarMonth,
                 onPeriodChange: _onPeriodChange,
+                showModeTabs: false,
                 child: ScheduledPaymentsCalendarView(
                   payments: payments,
                   selectedYear: _calendarYear,

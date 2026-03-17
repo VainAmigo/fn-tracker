@@ -93,6 +93,11 @@ class _AppViewState extends State<AppView> {
           create: (context) =>
               AnalyticsCubit(analyticsRepo: AnalyticsRepository()),
         ),
+        BlocProvider<ScheduledPaymentsCubit>(
+          create: (context) => ScheduledPaymentsCubit(
+            walletRepo: walletRepo,
+          ),
+        ),
       ],
       child: MultiProvider(
         providers: [

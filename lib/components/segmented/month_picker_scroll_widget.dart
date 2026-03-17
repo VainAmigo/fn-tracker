@@ -33,6 +33,7 @@ class MonthPickerScrollWidget extends StatefulWidget {
     this.initialMonth,
     this.initialMode = PickerMode.monthly,
     this.child,
+    this.showModeTabs = true,
   });
 
   /// Вызывается при смене выбранного периода (год / месяц / неделя).
@@ -49,6 +50,10 @@ class MonthPickerScrollWidget extends StatefulWidget {
 
   /// Контент под пикером. Поддерживает свайп влево/вправо для смены периода.
   final Widget? child;
+
+  /// Показывать табы Yearly/Monthly/Weekly. По умолчанию — true.
+  /// Если false — только скролл по месяцам (без переключения режимов).
+  final bool showModeTabs;
 
   @override
   State<MonthPickerScrollWidget> createState() =>
@@ -88,7 +93,7 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
   void initState() {
     super.initState();
     final now = DateTime.now();
-    _mode = widget.initialMode;
+    _mode = widget.showModeTabs ? widget.initialMode : PickerMode.monthly;
 
     // Yearly: от _startYear до now + 2 года
     _yearCount = _nowYear + 2 - _startYear + 1;
@@ -307,26 +312,30 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: widget.showModeTabs
+              ? MainAxisAlignment.spaceBetween
+              : MainAxisAlignment.start,
           children: [
-            Expanded(
-              child: CustomTabWidget<PickerMode>(
-                items: const [
-                  PickerMode.yearly,
-                  PickerMode.monthly,
-                  PickerMode.weekly,
-                ],
-                selectedValue: _mode,
-                onChanged: _onModeChanged,
-                labelBuilder: (mode) => switch (mode) {
-                  PickerMode.yearly => 'Yearly',
-                  PickerMode.monthly => 'Monthly',
-                  PickerMode.weekly => 'Weekly',
-                },
-                leftPadding: 0,
+            if (widget.showModeTabs)
+              Expanded(
+                child: CustomTabWidget<PickerMode>(
+                  items: const [
+                    PickerMode.yearly,
+                    PickerMode.monthly,
+                    PickerMode.weekly,
+                  ],
+                  selectedValue: _mode,
+                  onChanged: _onModeChanged,
+                  labelBuilder: (mode) => switch (mode) {
+                    PickerMode.yearly => 'Yearly',
+                    PickerMode.monthly => 'Monthly',
+                    PickerMode.weekly => 'Weekly',
+                  },
+                  leftPadding: 0,
+                ),
               ),
-            ),
-            const SizedBox(width: AppSizing.spaceBtwItems),
+            if (widget.showModeTabs)
+              const SizedBox(width: AppSizing.spaceBtwItems),
             Text(
               _headerLabel(context),
               style: AppTextStyles.text16w400(
@@ -380,11 +389,16 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
     );
   }
 
-  String _headerLabel(BuildContext context) => switch (_mode) {
-    PickerMode.yearly => '$_currentYear',
-    PickerMode.monthly => '${_currentMonthPair.$1}',
-    PickerMode.weekly => '${_currentMonthPair.$1}',
-  };
+  String _headerLabel(BuildContext context) {
+    if (!widget.showModeTabs && _mode == PickerMode.monthly) {
+      return '${Month.fromValue(_currentMonthPair.$2).localizedName(context)} ${_currentMonthPair.$1}';
+    }
+    return switch (_mode) {
+      PickerMode.yearly => '$_currentYear',
+      PickerMode.monthly => '${_currentMonthPair.$1}',
+      PickerMode.weekly => '${_currentMonthPair.$1}',
+    };
+  }
 
   String _itemLabel(BuildContext context, int index) {
     return switch (_mode) {
