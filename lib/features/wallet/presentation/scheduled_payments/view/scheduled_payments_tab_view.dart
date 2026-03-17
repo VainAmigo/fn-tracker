@@ -83,7 +83,7 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
               MonthPickerScrollWidget(
                 initialYear: _calendarYear,
                 initialMonth: _calendarMonth,
-                onDateChange: _onCalendarDateChange,
+                onPeriodChange: _onCalendarDateChange,
                 child: ScheduledPaymentsCalendarView(
                   payments: payments,
                   selectedYear: _calendarYear,
@@ -223,13 +223,18 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
     );
   }
 
-  void _onCalendarDateChange(Month month, int year) {
+  void _onCalendarDateChange(DatePickerPeriod period) {
+    final (year, month) = switch (period) {
+      YearlyPeriod(:final year) => (year, 1),
+      MonthlyPeriod(:final year, :final month) => (year, month.value),
+      WeeklyPeriod(:final start) => (start.year, start.month),
+    };
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (_calendarYear == year && _calendarMonth == month.value) return;
+      if (_calendarYear == year && _calendarMonth == month) return;
       setState(() {
         _calendarYear = year;
-        _calendarMonth = month.value;
+        _calendarMonth = month;
       });
     });
   }

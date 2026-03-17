@@ -111,9 +111,7 @@ final class AppRouter {
           name: updateScheduledPayment,
           arguments: settings.arguments,
         ),
-        builder: (_) => ScheduledPaymentFormView(
-          payment: settings.arguments as ScheduledPaymentModel?,
-        ),
+        builder: (_) => ScheduledPaymentFormView(),
       ),
       _ => throw Exception(
         'No builder specified for route named: [${settings.name}]',

@@ -9,7 +9,7 @@ class ScheduledPaymentAutoCreateService {
   });
 
   final WalletRepoImpl walletRepo;
-  final TransactionsRepoImpl transactionsRepo;
+  final TransactionsRepository transactionsRepo;
 
   /// Проверяет и создаёт транзакции для платежей с nextDate == сегодня.
   Future<void> checkAndCreateForToday() async {
@@ -27,7 +27,9 @@ class ScheduledPaymentAutoCreateService {
             : (payment.walletId != null && payment.categoryId != null);
         if (!canCreate) continue;
 
-        final nextDate = ScheduledPaymentDateService.computeNextDateForModel(payment);
+        final nextDate = ScheduledPaymentDateService.computeNextDateForModel(
+          payment,
+        );
         if (nextDate == null) continue;
 
         final nextDateKey = nextDate.dayKey;
