@@ -127,6 +127,9 @@ class CategorySegmentData {
 ///   currency: currency,
 /// )
 /// ```
+
+const double _defaultChartHeight = 250;
+
 class PeriodSegmentChart extends StatefulWidget {
   const PeriodSegmentChart({
     super.key,
@@ -134,12 +137,14 @@ class PeriodSegmentChart extends StatefulWidget {
     required this.currency,
     this.segmentWidth = AppSizing.heightM,
     this.segmentGap = AppSizing.spaceBtwItemsExtra,
-    this.chartHeight = 140,
+    this.chartHeight = _defaultChartHeight,
     this.barRadius = AppSizing.borderRadius4,
     this.segmentGapVertical = AppSizing.spaceBtwItemsExtra,
-    this.minSegmentHeight = 6,
+    this.minSegmentHeight = _defaultChartHeight * 0.02,
     this.inactiveBarColor,
     this.onSegmentTap,
+    this.animationDuration = const Duration(milliseconds: 800),
+    this.animationCurve = Curves.easeOutCubic,
   });
 
   final List<PeriodSegmentData> bars;
@@ -169,17 +174,35 @@ class PeriodSegmentChart extends StatefulWidget {
   /// Коллбэк при нажатии на сегмент (индекс).
   final ValueChanged<int>? onSegmentTap;
 
+  /// Длительность анимации появления.
+  final Duration animationDuration;
+
+  /// Кривая анимации.
+  final Curve animationCurve;
+
   @override
   State<PeriodSegmentChart> createState() => _PeriodSegmentChartState();
 }
 
-class _PeriodSegmentChartState extends State<PeriodSegmentChart> {
+class _PeriodSegmentChartState extends State<PeriodSegmentChart>
+    with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   int? _selectedIndex;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: widget.animationDuration,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: widget.animationCurve,
+    );
+    _animationController.forward();
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => _scrollToInitialVisible(),
     );
@@ -189,6 +212,7 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart> {
   void didUpdateWidget(covariant PeriodSegmentChart oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!listEquals(oldWidget.bars, widget.bars)) {
+      _animationController.forward(from: 0);
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => _scrollToInitialVisible(),
       );
@@ -215,6 +239,7 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart> {
 
   @override
   void dispose() {
+    _animationController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -236,63 +261,73 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart> {
       children: [
         SizedBox(
           height: widget.chartHeight + 56,
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: SizedBox(
-              width: contentWidth,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(widget.bars.length, (i) {
-                      final bar = widget.bars[i];
-                      final isSelected = _selectedIndex == i;
-                      final isLast = i == widget.bars.length - 1;
-                      final barWidth = isLast
-                          ? widget.segmentWidth
-                          : widget.segmentWidth + widget.segmentGap;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() => _selectedIndex = i);
-                          widget.onSegmentTap?.call(i);
-                        },
-                        child: SizedBox(
-                          width: barWidth,
-                          child: _ChartBar(
-                            bar: bar,
-                            isSelected: isSelected,
-                            segmentWidth: widget.segmentWidth,
-                            segmentGap: widget.segmentGap,
-                            chartHeight: widget.chartHeight,
-                            barRadius: widget.barRadius,
-                            segmentGapVertical: widget.segmentGapVertical,
-                            minSegmentHeight: widget.minSegmentHeight,
-                            inactiveColor: inactiveColor,
-                            currency: widget.currency,
-                            maxTotal: _maxTotal,
+          child: AnimatedBuilder(
+            animation: _animation,
+            builder: (context, _) => SingleChildScrollView(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 28),
+                child: SizedBox(
+                  width: contentWidth,
+                  child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(widget.bars.length, (i) {
+                        final bar = widget.bars[i];
+                        final isSelected = _selectedIndex == i;
+                        final isLast = i == widget.bars.length - 1;
+                        final barWidth = isLast
+                            ? widget.segmentWidth
+                            : widget.segmentWidth + widget.segmentGap;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() => _selectedIndex = i);
+                            widget.onSegmentTap?.call(i);
+                          },
+                          child: SizedBox(
+                            width: barWidth,
+                            child: _ChartBar(
+                              bar: bar,
+                              isSelected: isSelected,
+                              segmentWidth: widget.segmentWidth,
+                              segmentGap: widget.segmentGap,
+                              chartHeight: widget.chartHeight,
+                              barRadius: widget.barRadius,
+                              segmentGapVertical: widget.segmentGapVertical,
+                              minSegmentHeight: widget.minSegmentHeight,
+                              inactiveColor: inactiveColor,
+                              currency: widget.currency,
+                              maxTotal: _maxTotal,
+                              progress: _animation.value,
+                            ),
                           ),
-                        ),
-                      );
-                    }),
-                  ),
-                ],
+                        );
+                      }),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
+      ),
         if (_selectedIndex != null &&
             _selectedIndex! < widget.bars.length &&
-            widget.bars[_selectedIndex!].segments.isNotEmpty) ...[
-          _CategoryBreakdownList(
-            segments: widget.bars[_selectedIndex!].segments,
-            total: widget.bars[_selectedIndex!].total,
-            currency: widget.currency,
+            widget.bars[_selectedIndex!].segments.isNotEmpty)
+          AnimatedBuilder(
+            animation: _animation,
+            builder: (context, _) => _CategoryBreakdownList(
+              segments: widget.bars[_selectedIndex!].segments,
+              total: widget.bars[_selectedIndex!].total,
+              currency: widget.currency,
+              progress: _animation.value,
+            ),
           ),
-        ],
       ],
     );
   }
@@ -319,6 +354,7 @@ class _ChartBar extends StatelessWidget {
     required this.inactiveColor,
     required this.currency,
     required this.maxTotal,
+    this.progress = 1.0,
   });
 
   final PeriodSegmentData bar;
@@ -332,6 +368,7 @@ class _ChartBar extends StatelessWidget {
   final Color inactiveColor;
   final Currency currency;
   final double maxTotal;
+  final double progress;
 
   @override
   Widget build(BuildContext context) {
@@ -339,53 +376,63 @@ class _ChartBar extends StatelessWidget {
     final barHeight = maxTotal > 0 ? (bar.total / maxTotal) * chartHeight : 0.0;
     final radius = Radius.circular(barRadius);
 
+    final barWidget = isSelected && bar.segments.isNotEmpty
+        ? _StackedBar(
+            segments: bar.segments,
+            width: segmentWidth,
+            totalHeight: barHeight * progress,
+            total: bar.total,
+            maxTotal: maxTotal,
+            radius: radius,
+            segmentGap: segmentGapVertical,
+            minSegmentHeight: minSegmentHeight,
+            progress: progress,
+          )
+        : Container(
+            width: segmentWidth,
+            height: (barHeight * progress).clamp(4, chartHeight),
+            decoration: BoxDecoration(
+              color: inactiveColor,
+              borderRadius: BorderRadius.all(radius),
+            ),
+          );
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (isSelected && bar.total > 0)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: SizedBox(
-              width: segmentWidth + segmentGap,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  formatter.format(bar.total),
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ),
         SizedBox(
           width: segmentWidth,
           height: chartHeight,
-          child: Align(
+          child: Stack(
+            clipBehavior: Clip.none,
             alignment: Alignment.bottomCenter,
-            child: isSelected && bar.segments.isNotEmpty
-                ? _StackedBar(
-                    segments: bar.segments,
-                    width: segmentWidth,
-                    totalHeight: barHeight,
-                    total: bar.total,
-                    maxTotal: maxTotal,
-                    radius: radius,
-                    segmentGap: segmentGapVertical,
-                    minSegmentHeight: minSegmentHeight,
-                  )
-                : Container(
-                    width: segmentWidth,
-                    height: barHeight.clamp(4, chartHeight),
-                    decoration: BoxDecoration(
-                      color: inactiveColor,
-                      borderRadius: BorderRadius.all(radius),
+            children: [
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: barWidget,
+              ),
+              if (isSelected && bar.total > 0)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: barHeight * progress + 4,
+                  child: Center(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        formatter.format(bar.total),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
+                ),
+            ],
           ),
         ),
         const SizedBox(height: 6),
@@ -418,6 +465,7 @@ class _StackedBar extends StatelessWidget {
     required this.radius,
     required this.segmentGap,
     required this.minSegmentHeight,
+    this.progress = 1.0,
   });
 
   final List<CategorySegmentData> segments;
@@ -428,6 +476,7 @@ class _StackedBar extends StatelessWidget {
   final Radius radius;
   final double segmentGap;
   final double minSegmentHeight;
+  final double progress;
 
   List<double> _computeSegmentHeights(
     List<CategorySegmentData> validSegments,
@@ -437,7 +486,7 @@ class _StackedBar extends StatelessWidget {
     if (totalValue <= 0) return List.filled(validSegments.length, 0);
 
     final n = validSegments.length;
-    final heights = validSegments
+    var heights = validSegments
         .map((s) => (s.value / totalValue) * available)
         .toList();
 
@@ -461,6 +510,13 @@ class _StackedBar extends StatelessWidget {
       }
     }
 
+    var totalHeights = heights.fold<double>(0, (a, b) => a + b);
+    if (totalHeights > available && totalHeights > 0) {
+      final safeAvailable = math.max(0, available - 2);
+      final scale = safeAvailable / totalHeights;
+      heights = heights.map((h) => h * scale).toList();
+    }
+
     return heights;
   }
 
@@ -479,14 +535,15 @@ class _StackedBar extends StatelessWidget {
     return SizedBox(
       width: width,
       height: totalHeight.clamp(4, double.infinity),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
+      child: ClipRect(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
           for (var i = 0; i < validSegments.length; i++) ...[
             if (i > 0) SizedBox(height: segmentGap),
             Container(
               width: width,
-              height: heights[i].clamp(minSegmentHeight, double.infinity),
+              height: (heights[i] * progress).clamp(1, double.infinity),
               decoration: BoxDecoration(
                 color: validSegments[i].color,
                 borderRadius: BorderRadius.vertical(
@@ -497,6 +554,7 @@ class _StackedBar extends StatelessWidget {
             ),
           ],
         ],
+        ),
       ),
     );
   }
@@ -507,11 +565,13 @@ class _CategoryBreakdownList extends StatelessWidget {
     required this.segments,
     required this.total,
     required this.currency,
+    this.progress = 1.0,
   });
 
   final List<CategorySegmentData> segments;
   final double total;
   final Currency currency;
+  final double progress;
 
   @override
   Widget build(BuildContext context) {
@@ -534,6 +594,7 @@ class _CategoryBreakdownList extends StatelessWidget {
             maxValue: maxValue,
             formatter: formatter,
             colorScheme: colorScheme,
+            progress: progress,
           ),
         ],
       ],
@@ -547,6 +608,7 @@ class _CategoryBreakdownRow extends StatelessWidget {
     required this.maxValue,
     required this.formatter,
     required this.colorScheme,
+    this.progress = 1.0,
   });
 
   static const double _minBarWidth = 90;
@@ -557,13 +619,15 @@ class _CategoryBreakdownRow extends StatelessWidget {
   final double maxValue;
   final CurrencyFormatter formatter;
   final ColorScheme colorScheme;
+  final double progress;
 
   @override
   Widget build(BuildContext context) {
     final fraction = maxValue > 0
         ? (segment.value / maxValue).clamp(0.0, 1.0)
         : 0.0;
-    final barWidth = _minBarWidth + (_maxBarWidth - _minBarWidth) * fraction;
+    final barWidth = _minBarWidth +
+        (_maxBarWidth - _minBarWidth) * fraction * progress;
 
     return Row(
       children: [

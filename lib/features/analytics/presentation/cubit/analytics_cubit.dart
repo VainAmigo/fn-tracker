@@ -18,31 +18,11 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
   DatePickerPeriod? get currentPeriod => _currentPeriod;
 
   Future<void> loadAnalytics() async {
-    try {
-      emit(AnalyticsLoading());
-      final (:start, :end) = MonthRangeUtils.rangeFor(
-        _selectedYear,
-        Month.fromValue(_selectedMonth),
-      );
-      _currentPeriod = MonthlyPeriod(
-        year: _selectedYear,
-        month: Month.fromValue(_selectedMonth),
-      );
-
-      final data = await analyticsRepo.getAnalytics(
-        startDayKey: start.dayKey,
-        endDayKey: end.dayKey,
-      );
-      emit(AnalyticsLoaded(data: data, period: _currentPeriod));
-    } catch (e) {
-      emit(AnalyticsError(message: e.toString()));
-    }
-  }
-
-  Future<void> loadAnalyticsByMonth(Month month, int year) async {
-    _selectedYear = year;
-    _selectedMonth = month.value;
-    await loadAnalytics();
+    _currentPeriod = MonthlyPeriod(
+      year: _selectedYear,
+      month: Month.fromValue(_selectedMonth),
+    );
+    await _loadForPeriod(_currentPeriod!);
   }
 
   Future<void> loadAnalyticsByPeriod(DatePickerPeriod period) async {
@@ -61,11 +41,16 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
         _selectedMonth = start.month;
         break;
     }
+    await _loadForPeriod(period);
+  }
+
+  Future<void> _loadForPeriod(DatePickerPeriod period) async {
     try {
       emit(AnalyticsLoading());
       final data = await analyticsRepo.getAnalytics(
         startDayKey: period.startDayKey,
         endDayKey: period.endDayKey,
+        period: period,
       );
       emit(AnalyticsLoaded(data: data, period: period));
     } catch (e) {

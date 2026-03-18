@@ -40,30 +40,30 @@ class AnalyticsSpendingDonutWidget extends StatelessWidget {
 
     if (segments.isEmpty) return const SizedBox.shrink();
 
-    return TitledSection(
-      title: 'Категории',
-      children: [
-        Center(
-          child: DonutChart(
-            size: 300,
-            strokeWidth: 44,
-            segments: segments,
-            iconSize: 32,
-            minSegmentValue: totalExpense * 0.02,
-            trackColor: colorScheme.surface,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Всего', style: AppTextStyles.text16w400(context)),
-                AmountTextWidget(
-                  amount: totalExpense,
-                  style: AppTextStyles.text36w600(context),
-                ),
-              ],
+    return Center(
+      child: DonutChart(
+        size: 300,
+        strokeWidth: 44,
+        segments: segments,
+        iconSize: 32,
+        minSegmentValue: totalExpense * 0.02,
+        trackColor: colorScheme.surface,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'SPENT',
+              style: AppTextStyles.text12w400(context).copyWith(
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
             ),
-          ),
+            AmountTextWidget(
+              amount: totalExpense,
+              style: AppTextStyles.text36w600(context),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

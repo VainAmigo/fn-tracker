@@ -1,39 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-class AnalyticsContentWidget extends StatelessWidget {
-  const AnalyticsContentWidget({required this.data, this.period, super.key});
+class AnalyticsContentWidget extends StatefulWidget {
+  const AnalyticsContentWidget({
+    required this.data,
+    required this.period,
+    this.initialTabIndex = 0,
+    this.onTabChanged,
+    super.key,
+  });
 
-  final AnalyticsPeriodModel data;
-  final DatePickerPeriod? period;
+  final AnalyticsModel data;
+  final DatePickerPeriod period;
+  final int initialTabIndex;
+  final ValueChanged<int>? onTabChanged;
 
-  List<WeeklyBarData> _weeklyBarsFromData(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return data.weeklySpending
-        .map(
-          (d) => WeeklyBarData(
-            label: Weekday.fromValue(d.weekday).localizedShortName(context),
-            segments: d.categorySpending.where((s) => s.amount > 0).map((s) {
-              final shade = findShadeById(s.category.colorId);
-              final icon = findIconById(s.category.iconId);
-              final color = shade?.color ?? colorScheme.outline;
-              return BarChartSegment(
-                value: s.amount,
-                color: color,
-                icon: icon?.icon,
-              );
-            }).toList(),
-          ),
-        )
-        .toList();
+  @override
+  State<AnalyticsContentWidget> createState() => _AnalyticsContentWidgetState();
+}
+
+class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
+  late int _selectedTabIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTabIndex = widget.initialTabIndex;
+  }
+
+  @override
+  void didUpdateWidget(covariant AnalyticsContentWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialTabIndex != widget.initialTabIndex) {
+      _selectedTabIndex = widget.initialTabIndex;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isWeekly = period is WeeklyPeriod;
+    final currency = context.watch<CurrencyProvider>().currency;
+    final data = widget.data;
+
+    if (data.categorySpending.isEmpty &&
+        data.totalIncome == 0 &&
+        data.totalExpense == 0) {
+      return const AnalyticsEmptyPlaceholderWidget();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,36 +60,115 @@ class AnalyticsContentWidget extends StatelessWidget {
           balance: data.balance,
         ),
         const SizedBox(height: AppSizing.spaceBtwSections),
-        if (isWeekly) ...[
-          TitledSection(
-            title: 'По дням недели',
-            children: [
-              WeeklyStackedBarChart(
-                bars: _weeklyBarsFromData(context),
-                height: 220,
-              ),
-            ],
+        _buildTabBar(context),
+        const SizedBox(height: AppSizing.spaceBtwElements),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: _selectedTabIndex == 0
+              ? _DonutTabContent(
+                  key: const ValueKey('donut'),
+                  data: data,
+                  currency: currency,
+                )
+              : _BarTabContent(
+                  key: ValueKey('bar_${widget.period.startDayKey}'),
+                  data: data,
+                  currency: currency,
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTabBar(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final activeColor = colorScheme.tertiary;
+    final inactiveColor = colorScheme.onSurface.withValues(alpha: 0.5);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        IconButton(
+          onPressed: () {
+            setState(() => _selectedTabIndex = 0);
+            widget.onTabChanged?.call(0);
+          },
+          icon: Icon(
+            Icons.donut_large,
+            color: _selectedTabIndex == 0 ? activeColor : inactiveColor,
           ),
-          const SizedBox(height: AppSizing.spaceBtwSections),
-        ],
-        if (!isWeekly && data.categorySpending.isNotEmpty) ...[
+        ),
+        IconButton(
+          onPressed: () {
+            setState(() => _selectedTabIndex = 1);
+            widget.onTabChanged?.call(1);
+          },
+          icon: Icon(
+            Icons.bar_chart,
+            color: _selectedTabIndex == 1 ? activeColor : inactiveColor,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DonutTabContent extends StatelessWidget {
+  const _DonutTabContent({
+    super.key,
+    required this.data,
+    required this.currency,
+  });
+
+  final AnalyticsModel data;
+  final Currency currency;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (data.categorySpending.isNotEmpty) ...[
           AnalyticsSpendingDonutWidget(
             categorySpending: data.categorySpending,
             totalExpense: data.totalExpense,
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
-        ],
-        if (data.categorySpending.isNotEmpty) ...[
-          BudgetsSpendingCategoriesListWidget(
+          SpendingCategoriesListWidget(
             categorySpending: data.categorySpending,
+            currency: currency,
           ),
         ],
-        if (data.categorySpending.isEmpty &&
-            data.totalIncome == 0 &&
-            data.totalExpense == 0)
-          const AnalyticsEmptyPlaceholderWidget(),
-        const SizedBox(height: AppSizing.bottomPadding),
       ],
+    );
+  }
+}
+
+class _BarTabContent extends StatelessWidget {
+  const _BarTabContent({
+    super.key,
+    required this.data,
+    required this.currency,
+  });
+
+  final AnalyticsModel data;
+  final Currency currency;
+
+  @override
+  Widget build(BuildContext context) {
+    final bars = data.periodSegments
+        .map(
+          (s) => PeriodSegmentData.fromCategorySpendingList(
+            label: s.label,
+            categorySpending: s.categorySpending,
+            isInitialVisible: s.isInitialVisible,
+          ),
+        )
+        .toList();
+
+    return PeriodSegmentChart(
+      bars: bars,
+      currency: currency,
     );
   }
 }

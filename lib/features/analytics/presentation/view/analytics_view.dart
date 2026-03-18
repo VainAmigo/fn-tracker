@@ -12,6 +12,8 @@ class AnalyticsView extends StatefulWidget {
 }
 
 class _AnalyticsViewState extends State<AnalyticsView> {
+  int _selectedChartTabIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -36,11 +38,17 @@ class _AnalyticsViewState extends State<AnalyticsView> {
               slivers: [
                 SliverToBoxAdapter(
                   child: Text(
-                    'Analytics',
+                    'Analytics chart',
                     style: AppTextStyles.tabTitle(context),
                   ),
                 ),
-                SliverToBoxAdapter(child: _AnalyticsBody()),
+                SliverToBoxAdapter(
+                  child: _AnalyticsBody(
+                    selectedChartTabIndex: _selectedChartTabIndex,
+                    onChartTabChanged: (index) =>
+                        setState(() => _selectedChartTabIndex = index),
+                  ),
+                ),
               ],
             ),
           ),
@@ -51,6 +59,14 @@ class _AnalyticsViewState extends State<AnalyticsView> {
 }
 
 class _AnalyticsBody extends StatelessWidget {
+  const _AnalyticsBody({
+    required this.selectedChartTabIndex,
+    required this.onChartTabChanged,
+  });
+
+  final int selectedChartTabIndex;
+  final ValueChanged<int> onChartTabChanged;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AnalyticsCubit, AnalyticsState>(
@@ -82,7 +98,13 @@ class _AnalyticsBody extends StatelessWidget {
                   onRetry: () => cubit.loadAnalytics(),
                 )
               else if (state is AnalyticsLoaded)
-                AnalyticsContentWidget(data: state.data, period: state.period),
+                AnalyticsContentWidget(
+                  data: state.data,
+                  period: state.period,
+                  initialTabIndex: selectedChartTabIndex,
+                  onTabChanged: onChartTabChanged,
+                ),
+              const SizedBox(height: AppSizing.bottomPadding),
             ],
           ),
         );
