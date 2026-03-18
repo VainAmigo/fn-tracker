@@ -23,36 +23,74 @@ class BudgetCubit extends Cubit<BudgetState> {
         startDayKey: startDayKey,
         endDayKey: endDayKey,
       );
-      emit(BudgetStatsLoaded(stats));
+      List<BudgetHistoryEntry> history = [];
+      if (stats.budget != null) {
+        await walletRepo.ensureBudgetHistoryIfEmpty(
+          budgetId: stats.budget!.id,
+          budget: stats.budget!,
+        );
+        history = await walletRepo.getBudgetHistory(stats.budget!.id);
+      }
+      emit(BudgetStatsLoaded(stats, history));
     } catch (e) {
       emit(BudgetError(e.toString()));
     }
   }
 
   Future<void> createBudget({required BudgetModel budget}) async {
-    emit(BudgetLoading());
-    try {
-      await walletRepo.createBudget(budget: budget);
-      await _reloadStats();
-    } catch (e) {
-      emit(BudgetError(e.toString()));
-    }
+    await _executeWithReload(() => walletRepo.createBudget(budget: budget));
   }
 
-  Future<void> updateBudget({required BudgetModel budget}) async {
-    emit(BudgetLoading());
-    try {
-      await walletRepo.updateBudget(budget: budget);
-      await _reloadStats();
-    } catch (e) {
-      emit(BudgetError(e.toString()));
-    }
+  Future<void> updateBudget({
+    required BudgetModel budget,
+    String? effectiveDayKey,
+    bool replaceAll = false,
+  }) async {
+    await _executeWithReload(() => walletRepo.updateBudget(
+          budget: budget,
+          effectiveDayKey: effectiveDayKey,
+          replaceAll: replaceAll,
+        ));
   }
 
   Future<void> deleteBudget(String id) async {
+    await _executeWithReload(() => walletRepo.deleteBudget(id));
+  }
+
+  Future<void> addBudgetHistoryEntry({
+    required String budgetId,
+    required BudgetHistoryEntry entry,
+  }) async {
+    await _executeWithReload(() => walletRepo.addBudgetHistoryEntry(
+          budgetId: budgetId,
+          entry: entry,
+        ));
+  }
+
+  Future<void> updateBudgetHistoryEntry({
+    required String budgetId,
+    required BudgetHistoryEntry entry,
+  }) async {
+    await _executeWithReload(() => walletRepo.updateBudgetHistoryEntry(
+          budgetId: budgetId,
+          entry: entry,
+        ));
+  }
+
+  Future<void> deleteBudgetHistoryEntry({
+    required String budgetId,
+    required String entryId,
+  }) async {
+    await _executeWithReload(() => walletRepo.deleteBudgetHistoryEntry(
+          budgetId: budgetId,
+          entryId: entryId,
+        ));
+  }
+
+  Future<void> _executeWithReload(Future<void> Function() action) async {
     emit(BudgetLoading());
     try {
-      await walletRepo.deleteBudget(id);
+      await action();
       await _reloadStats();
     } catch (e) {
       emit(BudgetError(e.toString()));
@@ -65,7 +103,11 @@ class BudgetCubit extends Cubit<BudgetState> {
         startDayKey: _lastStartDayKey!,
         endDayKey: _lastEndDayKey!,
       );
-      emit(BudgetStatsLoaded(stats));
+      List<BudgetHistoryEntry> history = [];
+      if (stats.budget != null) {
+        history = await walletRepo.getBudgetHistory(stats.budget!.id);
+      }
+      emit(BudgetStatsLoaded(stats, history));
     }
   }
 }

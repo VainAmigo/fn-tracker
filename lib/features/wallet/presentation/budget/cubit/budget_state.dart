@@ -8,8 +8,10 @@ class BudgetLoading extends BudgetState {}
 
 class BudgetStatsLoaded extends BudgetState {
   final BudgetStatModel stats;
+  final List<BudgetHistoryEntry> history;
 
-  BudgetStatsLoaded(this.stats);
+  BudgetStatsLoaded(this.stats, [List<BudgetHistoryEntry>? history])
+      : history = history ?? [];
 }
 
 class BudgetError extends BudgetState {

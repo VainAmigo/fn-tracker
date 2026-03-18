@@ -15,6 +15,12 @@ class WalletRepository with FirestoreUserContext implements WalletRepoImpl {
   CollectionReference<Map<String, dynamic>> _budgetsRef(String uid) =>
       FirestorePaths.budgetRef(firebaseFirestore, uid);
 
+  CollectionReference<Map<String, dynamic>> _budgetHistoryRef(
+    String uid,
+    String budgetId,
+  ) =>
+      FirestorePaths.budgetHistoryRef(firebaseFirestore, uid, budgetId);
+
   CollectionReference<Map<String, dynamic>> _transactionsRef(String uid) =>
       FirestorePaths.transactionsRef(firebaseFirestore, uid);
 
@@ -226,39 +232,143 @@ class WalletRepository with FirestoreUserContext implements WalletRepoImpl {
     final uid = requireUid();
     return FirebaseLogger.withLogging<BudgetModel>(
       'Firestore.createBudget',
-      {'amount': budget.amount, 'type': budget.type.toJson()},
+      {'amount': budget.amount},
       () async {
         final docRef = _budgetsRef(uid).doc();
+        final budgetId = docRef.id;
+        final now = DateTime.now();
+        final effectiveDayKey = now.dayKey;
         await docRef.set(
-          BudgetModel(
-            id: docRef.id,
-            amount: budget.amount,
-            type: budget.type,
-          ).toJson(),
+          BudgetModel(id: budgetId, amount: budget.amount).toJson(),
         );
-        return BudgetModel(
-          id: docRef.id,
-          amount: budget.amount,
-          type: budget.type,
-        );
+        await _budgetHistoryRef(uid, budgetId).add({
+          'amount': budget.amount,
+          'effectiveDayKey': effectiveDayKey,
+          'createdAt': now.toUtc().toIso8601String(),
+        });
+        return BudgetModel(id: budgetId, amount: budget.amount);
       },
       serializeResponse: (b) => {'id': b.id, 'amount': b.amount},
     ).catchError((e) => throw Exception('Failed to create budget: $e'));
   }
 
   @override
-  Future<BudgetModel> updateBudget({required BudgetModel budget}) async {
+  Future<BudgetModel> updateBudget({
+    required BudgetModel budget,
+    String? effectiveDayKey,
+    bool replaceAll = false,
+  }) async {
     final uid = requireUid();
     return FirebaseLogger.withLogging<BudgetModel>(
       'Firestore.updateBudget',
-      {'id': budget.id, 'amount': budget.amount},
+      {
+        'id': budget.id,
+        'amount': budget.amount,
+        'effectiveDayKey': effectiveDayKey,
+        'replaceAll': replaceAll,
+      },
       () async {
         final docRef = _budgetsRef(uid).doc(budget.id);
         await docRef.update(budget.toJson());
+        final now = DateTime.now();
+        final historyRef = _budgetHistoryRef(uid, budget.id);
+
+        if (replaceAll) {
+          final snapshot = await historyRef.get();
+          for (final doc in snapshot.docs) {
+            await doc.reference.delete();
+          }
+        }
+
+        final key = effectiveDayKey ?? now.dayKey;
+        await historyRef.add({
+          'amount': budget.amount,
+          'effectiveDayKey': key,
+          'createdAt': now.toUtc().toIso8601String(),
+        });
         return budget;
       },
       serializeResponse: (b) => {'id': b.id},
     ).catchError((e) => throw Exception('Failed to update budget: $e'));
+  }
+
+  @override
+  Future<List<BudgetHistoryEntry>> getBudgetHistory(String budgetId) async {
+    final uid = requireUid();
+    return FirebaseLogger.withLogging<List<BudgetHistoryEntry>>(
+      'Firestore.getBudgetHistory',
+      {'budgetId': budgetId},
+      () async {
+        final snapshot = await _budgetHistoryRef(uid, budgetId)
+            .orderBy('effectiveDayKey')
+            .get();
+        return snapshot.docs
+            .map((doc) => BudgetHistoryEntry.fromJson(doc.id, doc.data()))
+            .toList();
+      },
+      serializeResponse: (h) => {'count': h.length},
+    ).catchError((e) => throw Exception('Failed to get budget history: $e'));
+  }
+
+  @override
+  Future<void> addBudgetHistoryEntry({
+    required String budgetId,
+    required BudgetHistoryEntry entry,
+  }) async {
+    final uid = requireUid();
+    return FirebaseLogger.withLogging<void>(
+      'Firestore.addBudgetHistoryEntry',
+      {'budgetId': budgetId, 'amount': entry.amount},
+      () => _budgetHistoryRef(uid, budgetId).add(entry.toJson()),
+      serializeResponse: (_) => {'ok': true},
+    ).catchError((e) => throw Exception('Failed to add budget history: $e'));
+  }
+
+  @override
+  Future<void> updateBudgetHistoryEntry({
+    required String budgetId,
+    required BudgetHistoryEntry entry,
+  }) async {
+    final uid = requireUid();
+    return FirebaseLogger.withLogging<void>(
+      'Firestore.updateBudgetHistoryEntry',
+      {'budgetId': budgetId, 'entryId': entry.id},
+      () => _budgetHistoryRef(uid, budgetId)
+          .doc(entry.id)
+          .update(entry.toJson()),
+      serializeResponse: (_) => {'ok': true},
+    ).catchError((e) => throw Exception('Failed to update budget history: $e'));
+  }
+
+  @override
+  Future<void> deleteBudgetHistoryEntry({
+    required String budgetId,
+    required String entryId,
+  }) async {
+    final uid = requireUid();
+    return FirebaseLogger.withLogging<void>(
+      'Firestore.deleteBudgetHistoryEntry',
+      {'budgetId': budgetId, 'entryId': entryId},
+      () => _budgetHistoryRef(uid, budgetId).doc(entryId).delete(),
+      serializeResponse: (_) => {'ok': true},
+    ).catchError((e) => throw Exception('Failed to delete budget history: $e'));
+  }
+
+  @override
+  Future<void> ensureBudgetHistoryIfEmpty({
+    required String budgetId,
+    required BudgetModel budget,
+  }) async {
+    final uid = requireUid();
+    final snapshot = await _budgetHistoryRef(uid, budgetId).limit(1).get();
+    if (snapshot.docs.isEmpty) {
+      final now = DateTime.now();
+      await _budgetHistoryRef(uid, budgetId).add({
+        'amount': budget.amount,
+        'effectiveDayKey': '2000-01-01',
+        'createdAt': now.toUtc().toIso8601String(),
+      });
+    }
   }
 
   @override
@@ -267,7 +377,14 @@ class WalletRepository with FirestoreUserContext implements WalletRepoImpl {
     return FirebaseLogger.withLogging<void>(
       'Firestore.deleteBudget',
       {'id': id},
-      () => _budgetsRef(uid).doc(id).delete(),
+      () async {
+        final historyRef = _budgetHistoryRef(uid, id);
+        final snapshot = await historyRef.get();
+        for (final doc in snapshot.docs) {
+          await doc.reference.delete();
+        }
+        await _budgetsRef(uid).doc(id).delete();
+      },
       serializeResponse: (_) => {'ok': true},
     ).catchError((e) => throw Exception('Failed to delete budget: $e'));
   }

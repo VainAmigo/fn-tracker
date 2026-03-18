@@ -10,6 +10,7 @@ class BudgetDonutStatWidget extends StatelessWidget {
     required this.budget,
     required this.period,
     required this.totalForPeriod,
+    this.history = const [],
     required this.currency,
     required this.onBudgetTap,
   });
@@ -17,6 +18,7 @@ class BudgetDonutStatWidget extends StatelessWidget {
   final BudgetModel budget;
   final DatePickerPeriod period;
   final double totalForPeriod;
+  final List<BudgetHistoryEntry> history;
   final Currency currency;
   final VoidCallback onBudgetTap;
 
@@ -24,8 +26,9 @@ class BudgetDonutStatWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final formatter = CurrencyFormatter(currency);
     final colorScheme = Theme.of(context).colorScheme;
-    final budgetForPeriod =
-        BudgetDisplayUtils.budgetForDisplayPeriod(budget, period);
+    final budgetForPeriod = history.isEmpty
+        ? BudgetDisplayUtils.budgetForDisplayPeriod(budget.amount, period)
+        : BudgetCalculator.budgetForPeriod(history, period);
 
     final chartData = BudgetChartData.from(
       budget: budgetForPeriod,

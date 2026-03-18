@@ -1,42 +1,65 @@
-class BudgetModel {
-  final String id;
-  final double amount;
-  final BudgetType type;
-  final double? canSpendAmount;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-  BudgetModel({
+/// Бюджет всегда месячный. [amount] — сумма на месяц.
+class BudgetModel {
+  const BudgetModel({
     required this.id,
     required this.amount,
-    required this.type,
     this.canSpendAmount,
   });
 
+  final String id;
+  final double amount;
+  final double? canSpendAmount;
+
   Map<String, dynamic> toJson() {
-    return {'id': id, 'amount': amount, 'type': type.toJson()};
+    return {'id': id, 'amount': amount};
   }
 
   factory BudgetModel.fromJson(Map<String, dynamic> json) {
     return BudgetModel(
       id: json['id'] as String,
       amount: (json['amount'] as num).toDouble(),
-      type: BudgetType.fromJson(json['type'] as String? ?? 'MONTHLY'),
     );
   }
 }
 
-enum BudgetType {
-  yearly,
-  monthly,
-  weekly;
+class BudgetHistoryEntry {
+  const BudgetHistoryEntry({
+    required this.id,
+    required this.amount,
+    required this.effectiveDayKey,
+    required this.createdAt,
+  });
 
-  /// Возвращает строковое представление для сохранения в Firestore
-  String toJson() => name.toUpperCase();
+  final String id;
+  final double amount;
+  final String effectiveDayKey;
+  final DateTime createdAt;
 
-  /// Создаёт enum из строки (например, из Firestore)
-  static BudgetType fromJson(String value) {
-    return BudgetType.values.firstWhere(
-      (e) => e.name.toUpperCase() == value.toUpperCase(),
-      orElse: () => BudgetType.yearly, // значение по умолчанию
+  Map<String, dynamic> toJson() {
+    return {
+      'amount': amount,
+      'effectiveDayKey': effectiveDayKey,
+      'createdAt': createdAt.toUtc().toIso8601String(),
+    };
+  }
+
+  factory BudgetHistoryEntry.fromJson(String id, Map<String, dynamic> json) {
+    final createdAtRaw = json['createdAt'];
+    final DateTime createdAt = createdAtRaw is Timestamp
+        ? createdAtRaw.toDate()
+        : DateTime.tryParse(createdAtRaw as String? ?? '') ?? DateTime.now();
+
+    return BudgetHistoryEntry(
+      id: id,
+      amount: (json['amount'] as num).toDouble(),
+      effectiveDayKey: json['effectiveDayKey'] as String,
+      createdAt: createdAt,
     );
+  }
+
+  BudgetModel toBudgetModel(String budgetId) {
+    return BudgetModel(id: budgetId, amount: amount);
   }
 }

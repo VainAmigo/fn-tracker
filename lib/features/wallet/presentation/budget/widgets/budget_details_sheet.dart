@@ -5,7 +5,7 @@ import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
-/// Bottom sheet с деталями бюджета и кнопками Edit/Delete.
+/// Bottom sheet с деталями бюджета, историей изменений и кнопками Edit/Delete.
 class BudgetDetailsSheet extends StatelessWidget {
   const BudgetDetailsSheet({
     super.key,
@@ -13,6 +13,7 @@ class BudgetDetailsSheet extends StatelessWidget {
     required this.totalForPeriod,
     required this.currency,
     required this.period,
+    required this.history,
     required this.onEdit,
   });
 
@@ -20,6 +21,7 @@ class BudgetDetailsSheet extends StatelessWidget {
   final double totalForPeriod;
   final Currency currency;
   final DatePickerPeriod period;
+  final List<BudgetHistoryEntry> history;
   final VoidCallback onEdit;
 
   static Future<void> show(
@@ -28,6 +30,7 @@ class BudgetDetailsSheet extends StatelessWidget {
     required double totalForPeriod,
     required Currency currency,
     required DatePickerPeriod period,
+    required List<BudgetHistoryEntry> history,
     required VoidCallback onEdit,
   }) {
     return AppBottomSheet.showFittedModalBottomSheet<void>(
@@ -39,25 +42,15 @@ class BudgetDetailsSheet extends StatelessWidget {
         totalForPeriod: totalForPeriod,
         currency: currency,
         period: period,
+        history: history,
         onEdit: onEdit,
       ),
     );
   }
 
-  static String _budgetTypeLabel(BudgetType type) {
-    return switch (type) {
-      BudgetType.yearly => 'Yearly',
-      BudgetType.monthly => 'Monthly',
-      BudgetType.weekly => 'Weekly',
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final formatter = CurrencyFormatter(currency);
-    final budgetForPeriod =
-        BudgetDisplayUtils.budgetForDisplayPeriod(budget, period);
 
     return Container(
       padding: const EdgeInsets.all(AppSizing.defaultPadding),
@@ -65,38 +58,12 @@ class BudgetDetailsSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ModalSheetTitleWidget(
-            title: 'Budget details',
-            action: PrimaryButton(
-              text: 'Edit',
-              onPressed: () {
-                Navigator.of(context).pop();
-                onEdit();
-              },
-              size: PrimaryButtonSize.xSmall,
-              rounded: true,
-              fullWidth: false,
-            ),
-          ),
-          const SizedBox(height: AppSizing.spaceBtwElements),
-          _InfoRow(
-            label: 'Type',
-            value: _budgetTypeLabel(budget.type),
-          ),
+          ModalSheetTitleWidget(title: 'Budget details'),
           const SizedBox(height: AppSizing.spaceBtwItems),
-          _InfoRow(
-            label: 'Budget amount',
-            value: formatter.format(budget.amount),
-          ),
-          const SizedBox(height: AppSizing.spaceBtwItems),
-          _InfoRow(
-            label: 'Budget for period',
-            value: formatter.format(budgetForPeriod),
-          ),
-          const SizedBox(height: AppSizing.spaceBtwItems),
-          _InfoRow(
-            label: 'Spent',
-            value: formatter.format(totalForPeriod),
+          _BudgetHistoryList(
+            budgetId: budget.id,
+            history: history,
+            currency: currency,
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           Row(
@@ -112,9 +79,9 @@ class BudgetDetailsSheet extends StatelessWidget {
                     Navigator.of(context).pop();
                   }
                   if (state is BudgetError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.error)),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(state.error)));
                   }
                 },
                 child: PrimaryButton(
@@ -144,7 +111,7 @@ class BudgetDetailsSheet extends StatelessWidget {
               ),
               Expanded(
                 child: PrimaryButton(
-                  text: 'Edit',
+                  text: 'Edit budget',
                   icon: Icons.edit,
                   size: PrimaryButtonSize.large,
                   rounded: true,
@@ -163,24 +130,146 @@ class BudgetDetailsSheet extends StatelessWidget {
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.label, required this.value});
+class _BudgetHistoryList extends StatelessWidget {
+  const _BudgetHistoryList({
+    required this.budgetId,
+    required this.history,
+    required this.currency,
+  });
 
-  final String label;
-  final String value;
+  final String budgetId;
+  final List<BudgetHistoryEntry> history;
+  final Currency currency;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final colorScheme = Theme.of(context).colorScheme;
+    final sorted = List<BudgetHistoryEntry>.from(history)
+      ..sort((a, b) => b.effectiveDayKey.compareTo(a.effectiveDayKey));
+
+    return Column(
       children: [
-        Text(label, style: AppTextStyles.text14w400(context)),
-        Text(
-          value,
-          style: AppTextStyles.text14w400(context)
-              .copyWith(fontWeight: FontWeight.w600),
-        ),
+        if (sorted.isEmpty)
+          Text(
+            'No history entries',
+            style: AppTextStyles.text14w400(
+              context,
+            ).copyWith(color: colorScheme.onSurface),
+          )
+        else
+          ...sorted.map(
+            (entry) => _HistoryEntryTile(
+              entry: entry,
+              onEdit: () => _showEditSheet(context, entry),
+              onDelete: () => _confirmDelete(context, entry.id),
+            ),
+          ),
       ],
+    );
+  }
+
+  void _showEditSheet(BuildContext context, BudgetHistoryEntry entry) {
+    BudgetHistoryEntryFormSheet.show(
+      context,
+      entry: entry,
+      title: 'Edit history entry',
+      onSave: (amount, effectiveDayKey) {
+        context.read<BudgetCubit>().updateBudgetHistoryEntry(
+          budgetId: budgetId,
+          entry: BudgetHistoryEntry(
+            id: entry.id,
+            amount: amount,
+            effectiveDayKey: effectiveDayKey,
+            createdAt: entry.createdAt,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, String entryId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete history entry?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      context.read<BudgetCubit>().deleteBudgetHistoryEntry(
+        budgetId: budgetId,
+        entryId: entryId,
+      );
+    }
+  }
+}
+
+class _HistoryEntryTile extends StatelessWidget {
+  const _HistoryEntryTile({
+    required this.entry,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  final BudgetHistoryEntry entry;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSizing.spaceBtwItems),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizing.defaultPadding,
+          vertical: AppSizing.spaceBtwItems,
+        ),
+        decoration: BoxDecoration(
+          color: colorScheme.secondary,
+          borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    entry.effectiveDayKey,
+                    style: AppTextStyles.text14w400(context),
+                  ),
+                  AmountTextWidget(amount: entry.amount),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: onEdit,
+              icon: Icon(Icons.edit, size: 20, color: colorScheme.onSecondary),
+              tooltip: 'Edit',
+            ),
+            IconButton(
+              onPressed: onDelete,
+              icon: Icon(Icons.delete, size: 20, color: colorScheme.error),
+              tooltip: 'Delete',
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

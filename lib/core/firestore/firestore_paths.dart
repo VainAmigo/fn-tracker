@@ -48,6 +48,13 @@ abstract final class FirestorePaths {
   ) =>
       userCollection(firestore, uid, budget);
 
+  static CollectionReference<Map<String, dynamic>> budgetHistoryRef(
+    FirebaseFirestore firestore,
+    String uid,
+    String budgetId,
+  ) =>
+      budgetRef(firestore, uid).doc(budgetId).collection('history');
+
   static CollectionReference<Map<String, dynamic>> scheduledPaymentsRef(
     FirebaseFirestore firestore,
     String uid,
