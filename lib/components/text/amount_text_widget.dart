@@ -25,9 +25,17 @@ class AmountTextWidget extends StatelessWidget {
     this.type,
     this.decimalPlaces = 2,
     this.showSignPrefix = false,
+    this.maxLines = 1,
+    this.textAlign = TextAlign.left,
   });
 
   final double amount;
+
+  /// Количество строк.
+  final int maxLines;
+
+  /// Выравнивание текста.
+  final TextAlign textAlign;
 
   final TransactionType? type;
 
@@ -87,7 +95,12 @@ class AmountTextWidget extends StatelessWidget {
 
     final effectiveStyle = style ?? theme.textTheme.bodyLarge;
 
-    return Text(displayText, style: effectiveStyle);
+    return Text(
+      displayText,
+      style: effectiveStyle,
+      maxLines: maxLines,
+      textAlign: textAlign,
+    );
   }
 
   Currency? _currencyFromContext(BuildContext context) {

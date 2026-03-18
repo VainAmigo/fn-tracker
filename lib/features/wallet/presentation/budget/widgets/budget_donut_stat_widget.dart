@@ -36,8 +36,8 @@ class BudgetDonutStatWidget extends StatelessWidget {
     final exceeded = totalForPeriod > budgetForPeriod;
     final remainingPercent = budgetForPeriod > 0
         ? ((budgetForPeriod - totalForPeriod) / budgetForPeriod * 100)
-            .clamp(0, 100)
-            .toStringAsFixed(0)
+              .clamp(0, 100)
+              .toStringAsFixed(0)
         : '0';
 
     return Column(
@@ -62,10 +62,14 @@ class BudgetDonutStatWidget extends StatelessWidget {
                   ),
                   AmountTextWidget(
                     amount: totalForPeriod,
-                    style: AppTextStyles.text36w600(context).copyWith(color: chartData.accentColor),
+                    style: AppTextStyles.text36w600(
+                      context,
+                    ).copyWith(color: chartData.accentColor),
                   ),
                   Text(
-                    exceeded ? 'Budget exceeded' : '$remainingPercent% remaining',
+                    exceeded
+                        ? 'Budget exceeded'
+                        : '$remainingPercent% remaining',
                     style: AppTextStyles.tabSubTitle(context),
                   ),
                 ],
@@ -73,62 +77,7 @@ class BudgetDonutStatWidget extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: AppSizing.spaceBtwElements),
-        Row(
-          spacing: AppSizing.spaceBtwItems,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _StatColumn(
-              label: 'Spent',
-              value: totalForPeriod,
-            ),
-            Container(
-              height: AppSizing.heightXS,
-              alignment: Alignment.center,
-              child: VerticalDivider(
-                color: colorScheme.onSecondary,
-                width: AppSizing.spaceBtwSections,
-                thickness: 1,
-              ),
-            ),
-            _StatColumn(
-              label: 'Budget',
-              value: budgetForPeriod,
-            ),
-          ],
-        ),
       ],
-    );
-  }
-}
-
-class _StatColumn extends StatelessWidget {
-  const _StatColumn({required this.label, required this.value});
-
-  final String label;
-  final double value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Flexible(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            label,
-            style: AppTextStyles.text16w400(context).copyWith(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.onSecondary,
-            ),
-          ),
-          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          AmountTextWidget(
-            amount: value,
-            style: AppTextStyles.text20w600(context),
-          ),
-        ],
-      ),
     );
   }
 }

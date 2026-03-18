@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
@@ -134,7 +135,6 @@ class PeriodSegmentChart extends StatefulWidget {
   const PeriodSegmentChart({
     super.key,
     required this.bars,
-    required this.currency,
     this.segmentWidth = AppSizing.heightM,
     this.segmentGap = AppSizing.spaceBtwItemsExtra,
     this.chartHeight = _defaultChartHeight,
@@ -148,7 +148,6 @@ class PeriodSegmentChart extends StatefulWidget {
   });
 
   final List<PeriodSegmentData> bars;
-  final Currency currency;
 
   /// Фиксированная ширина одного сегмента (столбца).
   final double segmentWidth;
@@ -272,62 +271,62 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart>
                 child: SizedBox(
                   width: contentWidth,
                   child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(widget.bars.length, (i) {
-                        final bar = widget.bars[i];
-                        final isSelected = _selectedIndex == i;
-                        final isLast = i == widget.bars.length - 1;
-                        final barWidth = isLast
-                            ? widget.segmentWidth
-                            : widget.segmentWidth + widget.segmentGap;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() => _selectedIndex = i);
-                            widget.onSegmentTap?.call(i);
-                          },
-                          child: SizedBox(
-                            width: barWidth,
-                            child: _ChartBar(
-                              bar: bar,
-                              isSelected: isSelected,
-                              segmentWidth: widget.segmentWidth,
-                              segmentGap: widget.segmentGap,
-                              chartHeight: widget.chartHeight,
-                              barRadius: widget.barRadius,
-                              segmentGapVertical: widget.segmentGapVertical,
-                              minSegmentHeight: widget.minSegmentHeight,
-                              inactiveColor: inactiveColor,
-                              currency: widget.currency,
-                              maxTotal: _maxTotal,
-                              progress: _animation.value,
+                    clipBehavior: Clip.none,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(widget.bars.length, (i) {
+                          final bar = widget.bars[i];
+                          final isSelected = _selectedIndex == i;
+                          final isLast = i == widget.bars.length - 1;
+                          final barWidth = isLast
+                              ? widget.segmentWidth
+                              : widget.segmentWidth + widget.segmentGap;
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() => _selectedIndex = i);
+                              widget.onSegmentTap?.call(i);
+                            },
+                            child: SizedBox(
+                              width: barWidth,
+                              child: _ChartBar(
+                                bar: bar,
+                                isSelected: isSelected,
+                                segmentWidth: widget.segmentWidth,
+                                segmentGap: widget.segmentGap,
+                                chartHeight: widget.chartHeight,
+                                barRadius: widget.barRadius,
+                                segmentGapVertical: widget.segmentGapVertical,
+                                minSegmentHeight: widget.minSegmentHeight,
+                                inactiveColor: inactiveColor,
+                                maxTotal: _maxTotal,
+                                progress: _animation.value,
+                              ),
                             ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ],
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
         if (_selectedIndex != null &&
             _selectedIndex! < widget.bars.length &&
-            widget.bars[_selectedIndex!].segments.isNotEmpty)
+            widget.bars[_selectedIndex!].segments.isNotEmpty) ...[
+          const SizedBox(height: AppSizing.spaceBtwItems),
           AnimatedBuilder(
             animation: _animation,
             builder: (context, _) => _CategoryBreakdownList(
               segments: widget.bars[_selectedIndex!].segments,
               total: widget.bars[_selectedIndex!].total,
-              currency: widget.currency,
               progress: _animation.value,
             ),
           ),
+        ],
       ],
     );
   }
@@ -352,7 +351,6 @@ class _ChartBar extends StatelessWidget {
     required this.segmentGapVertical,
     required this.minSegmentHeight,
     required this.inactiveColor,
-    required this.currency,
     required this.maxTotal,
     this.progress = 1.0,
   });
@@ -366,13 +364,11 @@ class _ChartBar extends StatelessWidget {
   final double segmentGapVertical;
   final double minSegmentHeight;
   final Color inactiveColor;
-  final Currency currency;
   final double maxTotal;
   final double progress;
 
   @override
   Widget build(BuildContext context) {
-    final formatter = CurrencyFormatter(currency);
     final barHeight = maxTotal > 0 ? (bar.total / maxTotal) * chartHeight : 0.0;
     final radius = Radius.circular(barRadius);
 
@@ -408,10 +404,7 @@ class _ChartBar extends StatelessWidget {
             clipBehavior: Clip.none,
             alignment: Alignment.bottomCenter,
             children: [
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: barWidget,
-              ),
+              Align(alignment: Alignment.bottomCenter, child: barWidget),
               if (isSelected && bar.total > 0)
                 Positioned(
                   left: 0,
@@ -420,14 +413,14 @@ class _ChartBar extends StatelessWidget {
                   child: Center(
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
-                      child: Text(
-                        formatter.format(bar.total),
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
+                      child: AmountTextWidget(
+                        amount: bar.total,
                         textAlign: TextAlign.center,
+                        maxLines: 1,
+                        style: AppTextStyles.text14w400(context).copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),
@@ -539,21 +532,23 @@ class _StackedBar extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-          for (var i = 0; i < validSegments.length; i++) ...[
-            if (i > 0) SizedBox(height: segmentGap),
-            Container(
-              width: width,
-              height: (heights[i] * progress).clamp(1, double.infinity),
-              decoration: BoxDecoration(
-                color: validSegments[i].color,
-                borderRadius: BorderRadius.vertical(
-                  top: i == 0 ? radius : Radius.zero,
-                  bottom: i == validSegments.length - 1 ? radius : Radius.zero,
+            for (var i = 0; i < validSegments.length; i++) ...[
+              if (i > 0) SizedBox(height: segmentGap),
+              Container(
+                width: width,
+                height: (heights[i] * progress).clamp(1, double.infinity),
+                decoration: BoxDecoration(
+                  color: validSegments[i].color,
+                  borderRadius: BorderRadius.vertical(
+                    top: i == 0 ? radius : Radius.zero,
+                    bottom: i == validSegments.length - 1
+                        ? radius
+                        : Radius.zero,
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
-        ],
         ),
       ),
     );
@@ -564,19 +559,16 @@ class _CategoryBreakdownList extends StatelessWidget {
   const _CategoryBreakdownList({
     required this.segments,
     required this.total,
-    required this.currency,
     this.progress = 1.0,
   });
 
   final List<CategorySegmentData> segments;
   final double total;
-  final Currency currency;
   final double progress;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final formatter = CurrencyFormatter(currency);
     final validSegments = segments.where((s) => s.value > 0).toList();
     if (validSegments.isEmpty) return const SizedBox.shrink();
 
@@ -592,7 +584,6 @@ class _CategoryBreakdownList extends StatelessWidget {
           _CategoryBreakdownRow(
             segment: validSegments[i],
             maxValue: maxValue,
-            formatter: formatter,
             colorScheme: colorScheme,
             progress: progress,
           ),
@@ -606,7 +597,6 @@ class _CategoryBreakdownRow extends StatelessWidget {
   const _CategoryBreakdownRow({
     required this.segment,
     required this.maxValue,
-    required this.formatter,
     required this.colorScheme,
     this.progress = 1.0,
   });
@@ -617,7 +607,6 @@ class _CategoryBreakdownRow extends StatelessWidget {
 
   final CategorySegmentData segment;
   final double maxValue;
-  final CurrencyFormatter formatter;
   final ColorScheme colorScheme;
   final double progress;
 
@@ -626,8 +615,8 @@ class _CategoryBreakdownRow extends StatelessWidget {
     final fraction = maxValue > 0
         ? (segment.value / maxValue).clamp(0.0, 1.0)
         : 0.0;
-    final barWidth = _minBarWidth +
-        (_maxBarWidth - _minBarWidth) * fraction * progress;
+    final barWidth =
+        _minBarWidth + (_maxBarWidth - _minBarWidth) * fraction * progress;
 
     return Row(
       children: [
@@ -659,7 +648,7 @@ class _CategoryBreakdownRow extends StatelessWidget {
           constraints: BoxConstraints(minWidth: _minBarWidth),
           width: barWidth,
           decoration: BoxDecoration(
-            color: segment.color,
+            color: segment.color.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
           ),
           padding: const EdgeInsets.symmetric(
@@ -669,12 +658,13 @@ class _CategoryBreakdownRow extends StatelessWidget {
           child: FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerRight,
-            child: Text(
-              formatter.format(segment.value),
+            child: AmountTextWidget(
+              amount: segment.value,
+              textAlign: TextAlign.center,
+              maxLines: 1,
               style: AppTextStyles.text14w400(
                 context,
               ).copyWith(color: Colors.white, fontWeight: FontWeight.w500),
-              maxLines: 1,
             ),
           ),
         ),

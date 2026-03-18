@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
@@ -42,7 +41,6 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = context.watch<CurrencyProvider>().currency;
     final data = widget.data;
 
     if (data.categorySpending.isEmpty &&
@@ -60,21 +58,23 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
           balance: data.balance,
         ),
         const SizedBox(height: AppSizing.spaceBtwSections),
-        _buildTabBar(context),
-        const SizedBox(height: AppSizing.spaceBtwElements),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: _selectedTabIndex == 0
-              ? _DonutTabContent(
-                  key: const ValueKey('donut'),
-                  data: data,
-                  currency: currency,
-                )
-              : _BarTabContent(
-                  key: ValueKey('bar_${widget.period.startDayKey}'),
-                  data: data,
-                  currency: currency,
-                ),
+        TitledSection(
+          title: 'Spending chart',
+          action: _buildTabBar(context),
+          children: [
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: _selectedTabIndex == 0
+                  ? _DonutTabContent(
+                      key: const ValueKey('donut'),
+                      data: data,
+                    )
+                  : _BarTabContent(
+                      key: ValueKey('bar_${widget.period.startDayKey}'),
+                      data: data,
+                    ),
+            ),
+          ],
         ),
       ],
     );
@@ -86,7 +86,6 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
     final inactiveColor = colorScheme.onSurface.withValues(alpha: 0.5);
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         IconButton(
           onPressed: () {
@@ -117,11 +116,9 @@ class _DonutTabContent extends StatelessWidget {
   const _DonutTabContent({
     super.key,
     required this.data,
-    required this.currency,
   });
 
   final AnalyticsModel data;
-  final Currency currency;
 
   @override
   Widget build(BuildContext context) {
@@ -134,10 +131,7 @@ class _DonutTabContent extends StatelessWidget {
             totalExpense: data.totalExpense,
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
-          SpendingCategoriesListWidget(
-            categorySpending: data.categorySpending,
-            currency: currency,
-          ),
+          SpendingCategoriesListWidget(categorySpending: data.categorySpending),
         ],
       ],
     );
@@ -145,14 +139,9 @@ class _DonutTabContent extends StatelessWidget {
 }
 
 class _BarTabContent extends StatelessWidget {
-  const _BarTabContent({
-    super.key,
-    required this.data,
-    required this.currency,
-  });
+  const _BarTabContent({super.key, required this.data});
 
   final AnalyticsModel data;
-  final Currency currency;
 
   @override
   Widget build(BuildContext context) {
@@ -166,9 +155,6 @@ class _BarTabContent extends StatelessWidget {
         )
         .toList();
 
-    return PeriodSegmentChart(
-      bars: bars,
-      currency: currency,
-    );
+    return PeriodSegmentChart(bars: bars);
   }
 }

@@ -1,11 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
-
-import 'period_segment_chart.dart';
 
 /// Список категорий с иконкой, названием и цветным баром суммы.
 /// Используется в Donut-табе аналитики и совместим по дизайну с [PeriodSegmentChart].
@@ -13,11 +11,9 @@ class SpendingCategoriesListWidget extends StatelessWidget {
   const SpendingCategoriesListWidget({
     super.key,
     required this.categorySpending,
-    required this.currency,
   });
 
   final List<CategorySpending> categorySpending;
-  final Currency currency;
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +23,9 @@ class SpendingCategoriesListWidget extends StatelessWidget {
         .toList();
     if (segments.isEmpty) return const SizedBox.shrink();
 
-    final maxValue =
-        segments.map((s) => s.value).fold<double>(0, (a, b) => math.max(a, b));
-    final formatter = CurrencyFormatter(currency);
+    final maxValue = segments
+        .map((s) => s.value)
+        .fold<double>(0, (a, b) => math.max(a, b));
     final colorScheme = Theme.of(context).colorScheme;
 
     return Column(
@@ -40,7 +36,6 @@ class SpendingCategoriesListWidget extends StatelessWidget {
           _SpendingCategoryRow(
             segment: segments[i],
             maxValue: maxValue,
-            formatter: formatter,
             colorScheme: colorScheme,
           ),
         ],
@@ -53,7 +48,6 @@ class _SpendingCategoryRow extends StatelessWidget {
   const _SpendingCategoryRow({
     required this.segment,
     required this.maxValue,
-    required this.formatter,
     required this.colorScheme,
   });
 
@@ -62,13 +56,13 @@ class _SpendingCategoryRow extends StatelessWidget {
 
   final CategorySegmentData segment;
   final double maxValue;
-  final CurrencyFormatter formatter;
   final ColorScheme colorScheme;
 
   @override
   Widget build(BuildContext context) {
-    final fraction =
-        maxValue > 0 ? (segment.value / maxValue).clamp(0.0, 1.0) : 0.0;
+    final fraction = maxValue > 0
+        ? (segment.value / maxValue).clamp(0.0, 1.0)
+        : 0.0;
     final barWidth = _minBarWidth + (_maxBarWidth - _minBarWidth) * fraction;
 
     return Row(
@@ -101,7 +95,7 @@ class _SpendingCategoryRow extends StatelessWidget {
           constraints: const BoxConstraints(minWidth: _minBarWidth),
           width: barWidth,
           decoration: BoxDecoration(
-            color: segment.color,
+            color: segment.color.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -109,13 +103,13 @@ class _SpendingCategoryRow extends StatelessWidget {
           child: FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerRight,
-            child: Text(
-              formatter.format(segment.value),
-              style: AppTextStyles.text14w400(context).copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
+            child: AmountTextWidget(
+              amount: segment.value,
+              textAlign: TextAlign.center,
               maxLines: 1,
+              style: AppTextStyles.text14w400(
+                context,
+              ).copyWith(color: Colors.white, fontWeight: FontWeight.w500),
             ),
           ),
         ),

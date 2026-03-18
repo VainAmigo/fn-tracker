@@ -38,7 +38,7 @@ class _AnalyticsViewState extends State<AnalyticsView> {
               slivers: [
                 SliverToBoxAdapter(
                   child: Text(
-                    'Analytics chart',
+                    'Analytics',
                     style: AppTextStyles.tabTitle(context),
                   ),
                 ),
