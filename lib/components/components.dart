@@ -16,6 +16,7 @@ export 'text/tab_title_widget.dart';
 export 'chart/budget_daily_chart.dart';
 export 'chart/donut_chart.dart';
 export 'chart/gradient_line_chart.dart';
+export 'chart/period_segment_chart.dart';
 export 'chart/segmented_bar.dart';
 export 'chart/weekly_stacked_bar_chart.dart';
 export 'section/titled_section.dart';
