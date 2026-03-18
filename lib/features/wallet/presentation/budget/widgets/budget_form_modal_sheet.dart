@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/utils/expression_evaluator.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 import 'package:provider/provider.dart';
@@ -58,6 +59,23 @@ class BudgetFormModalSheet extends StatefulWidget {
 class _BudgetFormModalSheetState extends State<BudgetFormModalSheet> {
   late String _amountText;
   late BudgetType _selectedType;
+
+  /// Парсит сумму: поддерживает числа и выражения (100+50, 10*2).
+  double? _parseAmount(String text) {
+    var t = text.trim();
+    if (t.isEmpty) return null;
+    const operators = ['+', '-', '*', '/'];
+    while (t.length > 1 && operators.contains(t[t.length - 1])) {
+      t = t.substring(0, t.length - 1).trim();
+    }
+    if (t.isEmpty) return null;
+    if (ExpressionEvaluator.hasOperator(t)) {
+      final evaluated = ExpressionEvaluator.evaluate(t);
+      if (evaluated != null && evaluated > 0) return evaluated;
+    }
+    final parsed = double.tryParse(t.replaceAll(',', '.'));
+    return parsed != null && parsed > 0 ? parsed : null;
+  }
 
   static const _typeSegments = [
     SegmentItem<BudgetType>(
@@ -121,7 +139,7 @@ class _BudgetFormModalSheetState extends State<BudgetFormModalSheet> {
           PrimaryButton(
             text: widget.saveLabel,
             onPressed: () {
-              final parsed = double.tryParse(_amountText);
+              final parsed = _parseAmount(_amountText);
               if (parsed == null || parsed <= 0) return;
               widget.onSave?.call(parsed, _selectedType);
               if (context.mounted) Navigator.of(context).pop();

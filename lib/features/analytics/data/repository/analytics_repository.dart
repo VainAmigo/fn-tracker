@@ -31,7 +31,10 @@ class AnalyticsRepository
     required String endDayKey,
   }) async {
     final uid = requireUid();
-
+    return FirebaseLogger.withLogging<AnalyticsPeriodModel>(
+      'Firestore.getAnalytics',
+      {'startDayKey': startDayKey, 'endDayKey': endDayKey},
+      () async {
     final results = await Future.wait([
       _transactionsRef(uid)
           .where('dayKey', isGreaterThanOrEqualTo: startDayKey)
@@ -159,6 +162,12 @@ class AnalyticsRepository
       categorySpending: categorySpending,
       weeklySpending: weeklySpending,
       budget: budget,
+    );
+      },
+      serializeResponse: (a) => {
+        'totalIncome': a.totalIncome,
+        'totalExpense': a.totalExpense,
+      },
     );
   }
 }

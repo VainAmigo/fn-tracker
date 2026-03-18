@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/utils/expression_evaluator.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 import 'package:provider/provider.dart';
@@ -62,6 +63,24 @@ class AmountFormModalSheet extends StatefulWidget {
 class _AmountFormModalSheetState extends State<AmountFormModalSheet> {
   late String _amountText;
 
+  /// Парсит сумму: поддерживает числа и выражения (100+50, 10*2) при enableCalculator.
+  double? _parseAmount(String text) {
+    var t = text.trim();
+    if (t.isEmpty) return null;
+    // Убираем завершающие операторы (например "150+" после вычисления)
+    const operators = ['+', '-', '*', '/'];
+    while (t.length > 1 && operators.contains(t[t.length - 1])) {
+      t = t.substring(0, t.length - 1).trim();
+    }
+    if (t.isEmpty) return null;
+    if (widget.enableCalculator && ExpressionEvaluator.hasOperator(t)) {
+      final evaluated = ExpressionEvaluator.evaluate(t);
+      if (evaluated != null && evaluated > 0) return evaluated;
+    }
+    final parsed = double.tryParse(t.replaceAll(',', '.'));
+    return parsed != null && parsed > 0 ? parsed : null;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -101,7 +120,7 @@ class _AmountFormModalSheetState extends State<AmountFormModalSheet> {
           PrimaryButton(
             text: widget.saveLabel,
             onPressed: () {
-              final parsed = double.tryParse(_amountText);
+              final parsed = _parseAmount(_amountText);
               if (parsed == null || parsed <= 0) return;
               widget.onSave?.call(parsed);
               if (context.mounted) Navigator.of(context).pop();

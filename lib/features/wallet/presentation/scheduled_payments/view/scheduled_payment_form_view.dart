@@ -195,6 +195,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                           onSave: (amount) =>
                               setState(() => _paymentAmount = amount),
                           saveLabel: 'Save',
+                          enableCalculator: true,
                         ),
                       ),
                       const SizedBox(height: AppSizing.spaceBtwItemsExtra),
