@@ -40,7 +40,6 @@ class BudgetsSpendingCategoriesListWidget extends StatelessWidget {
       ],
     );
   }
-
 }
 
 class _SpendingCategoryCard extends StatelessWidget {
@@ -139,7 +138,7 @@ class _SpendingCategoryCard extends StatelessWidget {
                     ],
               trackColor: colorScheme.secondary,
             ),
-            const SizedBox(height: AppSizing.spaceBtwElements),
+            const SizedBox(height: AppSizing.spaceBtwItemsExtra),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
