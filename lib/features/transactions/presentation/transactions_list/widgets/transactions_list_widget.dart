@@ -6,10 +6,7 @@ import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class TransactionsListWidget extends StatelessWidget {
-  const TransactionsListWidget({
-    super.key,
-    this.filterHidden = true,
-  });
+  const TransactionsListWidget({super.key, this.filterHidden = true});
 
   /// Скрывать транзакции скрытых кошельков и целей.
   /// false — при просмотре истории конкретного кошелька/цели (пользователь уже ввёл PIN).
@@ -26,9 +23,9 @@ class TransactionsListWidget extends StatelessWidget {
           ),
           TransactionsEmpty() => const EmptyTransactionsWidget(),
           TransactionsLoaded() => _Body(
-                transactions: state.transactions,
-                filterHidden: filterHidden,
-              ),
+            transactions: state.transactions,
+            filterHidden: filterHidden,
+          ),
           TransactionDeleted() =>
             state.transactions.isEmpty
                 ? const EmptyTransactionsWidget()
@@ -44,10 +41,7 @@ class TransactionsListWidget extends StatelessWidget {
 }
 
 class _Body extends StatelessWidget {
-  const _Body({
-    required this.transactions,
-    this.filterHidden = true,
-  });
+  const _Body({required this.transactions, this.filterHidden = true});
 
   final List<TransactionModel> transactions;
   final bool filterHidden;
@@ -57,14 +51,17 @@ class _Body extends StatelessWidget {
     final categoriesState = context.watch<CategoriesCubit>().state;
     final categories = BlocStateExtractors.extractCategories(categoriesState);
     final categoryMap = {for (final c in categories) c.categoryId: c};
-    final goals = BlocStateExtractors.extractGoals(context.watch<GoalsCubit>().state);
+    final goals = BlocStateExtractors.extractGoals(
+      context.watch<GoalsCubit>().state,
+    );
     final goalMap = {for (final g in goals) g.id: g};
-    final wallets = BlocStateExtractors.extractWallets(context.watch<WalletCubit>().state);
+    final wallets = BlocStateExtractors.extractWallets(
+      context.watch<WalletCubit>().state,
+    );
     final walletMap = {
       for (final w in wallets)
         if (w.id != null) w.id!: w,
     };
-    final currency = context.watch<CurrencyProvider>().currency;
 
     final visibleTransactions = filterHidden
         ? _filterHiddenTransactions(transactions, walletMap, goalMap)
@@ -98,7 +95,9 @@ class _Body extends StatelessWidget {
                 ),
                 AmountTextWidget(
                   amount: groupSum.abs(),
-                  type: groupSum >= 0 ? TransactionType.income : TransactionType.expense,
+                  type: groupSum >= 0
+                      ? TransactionType.income
+                      : TransactionType.expense,
                   showSignPrefix: true,
                   style: AppTextStyles.sectionTitle(context),
                 ),
@@ -113,7 +112,6 @@ class _Body extends StatelessWidget {
                 categoryMap: categoryMap,
                 goalMap: goalMap,
                 walletMap: walletMap,
-                currency: currency,
                 radius: radiusForIndex(i, txList.length),
               ),
             ],
@@ -129,7 +127,6 @@ class _Body extends StatelessWidget {
     required Map<String, CategoryModel> categoryMap,
     required Map<String, GoalModel> goalMap,
     required Map<String, WalletModel> walletMap,
-    required Currency currency,
     required CardRadius radius,
   }) {
     final isGoalTransaction = tx.categoryId == null || tx.categoryId!.isEmpty;
@@ -263,5 +260,4 @@ class _Body extends StatelessWidget {
     }
     return base;
   }
-
 }

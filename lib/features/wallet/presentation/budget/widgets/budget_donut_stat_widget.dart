@@ -11,7 +11,6 @@ class BudgetDonutStatWidget extends StatelessWidget {
     required this.period,
     required this.totalForPeriod,
     this.history = const [],
-    required this.currency,
     required this.onBudgetTap,
   });
 
@@ -19,12 +18,10 @@ class BudgetDonutStatWidget extends StatelessWidget {
   final DatePickerPeriod period;
   final double totalForPeriod;
   final List<BudgetHistoryEntry> history;
-  final Currency currency;
   final VoidCallback onBudgetTap;
 
   @override
   Widget build(BuildContext context) {
-    final formatter = CurrencyFormatter(currency);
     final colorScheme = Theme.of(context).colorScheme;
     final budgetForPeriod = history.isEmpty
         ? BudgetDisplayUtils.budgetForDisplayPeriod(budget.amount, period)
@@ -63,11 +60,9 @@ class BudgetDonutStatWidget extends StatelessWidget {
                     exceeded ? 'Overspent' : 'Spent',
                     style: AppTextStyles.text16w400(context),
                   ),
-                  Text(
-                    formatter.format(totalForPeriod),
-                    style: AppTextStyles.text36w600(
-                      context,
-                    ).copyWith(color: chartData.accentColor),
+                  AmountTextWidget(
+                    amount: totalForPeriod,
+                    style: AppTextStyles.text36w600(context).copyWith(color: chartData.accentColor),
                   ),
                   Text(
                     exceeded ? 'Budget exceeded' : '$remainingPercent% remaining',

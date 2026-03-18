@@ -8,13 +8,11 @@ class AnalyticsSpendingDonutWidget extends StatelessWidget {
   const AnalyticsSpendingDonutWidget({
     required this.categorySpending,
     required this.totalExpense,
-    required this.formatter,
     super.key,
   });
 
   final List<CategorySpending> categorySpending;
   final double totalExpense;
-  final CurrencyFormatter formatter;
 
   @override
   Widget build(BuildContext context) {

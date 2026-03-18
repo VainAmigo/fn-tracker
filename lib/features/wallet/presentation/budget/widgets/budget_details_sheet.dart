@@ -11,7 +11,6 @@ class BudgetDetailsSheet extends StatelessWidget {
     super.key,
     required this.budget,
     required this.totalForPeriod,
-    required this.currency,
     required this.period,
     required this.history,
     required this.onEdit,
@@ -19,7 +18,6 @@ class BudgetDetailsSheet extends StatelessWidget {
 
   final BudgetModel budget;
   final double totalForPeriod;
-  final Currency currency;
   final DatePickerPeriod period;
   final List<BudgetHistoryEntry> history;
   final VoidCallback onEdit;
@@ -28,7 +26,6 @@ class BudgetDetailsSheet extends StatelessWidget {
     BuildContext context, {
     required BudgetModel budget,
     required double totalForPeriod,
-    required Currency currency,
     required DatePickerPeriod period,
     required List<BudgetHistoryEntry> history,
     required VoidCallback onEdit,
@@ -40,7 +37,6 @@ class BudgetDetailsSheet extends StatelessWidget {
       child: BudgetDetailsSheet(
         budget: budget,
         totalForPeriod: totalForPeriod,
-        currency: currency,
         period: period,
         history: history,
         onEdit: onEdit,
@@ -63,7 +59,6 @@ class BudgetDetailsSheet extends StatelessWidget {
           _BudgetHistoryList(
             budgetId: budget.id,
             history: history,
-            currency: currency,
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           Row(
@@ -134,12 +129,10 @@ class _BudgetHistoryList extends StatelessWidget {
   const _BudgetHistoryList({
     required this.budgetId,
     required this.history,
-    required this.currency,
   });
 
   final String budgetId;
   final List<BudgetHistoryEntry> history;
-  final Currency currency;
 
   @override
   Widget build(BuildContext context) {

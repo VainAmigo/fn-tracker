@@ -8,11 +8,9 @@ class BudgetsSpendingCategoriesListWidget extends StatelessWidget {
   const BudgetsSpendingCategoriesListWidget({
     super.key,
     required this.categorySpending,
-    required this.currency,
   });
 
   final List<CategorySpending> categorySpending;
-  final Currency currency;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +29,6 @@ class BudgetsSpendingCategoriesListWidget extends StatelessWidget {
               if (i > 0) const SizedBox(height: AppSizing.spaceBtwItemsExtra),
               _SpendingCategoryCard(
                 spending: categorySpending[i],
-                currency: currency,
                 radius: radiusForIndex(i, total),
               ),
             ],
@@ -43,20 +40,14 @@ class BudgetsSpendingCategoriesListWidget extends StatelessWidget {
 }
 
 class _SpendingCategoryCard extends StatelessWidget {
-  const _SpendingCategoryCard({
-    required this.spending,
-    required this.currency,
-    required this.radius,
-  });
+  const _SpendingCategoryCard({required this.spending, required this.radius});
 
   final CategorySpending spending;
-  final Currency currency;
   final CardRadius radius;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final formatter = CurrencyFormatter(currency);
     final category = spending.category;
     final spent = spending.amount;
 
@@ -105,11 +96,9 @@ class _SpendingCategoryCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Text(
-                formatter.format(spent),
-                style: AppTextStyles.listTileTitle(
-                  context,
-                ).copyWith(color: exceeded ? colorScheme.error : null),
+              AmountTextWidget(
+                amount: spent,
+                style: AppTextStyles.listTileTitle(context),
               ),
             ],
           ),
@@ -142,12 +131,7 @@ class _SpendingCategoryCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${formatter.format(spent)} / ${formatter.format(limit)}',
-                  style: AppTextStyles.listTileSubtitle(
-                    context,
-                  ).copyWith(fontWeight: FontWeight.w600),
-                ),
+                AmountDividerWidget(leftAmount: spent, rightAmount: limit),
                 Text(
                   exceeded
                       ? 'Limit exceeded'

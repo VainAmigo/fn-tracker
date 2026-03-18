@@ -13,7 +13,6 @@ class BudgetSummaryCard extends StatelessWidget {
     required this.totalForPeriod,
     required this.history,
     required this.transactions,
-    required this.currency,
   });
 
   final BudgetModel budget;
@@ -21,7 +20,6 @@ class BudgetSummaryCard extends StatelessWidget {
   final double totalForPeriod;
   final List<BudgetHistoryEntry> history;
   final List<TransactionModel> transactions;
-  final Currency currency;
 
   static String _periodLabel(DatePickerPeriod period) {
     return switch (period) {
@@ -34,7 +32,6 @@ class BudgetSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final formatter = CurrencyFormatter(currency);
     final budgetForPeriod = history.isEmpty
         ? BudgetDisplayUtils.budgetForDisplayPeriod(budget.amount, period)
         : BudgetCalculator.budgetForPeriod(history, period);
@@ -62,8 +59,8 @@ class BudgetSummaryCard extends StatelessWidget {
                     _periodLabel(period),
                     style: AppTextStyles.text12w400(context),
                   ),
-                  Text(
-                    formatter.format(budgetForPeriod),
+                  AmountTextWidget(
+                    amount: budgetForPeriod,
                     style: AppTextStyles.text20w600(
                       context,
                     ).copyWith(color: colorScheme.onSurface),

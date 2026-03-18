@@ -33,8 +33,6 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = context.watch<CurrencyProvider>().currency;
-
     return SingleChildScrollView(
       child: MonthPickerScrollWidget(
         onPeriodChange: _onPeriodChange,
@@ -51,8 +49,7 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                   BudgetStatsLoaded(:final stats, :final history) =>
                     stats.budget == null
                         ? _NoBudgetPlaceholder(
-                            onCreatePressed: () =>
-                                _showBudgetSheet(currency: currency),
+                            onCreatePressed: () => _showBudgetSheet(),
                           )
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +61,6 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                                 totalForPeriod: stats.totalForPeriod,
                                 history: history,
                                 transactions: stats.transactions,
-                                currency: currency,
                               ),
                               const SizedBox(
                                 height: AppSizing.spaceBtwElements,
@@ -74,11 +70,9 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                                 period: _periodOrDefault(),
                                 totalForPeriod: stats.totalForPeriod,
                                 history: history,
-                                currency: currency,
                                 onBudgetTap: () => _showBudgetDetailsSheet(
                                   budget: stats.budget!,
                                   totalForPeriod: stats.totalForPeriod,
-                                  currency: currency,
                                   history: history,
                                 ),
                               ),
@@ -87,7 +81,6 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                               ),
                               BudgetsSpendingCategoriesListWidget(
                                 categorySpending: stats.categorySpending,
-                                currency: currency,
                               ),
                             ],
                           ),
@@ -113,7 +106,6 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
   void _showBudgetDetailsSheet({
     required BudgetModel budget,
     required double totalForPeriod,
-    required Currency currency,
     required List<BudgetHistoryEntry> history,
   }) {
     final period = _periodOrDefault();
@@ -121,18 +113,13 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
       context,
       budget: budget,
       totalForPeriod: totalForPeriod,
-      currency: currency,
       period: period,
       history: history,
-      onEdit: () =>
-          _showBudgetSheet(currency: currency, existingBudget: budget),
+      onEdit: () => _showBudgetSheet(existingBudget: budget),
     );
   }
 
-  void _showBudgetSheet({
-    required Currency currency,
-    BudgetModel? existingBudget,
-  }) {
+  void _showBudgetSheet({BudgetModel? existingBudget}) {
     BudgetFormModalSheet.show(
       context,
       initialAmount: existingBudget?.amount,
