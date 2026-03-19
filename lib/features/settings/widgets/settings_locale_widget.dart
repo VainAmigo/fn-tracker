@@ -25,9 +25,7 @@ class SettingsLocaleWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ModalSheetTitleWidget(
-            title: 'Language',
-          ),
+          ModalSheetTitleWidget(title: 'Language'),
           const SizedBox(height: AppSizing.spaceBtwSections),
           Column(
             children: [
@@ -57,13 +55,10 @@ class SettingsLocaleWidget extends StatelessWidget {
                             ? Radius.circular(AppSizing.borderRadius12)
                             : Radius.circular(AppSizing.borderRadius4),
                       ),
-                      side: BorderSide(
-                        color: Theme.of(context).colorScheme.onSecondary,
-                      ),
                     ),
                     tileColor: isSelected
                         ? Theme.of(context).colorScheme.primary
-                        : Colors.transparent,
+                        : Theme.of(context).colorScheme.secondary,
                     leading: Icon(
                       Icons.language,
                       color: isSelected
@@ -81,7 +76,8 @@ class SettingsLocaleWidget extends StatelessWidget {
                     ),
                     subtitle: Text(
                       locale.languageCode.toUpperCase(),
-                      style: AppTextStyles.listTileSubtitle(context,
+                      style: AppTextStyles.listTileSubtitle(
+                        context,
                         color: isSelected
                             ? Theme.of(context).colorScheme.onSurface
                             : Theme.of(context).colorScheme.onSecondary,

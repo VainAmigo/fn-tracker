@@ -41,4 +41,28 @@ class BudgetDisplayUtils {
       WeeklyPeriod() => monthlyAmount / _weeksPerMonth,
     };
   }
+
+  /// Количество дней в периоде.
+  static int daysInPeriod(DatePickerPeriod period) {
+    return period.endDate.difference(period.startDate).inDays + 1;
+  }
+
+  /// Бюджет в день для отображения на графике и в карточке.
+  static double dailyBudgetForPeriod(
+    double budgetForPeriod,
+    DatePickerPeriod period,
+  ) {
+    return switch (period) {
+      YearlyPeriod() => budgetForPeriod / 12,
+      _ => budgetForPeriod / daysInPeriod(period),
+    };
+  }
+
+  /// Подпись для дневного/месячного бюджета.
+  static String perUnitBudgetLabel(DatePickerPeriod period) {
+    return switch (period) {
+      YearlyPeriod() => '/ month',
+      _ => '/ day',
+    };
+  }
 }

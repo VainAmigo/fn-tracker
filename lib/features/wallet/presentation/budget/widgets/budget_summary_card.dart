@@ -35,6 +35,10 @@ class BudgetSummaryCard extends StatelessWidget {
     final budgetForPeriod = history.isEmpty
         ? BudgetDisplayUtils.budgetForDisplayPeriod(budget.amount, period)
         : BudgetCalculator.budgetForPeriod(history, period);
+    final dailyBudget = BudgetDisplayUtils.dailyBudgetForPeriod(
+      budgetForPeriod,
+      period,
+    );
     final (chartLimits, chartValues) = (
       BudgetCalculator.chartBudgetLimits(history, period),
       BudgetCalculator.chartSpendingValues(transactions, period),
@@ -64,6 +68,23 @@ class BudgetSummaryCard extends StatelessWidget {
                     style: AppTextStyles.text20w600(
                       context,
                     ).copyWith(color: colorScheme.onSurface),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AmountTextWidget(
+                        amount: dailyBudget,
+                        style: AppTextStyles.text12w400(context).copyWith(
+                          color: colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ),
+                      Text(
+                        BudgetDisplayUtils.perUnitBudgetLabel(period),
+                        style: AppTextStyles.text12w400(context).copyWith(
+                          color: colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

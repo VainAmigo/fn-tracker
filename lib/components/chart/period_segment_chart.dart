@@ -418,7 +418,7 @@ class _ChartBar extends StatelessWidget {
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         style: AppTextStyles.text14w400(context).copyWith(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -662,9 +662,10 @@ class _CategoryBreakdownRow extends StatelessWidget {
               amount: segment.value,
               textAlign: TextAlign.center,
               maxLines: 1,
-              style: AppTextStyles.text14w400(
-                context,
-              ).copyWith(color: Colors.white, fontWeight: FontWeight.w500),
+              style: AppTextStyles.text14w400(context).copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),

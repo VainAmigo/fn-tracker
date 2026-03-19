@@ -46,8 +46,8 @@ class BudgetCalculator {
   }
 
   /// Лимит бюджета для каждого бара графика.
-  /// Линия = бюджет периода (11 666 для недели, 50 000 для месяца).
-  /// При смене бюджета в истории — ступенчатая линия (50k → 30k).
+  /// Для недели/месяца: дневной бюджет (8064/7≈1152 для недели, 50000/31≈1613 для месяца).
+  /// При смене бюджета в истории — ступенчатая линия.
   static List<double> chartBudgetLimits(
     List<BudgetHistoryEntry> history,
     DatePickerPeriod period,
@@ -88,7 +88,8 @@ class BudgetCalculator {
     final result = <double>[];
     for (int m = 1; m <= 12; m++) {
       final midMonth = DateTime(year, m, 15);
-      result.add(_periodBudgetForDay(history, midMonth, period));
+      final yearlyBudget = _periodBudgetForDay(history, midMonth, period);
+      result.add(yearlyBudget / 12);
     }
     return result;
   }
@@ -105,7 +106,8 @@ class BudgetCalculator {
     final result = <double>[];
     for (int i = 0; i < barCount; i++) {
       final d = start.add(Duration(days: i));
-      result.add(_periodBudgetForDay(history, d, period));
+      final periodBudget = _periodBudgetForDay(history, d, period);
+      result.add(periodBudget / barCount);
     }
     return result;
   }
@@ -120,7 +122,8 @@ class BudgetCalculator {
     final result = <double>[];
     for (int i = 0; i < barCount; i++) {
       final d = start.add(Duration(days: i));
-      result.add(_periodBudgetForDay(history, d, period));
+      final periodBudget = _periodBudgetForDay(history, d, period);
+      result.add(periodBudget / barCount);
     }
     return result;
   }

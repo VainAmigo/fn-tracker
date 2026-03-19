@@ -57,13 +57,10 @@ class SettingsCurrencyWidget extends StatelessWidget {
                             ? Radius.circular(AppSizing.borderRadius12)
                             : Radius.circular(AppSizing.borderRadius4),
                       ),
-                      side: BorderSide(
-                        color: Theme.of(context).colorScheme.onSecondary,
-                      ),
                     ),
                     tileColor: isSelected
                         ? Theme.of(context).colorScheme.primary
-                        : Colors.transparent,
+                        : Theme.of(context).colorScheme.secondary,
                     leading: Icon(
                       Icons.attach_money,
                       color: isSelected

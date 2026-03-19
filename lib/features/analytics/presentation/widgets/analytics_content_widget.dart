@@ -65,10 +65,7 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
               child: _selectedTabIndex == 0
-                  ? _DonutTabContent(
-                      key: const ValueKey('donut'),
-                      data: data,
-                    )
+                  ? _DonutTabContent(key: const ValueKey('donut'), data: data)
                   : _BarTabContent(
                       key: ValueKey('bar_${widget.period.startDayKey}'),
                       data: data,
@@ -113,10 +110,7 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
 }
 
 class _DonutTabContent extends StatelessWidget {
-  const _DonutTabContent({
-    super.key,
-    required this.data,
-  });
+  const _DonutTabContent({super.key, required this.data});
 
   final AnalyticsModel data;
 
