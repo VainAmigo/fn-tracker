@@ -8,10 +8,6 @@ class AppThemes {
     switch (palette) {
       case AppPalette.mintGreen:
         return brightness == Brightness.light ? mintGreenLight : mintGreenDark;
-      case AppPalette.sunsetBerry:
-        return brightness == Brightness.light
-            ? sunsetBerryLight
-            : sunsetBerryDark;
       case AppPalette.nordicFrost:
         return brightness == Brightness.light
             ? nordicFrostLight
@@ -27,7 +23,7 @@ class AppThemes {
     brightness: Brightness.light,
     primaryColor: Colors.blue,
     appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
-    scaffoldBackgroundColor: Color(0xFFFFFFFF),
+    scaffoldBackgroundColor: Color.fromARGB(255, 212, 238, 223),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Color(0xFF13EC5B),
       contentTextStyle: TextStyle(color: Color(0xFF111813)),
@@ -35,11 +31,16 @@ class AppThemes {
     colorScheme: ColorScheme.light(
       primary: Color(0xFF13EC5B),
       onPrimary: Color(0xFF111813),
-      surface: Color(0xFFFFFFFF),
+      surface: Color.fromARGB(255, 212, 238, 223),
       onSurface: Color(0xFF111813),
-      secondary: Color(0xFFDBE6DF),
+      secondary: Color.fromARGB(255, 206, 229, 214),
       onSecondary: Color(0xFF5B866A),
       tertiary: Color(0xFF13EC5B),
+
+      error: Color(0xFFD32F2F),
+      onError: Color(0xFFFFFFFF),
+      errorContainer: Color(0xFFFFEAEA),
+      onErrorContainer: Color(0xFF410002),
     ),
   );
 
@@ -59,44 +60,11 @@ class AppThemes {
       secondary: Color(0xFF1C2D22),
       onSecondary: Color.fromARGB(255, 86, 107, 94),
       tertiary: Color(0xFF13EC5B),
-    ),
-  );
 
-  static ThemeData sunsetBerryLight = ThemeData(
-    brightness: Brightness.light,
-    scaffoldBackgroundColor: Color(0xFFFFFFFF),
-    appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
-    snackBarTheme: SnackBarThemeData(
-      backgroundColor: Color(0xFFFF7549),
-      contentTextStyle: TextStyle(color: Color(0xFFFFFCFB)),
-    ),
-    colorScheme: ColorScheme.light(
-      primary: Color(0xFFFF7549),
-      onPrimary: Color(0xFFFFFCFB),
-      surface: Color(0xFFFFF9F5),
-      onSurface: Color(0xFF4A1D3D),
-      secondary: Color(0xFFF6EDEB),
-      onSecondary: Color(0xFFBCAAB2),
-      tertiary: Color(0xFFD7005A),
-    ),
-  );
-
-  static ThemeData sunsetBerryDark = ThemeData(
-    brightness: Brightness.dark,
-    scaffoldBackgroundColor: Color(0xFF1C0D18),
-    appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
-    snackBarTheme: SnackBarThemeData(
-      backgroundColor: Color(0xFFFF845D),
-      contentTextStyle: TextStyle(color: Color(0xFFFFFFFF)),
-    ),
-    colorScheme: ColorScheme.dark(
-      primary: Color(0xFFFF845D),
-      onPrimary: Color(0xFFFFFFFF),
-      surface: Color(0xFF1C0D18),
-      onSurface: Color(0xFFE8E2DD),
-      secondary: Color(0xFF2C1E28),
-      onSecondary: Color(0xFF675D61),
-      tertiary: Color(0xFFFF2E80),
+      error: Color(0xFFCF6679),
+      onError: Color(0xFF1E0000),
+      errorContainer: Color(0xFF8C1D18),
+      onErrorContainer: Color(0xFFFFDAD6),
     ),
   );
 
@@ -113,9 +81,14 @@ class AppThemes {
       onPrimary: Color(0xFFFFFFFF),
       surface: Color(0xFFF0F4F8),
       onSurface: Color(0xFF2D3748),
-      secondary: Color.fromARGB(255, 216, 228, 240),
-      onSecondary: Color.fromARGB(255, 147, 157, 173),
+      secondary: Color(0xFFD8E4F0),
+      onSecondary: Color(0xFF939DAD),
       tertiary: Color(0xFF3BC9DB),
+
+      error: Color(0xFFE53935),
+      onError: Color(0xFFFFFFFF),
+      errorContainer: Color(0xFFFFEBEE),
+      onErrorContainer: Color(0xFF410002),
     ),
   );
 
@@ -135,12 +108,17 @@ class AppThemes {
       secondary: Color(0xFF242C3A),
       onSecondary: Color(0xFF565D67),
       tertiary: Color(0xFF3BC9DB),
+
+      error: Color(0xFFCF6679),
+      onError: Color(0xFF1E0000),
+      errorContainer: Color(0xFF8C1D18),
+      onErrorContainer: Color(0xFFFFDAD6),
     ),
   );
 
   static ThemeData terracottaEarthLight = ThemeData(
     brightness: Brightness.light,
-    scaffoldBackgroundColor: Color(0xFFF7F2E9),
+    scaffoldBackgroundColor: Color.fromARGB(255, 215, 204, 182),
     appBarTheme: AppBarTheme(scrolledUnderElevation: 0),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Color(0xFFDE775C),
@@ -149,11 +127,16 @@ class AppThemes {
     colorScheme: ColorScheme.light(
       primary: Color(0xFFDE775C),
       onPrimary: Color(0xFFFFFFFF),
-      surface: Color(0xFFF7F2E9),
+      surface: Color.fromARGB(255, 215, 204, 182),
       onSurface: Color(0xFF4A3728),
-      secondary: Color(0xFFEEE8DF),
-      onSecondary: Color.fromARGB(255, 161, 152, 141),
+      secondary: Color.fromARGB(255, 225, 213, 194),
+      onSecondary: Color(0xFFA1988D),
       tertiary: Color(0xFFDF7457),
+
+      error: Color(0xFFD84315),
+      onError: Color(0xFFFFFFFF),
+      errorContainer: Color(0xFFFFEDE7),
+      onErrorContainer: Color(0xFF410002),
     ),
   );
 
@@ -173,6 +156,11 @@ class AppThemes {
       secondary: Color(0xFF372F29),
       onSecondary: Color(0xFF6A6257),
       tertiary: Color(0xFF8A9A5B),
+
+      error: Color.fromARGB(255, 248, 97, 80),
+      onError: Color(0xFF3B0000),
+      errorContainer: Color(0xFF8C2F1B),
+      onErrorContainer: Color(0xFFFFDAD4),
     ),
   );
 }
