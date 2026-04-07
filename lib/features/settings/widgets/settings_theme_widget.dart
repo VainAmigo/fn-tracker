@@ -34,6 +34,8 @@ class SettingsThemeWidget extends StatelessWidget {
           TitledSection(
             title: 'Theme',
             children: [
+              const SettingsDynamicColorWidget(),
+              const SizedBox(height: AppSizing.spaceBtwElements),
               SettingsAppThemeModeWidget(),
             ],
           ),

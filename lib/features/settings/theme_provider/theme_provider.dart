@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ThemeProvider extends ChangeNotifier {
   static const String _themeModeKey = 'theme_mode';
   static const String _paletteKey = 'theme_palette';
+  static const String _preferDynamicColorKey = 'theme_prefer_dynamic_color';
 
   AppThemeState _state = const AppThemeState();
 
@@ -32,6 +33,7 @@ class ThemeProvider extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final modeStr = prefs.getString(_themeModeKey);
       final paletteStr = prefs.getString(_paletteKey);
+      final preferDynamic = prefs.getBool(_preferDynamicColorKey);
 
       AppThemeMode? mode;
       if (modeStr != null) {
@@ -53,10 +55,11 @@ class ThemeProvider extends ChangeNotifier {
         }
       }
 
-      if (mode != null || palette != null) {
+      if (mode != null || palette != null || preferDynamic != null) {
         _state = _state.copyWith(
           themeMode: mode ?? _state.themeMode,
           palette: palette ?? _state.palette,
+          preferDynamicColor: preferDynamic ?? _state.preferDynamicColor,
         );
         notifyListeners();
       }
@@ -67,7 +70,8 @@ class ThemeProvider extends ChangeNotifier {
   Future<void> setState(AppThemeState Function(AppThemeState) update) async {
     final newState = update(_state);
     if (_state.themeMode == newState.themeMode &&
-        _state.palette == newState.palette) {
+        _state.palette == newState.palette &&
+        _state.preferDynamicColor == newState.preferDynamicColor) {
       return;
     }
 
@@ -78,6 +82,10 @@ class ThemeProvider extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_themeModeKey, _state.themeMode.toString());
       await prefs.setString(_paletteKey, _state.palette.toString());
+      await prefs.setBool(
+        _preferDynamicColorKey,
+        _state.preferDynamicColor,
+      );
     } catch (_) {}
   }
 }

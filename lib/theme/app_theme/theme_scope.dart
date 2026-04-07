@@ -6,18 +6,24 @@ class AppThemeState {
   const AppThemeState({
     this.themeMode = AppThemeMode.system,
     this.palette = AppPalette.mintGreen,
+    this.preferDynamicColor = true,
   });
 
   final AppThemeMode themeMode;
   final AppPalette palette;
 
+  /// На Android 12+ использовать [ColorScheme] из обоев (Material You), если доступен.
+  final bool preferDynamicColor;
+
   AppThemeState copyWith({
     AppThemeMode? themeMode,
     AppPalette? palette,
+    bool? preferDynamicColor,
   }) {
     return AppThemeState(
       themeMode: themeMode ?? this.themeMode,
       palette: palette ?? this.palette,
+      preferDynamicColor: preferDynamicColor ?? this.preferDynamicColor,
     );
   }
 }

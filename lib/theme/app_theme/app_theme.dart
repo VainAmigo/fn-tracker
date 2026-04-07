@@ -19,6 +19,36 @@ class AppThemes {
     }
   }
 
+  /// Тема из системного [ColorScheme] Android 12+ (Material You).
+  ///
+  /// В приложении [ColorScheme.secondary] используется как второстепенный фон
+  /// (карточки, поля). В M3 из коробки [ColorScheme.secondary] — яркий акцент,
+  /// поэтому подставляем системные [surfaceContainer*] — они темнее/слойнее [surface].
+  static ThemeData themeFromDynamicColor(ColorScheme scheme) {
+    final schemeForUi = scheme.copyWith(
+      secondary: scheme.onInverseSurface,
+      onSecondary: scheme.onSurfaceVariant,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: schemeForUi.brightness,
+      colorScheme: schemeForUi,
+      scaffoldBackgroundColor: schemeForUi.surface,
+      appBarTheme: AppBarTheme(
+        scrolledUnderElevation: 0,
+        backgroundColor: schemeForUi.surface,
+        foregroundColor: schemeForUi.onSurface,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: schemeForUi.inverseSurface,
+        contentTextStyle: TextStyle(color: schemeForUi.onInverseSurface),
+        actionTextColor: schemeForUi.primary,
+      ),
+      dividerTheme: DividerThemeData(color: schemeForUi.outlineVariant),
+    );
+  }
+
   static ThemeData mintGreenLight = ThemeData(
     brightness: Brightness.light,
     primaryColor: Colors.blue,

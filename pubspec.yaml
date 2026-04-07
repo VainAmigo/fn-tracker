@@ -23,6 +23,8 @@ dependencies:
   provider: ^6.1.5+1
   intl: ^0.20.2
   flutter_localization: ^0.3.3
+  quick_actions: ^1.1.0
+  dynamic_color: ^1.8.1
 
 dev_dependencies:
   flutter_test:

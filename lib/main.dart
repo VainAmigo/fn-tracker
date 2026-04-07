@@ -1,3 +1,4 @@
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -80,8 +81,7 @@ class _AppViewState extends State<AppView> {
           create: (context) => BudgetCubit(walletRepo: walletRepo),
         ),
         BlocProvider<HomeCubit>(
-          create: (context) =>
-              HomeCubit(transactionsRepo: transactionsRepo),
+          create: (context) => HomeCubit(transactionsRepo: transactionsRepo),
         ),
         BlocProvider<WalletCubit>(
           create: (context) => WalletCubit(walletRepo: walletRepo),
@@ -97,9 +97,7 @@ class _AppViewState extends State<AppView> {
               AnalyticsCubit(analyticsRepo: AnalyticsRepository()),
         ),
         BlocProvider<ScheduledPaymentsCubit>(
-          create: (context) => ScheduledPaymentsCubit(
-            walletRepo: walletRepo,
-          ),
+          create: (context) => ScheduledPaymentsCubit(walletRepo: walletRepo),
         ),
       ],
       child: MultiProvider(
@@ -134,21 +132,34 @@ class FnTracker extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final localeProvider = context.watch<LocaleProvider>();
+    final palette = themeProvider.state.palette;
+    final useDynamic = themeProvider.state.preferDynamicColor;
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'FN Tracker',
-      initialRoute: AppRouter.main,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      locale: localeProvider.locale,
-      theme: AppThemes.themeFor(themeProvider.state.palette, Brightness.light),
-      darkTheme: AppThemes.themeFor(
-        themeProvider.state.palette,
-        Brightness.dark,
-      ),
-      themeMode: themeProvider.themeMode,
-      onGenerateRoute: AppRouter.onGenerateRoute,
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        final hasDynamic = lightDynamic != null && darkDynamic != null;
+        final applyDynamic = useDynamic && hasDynamic;
+
+        final lightTheme = applyDynamic
+            ? AppThemes.themeFromDynamicColor(lightDynamic)
+            : AppThemes.themeFor(palette, Brightness.light);
+        final darkTheme = applyDynamic
+            ? AppThemes.themeFromDynamicColor(darkDynamic)
+            : AppThemes.themeFor(palette, Brightness.dark);
+
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'FN Tracker',
+          initialRoute: AppRouter.main,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: localeProvider.locale,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: themeProvider.themeMode,
+          onGenerateRoute: AppRouter.onGenerateRoute,
+        );
+      },
     );
   }
 }

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
+import 'package:quick_actions/quick_actions.dart';
 
 class AppMainView extends StatefulWidget {
   const AppMainView({super.key});
@@ -13,14 +15,65 @@ class AppMainView extends StatefulWidget {
 
 class _AppMainViewState extends State<AppMainView> {
   int _selectedIndex = 0;
+  final quickActions = QuickActions();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _runAutoCreate());
+    // Нельзя вызывать context.l10n / context.read в initState — только после кадра.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _registerQuickActions();
+      _runAutoCreate();
+    });
+  }
+
+  void _registerQuickActions() {
+    if (!mounted) return;
+    quickActions.setShortcutItems([
+      ShortcutItem(
+        type: 'expense',
+        localizedTitle: _getShortcutTitle('expense', context),
+        icon: 'expense_icon',
+      ),
+      ShortcutItem(
+        type: 'income',
+        localizedTitle: _getShortcutTitle('income', context),
+        icon: 'income_icon',
+      ),
+    ]);
+
+    quickActions.initialize((String shortcutType) {
+      if (!context.mounted) return;
+      switch (shortcutType) {
+        case 'expense':
+          Navigator.of(context).pushNamed(
+            AppRouter.addTransaction,
+            arguments: TransactionType.expense,
+          );
+          return;
+        case 'income':
+          Navigator.of(context).pushNamed(
+            AppRouter.addTransaction,
+            arguments: TransactionType.income,
+          );
+          return;
+        default:
+          return;
+      }
+    });
+  }
+
+  String _getShortcutTitle(String shortcutType, BuildContext context) {
+    return switch (shortcutType) {
+      'expense' => context.l10n.expense,
+      'income' => context.l10n.income,
+      _ => '',
+    };
   }
 
   Future<void> _runAutoCreate() async {
+    if (!mounted) return;
     final walletRepo = context.read<WalletCubit>().walletRepo;
     final transactionsRepo = context.read<TransactionsCubit>().transactionsRepo;
     final service = ScheduledPaymentAutoCreateService(
