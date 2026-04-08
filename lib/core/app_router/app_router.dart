@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/features.dart';
 
 @immutable
@@ -49,15 +50,30 @@ final class AppRouter {
           name: addTransaction,
           arguments: settings.arguments,
         ),
-        builder: (_) {
+        builder: (context) {
           final args = settings.arguments;
+          CategoryModel? categoryById;
+          if (args is Map<String, dynamic> && args['categoryId'] is String) {
+            final categoriesState = context.read<CategoriesCubit>().state;
+            if (categoriesState is CategoriesLoaded) {
+              final categoryId = args['categoryId'] as String;
+              for (final category in categoriesState.categories) {
+                if (category.categoryId == categoryId) {
+                  categoryById = category;
+                  break;
+                }
+              }
+            }
+          }
           return AddTransactionView(
             initialType: args is WalletModel || args is GoalModel
                 ? TransactionType.income
+                : args is Map<String, dynamic>
+                ? TransactionType.expense
                 : null,
             initialWallet: args is WalletModel ? args : null,
             initialGoal: args is GoalModel ? args : null,
-            initialCategory: args is CategoryModel ? args : null,
+            initialCategory: args is CategoryModel ? args : categoryById,
           );
         },
       ),

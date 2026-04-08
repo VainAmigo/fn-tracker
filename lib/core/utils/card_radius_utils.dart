@@ -8,6 +8,8 @@ enum CardRadius {
   last,
   middle,
   single,
+  withSettingsLast,
+  withSettingsFirst,
 }
 
 /// Возвращает [CardRadius] для элемента списка по индексу.
@@ -42,5 +44,17 @@ BorderRadius borderRadiusFor(
       ),
     CardRadius.middle => BorderRadius.circular(cornerRadius),
     CardRadius.single => BorderRadius.circular(mainRadius),
+    CardRadius.withSettingsFirst => BorderRadius.only(
+        topLeft: Radius.circular(mainRadius),
+        topRight: Radius.circular(cornerRadius),
+        bottomLeft: Radius.circular(cornerRadius),
+        bottomRight: Radius.circular(cornerRadius),
+    ),
+    CardRadius.withSettingsLast => BorderRadius.only(
+        topLeft: Radius.circular(cornerRadius),
+        topRight: Radius.circular(cornerRadius),
+        bottomLeft: Radius.circular(mainRadius),
+        bottomRight: Radius.circular(cornerRadius),
+      ),
   };
 }

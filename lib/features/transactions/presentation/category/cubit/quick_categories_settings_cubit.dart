@@ -1,4 +1,5 @@
 import 'package:fn_tracker/features/transactions/presentation/category/data/quick_categories_display_mode.dart';
+import 'package:fn_tracker/features/transactions/presentation/category/data/widget_categories_source.dart';
 import 'package:fn_tracker/features/transactions/presentation/category/cubit/quick_categories_settings_state.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
@@ -21,9 +22,18 @@ class QuickCategoriesSettingsCubit
             ?.map((e) => e as String)
             .toList() ??
         const [];
+    final widgetSource = WidgetCategoriesSource.fromString(
+      json['widgetSource'] as String? ?? 'system',
+    );
+    final customWidgetOrder = (json['customWidgetOrder'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList() ??
+        const [];
     return QuickCategoriesSettingsState(
       displayMode: displayMode,
       pinnedOrder: pinnedOrder,
+      widgetSource: widgetSource,
+      customWidgetOrder: customWidgetOrder,
     );
   }
 
@@ -32,6 +42,8 @@ class QuickCategoriesSettingsCubit
     return {
       'displayMode': state.displayMode.name,
       'pinnedOrder': state.pinnedOrder,
+      'widgetSource': state.widgetSource.name,
+      'customWidgetOrder': state.customWidgetOrder,
     };
   }
 
@@ -43,6 +55,8 @@ class QuickCategoriesSettingsCubit
     emit(QuickCategoriesSettingsState(
       displayMode: mode,
       pinnedOrder: state.pinnedOrder,
+      widgetSource: state.widgetSource,
+      customWidgetOrder: state.customWidgetOrder,
     ));
   }
 
@@ -50,6 +64,26 @@ class QuickCategoriesSettingsCubit
     emit(QuickCategoriesSettingsState(
       displayMode: state.displayMode,
       pinnedOrder: order,
+      widgetSource: state.widgetSource,
+      customWidgetOrder: state.customWidgetOrder,
+    ));
+  }
+
+  Future<void> setWidgetSource(WidgetCategoriesSource source) async {
+    emit(QuickCategoriesSettingsState(
+      displayMode: state.displayMode,
+      pinnedOrder: state.pinnedOrder,
+      widgetSource: source,
+      customWidgetOrder: state.customWidgetOrder,
+    ));
+  }
+
+  Future<void> setCustomWidgetOrder(List<String> order) async {
+    emit(QuickCategoriesSettingsState(
+      displayMode: state.displayMode,
+      pinnedOrder: state.pinnedOrder,
+      widgetSource: state.widgetSource,
+      customWidgetOrder: order,
     ));
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/features/main/services/android_widget_bridge.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
@@ -25,7 +26,15 @@ class _AppMainViewState extends State<AppMainView> {
       if (!mounted) return;
       _registerQuickActions();
       _runAutoCreate();
+      AndroidWidgetBridge.init(onCategoryTap: _openAddExpenseFromWidget);
+      _syncWidgetData(context);
     });
+  }
+
+  @override
+  void dispose() {
+    AndroidWidgetBridge.dispose();
+    super.dispose();
   }
 
   void _registerQuickActions() {
@@ -111,6 +120,101 @@ class _AppMainViewState extends State<AppMainView> {
     );
   }
 
+  Future<void> _openAddExpenseFromWidget(String categoryId) async {
+    if (!mounted) return;
+
+    final categoriesCubit = context.read<CategoriesCubit>();
+    CategoryModel? category = _findCategoryById(categoriesCubit.state, categoryId);
+
+    if (category == null) {
+      await categoriesCubit.loadCategories();
+      category = _findCategoryById(categoriesCubit.state, categoryId);
+    }
+
+    if (!mounted) return;
+    Navigator.of(context).pushNamed(
+      AppRouter.addTransaction,
+      arguments: category,
+    );
+  }
+
+  CategoryModel? _findCategoryById(CategoriesState state, String categoryId) {
+    if (state is! CategoriesLoaded) return null;
+    for (final item in state.categories) {
+      if (item.categoryId == categoryId) return item;
+    }
+    return null;
+  }
+
+  Future<void> _syncWidgetData(BuildContext context) async {
+    final categoriesState = context.read<CategoriesCubit>().state;
+    if (categoriesState is! CategoriesLoaded) {
+      await AndroidWidgetBridge.clear();
+      return;
+    }
+
+    final allCategories = categoriesState.categories;
+    final settings = context.read<QuickCategoriesSettingsCubit>().state;
+    final transactionsState = context.read<TransactionsCubit>().state;
+    final recentIds = <String>[];
+
+    final txList = switch (transactionsState) {
+      TransactionsLoaded() => transactionsState.transactions,
+      TransactionDeleted() => transactionsState.transactions,
+      _ => <TransactionModel>[],
+    };
+
+    for (final tx in txList) {
+      final categoryId = tx.categoryId;
+      if (categoryId == null ||
+          categoryId.isEmpty ||
+          recentIds.contains(categoryId)) {
+        continue;
+      }
+      recentIds.add(categoryId);
+      if (recentIds.length >= 12) break;
+    }
+
+    final defaultPinnedIds = _resolvePinnedIds(
+      categories: allCategories,
+      pinnedOrder: settings.pinnedOrder,
+    );
+
+    final (widgetPinnedIds, widgetRecentIds) = switch (settings.widgetSource) {
+      WidgetCategoriesSource.system => switch (settings.displayMode) {
+          QuickCategoriesDisplayMode.pinned => (defaultPinnedIds, <String>[]),
+          QuickCategoriesDisplayMode.recent => (recentIds, <String>[]),
+        },
+      WidgetCategoriesSource.custom => (settings.customWidgetOrder, <String>[]),
+    };
+
+    await AndroidWidgetBridge.syncCategories(
+      categories: allCategories,
+      pinnedIds: widgetPinnedIds,
+      recentIds: widgetRecentIds,
+    );
+  }
+
+  List<String> _resolvePinnedIds({
+    required List<CategoryModel> categories,
+    required List<String> pinnedOrder,
+  }) {
+    final pinnedSet = <String>{
+      for (final category in categories)
+        if (category.isQuick == true) category.categoryId,
+    };
+    if (pinnedSet.isEmpty) return const [];
+
+    final result = <String>[];
+    for (final id in pinnedOrder) {
+      if (pinnedSet.contains(id)) result.add(id);
+    }
+    for (final id in pinnedSet) {
+      if (!result.contains(id)) result.add(id);
+    }
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -130,6 +234,17 @@ class _AppMainViewState extends State<AppMainView> {
             if (state is TransactionDeleted) {
               _onDataUpdated(context);
             }
+            _syncWidgetData(context);
+          },
+        ),
+        BlocListener<CategoriesCubit, CategoriesState>(
+          listener: (context, state) {
+            _syncWidgetData(context);
+          },
+        ),
+        BlocListener<QuickCategoriesSettingsCubit, QuickCategoriesSettingsState>(
+          listener: (context, state) {
+            _syncWidgetData(context);
           },
         ),
         BlocListener<GoalsCubit, GoalsState>(
