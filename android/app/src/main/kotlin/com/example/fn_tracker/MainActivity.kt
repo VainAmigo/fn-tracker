@@ -40,6 +40,19 @@ class MainActivity : FlutterActivity() {
                     result.success(id)
                 }
 
+                "syncAnalyticsWidgetData" -> {
+                    val args = call.arguments as? Map<*, *> ?: emptyMap<String, Any>()
+                    saveAnalyticsWidgetData(args)
+                    refreshAnalyticsWidgets()
+                    result.success(null)
+                }
+
+                "clearAnalyticsWidgetData" -> {
+                    clearAnalyticsWidgetData()
+                    refreshAnalyticsWidgets()
+                    result.success(null)
+                }
+
                 else -> result.notImplemented()
             }
         }
@@ -111,5 +124,54 @@ class MainActivity : FlutterActivity() {
         if (ids.isEmpty()) return
         manager.notifyAppWidgetViewDataChanged(ids, R.id.widget_grid)
         QuickCategoriesWidgetProvider.updateAll(this, manager, ids)
+    }
+
+    private fun saveAnalyticsWidgetData(args: Map<*, *>) {
+        val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        prefs.edit()
+            .putFloat(
+                "flutter.widget_analytics_total_income",
+                (args["total_income"] as? Number)?.toFloat() ?: 0f
+            )
+            .putFloat(
+                "flutter.widget_analytics_total_expense",
+                (args["total_expense"] as? Number)?.toFloat() ?: 0f
+            )
+            .putFloat(
+                "flutter.widget_analytics_balance",
+                (args["balance"] as? Number)?.toFloat() ?: 0f
+            )
+            .putString(
+                "flutter.widget_analytics_period_label",
+                args["period_label"] as? String ?: ""
+            )
+            .putString(
+                "flutter.widget_analytics_trend_points_json",
+                args["trend_points_json"] as? String ?: "[]"
+            )
+            .putLong(
+                "flutter.widget_analytics_updated_at_ms",
+                (args["updated_at_ms"] as? Number)?.toLong() ?: System.currentTimeMillis()
+            )
+            .apply()
+    }
+
+    private fun clearAnalyticsWidgetData() {
+        val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        prefs.edit()
+            .putFloat("flutter.widget_analytics_total_income", 0f)
+            .putFloat("flutter.widget_analytics_total_expense", 0f)
+            .putFloat("flutter.widget_analytics_balance", 0f)
+            .putString("flutter.widget_analytics_period_label", "")
+            .putString("flutter.widget_analytics_trend_points_json", "[]")
+            .apply()
+    }
+
+    private fun refreshAnalyticsWidgets() {
+        val manager = AppWidgetManager.getInstance(this)
+        val provider = ComponentName(this, AnalyticsWidgetProvider::class.java)
+        val ids = manager.getAppWidgetIds(provider)
+        if (ids.isEmpty()) return
+        AnalyticsWidgetProvider.updateAll(this, manager, ids)
     }
 }

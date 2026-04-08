@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">FN Tracker</string>
     <string name="quick_categories_widget_name">Quick Categories</string>
+    <string name="analytics_widget_name">Analytics</string>
 </resources>

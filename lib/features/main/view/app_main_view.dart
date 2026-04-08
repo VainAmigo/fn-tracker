@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/features/main/services/android_analytics_widget_bridge.dart';
 import 'package:fn_tracker/features/main/services/android_widget_bridge.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/l10n/l10.dart';
@@ -195,6 +196,27 @@ class _AppMainViewState extends State<AppMainView> {
     );
   }
 
+  Future<void> _syncAnalyticsWidgetData(BuildContext context) async {
+    final state = context.read<AnalyticsCubit>().state;
+    if (state is! AnalyticsLoaded) {
+      await AndroidAnalyticsWidgetBridge.clear();
+      return;
+    }
+    await AndroidAnalyticsWidgetBridge.syncAnalytics(
+      data: state.data,
+      periodLabel: _periodLabel(state.period),
+    );
+  }
+
+  String _periodLabel(DatePickerPeriod period) {
+    return switch (period) {
+      MonthlyPeriod(:final year, :final month) => '${month.name} $year',
+      YearlyPeriod(:final year) => '$year',
+      WeeklyPeriod(:final start, :final end) =>
+        '${start.day}.${start.month} - ${end.day}.${end.month}',
+    };
+  }
+
   List<String> _resolvePinnedIds({
     required List<CategoryModel> categories,
     required List<String> pinnedOrder,
@@ -245,6 +267,11 @@ class _AppMainViewState extends State<AppMainView> {
         BlocListener<QuickCategoriesSettingsCubit, QuickCategoriesSettingsState>(
           listener: (context, state) {
             _syncWidgetData(context);
+          },
+        ),
+        BlocListener<AnalyticsCubit, AnalyticsState>(
+          listener: (context, state) {
+            _syncAnalyticsWidgetData(context);
           },
         ),
         BlocListener<GoalsCubit, GoalsState>(
