@@ -218,11 +218,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   }
 
   double get _effectiveAmount {
-    if (_amount.isEmpty) return 0;
-    if (ExpressionEvaluator.hasOperator(_amount)) {
-      return ExpressionEvaluator.evaluate(_amount) ?? 0;
-    }
-    return double.tryParse(_amount) ?? 0;
+    return AmountInputLogic.parseAmount(_amount);
   }
 
   String? get _expressionForDisplay =>
@@ -248,89 +244,15 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     final currency = context.read<CurrencyProvider>().currency;
     final decimalSep =
         currency.decimalSeparator == DecimalSeparator.comma ? ',' : '.';
-
-    if (key == '+' || key == '-' || key == '*' || key == '/') {
-      _handleOperator(key, currency);
-      return;
-    }
-
-    if (key == 'backspace') {
-      if (_amount.isNotEmpty) {
-        setState(() => _amount = _amount.substring(0, _amount.length - 1));
-      }
-      return;
-    }
-
-    if (key == '.') {
-      if (_amount.contains('.') || _amount.contains(',')) return;
-      if (ExpressionEvaluator.hasOperator(_amount)) {
-        final lastNumStart = _lastNumberStartIndex();
-        if (lastNumStart >= 0) {
-          final afterOp = _amount.substring(lastNumStart);
-          if (afterOp.contains('.') || afterOp.contains(',')) return;
-        }
-      }
-      setState(() {
-        _amount = _amount.isEmpty ? '0$decimalSep' : '$_amount$decimalSep';
-      });
-      return;
-    }
-
-    if (ExpressionEvaluator.hasOperator(_amount)) {
-      final lastNumStart = _lastNumberStartIndex();
-      if (lastNumStart >= 0) {
-        final afterOp = _amount.substring(lastNumStart);
-        if (afterOp.contains('.') || afterOp.contains(',')) {
-          final parts = afterOp.split(RegExp(r'[.,]'));
-          if (parts.length == 2 &&
-              parts[1].length >= currency.decimalPlaces) {
-            return;
-          }
-        } else if (afterOp.replaceAll(RegExp(r'[^0-9]'), '').length >= 12) {
-          return;
-        }
-      }
-    } else {
-      if (_amount.contains('.') || _amount.contains(',')) {
-        final parts = _amount.split(RegExp(r'[.,]'));
-        if (parts.length == 2 &&
-            parts[1].length >= currency.decimalPlaces) {
-          return;
-        }
-      } else if (_amount.length >= 12) {
-        return;
-      }
-    }
-
-    setState(() {
-      if (_amount.isEmpty || _amount == '0') {
-        _amount = key == '0' ? '0' : key;
-      } else {
-        _amount = '$_amount$key';
-      }
-    });
-  }
-
-  void _handleOperator(String op, Currency currency) {
-    if (_amount.isEmpty) return;
-    if (ExpressionEvaluator.hasOperator(_amount)) {
-      final lastOpIndex = _lastOperatorIndex();
-      if (lastOpIndex != null && lastOpIndex == _amount.length - 1) {
-        setState(() =>
-            _amount = '${_amount.substring(0, lastOpIndex)}$op');
-      } else {
-        final result = ExpressionEvaluator.evaluate(_amount);
-        if (result != null) {
-          final resultStr = result == result.truncateToDouble()
-              ? result.toInt().toString()
-              : result.toStringAsFixed(currency.decimalPlaces);
-          setState(() => _amount = '$resultStr$op');
-        } else {
-          setState(() => _amount = '$_amount$op');
-        }
-      }
-    } else {
-      setState(() => _amount = '$_amount$op');
+    final nextAmount = AmountInputLogic.applyKey(
+      currentAmount: _amount,
+      key: key,
+      decimalPlaces: currency.decimalPlaces,
+      decimalSeparator: decimalSep,
+      enableCalculator: true,
+    );
+    if (nextAmount != _amount) {
+      setState(() => _amount = nextAmount);
     }
   }
 
@@ -339,11 +261,6 @@ class _AddTransactionViewState extends State<AddTransactionView> {
       if ('+-*/'.contains(_amount[i])) return i;
     }
     return null;
-  }
-
-  int _lastNumberStartIndex() {
-    final idx = _lastOperatorIndex();
-    return idx != null ? idx + 1 : 0;
   }
 
   String? _validateInputs() {

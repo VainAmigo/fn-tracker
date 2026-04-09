@@ -1,4 +1,5 @@
 export 'amount_input/amount_display.dart';
+export 'amount_input/amount_input_logic.dart';
 export 'amount_input/amount_input_widget.dart';
 export 'amount_input/amount_keyboard.dart';
 export 'amount_input/amount_input_modal_sheet.dart';

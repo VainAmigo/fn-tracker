@@ -55,112 +55,23 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
   }
 
   void _onKeyPressed(String key) {
-    if (widget.enableCalculator && _isOperator(key)) {
-      _handleOperator(key);
-      return;
-    }
-
-    if (key == 'backspace') {
-      if (_amount.isNotEmpty) {
-        setState(() {
-          _amount = _amount.substring(0, _amount.length - 1);
-        });
-        _notifyAmountChanged();
-      }
-      return;
-    }
-
-    if (key == '.') {
-      if (_amount.contains('.') || _amount.contains(',')) return;
-      if (widget.enableCalculator && ExpressionEvaluator.hasOperator(_amount)) {
-        final lastNumStart = _lastNumberStartIndex();
-        if (lastNumStart >= 0) {
-          final afterOp = _amount.substring(lastNumStart);
-          if (afterOp.contains('.') || afterOp.contains(',')) return;
-        }
-      }
-      final decimalSep = widget.currency.decimalSeparator ==
-              DecimalSeparator.comma
-          ? ','
-          : '.';
+    final decimalSep = widget.currency.decimalSeparator ==
+            DecimalSeparator.comma
+        ? ','
+        : '.';
+    final nextAmount = AmountInputLogic.applyKey(
+      currentAmount: _amount,
+      key: key,
+      decimalPlaces: widget.currency.decimalPlaces,
+      decimalSeparator: decimalSep,
+      enableCalculator: widget.enableCalculator,
+    );
+    if (nextAmount != _amount) {
       setState(() {
-        _amount = _amount.isEmpty ? '0$decimalSep' : '$_amount$decimalSep';
+        _amount = nextAmount;
       });
       _notifyAmountChanged();
-      return;
     }
-
-    // Digit 0-9
-    if (widget.enableCalculator && ExpressionEvaluator.hasOperator(_amount)) {
-      final lastNumStart = _lastNumberStartIndex();
-      if (lastNumStart >= 0) {
-        final afterOp = _amount.substring(lastNumStart);
-        if (afterOp.contains('.') || afterOp.contains(',')) {
-          final parts = afterOp.split(RegExp(r'[.,]'));
-          if (parts.length == 2 &&
-              parts[1].length >= widget.currency.decimalPlaces) {
-            return;
-          }
-        } else if (afterOp.replaceAll(RegExp(r'[^0-9]'), '').length >= 12) {
-          return;
-        }
-      }
-    } else {
-      if (_amount.contains('.') || _amount.contains(',')) {
-        final parts = _amount.split(RegExp(r'[.,]'));
-        if (parts.length == 2 &&
-            parts[1].length >= widget.currency.decimalPlaces) {
-          return;
-        }
-      } else if (_amount.length >= 12) {
-        return;
-      }
-    }
-
-    setState(() {
-      if (_amount.isEmpty || _amount == '0') {
-        _amount = key == '0' ? '0' : key;
-      } else {
-        _amount = '$_amount$key';
-      }
-    });
-    _notifyAmountChanged();
-  }
-
-  bool _isOperator(String key) =>
-      key == '+' || key == '-' || key == '*' || key == '/';
-
-  void _handleOperator(String op) {
-    if (_amount.isEmpty) return;
-    if (ExpressionEvaluator.hasOperator(_amount)) {
-      final lastOpIndex = _lastOperatorIndex();
-      if (lastOpIndex != null && lastOpIndex == _amount.length - 1) {
-        setState(() => _amount = '${_amount.substring(0, lastOpIndex)}$op');
-      } else {
-        final result = ExpressionEvaluator.evaluate(_amount);
-        if (result != null) {
-          final resultStr = _formatResult(result);
-          setState(() => _amount = '$resultStr$op');
-        } else {
-          setState(() => _amount = '$_amount$op');
-        }
-      }
-    } else {
-      setState(() => _amount = '$_amount$op');
-    }
-    _notifyAmountChanged();
-  }
-
-  int? _lastOperatorIndex() {
-    for (int i = _amount.length - 1; i >= 0; i--) {
-      if (_isOperator(_amount[i])) return i;
-    }
-    return null;
-  }
-
-  int _lastNumberStartIndex() {
-    final idx = _lastOperatorIndex();
-    return idx != null ? idx + 1 : 0;
   }
 
   String _formatResult(double value) {
