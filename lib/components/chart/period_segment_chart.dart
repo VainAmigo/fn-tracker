@@ -283,26 +283,24 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart>
                           final barWidth = isLast
                               ? widget.segmentWidth
                               : widget.segmentWidth + widget.segmentGap;
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() => _selectedIndex = i);
-                              widget.onSegmentTap?.call(i);
-                            },
-                            child: SizedBox(
-                              width: barWidth,
-                              child: _ChartBar(
-                                bar: bar,
-                                isSelected: isSelected,
-                                segmentWidth: widget.segmentWidth,
-                                segmentGap: widget.segmentGap,
-                                chartHeight: widget.chartHeight,
-                                barRadius: widget.barRadius,
-                                segmentGapVertical: widget.segmentGapVertical,
-                                minSegmentHeight: widget.minSegmentHeight,
-                                inactiveColor: inactiveColor,
-                                maxTotal: _maxTotal,
-                                progress: _animation.value,
-                              ),
+                          return SizedBox(
+                            width: barWidth,
+                            child: _ChartBar(
+                              bar: bar,
+                              isSelected: isSelected,
+                              segmentWidth: widget.segmentWidth,
+                              segmentGap: widget.segmentGap,
+                              chartHeight: widget.chartHeight,
+                              barRadius: widget.barRadius,
+                              segmentGapVertical: widget.segmentGapVertical,
+                              minSegmentHeight: widget.minSegmentHeight,
+                              inactiveColor: inactiveColor,
+                              maxTotal: _maxTotal,
+                              progress: _animation.value,
+                              onTap: () {
+                                setState(() => _selectedIndex = i);
+                                widget.onSegmentTap?.call(i);
+                              },
                             ),
                           );
                         }),
@@ -316,7 +314,7 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart>
         ),
         if (_selectedIndex != null &&
             _selectedIndex! < widget.bars.length &&
-            widget.bars[_selectedIndex!].segments.isNotEmpty) ...[
+            widget.bars[_selectedIndex!].segments.any((s) => s.value > 0)) ...[
           const SizedBox(height: AppSizing.spaceBtwItems),
           AnimatedBuilder(
             animation: _animation,
@@ -352,6 +350,7 @@ class _ChartBar extends StatelessWidget {
     required this.minSegmentHeight,
     required this.inactiveColor,
     required this.maxTotal,
+    this.onTap,
     this.progress = 1.0,
   });
 
@@ -365,14 +364,18 @@ class _ChartBar extends StatelessWidget {
   final double minSegmentHeight;
   final Color inactiveColor;
   final double maxTotal;
+  final VoidCallback? onTap;
   final double progress;
 
   @override
   Widget build(BuildContext context) {
     final barHeight = maxTotal > 0 ? (bar.total / maxTotal) * chartHeight : 0.0;
+    final hasVisibleSegments = bar.total > 0 && bar.segments.any((s) => s.value > 0);
     final radius = Radius.circular(barRadius);
 
-    final barWidget = isSelected && bar.segments.isNotEmpty
+    final barWidget = !hasVisibleSegments
+        ? const SizedBox.shrink()
+        : isSelected
         ? _StackedBar(
             segments: bar.segments,
             width: segmentWidth,
@@ -393,57 +396,61 @@ class _ChartBar extends StatelessWidget {
             ),
           );
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: segmentWidth,
-          height: chartHeight,
-          child: Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.bottomCenter,
-            children: [
-              Align(alignment: Alignment.bottomCenter, child: barWidget),
-              if (isSelected && bar.total > 0)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: barHeight * progress + 4,
-                  child: Center(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: AmountTextWidget(
-                        amount: bar.total,
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        style: AppTextStyles.text14w400(context).copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontWeight: FontWeight.w500,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: segmentWidth,
+            height: chartHeight,
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.bottomCenter,
+              children: [
+                Align(alignment: Alignment.bottomCenter, child: barWidget),
+                if (isSelected && hasVisibleSegments)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: barHeight * progress + 4,
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: AmountTextWidget(
+                          amount: bar.total,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          style: AppTextStyles.text14w400(context).copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 6),
-        SizedBox(
-          width: segmentWidth + segmentGap,
-          child: Text(
-            bar.label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.6),
+              ],
             ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
-        ),
-      ],
+          const SizedBox(height: 6),
+          SizedBox(
+            width: segmentWidth + segmentGap,
+            child: Text(
+              bar.label,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

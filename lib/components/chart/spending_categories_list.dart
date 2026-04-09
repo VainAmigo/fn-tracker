@@ -11,9 +11,11 @@ class SpendingCategoriesListWidget extends StatelessWidget {
   const SpendingCategoriesListWidget({
     super.key,
     required this.categorySpending,
+    this.progress = 1.0,
   });
 
   final List<CategorySpending> categorySpending;
+  final double progress;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class SpendingCategoriesListWidget extends StatelessWidget {
             segment: segments[i],
             maxValue: maxValue,
             colorScheme: colorScheme,
+            progress: progress,
           ),
         ],
       ],
@@ -49,6 +52,7 @@ class _SpendingCategoryRow extends StatelessWidget {
     required this.segment,
     required this.maxValue,
     required this.colorScheme,
+    this.progress = 1.0,
   });
 
   static const double _minBarWidth = 90;
@@ -57,13 +61,15 @@ class _SpendingCategoryRow extends StatelessWidget {
   final CategorySegmentData segment;
   final double maxValue;
   final ColorScheme colorScheme;
+  final double progress;
 
   @override
   Widget build(BuildContext context) {
     final fraction = maxValue > 0
         ? (segment.value / maxValue).clamp(0.0, 1.0)
         : 0.0;
-    final barWidth = _minBarWidth + (_maxBarWidth - _minBarWidth) * fraction;
+    final barWidth =
+        _minBarWidth + (_maxBarWidth - _minBarWidth) * fraction * progress;
 
     return Row(
       children: [

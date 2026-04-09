@@ -116,6 +116,14 @@ class _DonutTabContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final listAnimationKey = ValueKey(
+      Object.hashAll(
+        data.categorySpending.map(
+          (s) => Object.hash(s.category.categoryId, s.amount),
+        ),
+      ),
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -125,7 +133,18 @@ class _DonutTabContent extends StatelessWidget {
             totalExpense: data.totalExpense,
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
-          SpendingCategoriesListWidget(categorySpending: data.categorySpending),
+          TweenAnimationBuilder<double>(
+            key: listAnimationKey,
+            tween: Tween(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.easeOutCubic,
+            builder: (context, progress, _) {
+              return SpendingCategoriesListWidget(
+                categorySpending: data.categorySpending,
+                progress: progress,
+              );
+            },
+          ),
         ],
       ],
     );
