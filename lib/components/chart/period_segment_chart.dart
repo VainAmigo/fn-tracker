@@ -278,6 +278,9 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart>
                         mainAxisSize: MainAxisSize.min,
                         children: List.generate(widget.bars.length, (i) {
                           final bar = widget.bars[i];
+                          final hasVisibleSegments =
+                              bar.total > 0 &&
+                              bar.segments.any((s) => s.value > 0);
                           final isSelected = _selectedIndex == i;
                           final isLast = i == widget.bars.length - 1;
                           final barWidth = isLast
@@ -297,10 +300,12 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart>
                               inactiveColor: inactiveColor,
                               maxTotal: _maxTotal,
                               progress: _animation.value,
-                              onTap: () {
-                                setState(() => _selectedIndex = i);
-                                widget.onSegmentTap?.call(i);
-                              },
+                              onTap: hasVisibleSegments
+                                  ? () {
+                                      setState(() => _selectedIndex = i);
+                                      widget.onSegmentTap?.call(i);
+                                    }
+                                  : null,
                             ),
                           );
                         }),
@@ -398,7 +403,7 @@ class _ChartBar extends StatelessWidget {
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+      onTap: hasVisibleSegments ? onTap : null,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,

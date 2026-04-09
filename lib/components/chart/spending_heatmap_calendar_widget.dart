@@ -156,13 +156,16 @@ class _SpendingHeatmapCalendarWidgetState
             children: [
               Row(
                 children: List.generate(totalWeeks, (weekIndex) {
-                  final weekStartDayIndex = (weekIndex * 7) - startWeekdayOffset;
+                  final weekStartDayIndex =
+                      (weekIndex * 7) - startWeekdayOffset;
                   final monthLabel = _monthLabelForWeekChunk(
                     context,
                     weekStartDayIndex,
                   );
                   return SizedBox(
-                    width: _yearlyCellSize + (weekIndex == totalWeeks - 1 ? 0 : _cellGap),
+                    width:
+                        _yearlyCellSize +
+                        (weekIndex == totalWeeks - 1 ? 0 : _cellGap),
                     child: Text(
                       monthLabel,
                       style: AppTextStyles.text12w400(context).copyWith(
@@ -177,12 +180,15 @@ class _SpendingHeatmapCalendarWidgetState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: List.generate(totalWeeks, (weekIndex) {
                   return Padding(
-                    padding: EdgeInsets.only(right: weekIndex == totalWeeks - 1 ? 0 : _cellGap),
+                    padding: EdgeInsets.only(
+                      right: weekIndex == totalWeeks - 1 ? 0 : _cellGap,
+                    ),
                     child: Column(
                       children: List.generate(7, (weekdayIndex) {
                         final absoluteCellIndex = weekIndex * 7 + weekdayIndex;
                         final dayIndex = absoluteCellIndex - startWeekdayOffset;
-                        final cell = (dayIndex < 0 || dayIndex >= widget.days.length)
+                        final cell =
+                            (dayIndex < 0 || dayIndex >= widget.days.length)
                             ? _emptyCell(size: _yearlyCellSize)
                             : _buildCell(
                                 context,
@@ -191,7 +197,9 @@ class _SpendingHeatmapCalendarWidgetState
                                 showDayNumber: false,
                               );
                         return Padding(
-                          padding: EdgeInsets.only(bottom: weekdayIndex == 6 ? 0 : _cellGap),
+                          padding: EdgeInsets.only(
+                            bottom: weekdayIndex == 6 ? 0 : _cellGap,
+                          ),
                           child: cell,
                         );
                       }),
@@ -213,6 +221,7 @@ class _SpendingHeatmapCalendarWidgetState
     required bool showDayNumber,
   }) {
     final isSelected = _isSameDay(item.date, widget.selectedDate);
+    final hasSpending = item.total > 0;
 
     final color = _heatColor(context, item.total);
 
@@ -220,7 +229,7 @@ class _SpendingHeatmapCalendarWidgetState
       message:
           '${item.date.day}.${item.date.month}.${item.date.year} • ${item.total.toStringAsFixed(2)}',
       child: GestureDetector(
-        onTap: () => widget.onDateSelected(item.date),
+        onTap: hasSpending ? () => widget.onDateSelected(item.date) : null,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           width: size,
@@ -246,9 +255,13 @@ class _SpendingHeatmapCalendarWidgetState
     );
   }
 
-  Widget _emptyCell({required double size}) => SizedBox(width: size, height: size);
+  Widget _emptyCell({required double size}) =>
+      SizedBox(width: size, height: size);
 
-  Widget _buildWeekdayHeaderRow(BuildContext context, {required double cellSize}) {
+  Widget _buildWeekdayHeaderRow(
+    BuildContext context, {
+    required double cellSize,
+  }) {
     return Row(
       children: Weekday.values.asMap().entries.map((entry) {
         final index = entry.key;
@@ -260,9 +273,9 @@ class _SpendingHeatmapCalendarWidgetState
             child: Center(
               child: Text(
                 weekday.localizedShortName(context),
-                style: AppTextStyles.text12w400(context).copyWith(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                ),
+                style: AppTextStyles.text12w400(
+                  context,
+                ).copyWith(color: Theme.of(context).colorScheme.onSecondary),
               ),
             ),
           ),
@@ -287,18 +300,21 @@ class _SpendingHeatmapCalendarWidgetState
   Color _heatColor(BuildContext context, double value) {
     final colorScheme = Theme.of(context).colorScheme;
     final base = colorScheme.primary;
-    final maxValue = widget.days.fold<double>(0, (max, d) => math.max(max, d.total));
+    final maxValue = widget.days.fold<double>(
+      0,
+      (max, d) => math.max(max, d.total),
+    );
 
     if (value <= 0 || maxValue <= 0) {
       return colorScheme.secondary;
     }
 
     final ratio = (value / maxValue).clamp(0.0, 1.0);
-    if (ratio < 0.2) return base.withValues(alpha: 0.25);
+    if (ratio < 0.2) return base.withValues(alpha: 0.2);
     if (ratio < 0.4) return base.withValues(alpha: 0.4);
-    if (ratio < 0.6) return base.withValues(alpha: 0.55);
-    if (ratio < 0.8) return base.withValues(alpha: 0.72);
-    return base.withValues(alpha: 0.9);
+    if (ratio < 0.6) return base.withValues(alpha: 0.6);
+    if (ratio < 0.8) return base.withValues(alpha: 0.8);
+    return base.withValues(alpha: 0.95);
   }
 
   bool _isSameDay(DateTime a, DateTime b) =>
@@ -326,7 +342,9 @@ class _SpendingHeatmapCalendarWidgetState
     final itemWidth = _yearlyCellSize + _cellGap;
     final viewportWidth = _yearlyScrollController.position.viewportDimension;
     final targetOffset =
-        (selectedWeekIndex * itemWidth) - (viewportWidth / 2) + (_yearlyCellSize / 2);
+        (selectedWeekIndex * itemWidth) -
+        (viewportWidth / 2) +
+        (_yearlyCellSize / 2);
     final maxOffset = _yearlyScrollController.position.maxScrollExtent;
 
     _yearlyScrollController.animateTo(
