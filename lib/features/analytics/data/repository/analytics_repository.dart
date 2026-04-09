@@ -82,6 +82,7 @@ class AnalyticsRepository
         final Map<int, Map<String, double>> spendingByDay = {};
         final Map<int, Map<String, double>> spendingByMonth = {};
         final Map<int, Map<String, double>> spendingByWeekday = {};
+        final Map<String, Map<String, double>> spendingByDayKey = {};
 
         for (final t in transactions) {
           if (t.type == TransactionType.income) {
@@ -109,6 +110,13 @@ class AnalyticsRepository
                 );
             spendingByWeekday
                 .putIfAbsent(t.date.weekday, () => {})
+                .update(
+                  t.categoryId ?? '',
+                  (prev) => prev + t.amount,
+                  ifAbsent: () => t.amount,
+                );
+            spendingByDayKey
+                .putIfAbsent(t.dayKey, () => {})
                 .update(
                   t.categoryId ?? '',
                   (prev) => prev + t.amount,
@@ -157,11 +165,18 @@ class AnalyticsRepository
             ),
         };
 
+        final daySpending = _buildDailySpending(
+          period: period,
+          categoriesMap: categoriesMap,
+          spendingByDayKey: spendingByDayKey,
+        );
+
         return AnalyticsModel(
           totalIncome: totalIncome,
           totalExpense: totalExpense,
           categorySpending: categorySpending,
           periodSegments: periodSegments,
+          daySpending: daySpending,
         );
       },
       serializeResponse: (a) => {
@@ -197,5 +212,43 @@ class AnalyticsRepository
         isInitialVisible: isInitialVisible(i),
       );
     });
+  }
+
+  List<AnalyticsDaySpending> _buildDailySpending({
+    required DatePickerPeriod period,
+    required Map<String, CategoryModel> categoriesMap,
+    required Map<String, Map<String, double>> spendingByDayKey,
+  }) {
+    var cursor = DateTime(
+      period.startDate.year,
+      period.startDate.month,
+      period.startDate.day,
+    );
+    final end = DateTime(period.endDate.year, period.endDate.month, period.endDate.day);
+    final result = <AnalyticsDaySpending>[];
+
+    while (!cursor.isAfter(end)) {
+      final byCategory = spendingByDayKey[cursor.dayKey] ?? {};
+      final categorySpending = byCategory.entries
+          .where((e) => categoriesMap.containsKey(e.key))
+          .map(
+            (e) => CategorySpending(
+              category: categoriesMap[e.key]!,
+              amount: e.value,
+            ),
+          )
+          .toList()
+        ..sort((a, b) => b.amount.compareTo(a.amount));
+
+      result.add(
+        AnalyticsDaySpending(
+          date: cursor,
+          categorySpending: categorySpending,
+        ),
+      );
+      cursor = cursor.add(const Duration(days: 1));
+    }
+
+    return result;
   }
 }

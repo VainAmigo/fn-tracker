@@ -20,6 +20,7 @@ export 'chart/donut_chart.dart';
 export 'chart/gradient_line_chart.dart';
 export 'chart/period_segment_chart.dart';
 export 'chart/spending_categories_list.dart';
+export 'chart/spending_heatmap_calendar_widget.dart';
 export 'chart/segmented_bar.dart';
 
 export 'section/titled_section.dart';

@@ -528,22 +528,28 @@ class _StackedBar extends StatelessWidget {
     final totalValue = validSegments.fold<double>(0, (s, e) => s + e.value);
     if (totalValue <= 0) return const SizedBox.shrink();
 
-    final availableHeight =
-        totalHeight - (validSegments.length - 1) * segmentGap;
+    final safeTotalHeight = totalHeight.clamp(4, double.infinity).toDouble();
+    final gapsCount = math.max(0, validSegments.length - 1);
+    var effectiveGap = segmentGap;
+    var availableHeight = safeTotalHeight - gapsCount * effectiveGap;
+    if (availableHeight <= 0) {
+      effectiveGap = 0;
+      availableHeight = safeTotalHeight;
+    }
     final heights = _computeSegmentHeights(validSegments, availableHeight);
 
     return SizedBox(
       width: width,
-      height: totalHeight.clamp(4, double.infinity),
+      height: safeTotalHeight,
       child: ClipRect(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             for (var i = 0; i < validSegments.length; i++) ...[
-              if (i > 0) SizedBox(height: segmentGap),
+              if (i > 0) SizedBox(height: effectiveGap),
               Container(
                 width: width,
-                height: (heights[i] * progress).clamp(1, double.infinity),
+                height: math.max(0.0, heights[i] * progress),
                 decoration: BoxDecoration(
                   color: validSegments[i].color,
                   borderRadius: BorderRadius.vertical(
