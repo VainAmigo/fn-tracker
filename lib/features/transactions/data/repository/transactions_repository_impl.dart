@@ -26,7 +26,7 @@ class TransactionsRepositoryImpl
         final snapshot = await _transactionsRef(uid)
             .where('dayKey', isGreaterThanOrEqualTo: start)
             .where('dayKey', isLessThanOrEqualTo: end)
-            .orderBy('dayKey', descending: true)
+            .orderBy('createdAt', descending: true)
             .get();
         return snapshot.docs
             .map((doc) => TransactionModel.fromJson(doc.data()))
@@ -58,7 +58,7 @@ class TransactionsRepositoryImpl
             .where(idFieldName, isEqualTo: id)
             .where('dayKey', isGreaterThanOrEqualTo: start)
             .where('dayKey', isLessThanOrEqualTo: end)
-            .orderBy('dayKey', descending: true)
+            .orderBy('createdAt', descending: true)
             .get();
         return snapshot.docs
             .map((doc) => TransactionModel.fromJson(doc.data()))
