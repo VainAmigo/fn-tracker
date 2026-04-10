@@ -49,6 +49,5 @@ class PeriodSegmentItem {
   final List<CategorySpending> categorySpending;
   final bool isInitialVisible;
 
-  double get total =>
-      categorySpending.fold<double>(0, (s, c) => s + c.amount);
+  double get total => categorySpending.fold<double>(0, (s, c) => s + c.amount);
 }

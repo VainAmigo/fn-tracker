@@ -96,6 +96,12 @@ class _AppViewState extends State<AppView> {
           create: (context) =>
               AnalyticsCubit(analyticsRepo: AnalyticsRepository()),
         ),
+        BlocProvider<ExportCubit>(
+          create: (context) => ExportCubit(
+            exportRepo: ExportRepository(),
+            excelService: ExportExcelService(),
+          ),
+        ),
         BlocProvider<ScheduledPaymentsCubit>(
           create: (context) => ScheduledPaymentsCubit(walletRepo: walletRepo),
         ),
@@ -158,6 +164,13 @@ class FnTracker extends StatelessWidget {
           darkTheme: darkTheme,
           themeMode: themeProvider.themeMode,
           onGenerateRoute: AppRouter.onGenerateRoute,
+          builder: (context, child) {
+            final media = MediaQuery.of(context);
+            return MediaQuery(
+              data: media.copyWith(textScaler: const TextScaler.linear(1.0)),
+              child: child ?? const SizedBox.shrink(),
+            );
+          },
         );
       },
     );

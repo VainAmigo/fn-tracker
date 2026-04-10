@@ -411,6 +411,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You have no transactions yet'**
   String get noTransactionsSubtitle;
+
+  /// No description provided for @exportColumnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get exportColumnDate;
+
+  /// No description provided for @exportColumnCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get exportColumnCreatedAt;
+
+  /// No description provided for @exportColumnType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get exportColumnType;
+
+  /// No description provided for @exportColumnAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get exportColumnAmount;
+
+  /// No description provided for @exportColumnCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get exportColumnCurrency;
+
+  /// No description provided for @exportColumnCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get exportColumnCategory;
+
+  /// No description provided for @exportColumnWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get exportColumnWallet;
+
+  /// No description provided for @exportColumnNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get exportColumnNote;
+
+  /// No description provided for @exportColumnTransactionId.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID'**
+  String get exportColumnTransactionId;
+
+  /// No description provided for @exportColumnDateDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction date selected by user.'**
+  String get exportColumnDateDescription;
+
+  /// No description provided for @exportColumnCreatedAtDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Record creation date in database.'**
+  String get exportColumnCreatedAtDescription;
+
+  /// No description provided for @exportColumnTypeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction type: expense, income, or transfer.'**
+  String get exportColumnTypeDescription;
+
+  /// No description provided for @exportColumnAmountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction amount with 2 decimal places.'**
+  String get exportColumnAmountDescription;
+
+  /// No description provided for @exportColumnCurrencyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency code used in transaction.'**
+  String get exportColumnCurrencyDescription;
+
+  /// No description provided for @exportColumnCategoryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Category name linked to transaction.'**
+  String get exportColumnCategoryDescription;
+
+  /// No description provided for @exportColumnWalletDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet name linked to transaction.'**
+  String get exportColumnWalletDescription;
+
+  /// No description provided for @exportColumnNoteDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'User note from transaction.'**
+  String get exportColumnNoteDescription;
+
+  /// No description provided for @exportColumnTransactionIdDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unique transaction identifier.'**
+  String get exportColumnTransactionIdDescription;
 }
 
 class _AppLocalizationsDelegate

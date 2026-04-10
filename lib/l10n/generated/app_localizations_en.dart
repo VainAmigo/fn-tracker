@@ -165,4 +165,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noTransactionsSubtitle => 'You have no transactions yet';
+
+  @override
+  String get exportColumnDate => 'Date';
+
+  @override
+  String get exportColumnCreatedAt => 'Created at';
+
+  @override
+  String get exportColumnType => 'Type';
+
+  @override
+  String get exportColumnAmount => 'Amount';
+
+  @override
+  String get exportColumnCurrency => 'Currency';
+
+  @override
+  String get exportColumnCategory => 'Category';
+
+  @override
+  String get exportColumnWallet => 'Wallet';
+
+  @override
+  String get exportColumnNote => 'Note';
+
+  @override
+  String get exportColumnTransactionId => 'Transaction ID';
+
+  @override
+  String get exportColumnDateDescription =>
+      'Transaction date selected by user.';
+
+  @override
+  String get exportColumnCreatedAtDescription =>
+      'Record creation date in database.';
+
+  @override
+  String get exportColumnTypeDescription =>
+      'Transaction type: expense, income, or transfer.';
+
+  @override
+  String get exportColumnAmountDescription =>
+      'Transaction amount with 2 decimal places.';
+
+  @override
+  String get exportColumnCurrencyDescription =>
+      'Currency code used in transaction.';
+
+  @override
+  String get exportColumnCategoryDescription =>
+      'Category name linked to transaction.';
+
+  @override
+  String get exportColumnWalletDescription =>
+      'Wallet name linked to transaction.';
+
+  @override
+  String get exportColumnNoteDescription => 'User note from transaction.';
+
+  @override
+  String get exportColumnTransactionIdDescription =>
+      'Unique transaction identifier.';
 }

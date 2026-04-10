@@ -165,4 +165,67 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noTransactionsSubtitle => 'У вас пока нет транзакций';
+
+  @override
+  String get exportColumnDate => 'Дата';
+
+  @override
+  String get exportColumnCreatedAt => 'Создано';
+
+  @override
+  String get exportColumnType => 'Тип';
+
+  @override
+  String get exportColumnAmount => 'Сумма';
+
+  @override
+  String get exportColumnCurrency => 'Валюта';
+
+  @override
+  String get exportColumnCategory => 'Категория';
+
+  @override
+  String get exportColumnWallet => 'Кошелек';
+
+  @override
+  String get exportColumnNote => 'Заметка';
+
+  @override
+  String get exportColumnTransactionId => 'ID транзакции';
+
+  @override
+  String get exportColumnDateDescription =>
+      'Дата операции, выбранная пользователем.';
+
+  @override
+  String get exportColumnCreatedAtDescription =>
+      'Дата создания записи в базе данных.';
+
+  @override
+  String get exportColumnTypeDescription =>
+      'Тип операции: расход, доход или перевод.';
+
+  @override
+  String get exportColumnAmountDescription =>
+      'Сумма операции с двумя знаками после запятой.';
+
+  @override
+  String get exportColumnCurrencyDescription =>
+      'Код валюты, используемый в операции.';
+
+  @override
+  String get exportColumnCategoryDescription =>
+      'Название категории, связанной с операцией.';
+
+  @override
+  String get exportColumnWalletDescription =>
+      'Название кошелька, связанного с операцией.';
+
+  @override
+  String get exportColumnNoteDescription =>
+      'Пользовательская заметка к операции.';
+
+  @override
+  String get exportColumnTransactionIdDescription =>
+      'Уникальный идентификатор операции.';
 }

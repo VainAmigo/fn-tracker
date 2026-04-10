@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
@@ -24,6 +25,10 @@ class _AnalyticsViewState extends State<AnalyticsView> {
     await context.read<AnalyticsCubit>().loadAnalytics();
   }
 
+  Future<void> _openExportSettings() async {
+    await Navigator.of(context).pushNamed(AppRouter.analyticsExportSettings);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,9 +42,22 @@ class _AnalyticsViewState extends State<AnalyticsView> {
             child: CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
-                  child: Text(
-                    'Analytics',
-                    style: AppTextStyles.tabTitle(context),
+                  child: Row(
+                    children: [
+                      Text('Analytics', style: AppTextStyles.tabTitle(context)),
+                      const Spacer(),
+                      BlocBuilder<ExportCubit, ExportState>(
+                        builder: (context, exportState) {
+                          return PrimaryButton(
+                            text: 'Export',
+                            onPressed: _openExportSettings,
+                            size: PrimaryButtonSize.small,
+                            fullWidth: false,
+                            icon: Icons.file_download_outlined,
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
                 SliverToBoxAdapter(

@@ -53,9 +53,9 @@ class AnalyticsSpendingDonutWidget extends StatelessWidget {
           children: [
             Text(
               'SPENT',
-              style: AppTextStyles.text12w400(context).copyWith(
-                color: colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
+              style: AppTextStyles.text12w400(
+                context,
+              ).copyWith(color: colorScheme.onSurface.withValues(alpha: 0.6)),
             ),
             AmountTextWidget(
               amount: totalExpense,

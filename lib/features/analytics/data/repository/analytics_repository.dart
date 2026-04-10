@@ -125,44 +125,57 @@ class AnalyticsRepository
           }
         }
 
-        final categorySpending = spendingByCategoryId.entries
-            .where((e) => categoriesMap.containsKey(e.key))
-            .map(
-              (e) => CategorySpending(
-                category: categoriesMap[e.key]!,
-                amount: e.value,
-              ),
-            )
-            .toList()
-          ..sort((a, b) => b.amount.compareTo(a.amount));
+        final categorySpending =
+            spendingByCategoryId.entries
+                .where((e) => categoriesMap.containsKey(e.key))
+                .map(
+                  (e) => CategorySpending(
+                    category: categoriesMap[e.key]!,
+                    amount: e.value,
+                  ),
+                )
+                .toList()
+              ..sort((a, b) => b.amount.compareTo(a.amount));
 
         final now = DateTime.now();
         final periodSegments = switch (period) {
           YearlyPeriod() => _buildPeriodSegments(
-              count: 12,
-              categoriesMap: categoriesMap,
-              spendingMap: spendingByMonth,
-              labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-                  'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-              isInitialVisible: (i) => (i + 1) == now.month,
-            ),
+            count: 12,
+            categoriesMap: categoriesMap,
+            spendingMap: spendingByMonth,
+            labels: [
+              'JAN',
+              'FEB',
+              'MAR',
+              'APR',
+              'MAY',
+              'JUN',
+              'JUL',
+              'AUG',
+              'SEP',
+              'OCT',
+              'NOV',
+              'DEC',
+            ],
+            isInitialVisible: (i) => (i + 1) == now.month,
+          ),
           MonthlyPeriod(:final year, :final month) => () {
-              final daysInMonth = DateTime(year, month.value + 1, 0).day;
-              return _buildPeriodSegments(
-                count: daysInMonth,
-                categoriesMap: categoriesMap,
-                spendingMap: spendingByDay,
-                labels: List.generate(daysInMonth, (i) => '${i + 1}'),
-                isInitialVisible: (i) => (i + 1) == now.day,
-              );
-            }(),
-          WeeklyPeriod() => _buildPeriodSegments(
-              count: 7,
+            final daysInMonth = DateTime(year, month.value + 1, 0).day;
+            return _buildPeriodSegments(
+              count: daysInMonth,
               categoriesMap: categoriesMap,
-              spendingMap: spendingByWeekday,
-              labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-              isInitialVisible: (i) => (i + 1) == now.weekday,
-            ),
+              spendingMap: spendingByDay,
+              labels: List.generate(daysInMonth, (i) => '${i + 1}'),
+              isInitialVisible: (i) => (i + 1) == now.day,
+            );
+          }(),
+          WeeklyPeriod() => _buildPeriodSegments(
+            count: 7,
+            categoriesMap: categoriesMap,
+            spendingMap: spendingByWeekday,
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            isInitialVisible: (i) => (i + 1) == now.weekday,
+          ),
         };
 
         final daySpending = _buildDailySpending(
@@ -196,16 +209,17 @@ class AnalyticsRepository
     return List.generate(count, (i) {
       final key = i + 1;
       final byCategory = spendingMap[key] ?? {};
-      final categorySpending = byCategory.entries
-          .where((e) => categoriesMap.containsKey(e.key))
-          .map(
-            (e) => CategorySpending(
-              category: categoriesMap[e.key]!,
-              amount: e.value,
-            ),
-          )
-          .toList()
-        ..sort((a, b) => b.amount.compareTo(a.amount));
+      final categorySpending =
+          byCategory.entries
+              .where((e) => categoriesMap.containsKey(e.key))
+              .map(
+                (e) => CategorySpending(
+                  category: categoriesMap[e.key]!,
+                  amount: e.value,
+                ),
+              )
+              .toList()
+            ..sort((a, b) => b.amount.compareTo(a.amount));
       return PeriodSegmentItem(
         label: labels[i],
         categorySpending: categorySpending,
@@ -224,27 +238,29 @@ class AnalyticsRepository
       period.startDate.month,
       period.startDate.day,
     );
-    final end = DateTime(period.endDate.year, period.endDate.month, period.endDate.day);
+    final end = DateTime(
+      period.endDate.year,
+      period.endDate.month,
+      period.endDate.day,
+    );
     final result = <AnalyticsDaySpending>[];
 
     while (!cursor.isAfter(end)) {
       final byCategory = spendingByDayKey[cursor.dayKey] ?? {};
-      final categorySpending = byCategory.entries
-          .where((e) => categoriesMap.containsKey(e.key))
-          .map(
-            (e) => CategorySpending(
-              category: categoriesMap[e.key]!,
-              amount: e.value,
-            ),
-          )
-          .toList()
-        ..sort((a, b) => b.amount.compareTo(a.amount));
+      final categorySpending =
+          byCategory.entries
+              .where((e) => categoriesMap.containsKey(e.key))
+              .map(
+                (e) => CategorySpending(
+                  category: categoriesMap[e.key]!,
+                  amount: e.value,
+                ),
+              )
+              .toList()
+            ..sort((a, b) => b.amount.compareTo(a.amount));
 
       result.add(
-        AnalyticsDaySpending(
-          date: cursor,
-          categorySpending: categorySpending,
-        ),
+        AnalyticsDaySpending(date: cursor, categorySpending: categorySpending),
       );
       cursor = cursor.add(const Duration(days: 1));
     }

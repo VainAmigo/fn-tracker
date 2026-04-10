@@ -26,6 +26,7 @@ final class AppRouter {
 
   static const createScheduledPayment = '/create-scheduled-payment';
   static const updateScheduledPayment = '/update-scheduled-payment';
+  static const analyticsExportSettings = '/analytics-export-settings';
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
     return switch (settings.name) {
@@ -129,6 +130,10 @@ final class AppRouter {
         builder: (_) => ScheduledPaymentFormView(
           payment: settings.arguments as ScheduledPaymentModel?,
         ),
+      ),
+      analyticsExportSettings => MaterialPageRoute(
+        settings: const RouteSettings(name: analyticsExportSettings),
+        builder: (_) => const ExportSettingsView(),
       ),
       _ => throw Exception(
         'No builder specified for route named: [${settings.name}]',

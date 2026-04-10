@@ -165,4 +165,67 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get noTransactionsSubtitle => 'Сизде азырынча транзакциялар жок';
+
+  @override
+  String get exportColumnDate => 'Дата';
+
+  @override
+  String get exportColumnCreatedAt => 'Түзүлгөн';
+
+  @override
+  String get exportColumnType => 'Түрү';
+
+  @override
+  String get exportColumnAmount => 'Сумма';
+
+  @override
+  String get exportColumnCurrency => 'Валюта';
+
+  @override
+  String get exportColumnCategory => 'Категория';
+
+  @override
+  String get exportColumnWallet => 'Капчык';
+
+  @override
+  String get exportColumnNote => 'Эскертүү';
+
+  @override
+  String get exportColumnTransactionId => 'Транзакция ID';
+
+  @override
+  String get exportColumnDateDescription =>
+      'Колдонуучу тандаган операция датасы.';
+
+  @override
+  String get exportColumnCreatedAtDescription =>
+      'Маалымат базасында жазуунун түзүлгөн датасы.';
+
+  @override
+  String get exportColumnTypeDescription =>
+      'Операция түрү: чыгым, киреше же которуу.';
+
+  @override
+  String get exportColumnAmountDescription =>
+      'Операция суммасы эки ондук тактык менен.';
+
+  @override
+  String get exportColumnCurrencyDescription =>
+      'Операцияда колдонулган валюта коду.';
+
+  @override
+  String get exportColumnCategoryDescription =>
+      'Операцияга байланышкан категориянын аталышы.';
+
+  @override
+  String get exportColumnWalletDescription =>
+      'Операцияга байланышкан капчыктын аталышы.';
+
+  @override
+  String get exportColumnNoteDescription =>
+      'Операцияга колдонуучунун эскертүүсү.';
+
+  @override
+  String get exportColumnTransactionIdDescription =>
+      'Операциянын уникалдуу идентификатору.';
 }
