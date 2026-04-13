@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class HomeTopActionWidget extends StatelessWidget {
@@ -20,7 +21,7 @@ class HomeTopActionWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Spent',
+            context.l10n.spent,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w400,
@@ -28,7 +29,7 @@ class HomeTopActionWidget extends StatelessWidget {
             ),
           ),
           Text(
-            today.formatMonthDay,
+            today.formatMonthDay(context),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,

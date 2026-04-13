@@ -50,12 +50,12 @@ class _AppMainViewState extends State<AppMainView> {
     quickActions.setShortcutItems([
       ShortcutItem(
         type: 'expense',
-        localizedTitle: _getShortcutTitle('expense', context),
+        localizedTitle: context.l10n.expense,
         icon: 'expense_icon',
       ),
       ShortcutItem(
         type: 'income',
-        localizedTitle: _getShortcutTitle('income', context),
+        localizedTitle: context.l10n.income,
         icon: 'income_icon',
       ),
     ]);
@@ -79,14 +79,6 @@ class _AppMainViewState extends State<AppMainView> {
           return;
       }
     });
-  }
-
-  String _getShortcutTitle(String shortcutType, BuildContext context) {
-    return switch (shortcutType) {
-      'expense' => context.l10n.expense,
-      'income' => context.l10n.income,
-      _ => '',
-    };
   }
 
   Future<void> _runAutoCreate() async {
@@ -312,7 +304,9 @@ class _AppMainViewState extends State<AppMainView> {
                 elevation: 0,
                 color: Theme.of(context).colorScheme.primary,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppSizing.borderRadius100),
+                  borderRadius: BorderRadius.circular(
+                    AppSizing.borderRadius100,
+                  ),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
@@ -344,7 +338,7 @@ class _AppMainViewState extends State<AppMainView> {
               ),
             ),
             bottomNavigationBar: AppBottomNavWidget(
-              destinations: mainBottomNavDestinations,
+              destinations: mainBottomNavDestinations(context),
               currentIndex: _selectedIndex,
               onTap: (index) {
                 setState(() {

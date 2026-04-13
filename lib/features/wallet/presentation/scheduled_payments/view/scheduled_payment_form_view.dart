@@ -729,7 +729,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
         d.day == DateTime(d.year, d.month + 1, 0).day
             ? 'End of month'
             : '${d.day}',
-      ScheduledPaymentFrequency.yearly => d.formatMonthDay,
+      ScheduledPaymentFrequency.yearly => d.formatMonthDay(context),
     };
   }
 }

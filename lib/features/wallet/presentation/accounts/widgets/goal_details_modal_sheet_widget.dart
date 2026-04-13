@@ -58,13 +58,13 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
           const SizedBox(height: AppSizing.spaceBtwItems),
           _InfoRow(
             label: 'Создано',
-            value: goal.createdAt.formatMonthDay,
+            value: goal.createdAt.formatMonthDay(context),
           ),
           if (goal.completedAt != null) ...[
             const SizedBox(height: AppSizing.spaceBtwItems),
             _InfoRow(
               label: 'Завершено',
-              value: goal.completedAt!.formatMonthDay,
+              value: goal.completedAt!.formatMonthDay(context),
             ),
           ],
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),

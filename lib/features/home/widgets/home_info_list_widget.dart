@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class HomeInfoListWidget extends StatelessWidget {
@@ -15,9 +16,9 @@ class HomeInfoListWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitledSection(
-            title: 'Quick Categories',
+            title: context.l10n.quickCategories,
             action: PrimaryButton(
-              text: 'Settings',
+              text: context.l10n.settings,
               onPressed: () => QuickCategoriesSettingsSheet.show(context),
               size: PrimaryButtonSize.xSmall,
               fullWidth: false,
@@ -26,9 +27,9 @@ class HomeInfoListWidget extends StatelessWidget {
             children: [const QuickCategoriesWidget()],
           ),
           TitledSection(
-            title: 'Last Transactions',
+            title: context.l10n.lastTransactions,
             action: PrimaryButton(
-              text: 'View All',
+              text: context.l10n.viewAll,
               onPressed: () =>
                   Navigator.pushNamed(context, AppRouter.transactions),
               size: PrimaryButtonSize.xSmall,

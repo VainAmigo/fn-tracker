@@ -434,7 +434,7 @@ class _ScheduledPaymentDatePickerWidgetState
               }
               final d = _selectedYearlyDates[index];
               return FormCardWidget(
-                title: d.formatMonthDay,
+                title: d.formatMonthDay(context),
                 backgroundColor: colorScheme.secondary,
                 foregroundColor: colorScheme.onSurface,
                 borderRadius: borderRadius,

@@ -615,6 +615,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Passwords do not match'**
   String get passwordsDoNotMatch;
+
+  /// No description provided for @spent.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent'**
+  String get spent;
+
+  /// No description provided for @quickCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Categories'**
+  String get quickCategories;
+
+  /// No description provided for @lastTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Transactions'**
+  String get lastTransactions;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAll;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @finance.
+  ///
+  /// In en, this message translates to:
+  /// **'Finance'**
+  String get finance;
+
+  /// No description provided for @analytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics'**
+  String get analytics;
+
+  /// No description provided for @chooseHowCategoriesAreDisplayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how categories are displayed on the home screen'**
+  String get chooseHowCategoriesAreDisplayed;
+
+  /// No description provided for @recent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get recent;
+
+  /// No description provided for @pinned.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get pinned;
+
+  /// No description provided for @showCategoriesFromYourLastTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Show categories from your last transactions'**
+  String get showCategoriesFromYourLastTransactions;
+
+  /// No description provided for @showCategoriesFromYourQuickCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Show categories you\'ve pinned for quick access'**
+  String get showCategoriesFromYourQuickCategories;
+
+  /// No description provided for @homeScreenWidgetSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Home screen widget source'**
+  String get homeScreenWidgetSource;
+
+  /// No description provided for @systemQuickCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'System quick categories'**
+  String get systemQuickCategories;
+
+  /// No description provided for @userQuickCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'User categories from current quick mode'**
+  String get userQuickCategories;
+
+  /// No description provided for @customCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom categories'**
+  String get customCategories;
+
+  /// No description provided for @chooseFixedCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a fixed list of categories for the home screen'**
+  String get chooseFixedCategories;
 }
 
 class _AppLocalizationsDelegate

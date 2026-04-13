@@ -279,4 +279,63 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => 'Пароли не совпадают';
+
+  @override
+  String get spent => 'Потрачено';
+
+  @override
+  String get quickCategories => 'Быстрые категории';
+
+  @override
+  String get lastTransactions => 'Последние операции';
+
+  @override
+  String get viewAll => 'Смотреть все';
+
+  @override
+  String get settings => 'Настройки';
+
+  @override
+  String get home => 'Главная';
+
+  @override
+  String get finance => 'Финансы';
+
+  @override
+  String get analytics => 'Аналитика';
+
+  @override
+  String get chooseHowCategoriesAreDisplayed =>
+      'Выберите, как отображаются категории на главном экране';
+
+  @override
+  String get recent => 'Недавние';
+
+  @override
+  String get pinned => 'Закреплённые';
+
+  @override
+  String get showCategoriesFromYourLastTransactions =>
+      'Показывать категории из последних операций';
+
+  @override
+  String get showCategoriesFromYourQuickCategories =>
+      'Показывать закреплённые категории для быстрого доступа';
+
+  @override
+  String get homeScreenWidgetSource => 'Источник виджета на главном экране';
+
+  @override
+  String get systemQuickCategories => 'Системные быстрые категории';
+
+  @override
+  String get userQuickCategories =>
+      'Пользовательские категории из текущего быстрого режима';
+
+  @override
+  String get customCategories => 'Свои категории';
+
+  @override
+  String get chooseFixedCategories =>
+      'Выберите фиксированный список категорий для главного экрана';
 }

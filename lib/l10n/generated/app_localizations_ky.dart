@@ -279,4 +279,63 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => 'Сырсөздөр дал келбейт';
+
+  @override
+  String get spent => 'Коротулду';
+
+  @override
+  String get quickCategories => 'Тез категориялар';
+
+  @override
+  String get lastTransactions => 'Акыркы транзакциялар';
+
+  @override
+  String get viewAll => 'Баарын көрүү';
+
+  @override
+  String get settings => 'Жөндөөлөр';
+
+  @override
+  String get home => 'Башкы';
+
+  @override
+  String get finance => 'Финансы';
+
+  @override
+  String get analytics => 'Аналитика';
+
+  @override
+  String get chooseHowCategoriesAreDisplayed =>
+      'Башкы экранда категориялар кантип көрсөтүлөрүн тандаңыз';
+
+  @override
+  String get recent => 'Акыркы';
+
+  @override
+  String get pinned => 'Бекитилген';
+
+  @override
+  String get showCategoriesFromYourLastTransactions =>
+      'Акыркы транзакцияларыңыздан категорияларды көрсөтүү';
+
+  @override
+  String get showCategoriesFromYourQuickCategories =>
+      'Тез жетүү үчүн бекиткен категорияларыңызды көрсөтүү';
+
+  @override
+  String get homeScreenWidgetSource => 'Башкы экран виджетинин булагы';
+
+  @override
+  String get systemQuickCategories => 'Системалык тез категориялар';
+
+  @override
+  String get userQuickCategories =>
+      'Учурдагы тез режимдеги колдонуучу категориялары';
+
+  @override
+  String get customCategories => 'Жеке категориялар';
+
+  @override
+  String get chooseFixedCategories =>
+      'Башкы экран үчүн категориялардын туруктуу тизмесин тандаңыз';
 }

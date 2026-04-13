@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class QuickCategoriesSettingsSheet extends StatelessWidget {
@@ -44,8 +45,8 @@ class QuickCategoriesSettingsSheet extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           ModalSheetTitleWidget(
-            title: 'Quick Categories',
-            subtitle: 'Choose how categories are displayed on the home screen',
+            title: context.l10n.quickCategories,
+            subtitle: context.l10n.chooseHowCategoriesAreDisplayed,
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           BlocBuilder<
@@ -62,8 +63,8 @@ class QuickCategoriesSettingsSheet extends StatelessWidget {
                     final mode = modes[index];
                     return _buildSelectableSettingsCard(
                       context: context,
-                      title: mode.label,
-                      subtitle: mode.description,
+                      title: mode.label(context),
+                      subtitle: mode.description(context),
                       icon: mode == QuickCategoriesDisplayMode.recent
                           ? Icons.history_rounded
                           : Icons.push_pin_rounded,
@@ -83,14 +84,14 @@ class QuickCategoriesSettingsSheet extends StatelessWidget {
                   }),
                   const SizedBox(height: AppSizing.spaceBtwItems),
                   TitledSection(
-                    title: 'Home screen widget source',
+                    title: context.l10n.homeScreenWidgetSource,
                     children: [
                       ...List.generate(widgetSources.length, (index) {
                         final source = widgetSources[index];
                         return _buildSelectableSettingsCard(
                           context: context,
-                          title: source.label,
-                          subtitle: source.description,
+                          title: source.label(context),
+                          subtitle: source.description(context),
                           icon: source == WidgetCategoriesSource.system
                               ? Icons.auto_awesome_rounded
                               : Icons.tune_rounded,

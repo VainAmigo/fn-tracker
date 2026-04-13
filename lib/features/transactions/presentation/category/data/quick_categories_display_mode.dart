@@ -1,20 +1,23 @@
+import 'package:flutter/material.dart';
+import 'package:fn_tracker/l10n/l10.dart';
+
 enum QuickCategoriesDisplayMode {
   recent,
   pinned;
 
-  String get label {
+  String label(BuildContext context) {
     return switch (this) {
-      QuickCategoriesDisplayMode.recent => 'Recent',
-      QuickCategoriesDisplayMode.pinned => 'Pinned',
+      QuickCategoriesDisplayMode.recent => context.l10n.recent,
+      QuickCategoriesDisplayMode.pinned => context.l10n.pinned,
     };
   }
 
-  String get description {
+  String description(BuildContext context) {
     return switch (this) {
       QuickCategoriesDisplayMode.recent =>
-        'Show categories from your last transactions',
+        context.l10n.showCategoriesFromYourLastTransactions,
       QuickCategoriesDisplayMode.pinned =>
-        'Show categories you\'ve pinned for quick access',
+        context.l10n.showCategoriesFromYourQuickCategories,
     };
   }
 

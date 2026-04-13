@@ -278,4 +278,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get spent => 'Spent';
+
+  @override
+  String get quickCategories => 'Quick Categories';
+
+  @override
+  String get lastTransactions => 'Last Transactions';
+
+  @override
+  String get viewAll => 'View All';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get finance => 'Finance';
+
+  @override
+  String get analytics => 'Analytics';
+
+  @override
+  String get chooseHowCategoriesAreDisplayed =>
+      'Choose how categories are displayed on the home screen';
+
+  @override
+  String get recent => 'Recent';
+
+  @override
+  String get pinned => 'Pinned';
+
+  @override
+  String get showCategoriesFromYourLastTransactions =>
+      'Show categories from your last transactions';
+
+  @override
+  String get showCategoriesFromYourQuickCategories =>
+      'Show categories you\'ve pinned for quick access';
+
+  @override
+  String get homeScreenWidgetSource => 'Home screen widget source';
+
+  @override
+  String get systemQuickCategories => 'System quick categories';
+
+  @override
+  String get userQuickCategories => 'User categories from current quick mode';
+
+  @override
+  String get customCategories => 'Custom categories';
+
+  @override
+  String get chooseFixedCategories =>
+      'Choose a fixed list of categories for the home screen';
 }

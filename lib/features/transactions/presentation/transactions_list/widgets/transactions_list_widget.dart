@@ -90,7 +90,7 @@ class _Body extends StatelessWidget {
               textBaseline: TextBaseline.alphabetic,
               children: [
                 Text(
-                  date.formatDayMonthYearUpper,
+                  date.formatDayMonthYearUpper(context),
                   style: AppTextStyles.sectionTitle(context),
                 ),
                 AmountTextWidget(

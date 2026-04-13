@@ -132,7 +132,7 @@ class TransactionDetailsSheet extends StatelessWidget {
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           CategoryCard(
             subtitle: 'Date',
-            title: transaction.date.formatDayMonthYearUpper,
+            title: transaction.date.formatDayMonthYearUpper(context),
             leading: _detailLeading(
               context,
               icon: Icons.calendar_today_rounded,

@@ -2,45 +2,15 @@ import 'package:flutter/widgets.dart';
 import 'package:fn_tracker/core/utils/month.dart';
 
 extension DateFormattingExtension on DateTime {
-  static const List<String> _monthsFull = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-
-  static const List<String> _monthsShortUpper = [
-    'JAN',
-    'FEB',
-    'MAR',
-    'APR',
-    'MAY',
-    'JUN',
-    'JUL',
-    'AUG',
-    'SEP',
-    'OCT',
-    'NOV',
-    'DEC',
-  ];
-
   /// October 21
-  String get formatMonthDay {
-    final monthName = _monthsFull[month - 1];
+  String formatMonthDay(BuildContext context) {
+    final monthName = Month.fromValue(month).localizedName(context);
     return '$monthName $day';
   }
 
   /// 21 OCT 2025
-  String get formatDayMonthYearUpper {
-    final monthName = _monthsShortUpper[month - 1];
+  String formatDayMonthYearUpper(BuildContext context) {
+    final monthName = Month.fromValue(month).localizedShortName(context);
     return '$day $monthName $year';
   }
 
