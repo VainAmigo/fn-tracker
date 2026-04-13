@@ -21,6 +21,11 @@ class _AppMainViewState extends State<AppMainView> {
   bool _fabMenuOpen = false;
   final quickActions = QuickActions();
 
+  static const _fabAnimDuration = Duration(milliseconds: 280);
+  static const _fabMenuAnimDuration = Duration(milliseconds: 260);
+  static const _fabAnimCurve = Curves.easeOutCubic;
+  static const _fabRotationCurve = Curves.easeOutBack;
+
   @override
   void initState() {
     super.initState();
@@ -299,29 +304,41 @@ class _AppMainViewState extends State<AppMainView> {
             body: IndexedStack(index: _selectedIndex, children: _tabs),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: Material(
-              elevation: 0,
-              color: Theme.of(context).colorScheme.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizing.borderRadius100),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: () {
-                  if (_fabMenuOpen) {
-                    setState(() => _fabMenuOpen = false);
-                  } else {
-                    Navigator.of(context).pushNamed(AppRouter.addTransaction);
-                  }
-                },
-                onLongPress: () => setState(() => _fabMenuOpen = true),
-                child: SizedBox(
-                  width: AppSizing.heightM,
-                  height: AppSizing.heightM,
-                  child: Icon(
-                    Icons.add,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    size: AppSizing.iconSizeM,
+            floatingActionButton: AnimatedScale(
+              scale: _fabMenuOpen ? 1.06 : 1.0,
+              duration: _fabAnimDuration,
+              curve: _fabAnimCurve,
+              child: Material(
+                elevation: 0,
+                color: Theme.of(context).colorScheme.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizing.borderRadius100),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () {
+                    if (_fabMenuOpen) {
+                      setState(() => _fabMenuOpen = false);
+                    } else {
+                      Navigator.of(context).pushNamed(AppRouter.addTransaction);
+                    }
+                  },
+                  onLongPress: () => setState(() => _fabMenuOpen = true),
+                  child: SizedBox(
+                    width: AppSizing.heightM,
+                    height: AppSizing.heightM,
+                    child: Center(
+                      child: AnimatedRotation(
+                        turns: _fabMenuOpen ? 0.125 : 0,
+                        duration: _fabAnimDuration,
+                        curve: _fabRotationCurve,
+                        child: Icon(
+                          Icons.add,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          size: AppSizing.iconSizeM,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -337,68 +354,91 @@ class _AppMainViewState extends State<AppMainView> {
               },
             ),
           ),
-          if (_fabMenuOpen) ...[
-            Positioned.fill(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => setState(() => _fabMenuOpen = false),
-                child: ColoredBox(color: Colors.black.withValues(alpha: 0.45)),
+          Positioned.fill(
+            child: IgnorePointer(
+              ignoring: !_fabMenuOpen,
+              child: AnimatedOpacity(
+                opacity: _fabMenuOpen ? 1 : 0,
+                duration: _fabMenuAnimDuration,
+                curve: _fabAnimCurve,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => setState(() => _fabMenuOpen = false),
+                  child: ColoredBox(
+                    color: Colors.black.withValues(alpha: 0.45),
+                  ),
+                ),
               ),
             ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: MediaQuery.of(context).padding.bottom + 108,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  PrimaryButton(
-                    text: 'Add with voice',
-                    onPressed: () {
-                      setState(() => _fabMenuOpen = false);
-                      Navigator.of(context).pushNamed(
-                        AppRouter.aiLogic,
-                        arguments: const AiLogicEntryArgs(
-                          mode: AiLogicEntryMode.voice,
-                        ),
-                      );
-                    },
-                    icon: Icons.mic_rounded,
-                    size: PrimaryButtonSize.small,
-                    fullWidth: false,
-                    rounded: true,
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: MediaQuery.of(context).padding.bottom + 120,
+            child: IgnorePointer(
+              ignoring: !_fabMenuOpen,
+              child: AnimatedSlide(
+                offset: _fabMenuOpen ? Offset.zero : const Offset(0, 0.12),
+                duration: _fabMenuAnimDuration,
+                curve: _fabAnimCurve,
+                child: AnimatedOpacity(
+                  opacity: _fabMenuOpen ? 1 : 0,
+                  duration: _fabMenuAnimDuration,
+                  curve: _fabAnimCurve,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      PrimaryButton(
+                        text: 'Add with voice',
+                        onPressed: () {
+                          setState(() => _fabMenuOpen = false);
+                          Navigator.of(context).pushNamed(
+                            AppRouter.aiLogic,
+                            arguments: const AiLogicEntryArgs(
+                              mode: AiLogicEntryMode.voice,
+                            ),
+                          );
+                        },
+                        icon: Icons.mic_rounded,
+                        size: PrimaryButtonSize.small,
+                        fullWidth: false,
+                        rounded: true,
+                      ),
+                      PrimaryButton(
+                        text: 'Add with file',
+                        onPressed: () {
+                          setState(() => _fabMenuOpen = false);
+                          Navigator.of(context).pushNamed(
+                            AppRouter.aiLogic,
+                            arguments: const AiLogicEntryArgs(
+                              mode: AiLogicEntryMode.attachment,
+                            ),
+                          );
+                        },
+                        icon: Icons.attach_file_rounded,
+                        size: PrimaryButtonSize.small,
+                        fullWidth: false,
+                        rounded: true,
+                      ),
+                      PrimaryButton(
+                        text: 'Add manually',
+                        onPressed: () {
+                          setState(() => _fabMenuOpen = false);
+                          Navigator.of(
+                            context,
+                          ).pushNamed(AppRouter.addTransaction);
+                        },
+                        icon: Icons.edit_note_rounded,
+                        size: PrimaryButtonSize.small,
+                        fullWidth: false,
+                        rounded: true,
+                      ),
+                    ],
                   ),
-                  PrimaryButton(
-                    text: 'Add with file',
-                    onPressed: () {
-                      setState(() => _fabMenuOpen = false);
-                      Navigator.of(context).pushNamed(
-                        AppRouter.aiLogic,
-                        arguments: const AiLogicEntryArgs(
-                          mode: AiLogicEntryMode.attachment,
-                        ),
-                      );
-                    },
-                    icon: Icons.attach_file_rounded,
-                    size: PrimaryButtonSize.small,
-                    fullWidth: false,
-                    rounded: true,
-                  ),
-                  PrimaryButton(
-                    text: 'Add manually',
-                    onPressed: () {
-                      setState(() => _fabMenuOpen = false);
-                      Navigator.of(context).pushNamed(AppRouter.addTransaction);
-                    },
-                    icon: Icons.edit_note_rounded,
-                    size: PrimaryButtonSize.small,
-                    fullWidth: false,
-                    rounded: true,
-                  ),
-                ],
+                ),
               ),
             ),
-          ],
+          ),
         ],
       ),
     );

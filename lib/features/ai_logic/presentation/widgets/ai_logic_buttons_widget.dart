@@ -74,6 +74,7 @@ class AiLogicButtonsWidget extends StatelessWidget {
           isLoading: isParsing,
           rounded: true,
           fullWidth: true,
+          icon: Icons.auto_awesome,
           onPressed: isParsing
               ? null
               : () => context.read<AiLogicCubit>().runParse(),

@@ -221,7 +221,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                       rounded: true,
                       fullWidth: false,
                       iconOnly: true,
-                      icon: Icons.assistant,
+                      icon: Icons.auto_awesome,
                       onPressed: () => Navigator.of(context).pushNamed(
                         AppRouter.aiLogic,
                         arguments: const AiLogicEntryArgs(
