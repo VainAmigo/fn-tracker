@@ -27,15 +27,15 @@ abstract class SeedTask {
 
 /// Создаёт кошельки по умолчанию.
 class WalletSeedTask extends SeedTask {
-  const WalletSeedTask({required this.walletRepo, required this.wallets});
+  const WalletSeedTask({required this.financeRepo, required this.wallets});
 
-  final WalletRepoImpl walletRepo;
+  final FinanceRepoImpl financeRepo;
   final List<WalletModel> wallets;
 
   @override
   Future<void> execute() async {
     for (final wallet in wallets) {
-      await walletRepo.addWallet(wallet: wallet);
+      await financeRepo.addWallet(wallet: wallet);
     }
   }
 }

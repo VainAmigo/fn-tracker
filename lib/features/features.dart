@@ -6,4 +6,4 @@ export 'main/app_main.dart';
 export 'home/home.dart';
 export 'transactions/transactions.dart';
 export 'settings/settings.dart';
-export 'wallet/wallet.dart';
+export 'finance/finance.dart';

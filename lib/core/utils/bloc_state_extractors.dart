@@ -1,5 +1,5 @@
 import 'package:fn_tracker/features/transactions/transactions.dart';
-import 'package:fn_tracker/features/wallet/wallet.dart';
+import 'package:fn_tracker/features/finance/finance.dart';
 
 /// Утилиты для извлечения данных из состояний BLoC/Cubit.
 /// Устраняет дублирование _extractGoals, _extractWallets, _extractCategories.

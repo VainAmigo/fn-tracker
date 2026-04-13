@@ -38,12 +38,12 @@ class _AppViewState extends State<AppView> {
   Widget build(BuildContext context) {
     final firebaseAuthRepo = FirebaseAuthRepo();
     final transactionsRepo = TransactionsRepositoryImpl();
-    final walletRepo = WalletRepository(transactionsRepo: transactionsRepo);
+    final financeRepo = FinanceRepository(transactionsRepo: transactionsRepo);
     final categoryRepo = CategoryRepository();
     final dataSeeder = DefaultDataSeeder(
       tasks: [
         WalletSeedTask(
-          walletRepo: walletRepo,
+          financeRepo: financeRepo,
           wallets: DefaultSeedData.wallets,
         ),
         CategorySeedTask(
@@ -78,17 +78,17 @@ class _AppViewState extends State<AppView> {
               AddTransactionCubit(transactionsRepo: transactionsRepo),
         ),
         BlocProvider<BudgetCubit>(
-          create: (context) => BudgetCubit(walletRepo: walletRepo),
+          create: (context) => BudgetCubit(financeRepo: financeRepo),
         ),
         BlocProvider<HomeCubit>(
           create: (context) => HomeCubit(transactionsRepo: transactionsRepo),
         ),
         BlocProvider<WalletCubit>(
-          create: (context) => WalletCubit(walletRepo: walletRepo),
+          create: (context) => WalletCubit(financeRepo: financeRepo),
         ),
         BlocProvider<GoalsCubit>(
           create: (context) => GoalsCubit(
-            walletRepo: walletRepo,
+            financeRepo: financeRepo,
             transactionsRepo: transactionsRepo,
           ),
         ),
@@ -97,9 +97,8 @@ class _AppViewState extends State<AppView> {
               AnalyticsCubit(analyticsRepo: AnalyticsRepository()),
         ),
         BlocProvider<AnalyticsAiChatCubit>(
-          create: (context) => AnalyticsAiChatCubit(
-            repository: AiAnalyticsChatRepositoryImpl(),
-          ),
+          create: (context) =>
+              AnalyticsAiChatCubit(repository: AiAnalyticsChatRepositoryImpl()),
         ),
         BlocProvider<ExportCubit>(
           create: (context) => ExportCubit(
@@ -108,7 +107,7 @@ class _AppViewState extends State<AppView> {
           ),
         ),
         BlocProvider<ScheduledPaymentsCubit>(
-          create: (context) => ScheduledPaymentsCubit(walletRepo: walletRepo),
+          create: (context) => ScheduledPaymentsCubit(financeRepo: financeRepo),
         ),
       ],
       child: MultiProvider(

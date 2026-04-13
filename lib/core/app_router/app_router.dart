@@ -64,7 +64,7 @@ final class AppRouter {
             create: (context) => AiLogicCubit(
               entryMode: mode,
               categoryRepo: CategoryRepository(),
-              walletRepo: WalletRepository(
+              financeRepo: FinanceRepository(
                 transactionsRepo:
                     context.read<TransactionsCubit>().transactionsRepo,
               ),

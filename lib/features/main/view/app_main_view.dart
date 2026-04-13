@@ -83,10 +83,10 @@ class _AppMainViewState extends State<AppMainView> {
 
   Future<void> _runAutoCreate() async {
     if (!mounted) return;
-    final walletRepo = context.read<WalletCubit>().walletRepo;
+    final financeRepo = context.read<WalletCubit>().financeRepo;
     final transactionsRepo = context.read<TransactionsCubit>().transactionsRepo;
     final service = ScheduledPaymentAutoCreateService(
-      walletRepo: walletRepo,
+      financeRepo: financeRepo,
       transactionsRepo: transactionsRepo,
     );
     await service.checkAndCreateForToday();
@@ -100,7 +100,7 @@ class _AppMainViewState extends State<AppMainView> {
 
   static const _tabs = [
     HomeView(),
-    WalletView(),
+    FinanceView(),
     AnalyticsView(),
     SettingsView(),
   ];

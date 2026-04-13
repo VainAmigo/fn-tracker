@@ -7,17 +7,17 @@ class AiLogicCubit extends Cubit<AiLogicState> {
   AiLogicCubit({
     required AiLogicEntryMode entryMode,
     required CategoryRepository categoryRepo,
-    required WalletRepository walletRepo,
+    required FinanceRepository financeRepo,
     required AiExpenseParseRepository parseRepo,
     required TransactionsRepository transactionsRepo,
   }) : _categoryRepo = categoryRepo,
-       _walletRepo = walletRepo,
+       _financeRepo = financeRepo,
        _parseRepo = parseRepo,
        _transactionsRepo = transactionsRepo,
        super(AiLogicInitial(entryMode: entryMode));
 
   final CategoryRepository _categoryRepo;
-  final WalletRepository _walletRepo;
+  final FinanceRepository _financeRepo;
   final AiExpenseParseRepository _parseRepo;
   final TransactionsRepository _transactionsRepo;
 
@@ -84,7 +84,7 @@ class AiLogicCubit extends Cubit<AiLogicState> {
 
     try {
       final categories = await _categoryRepo.getUserCategories();
-      final wallets = await _walletRepo.getWallets();
+      final wallets = await _financeRepo.getWallets();
 
       final drafts = bytes != null && bytes.isNotEmpty && mime != null
           ? await _parseRepo.parseTransactionFromBytes(
