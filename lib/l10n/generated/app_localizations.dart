@@ -519,6 +519,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unique transaction identifier.'**
   String get exportColumnTransactionIdDescription;
+
+  /// No description provided for @startTakingControlOfYourFinances.
+  ///
+  /// In en, this message translates to:
+  /// **'Start taking control of your finances'**
+  String get startTakingControlOfYourFinances;
+
+  /// No description provided for @continueWithEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Email'**
+  String get continueWithEmail;
+
+  /// No description provided for @noAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'No account? Register'**
+  String get noAccount;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign in'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @register.
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get register;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get continueWithGoogle;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get confirmPassword;
+
+  /// No description provided for @enterYourEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get enterYourEmail;
+
+  /// No description provided for @enterYourPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get enterYourPassword;
+
+  /// No description provided for @confirmYourPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your password'**
+  String get confirmYourPassword;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email'**
+  String get invalidEmail;
+
+  /// Validation message when password is shorter than the minimum length.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least {minLength} characters'**
+  String passwordMustBeAtLeast(int minLength);
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
 }
 
 class _AppLocalizationsDelegate

@@ -1,3 +1,7 @@
+import 'package:flutter/widgets.dart';
+
+import 'package:fn_tracker/l10n/l10.dart';
+
 class AuthValidationUtils {
   AuthValidationUtils._();
 
@@ -5,48 +9,53 @@ class AuthValidationUtils {
     r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
   );
 
-  static String? email(String? value) {
+  static String? email(String? value, BuildContext context) {
+    final l10n = context.l10n;
     if (value == null || value.trim().isEmpty) {
-      return 'Введите email';
+      return l10n.enterYourEmail;
     }
 
     if (!_emailRegex.hasMatch(value.trim())) {
-      return 'Некорректный email';
+      return l10n.invalidEmail;
     }
 
     return null;
   }
 
   static String? password(
-      String? value, {
-        int minLength = 6,
-      }) {
+    String? value,
+    BuildContext context, {
+    int minLength = 6,
+  }) {
+    final l10n = context.l10n;
     if (value == null || value.isEmpty) {
-      return 'Введите пароль';
+      return l10n.enterYourPassword;
     }
 
     if (value.length < minLength) {
-      return 'Минимум $minLength символов';
+      return l10n.passwordMustBeAtLeast(minLength);
     }
 
     return null;
   }
 
   static String? confirmPassword(
-      String? value,
-      String originalPassword, {
-        int minLength = 6,
-      }) {
+    String? value,
+    BuildContext context,
+    String originalPassword, {
+    int minLength = 6,
+  }) {
+    final l10n = context.l10n;
     if (value == null || value.isEmpty) {
-      return 'Подтвердите пароль';
+      return l10n.confirmYourPassword;
     }
 
     if (value.length < minLength) {
-      return 'Минимум $minLength символов';
+      return l10n.passwordMustBeAtLeast(minLength);
     }
 
     if (value != originalPassword) {
-      return 'Пароли не совпадают';
+      return l10n.passwordsDoNotMatch;
     }
 
     return null;

@@ -228,4 +228,55 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get exportColumnTransactionIdDescription =>
       'Уникальный идентификатор операции.';
+
+  @override
+  String get startTakingControlOfYourFinances =>
+      'Начните управлять своими финансами';
+
+  @override
+  String get continueWithEmail => 'Продолжить с электронной почтой';
+
+  @override
+  String get noAccount => 'Нет аккаунта? Зарегистрироваться';
+
+  @override
+  String get alreadyHaveAccount => 'Уже есть аккаунт? Войти';
+
+  @override
+  String get register => 'Зарегистрироваться';
+
+  @override
+  String get login => 'Войти';
+
+  @override
+  String get continueWithGoogle => 'Продолжить с Google';
+
+  @override
+  String get email => 'Электронная почта';
+
+  @override
+  String get password => 'Пароль';
+
+  @override
+  String get confirmPassword => 'Подтвердить пароль';
+
+  @override
+  String get enterYourEmail => 'Введите вашу электронную почту';
+
+  @override
+  String get enterYourPassword => 'Введите ваш пароль';
+
+  @override
+  String get confirmYourPassword => 'Подтвердите ваш пароль';
+
+  @override
+  String get invalidEmail => 'Некорректный email';
+
+  @override
+  String passwordMustBeAtLeast(int minLength) {
+    return 'Пароль должен содержать не менее $minLength символов';
+  }
+
+  @override
+  String get passwordsDoNotMatch => 'Пароли не совпадают';
 }

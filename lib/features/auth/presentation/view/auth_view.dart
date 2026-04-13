@@ -31,7 +31,7 @@ class AuthView extends StatelessWidget {
               ),
             );
           }
-          return const LoginView();
+          return const AuthInitView();
         },
       ),
     );

@@ -228,4 +228,55 @@ class AppLocalizationsKy extends AppLocalizations {
   @override
   String get exportColumnTransactionIdDescription =>
       'Операциянын уникалдуу идентификатору.';
+
+  @override
+  String get startTakingControlOfYourFinances =>
+      'Финанстарды башкарууга баштаңыз';
+
+  @override
+  String get continueWithEmail => 'Электрондук почта менен кириңиз';
+
+  @override
+  String get noAccount => 'Аккаунтум жок? Катталуу';
+
+  @override
+  String get alreadyHaveAccount => 'Аккаунтум бар? Кирүү';
+
+  @override
+  String get register => 'Катталуу';
+
+  @override
+  String get login => 'Кирүү';
+
+  @override
+  String get continueWithGoogle => 'Google менен кириңиз';
+
+  @override
+  String get email => 'Электрондук почта';
+
+  @override
+  String get password => 'Сырсөз';
+
+  @override
+  String get confirmPassword => 'Сырсөздү тастыктоо';
+
+  @override
+  String get enterYourEmail => 'Электрондук почтаны киргизиңиз';
+
+  @override
+  String get enterYourPassword => 'Сырсөздү киргизиңиз';
+
+  @override
+  String get confirmYourPassword => 'Сырсөздү тастыктаңыз';
+
+  @override
+  String get invalidEmail => 'Туура эмес email';
+
+  @override
+  String passwordMustBeAtLeast(int minLength) {
+    return 'Сырсөз ең аз $minLength символдон турушу керек';
+  }
+
+  @override
+  String get passwordsDoNotMatch => 'Сырсөздөр дал келбейт';
 }

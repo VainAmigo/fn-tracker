@@ -139,5 +139,44 @@
   "exportColumnNoteDescription": "User note from transaction.",
   "@exportColumnNoteDescription": {},
   "exportColumnTransactionIdDescription": "Unique transaction identifier.",
-  "@exportColumnTransactionIdDescription": {}
+  "@exportColumnTransactionIdDescription": {},
+  "startTakingControlOfYourFinances": "Start taking control of your finances",
+  "@startTakingControlOfYourFinances": {},
+  "continueWithEmail": "Continue with Email",
+  "@continueWithEmail": {},
+  "noAccount": "No account? Register",
+  "@noAccount": {},
+  "alreadyHaveAccount": "Already have an account? Sign in",
+  "@alreadyHaveAccount": {},
+  "register": "Register",
+  "@register": {},
+  "login": "Login",
+  "@login": {},
+  "continueWithGoogle": "Continue with Google",
+  "@continueWithGoogle": {},
+  "email": "Email",
+  "@email": {},
+  "password": "Password",
+  "@password": {},
+  "confirmPassword": "Confirm password",
+  "@confirmPassword": {},
+  "enterYourEmail": "Enter your email",
+  "@enterYourEmail": {},
+  "enterYourPassword": "Enter your password",
+  "@enterYourPassword": {},
+  "confirmYourPassword": "Confirm your password",
+  "@confirmYourPassword": {},
+  "invalidEmail": "Invalid email",
+  "@invalidEmail": {},
+  "passwordMustBeAtLeast": "Password must be at least {minLength} characters",
+  "@passwordMustBeAtLeast": {
+    "description": "Validation message when password is shorter than the minimum length.",
+    "placeholders": {
+      "minLength": {
+        "type": "int"
+      }
+    }
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {}
 }

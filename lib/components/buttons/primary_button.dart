@@ -9,6 +9,7 @@ class PrimaryButton extends StatelessWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.icon,
+    this.leading,
     this.size = PrimaryButtonSize.medium,
     this.paddingStyle = PrimaryButtonPaddingStyle.regular,
     this.fullWidth = true,
@@ -20,6 +21,7 @@ class PrimaryButton extends StatelessWidget {
   final void Function()? onPressed;
   final String text;
   final IconData? icon;
+  final Widget? leading;
   final Color? backgroundColor;
   final Color? foregroundColor;
   final PrimaryButtonSize size;
@@ -58,7 +60,10 @@ class PrimaryButton extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
+          if (leading != null) ...[
+            leading!,
+            if (!iconOnly) SizedBox(width: size.iconPadding),
+          ] else if (icon != null) ...[
             Icon(
               icon,
               size: size.iconSize,

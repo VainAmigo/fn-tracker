@@ -227,4 +227,55 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get exportColumnTransactionIdDescription =>
       'Unique transaction identifier.';
+
+  @override
+  String get startTakingControlOfYourFinances =>
+      'Start taking control of your finances';
+
+  @override
+  String get continueWithEmail => 'Continue with Email';
+
+  @override
+  String get noAccount => 'No account? Register';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account? Sign in';
+
+  @override
+  String get register => 'Register';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get continueWithGoogle => 'Continue with Google';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get confirmPassword => 'Confirm password';
+
+  @override
+  String get enterYourEmail => 'Enter your email';
+
+  @override
+  String get enterYourPassword => 'Enter your password';
+
+  @override
+  String get confirmYourPassword => 'Confirm your password';
+
+  @override
+  String get invalidEmail => 'Invalid email';
+
+  @override
+  String passwordMustBeAtLeast(int minLength) {
+    return 'Password must be at least $minLength characters';
+  }
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
 }

@@ -71,5 +71,21 @@
   "exportColumnCategoryDescription": "Операцияга байланышкан категориянын аталышы.",
   "exportColumnWalletDescription": "Операцияга байланышкан капчыктын аталышы.",
   "exportColumnNoteDescription": "Операцияга колдонуучунун эскертүүсү.",
-  "exportColumnTransactionIdDescription": "Операциянын уникалдуу идентификатору."
+  "exportColumnTransactionIdDescription": "Операциянын уникалдуу идентификатору.",
+  "startTakingControlOfYourFinances": "Финанстарды башкарууга баштаңыз",
+  "continueWithEmail": "Электрондук почта менен кириңиз",
+  "noAccount": "Аккаунтум жок? Катталуу",
+  "alreadyHaveAccount": "Аккаунтум бар? Кирүү",
+  "register": "Катталуу",
+  "login": "Кирүү",
+  "continueWithGoogle": "Google менен кириңиз",
+  "email": "Электрондук почта",
+  "password": "Сырсөз",
+  "confirmPassword": "Сырсөздү тастыктоо",
+  "enterYourEmail": "Электрондук почтаны киргизиңиз",
+  "enterYourPassword": "Сырсөздү киргизиңиз",
+  "confirmYourPassword": "Сырсөздү тастыктаңыз",
+  "invalidEmail": "Туура эмес email",
+  "passwordMustBeAtLeast": "Сырсөз ең аз {minLength} символдон турушу керек",
+  "passwordsDoNotMatch": "Сырсөздөр дал келбейт"
 }

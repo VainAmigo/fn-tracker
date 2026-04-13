@@ -71,5 +71,21 @@
   "exportColumnCategoryDescription": "Название категории, связанной с операцией.",
   "exportColumnWalletDescription": "Название кошелька, связанного с операцией.",
   "exportColumnNoteDescription": "Пользовательская заметка к операции.",
-  "exportColumnTransactionIdDescription": "Уникальный идентификатор операции."
+  "exportColumnTransactionIdDescription": "Уникальный идентификатор операции.",
+  "startTakingControlOfYourFinances": "Начните управлять своими финансами",
+  "continueWithEmail": "Продолжить с электронной почтой",
+  "noAccount": "Нет аккаунта? Зарегистрироваться",
+  "alreadyHaveAccount": "Уже есть аккаунт? Войти",
+  "register": "Зарегистрироваться",
+  "login": "Войти",
+  "continueWithGoogle": "Продолжить с Google",
+  "email": "Электронная почта",
+  "password": "Пароль",
+  "confirmPassword": "Подтвердить пароль",
+  "enterYourEmail": "Введите вашу электронную почту",
+  "enterYourPassword": "Введите ваш пароль",
+  "confirmYourPassword": "Подтвердите ваш пароль",
+  "invalidEmail": "Некорректный email",
+  "passwordMustBeAtLeast": "Пароль должен содержать не менее {minLength} символов",
+  "passwordsDoNotMatch": "Пароли не совпадают"
 }

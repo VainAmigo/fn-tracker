@@ -8,6 +8,7 @@ final class AppRouter {
 
   static const main = '/';
   static const auth = '/auth';
+  static const authInit = '/auth-init';
   static const register = '/register';
   static const login = '/login';
 
@@ -46,6 +47,10 @@ final class AppRouter {
       login => MaterialPageRoute(
         settings: const RouteSettings(name: login),
         builder: (_) => const LoginView(),
+      ),
+      authInit => MaterialPageRoute(
+        settings: const RouteSettings(name: authInit),
+        builder: (_) => const AuthInitView(),
       ),
       aiLogic => MaterialPageRoute(
         settings: RouteSettings(
