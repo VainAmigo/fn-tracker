@@ -4,14 +4,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:fn_tracker/features/ai_logic/data/ai_constants.dart';
-import 'package:fn_tracker/features/ai_logic/data/ai_expense_note_utils.dart';
-import 'package:fn_tracker/features/ai_logic/data/ai_expense_parse_repository.dart';
-import 'package:fn_tracker/features/ai_logic/data/ai_prompts.dart';
-import 'package:fn_tracker/features/ai_logic/data/models/ai_transaction_draft.dart';
-import 'package:fn_tracker/features/transactions/data/models/category_model.dart';
-import 'package:fn_tracker/features/transactions/data/models/transaction_model.dart';
-import 'package:fn_tracker/features/wallet/data/models/wallet_model.dart';
+import 'package:fn_tracker/features/features.dart';
 
 class AiExpenseParseRepositoryImpl implements AiExpenseParseRepository {
   AiExpenseParseRepositoryImpl({FirebaseAuth? auth})

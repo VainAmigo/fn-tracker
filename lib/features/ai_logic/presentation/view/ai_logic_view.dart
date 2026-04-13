@@ -103,7 +103,7 @@ class _AiLogicViewState extends State<AiLogicView> {
             child: Column(
               children: [
                 TabTitleWidget(
-                  title: 'Ввод',
+                  title: 'Добавление траты с помощью AI',
                   subtitle:
                       'Введите траты вручную или используйте готовые шаблоны',
                 ),

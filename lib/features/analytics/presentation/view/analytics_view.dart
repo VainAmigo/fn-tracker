@@ -102,7 +102,6 @@ class _AnalyticsBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: AppSizing.spaceBtwSections),
               if (state is AnalyticsLoading)
                 const Center(
                   child: Padding(

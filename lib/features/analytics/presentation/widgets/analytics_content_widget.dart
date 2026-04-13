@@ -52,14 +52,8 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnalyticsSummaryCardsWidget(
-          totalIncome: data.totalIncome,
-          totalExpense: data.totalExpense,
-          balance: data.balance,
-        ),
-        const SizedBox(height: AppSizing.spaceBtwSections),
         TitledSection(
-          title: 'Spending chart',
+          title: _selectedTabIndex == 3 ? 'AI assistant' : 'Spending chart',
           action: _buildTabBar(context),
           children: [
             AnimatedSwitcher(
@@ -70,11 +64,12 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
                   key: ValueKey('bar_${widget.period.startDayKey}'),
                   data: data,
                 ),
-                _ => _HeatmapTabContent(
+                2 => _HeatmapTabContent(
                   key: ValueKey('heatmap_${widget.period.startDayKey}'),
                   data: data,
                   period: widget.period,
                 ),
+                _ => const AnalyticsAiChatTabWidget(key: ValueKey('ai_chat')),
               },
             ),
           ],
@@ -120,6 +115,16 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
             color: _selectedTabIndex == 2 ? activeColor : inactiveColor,
           ),
         ),
+        IconButton(
+          onPressed: () {
+            setState(() => _selectedTabIndex = 3);
+            widget.onTabChanged?.call(3);
+          },
+          icon: Icon(
+            Icons.auto_awesome_outlined,
+            color: _selectedTabIndex == 3 ? activeColor : inactiveColor,
+          ),
+        ),
       ],
     );
   }
@@ -144,6 +149,12 @@ class _DonutTabContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (data.categorySpending.isNotEmpty) ...[
+          AnalyticsSummaryCardsWidget(
+            totalIncome: data.totalIncome,
+            totalExpense: data.totalExpense,
+            balance: data.balance,
+          ),
+          const SizedBox(height: AppSizing.spaceBtwElements),
           AnalyticsSpendingDonutWidget(
             categorySpending: data.categorySpending,
             totalExpense: data.totalExpense,
@@ -184,7 +195,18 @@ class _BarTabContent extends StatelessWidget {
         )
         .toList();
 
-    return PeriodSegmentChart(bars: bars);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AnalyticsSummaryCardsWidget(
+          totalIncome: data.totalIncome,
+          totalExpense: data.totalExpense,
+          balance: data.balance,
+        ),
+        const SizedBox(height: AppSizing.spaceBtwElements),
+        PeriodSegmentChart(bars: bars),
+      ],
+    );
   }
 }
 
@@ -241,6 +263,12 @@ class _HeatmapTabContentState extends State<_HeatmapTabContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        AnalyticsSummaryCardsWidget(
+          totalIncome: widget.data.totalIncome,
+          totalExpense: widget.data.totalExpense,
+          balance: widget.data.balance,
+        ),
+        const SizedBox(height: AppSizing.spaceBtwElements),
         SpendingHeatmapCalendarWidget(
           days: daySpending,
           period: widget.period,

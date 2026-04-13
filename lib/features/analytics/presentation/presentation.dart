@@ -5,3 +5,4 @@ export 'widgets/analytics_empty_placeholder_widget.dart';
 export 'widgets/analytics_error_placeholder_widget.dart';
 export 'widgets/analytics_spending_donut_widget.dart';
 export 'widgets/analytics_summary_cards_widget.dart';
+export 'widgets/analytics_ai_chat_tab_widget.dart';
