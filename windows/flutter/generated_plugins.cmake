@@ -5,11 +5,13 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   cloud_firestore
   dynamic_color
+  file_selector_windows
   firebase_auth
   firebase_core
   firebase_storage
   flutter_localization
   share_plus
+  speech_to_text_windows
   url_launcher_windows
 )
 

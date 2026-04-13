@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/core/core.dart';
-import 'package:fn_tracker/features/analytics/data/data.dart';
+import 'package:fn_tracker/features/features.dart';
 
 part 'analytics_state.dart';
 

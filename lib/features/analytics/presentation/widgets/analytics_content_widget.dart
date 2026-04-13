@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
@@ -24,11 +27,20 @@ class AnalyticsContentWidget extends StatefulWidget {
 
 class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
   late int _selectedTabIndex;
+  List<int> _visualOrder = List<int>.from(AnalyticsTabOrderStorage.defaultOrder);
 
   @override
   void initState() {
     super.initState();
     _selectedTabIndex = widget.initialTabIndex;
+    _loadTabOrder();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AnalyticsAiChatCubit>().bindAnalyticsContext(
+        widget.data,
+        widget.period,
+      );
+    });
   }
 
   @override
@@ -37,6 +49,45 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
     if (oldWidget.initialTabIndex != widget.initialTabIndex) {
       _selectedTabIndex = widget.initialTabIndex;
     }
+    final newKey = AnalyticsAiContextBuilder.periodContextKey(widget.period);
+    final oldKey = AnalyticsAiContextBuilder.periodContextKey(oldWidget.period);
+    if (newKey != oldKey) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.read<AnalyticsAiChatCubit>().bindAnalyticsContext(
+          widget.data,
+          widget.period,
+        );
+      });
+    }
+  }
+
+  Future<void> _loadTabOrder() async {
+    final loaded = await AnalyticsTabOrderStorage.load();
+    if (!mounted) return;
+    final useFirstInOrder = widget.initialTabIndex == 0;
+    setState(() {
+      _visualOrder = loaded;
+      if (useFirstInOrder) {
+        _selectedTabIndex = loaded.first;
+      }
+    });
+    if (useFirstInOrder) {
+      widget.onTabChanged?.call(loaded.first);
+    }
+  }
+
+  void _onReorderTabs(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      final next = List<int>.from(_visualOrder);
+      final item = next.removeAt(oldIndex);
+      next.insert(newIndex, item);
+      _visualOrder = next;
+    });
+    unawaited(AnalyticsTabOrderStorage.save(List<int>.from(_visualOrder)));
   }
 
   @override
@@ -52,30 +103,26 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnalyticsSummaryCardsWidget(
-          totalIncome: data.totalIncome,
-          totalExpense: data.totalExpense,
-          balance: data.balance,
-        ),
-        const SizedBox(height: AppSizing.spaceBtwSections),
         TitledSection(
-          title: 'Spending chart',
+          title: _selectedTabIndex == 3 ? 'AI assistant' : 'Spending chart',
           action: _buildTabBar(context),
           children: [
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: switch (_selectedTabIndex) {
-                0 => _DonutTabContent(key: const ValueKey('donut'), data: data),
-                1 => _BarTabContent(
+            IndexedStack(
+              index: _selectedTabIndex,
+              sizing: StackFit.passthrough,
+              children: [
+                _DonutTabContent(key: const ValueKey('donut'), data: data),
+                _BarTabContent(
                   key: ValueKey('bar_${widget.period.startDayKey}'),
                   data: data,
                 ),
-                _ => _HeatmapTabContent(
+                _HeatmapTabContent(
                   key: ValueKey('heatmap_${widget.period.startDayKey}'),
                   data: data,
                   period: widget.period,
                 ),
-              },
+                const AnalyticsAiChatTabWidget(),
+              ],
             ),
           ],
         ),
@@ -88,41 +135,54 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
     final activeColor = colorScheme.tertiary;
     final inactiveColor = colorScheme.onSurface.withValues(alpha: 0.5);
 
-    return Row(
-      children: [
-        IconButton(
-          onPressed: () {
-            setState(() => _selectedTabIndex = 0);
-            widget.onTabChanged?.call(0);
-          },
-          icon: Icon(
-            Icons.donut_large,
-            color: _selectedTabIndex == 0 ? activeColor : inactiveColor,
-          ),
-        ),
-        IconButton(
-          onPressed: () {
-            setState(() => _selectedTabIndex = 1);
-            widget.onTabChanged?.call(1);
-          },
-          icon: Icon(
-            Icons.bar_chart,
-            color: _selectedTabIndex == 1 ? activeColor : inactiveColor,
-          ),
-        ),
-        IconButton(
-          onPressed: () {
-            setState(() => _selectedTabIndex = 2);
-            widget.onTabChanged?.call(2);
-          },
-          icon: Icon(
-            Icons.calendar_view_week,
-            color: _selectedTabIndex == 2 ? activeColor : inactiveColor,
-          ),
-        ),
-      ],
+    return SizedBox(
+      height: AppSizing.heightM,
+      child: ReorderableListView.builder(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        buildDefaultDragHandles: false,
+        itemCount: _visualOrder.length,
+        onReorder: _onReorderTabs,
+        itemBuilder: (context, index) {
+          final logical = _visualOrder[index];
+          return ReorderableDragStartListener(
+            key: ValueKey<int>(logical),
+            index: index,
+            child: IconButton(
+              tooltip: _analyticsTabTooltip(logical),
+              onPressed: () {
+                setState(() => _selectedTabIndex = logical);
+                widget.onTabChanged?.call(logical);
+              },
+              icon: Icon(
+                _analyticsTabIcon(logical),
+                color: _selectedTabIndex == logical ? activeColor : inactiveColor,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
+}
+
+IconData _analyticsTabIcon(int logicalIndex) {
+  return switch (logicalIndex) {
+    0 => Icons.donut_large,
+    1 => Icons.bar_chart,
+    2 => Icons.calendar_view_week,
+    _ => Icons.auto_awesome_outlined,
+  };
+}
+
+String _analyticsTabTooltip(int logicalIndex) {
+  return switch (logicalIndex) {
+    0 => 'Donut chart',
+    1 => 'Bar chart',
+    2 => 'Heatmap',
+    _ => 'AI assistant',
+  };
 }
 
 class _DonutTabContent extends StatelessWidget {
@@ -144,6 +204,12 @@ class _DonutTabContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (data.categorySpending.isNotEmpty) ...[
+          AnalyticsSummaryCardsWidget(
+            totalIncome: data.totalIncome,
+            totalExpense: data.totalExpense,
+            balance: data.balance,
+          ),
+          const SizedBox(height: AppSizing.spaceBtwElements),
           AnalyticsSpendingDonutWidget(
             categorySpending: data.categorySpending,
             totalExpense: data.totalExpense,
@@ -184,7 +250,18 @@ class _BarTabContent extends StatelessWidget {
         )
         .toList();
 
-    return PeriodSegmentChart(bars: bars);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AnalyticsSummaryCardsWidget(
+          totalIncome: data.totalIncome,
+          totalExpense: data.totalExpense,
+          balance: data.balance,
+        ),
+        const SizedBox(height: AppSizing.spaceBtwElements),
+        PeriodSegmentChart(bars: bars),
+      ],
+    );
   }
 }
 
@@ -241,6 +318,12 @@ class _HeatmapTabContentState extends State<_HeatmapTabContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        AnalyticsSummaryCardsWidget(
+          totalIncome: widget.data.totalIncome,
+          totalExpense: widget.data.totalExpense,
+          balance: widget.data.balance,
+        ),
+        const SizedBox(height: AppSizing.spaceBtwElements),
         SpendingHeatmapCalendarWidget(
           days: daySpending,
           period: widget.period,

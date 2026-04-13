@@ -8,6 +8,7 @@ class AppTextStyles {
       fontSize: 36,
       fontWeight: FontWeight.w600,
       color: color ?? theme.colorScheme.onSurface,
+      height: 1,
     );
   }
 

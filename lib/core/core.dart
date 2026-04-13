@@ -13,6 +13,7 @@ export 'utils/month.dart';
 export 'utils/weekday.dart';
 export 'utils/month_range_utils.dart';
 export 'utils/date_keys_extention.dart';
+export 'utils/speech_locale_utils.dart';
 export 'utils/date_picker_period.dart';
 export 'utils/budget_display_utils.dart';
 export 'utils/budget_calculator.dart';
