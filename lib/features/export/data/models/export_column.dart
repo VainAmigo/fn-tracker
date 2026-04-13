@@ -1,6 +1,6 @@
 import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/features/export/export.dart';
 import 'package:fn_tracker/l10n/generated/app_localizations.dart';
-import 'package:fn_tracker/features/export/data/models/export_item.dart';
 
 enum ExportColumn {
   date,

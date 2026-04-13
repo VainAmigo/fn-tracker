@@ -1,6 +1,6 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:fn_tracker/core/core.dart';
-import 'package:fn_tracker/features/export/data/data.dart';
+import 'package:fn_tracker/features/export/export.dart';
 
 enum ExportRunStatus {
   success,

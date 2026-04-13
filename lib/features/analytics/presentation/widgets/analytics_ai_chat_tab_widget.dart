@@ -1,30 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
-
-enum AnalyticsAiMessageRole { user, assistant }
-
-class AnalyticsAiChatMessage {
-  const AnalyticsAiChatMessage({
-    required this.role,
-    required this.text,
-    this.sentAt,
-    this.isPending = false,
-  });
-
-  final AnalyticsAiMessageRole role;
-  final String text;
-  final DateTime? sentAt;
-  final bool isPending;
-}
-
-const List<String> _mockAssistantReplies = [
-  'Here is a quick summary (mock): income covered expenses with a small positive balance.',
-  'Mock insight: recurring subscriptions grew about 8% vs the previous period.',
-  'If you tell me a category name, I can mock a comparison with last month.',
-];
 
 class AnalyticsAiChatTabWidget extends StatefulWidget {
   const AnalyticsAiChatTabWidget({super.key});
@@ -36,114 +14,106 @@ class AnalyticsAiChatTabWidget extends StatefulWidget {
 
 class _AnalyticsAiChatTabWidgetState extends State<AnalyticsAiChatTabWidget> {
   final TextEditingController _controller = TextEditingController();
-  late List<AnalyticsAiChatMessage> _messages;
-  int _mockReplyIndex = 0;
-  Timer? _pendingTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    _messages = List<AnalyticsAiChatMessage>.from([]);
-  }
 
   @override
   void dispose() {
-    _pendingTimer?.cancel();
     _controller.dispose();
     super.dispose();
+  }
+
+  void _clearChat() {
+    context.read<AnalyticsAiChatCubit>().clearChat();
   }
 
   void _onSend() {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
-
-    setState(() {
-      _messages = [
-        ..._messages,
-        AnalyticsAiChatMessage(
-          role: AnalyticsAiMessageRole.user,
-          text: text,
-          sentAt: DateTime.now(),
-        ),
-        const AnalyticsAiChatMessage(
-          role: AnalyticsAiMessageRole.assistant,
-          text: '',
-          isPending: true,
-        ),
-      ];
-    });
     _controller.clear();
-
-    _pendingTimer?.cancel();
-    _pendingTimer = Timer(const Duration(milliseconds: 900), () {
-      if (!mounted) return;
-      final reply =
-          _mockAssistantReplies[_mockReplyIndex % _mockAssistantReplies.length];
-      _mockReplyIndex++;
-      setState(() {
-        final withoutPending = _messages.where((m) => !m.isPending).toList();
-        _messages = [
-          ...withoutPending,
-          AnalyticsAiChatMessage(
-            role: AnalyticsAiMessageRole.assistant,
-            text: reply,
-            sentAt: DateTime.now(),
-          ),
-        ];
-      });
-    });
+    context.read<AnalyticsAiChatCubit>().sendUserMessage(text);
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        TabTitleWidget(
-          title: 'Deep analytics',
-          subtitle: 'Ask about your analytics for this period',
-        ),
-        const SizedBox(height: AppSizing.spaceBtwItems),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(
-            vertical: AppSizing.spaceBtwItems,
-          ),
-          itemCount: _messages.length,
-          itemBuilder: (context, index) {
-            final message = _messages[index];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: AppSizing.spaceBtwItems),
-              child: _AnalyticsAiChatBubble(message: message),
-            );
-          },
-        ),
-        const SizedBox(height: AppSizing.spaceBtwItems),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return BlocConsumer<AnalyticsAiChatCubit, AnalyticsAiChatState>(
+      listenWhen: (p, c) => c.errorMessage != null && c.errorMessage != p.errorMessage,
+      listener: (context, state) {
+        final msg = state.errorMessage;
+        if (msg != null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+          context.read<AnalyticsAiChatCubit>().clearError();
+        }
+      },
+      builder: (context, state) {
+        final canClear = state.messages.isNotEmpty;
+        final sending = state.isSending;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(
-              child: CustomTextFormField(
-                controller: _controller,
-                hintText: 'Ask about your analytics…',
-                maxLines: 1,
-                keyboardType: TextInputType.multiline,
-                onChanged: (_) => setState(() {}),
+            TabTitleWidget(
+              title: 'Deep analytics',
+              subtitle: 'Ask about your analytics for this period',
+              action: IconButton(
+                tooltip: 'Clear chat',
+                onPressed: canClear ? _clearChat : null,
+                icon: Icon(
+                  Icons.delete_outline_rounded,
+                  color: canClear
+                      ? colorScheme.tertiary
+                      : colorScheme.onSurface.withValues(alpha: 0.35),
+                ),
               ),
             ),
-            const SizedBox(width: AppSizing.spaceBtwItems),
-            PrimaryButton(
-              text: '',
-              icon: Icons.send_rounded,
-              iconOnly: true,
-              fullWidth: false,
-              size: PrimaryButtonSize.medium,
-              onPressed: _controller.text.trim().isEmpty ? null : _onSend,
+            const SizedBox(height: AppSizing.spaceBtwItems),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(
+                vertical: AppSizing.spaceBtwItems,
+              ),
+              itemCount: state.messages.length,
+              itemBuilder: (context, index) {
+                final message = state.messages[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSizing.spaceBtwItems),
+                  child: _AnalyticsAiChatBubble(message: message),
+                );
+              },
+            ),
+            const SizedBox(height: AppSizing.spaceBtwItems),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: CustomTextFormField(
+                    controller: _controller,
+                    hintText: 'Ask about your analytics…',
+                    maxLines: 1,
+                    keyboardType: TextInputType.multiline,
+                    readOnly: sending,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                ),
+                const SizedBox(width: AppSizing.spaceBtwItems),
+                PrimaryButton(
+                  text: '',
+                  icon: Icons.send_rounded,
+                  iconOnly: true,
+                  fullWidth: false,
+                  size: PrimaryButtonSize.medium,
+                  isLoading: sending,
+                  onPressed: sending || _controller.text.trim().isEmpty
+                      ? null
+                      : _onSend,
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }
@@ -272,7 +242,9 @@ class _TypingDotsState extends State<_TypingDots>
               children: List.generate(3, (i) {
                 final phase = (t + i * 0.2) % 1.0;
                 final opacity =
-                    0.25 + 0.55 * (1 - (phase - 0.5).abs() * 2).clamp(0.0, 1.0);
+                    0.25 +
+                    0.55 *
+                        (1 - (phase - 0.5).abs() * 2).clamp(0.0, 1.0);
                 return Padding(
                   padding: const EdgeInsets.only(right: 4),
                   child: Container(

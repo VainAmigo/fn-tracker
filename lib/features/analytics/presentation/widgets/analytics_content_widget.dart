@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
@@ -29,6 +30,13 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
   void initState() {
     super.initState();
     _selectedTabIndex = widget.initialTabIndex;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AnalyticsAiChatCubit>().bindAnalyticsContext(
+        widget.data,
+        widget.period,
+      );
+    });
   }
 
   @override
@@ -36,6 +44,17 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialTabIndex != widget.initialTabIndex) {
       _selectedTabIndex = widget.initialTabIndex;
+    }
+    final newKey = AnalyticsAiContextBuilder.periodContextKey(widget.period);
+    final oldKey = AnalyticsAiContextBuilder.periodContextKey(oldWidget.period);
+    if (newKey != oldKey) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.read<AnalyticsAiChatCubit>().bindAnalyticsContext(
+          widget.data,
+          widget.period,
+        );
+      });
     }
   }
 
@@ -56,21 +75,22 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
           title: _selectedTabIndex == 3 ? 'AI assistant' : 'Spending chart',
           action: _buildTabBar(context),
           children: [
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: switch (_selectedTabIndex) {
-                0 => _DonutTabContent(key: const ValueKey('donut'), data: data),
-                1 => _BarTabContent(
+            IndexedStack(
+              index: _selectedTabIndex,
+              sizing: StackFit.passthrough,
+              children: [
+                _DonutTabContent(key: const ValueKey('donut'), data: data),
+                _BarTabContent(
                   key: ValueKey('bar_${widget.period.startDayKey}'),
                   data: data,
                 ),
-                2 => _HeatmapTabContent(
+                _HeatmapTabContent(
                   key: ValueKey('heatmap_${widget.period.startDayKey}'),
                   data: data,
                   period: widget.period,
                 ),
-                _ => const AnalyticsAiChatTabWidget(key: ValueKey('ai_chat')),
-              },
+                const AnalyticsAiChatTabWidget(),
+              ],
             ),
           ],
         ),

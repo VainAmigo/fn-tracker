@@ -1,5 +1,5 @@
 import 'package:fn_tracker/core/core.dart';
-import 'package:fn_tracker/features/export/data/models/export_column.dart';
+import 'package:fn_tracker/features/export/export.dart';
 
 enum ExportPeriodPreset { week, month, threeMonths, sixMonths, custom }
 

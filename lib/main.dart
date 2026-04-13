@@ -96,6 +96,11 @@ class _AppViewState extends State<AppView> {
           create: (context) =>
               AnalyticsCubit(analyticsRepo: AnalyticsRepository()),
         ),
+        BlocProvider<AnalyticsAiChatCubit>(
+          create: (context) => AnalyticsAiChatCubit(
+            repository: AiAnalyticsChatRepositoryImpl(),
+          ),
+        ),
         BlocProvider<ExportCubit>(
           create: (context) => ExportCubit(
             exportRepo: ExportRepository(),
@@ -123,6 +128,7 @@ class _AppViewState extends State<AppView> {
             context.read<CategoriesCubit>().clearForLogout();
             context.read<QuickCategoriesSettingsCubit>().clearForLogout();
             context.read<ScheduledPaymentsCubit>().clearForLogout();
+            context.read<AnalyticsAiChatCubit>().resetForLogout();
           },
           child: const FnTracker(),
         ),

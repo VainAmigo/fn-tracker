@@ -1,4 +1,4 @@
-import 'package:fn_tracker/features/export/data/models/export_item.dart';
+import 'package:fn_tracker/features/export/export.dart';
 
 abstract class ExportRepoImpl {
   Future<List<ExportItem>> getTransactionsForExport({
