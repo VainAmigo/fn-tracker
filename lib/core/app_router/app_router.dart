@@ -13,6 +13,7 @@ final class AppRouter {
 
   static const transactions = '/transactions';
   static const addTransaction = '/add-transaction';
+  static const aiLogic = '/ai-logic';
   static const transactionsById = '/transactions-by-id';
 
   static const createCategory = '/create-category';
@@ -45,6 +46,30 @@ final class AppRouter {
       login => MaterialPageRoute(
         settings: const RouteSettings(name: login),
         builder: (_) => const LoginView(),
+      ),
+      aiLogic => MaterialPageRoute(
+        settings: RouteSettings(
+          name: aiLogic,
+          arguments: settings.arguments,
+        ),
+        builder: (context) {
+          final args = settings.arguments as AiLogicEntryArgs?;
+          final mode = args?.mode ?? AiLogicEntryMode.voice;
+          return BlocProvider(
+            create: (context) => AiLogicCubit(
+              entryMode: mode,
+              categoryRepo: CategoryRepository(),
+              walletRepo: WalletRepository(
+                transactionsRepo:
+                    context.read<TransactionsCubit>().transactionsRepo,
+              ),
+              parseRepo: AiExpenseParseRepositoryImpl(),
+              transactionsRepo:
+                  context.read<TransactionsCubit>().transactionsRepo,
+            ),
+            child: const AiLogicView(),
+          );
+        },
       ),
       addTransaction => MaterialPageRoute(
         settings: RouteSettings(

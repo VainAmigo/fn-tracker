@@ -45,5 +45,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Приложению нужен микрофон для голосового ввода трат.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Распознавание речи превращает голос в текст для AI.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Выбор фото чека для распознавания трат.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Съёмка чека для распознавания трат.</string>
 </dict>
 </plist>

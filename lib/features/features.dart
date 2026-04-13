@@ -1,3 +1,4 @@
+export 'ai_logic/ai_logic.dart';
 export 'analytics/analytics.dart';
 export 'export/export.dart';
 export 'auth/auth.dart';

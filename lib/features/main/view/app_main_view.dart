@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fn_tracker/components/buttons/primary_button.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/features/main/services/android_analytics_widget_bridge.dart';
 import 'package:fn_tracker/features/main/services/android_widget_bridge.dart';
@@ -17,6 +18,7 @@ class AppMainView extends StatefulWidget {
 
 class _AppMainViewState extends State<AppMainView> {
   int _selectedIndex = 0;
+  bool _fabMenuOpen = false;
   final quickActions = QuickActions();
 
   @override
@@ -125,7 +127,10 @@ class _AppMainViewState extends State<AppMainView> {
     if (!mounted) return;
 
     final categoriesCubit = context.read<CategoriesCubit>();
-    CategoryModel? category = _findCategoryById(categoriesCubit.state, categoryId);
+    CategoryModel? category = _findCategoryById(
+      categoriesCubit.state,
+      categoryId,
+    );
 
     if (category == null) {
       await categoriesCubit.loadCategories();
@@ -133,10 +138,9 @@ class _AppMainViewState extends State<AppMainView> {
     }
 
     if (!mounted) return;
-    Navigator.of(context).pushNamed(
-      AppRouter.addTransaction,
-      arguments: category,
-    );
+    Navigator.of(
+      context,
+    ).pushNamed(AppRouter.addTransaction, arguments: category);
   }
 
   CategoryModel? _findCategoryById(CategoriesState state, String categoryId) {
@@ -183,9 +187,9 @@ class _AppMainViewState extends State<AppMainView> {
 
     final (widgetPinnedIds, widgetRecentIds) = switch (settings.widgetSource) {
       WidgetCategoriesSource.system => switch (settings.displayMode) {
-          QuickCategoriesDisplayMode.pinned => (defaultPinnedIds, <String>[]),
-          QuickCategoriesDisplayMode.recent => (recentIds, <String>[]),
-        },
+        QuickCategoriesDisplayMode.pinned => (defaultPinnedIds, <String>[]),
+        QuickCategoriesDisplayMode.recent => (recentIds, <String>[]),
+      },
       WidgetCategoriesSource.custom => (settings.customWidgetOrder, <String>[]),
     };
 
@@ -264,7 +268,10 @@ class _AppMainViewState extends State<AppMainView> {
             _syncWidgetData(context);
           },
         ),
-        BlocListener<QuickCategoriesSettingsCubit, QuickCategoriesSettingsState>(
+        BlocListener<
+          QuickCategoriesSettingsCubit,
+          QuickCategoriesSettingsState
+        >(
           listener: (context, state) {
             _syncWidgetData(context);
           },
@@ -285,30 +292,114 @@ class _AppMainViewState extends State<AppMainView> {
           },
         ),
       ],
-      child: Scaffold(
-        body: IndexedStack(index: _selectedIndex, children: _tabs),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizing.borderRadius100),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Scaffold(
+            body: IndexedStack(index: _selectedIndex, children: _tabs),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
+            floatingActionButton: Material(
+              elevation: 0,
+              color: Theme.of(context).colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizing.borderRadius100),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () {
+                  if (_fabMenuOpen) {
+                    setState(() => _fabMenuOpen = false);
+                  } else {
+                    Navigator.of(context).pushNamed(AppRouter.addTransaction);
+                  }
+                },
+                onLongPress: () => setState(() => _fabMenuOpen = true),
+                child: SizedBox(
+                  width: AppSizing.heightM,
+                  height: AppSizing.heightM,
+                  child: Icon(
+                    Icons.add,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    size: AppSizing.iconSizeM,
+                  ),
+                ),
+              ),
+            ),
+            bottomNavigationBar: AppBottomNavWidget(
+              destinations: mainBottomNavDestinations,
+              currentIndex: _selectedIndex,
+              onTap: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                  _fabMenuOpen = false;
+                });
+              },
+            ),
           ),
-          elevation: 0,
-          onPressed: () =>
-              Navigator.of(context).pushNamed(AppRouter.addTransaction),
-          child: Icon(
-            Icons.add,
-            color: Theme.of(context).colorScheme.onPrimary,
-            size: AppSizing.iconSizeM,
-          ),
-        ),
-        bottomNavigationBar: AppBottomNavWidget(
-          destinations: mainBottomNavDestinations,
-          currentIndex: _selectedIndex,
-          onTap: (index) {
-            setState(() => _selectedIndex = index);
-          },
-        ),
+          if (_fabMenuOpen) ...[
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => setState(() => _fabMenuOpen = false),
+                child: ColoredBox(color: Colors.black.withValues(alpha: 0.45)),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: MediaQuery.of(context).padding.bottom + 108,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  PrimaryButton(
+                    text: 'Add with voice',
+                    onPressed: () {
+                      setState(() => _fabMenuOpen = false);
+                      Navigator.of(context).pushNamed(
+                        AppRouter.aiLogic,
+                        arguments: const AiLogicEntryArgs(
+                          mode: AiLogicEntryMode.voice,
+                        ),
+                      );
+                    },
+                    icon: Icons.mic_rounded,
+                    size: PrimaryButtonSize.small,
+                    fullWidth: false,
+                    rounded: true,
+                  ),
+                  PrimaryButton(
+                    text: 'Add with file',
+                    onPressed: () {
+                      setState(() => _fabMenuOpen = false);
+                      Navigator.of(context).pushNamed(
+                        AppRouter.aiLogic,
+                        arguments: const AiLogicEntryArgs(
+                          mode: AiLogicEntryMode.attachment,
+                        ),
+                      );
+                    },
+                    icon: Icons.attach_file_rounded,
+                    size: PrimaryButtonSize.small,
+                    fullWidth: false,
+                    rounded: true,
+                  ),
+                  PrimaryButton(
+                    text: 'Add manually',
+                    onPressed: () {
+                      setState(() => _fabMenuOpen = false);
+                      Navigator.of(context).pushNamed(AppRouter.addTransaction);
+                    },
+                    icon: Icons.edit_note_rounded,
+                    size: PrimaryButtonSize.small,
+                    fullWidth: false,
+                    rounded: true,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

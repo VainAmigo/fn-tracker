@@ -27,6 +27,10 @@ dependencies:
   dynamic_color: ^1.8.1
   share_plus: ^12.0.0
   syncfusion_flutter_xlsio: ^31.2.5
+  firebase_ai: ^3.10.0
+  speech_to_text: ^7.3.0
+  image_picker: ^1.2.1
+  file_picker: ^11.0.2
 
 dev_dependencies:
   flutter_test:

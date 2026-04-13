@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/core/utils/date_keys_extention.dart';
 import 'package:fn_tracker/core/utils/expression_evaluator.dart';
 import 'package:fn_tracker/features/features.dart';
@@ -200,13 +201,35 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                   onKeyPressed: _onKeyPressed,
                   showOperators: true,
                 ),
-                PrimaryButton(
-                  text: 'Save',
-                  size: PrimaryButtonSize.medium,
-                  rounded: true,
-                  isLoading: isSaving,
-                  fullWidth: false,
-                  onPressed: isSaving ? null : _onSavePressed,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: AppSizing.spaceBtwItemsExtra,
+                  children: [
+                    Expanded(
+                      child: PrimaryButton(
+                        text: 'Save',
+                        size: PrimaryButtonSize.medium,
+                        rounded: true,
+                        isLoading: isSaving,
+                        fullWidth: false,
+                        onPressed: isSaving ? null : _onSavePressed,
+                      ),
+                    ),
+                    PrimaryButton(
+                      text: 'AI',
+                      size: PrimaryButtonSize.medium,
+                      rounded: true,
+                      fullWidth: false,
+                      iconOnly: true,
+                      icon: Icons.assistant,
+                      onPressed: () => Navigator.of(context).pushNamed(
+                        AppRouter.aiLogic,
+                        arguments: const AiLogicEntryArgs(
+                          mode: AiLogicEntryMode.voice,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: AppSizing.spaceBtwElements),
               ],
@@ -242,8 +265,9 @@ class _AddTransactionViewState extends State<AddTransactionView> {
 
   void _onKeyPressed(String key) {
     final currency = context.read<CurrencyProvider>().currency;
-    final decimalSep =
-        currency.decimalSeparator == DecimalSeparator.comma ? ',' : '.';
+    final decimalSep = currency.decimalSeparator == DecimalSeparator.comma
+        ? ','
+        : '.';
     final nextAmount = AmountInputLogic.applyKey(
       currentAmount: _amount,
       key: key,
@@ -289,7 +313,9 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   void _onSavePressed() {
     final error = _validateInputs();
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
       return;
     }
     final (
@@ -324,5 +350,4 @@ class _AddTransactionViewState extends State<AddTransactionView> {
 
     context.read<AddTransactionCubit>().addTransaction(transaction: model);
   }
-
 }
