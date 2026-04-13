@@ -38,7 +38,7 @@ class _LoginViewState extends State<LoginView> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: AppSizing.spaceBtwSections),
                   Text(

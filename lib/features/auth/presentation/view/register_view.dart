@@ -41,7 +41,7 @@ class _RegisterViewState extends State<RegisterView> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(height: AppSizing.spaceBtwSections),
