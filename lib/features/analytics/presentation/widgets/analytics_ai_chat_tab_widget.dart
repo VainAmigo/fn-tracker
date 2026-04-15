@@ -30,7 +30,7 @@ class _AnalyticsAiChatTabWidgetState extends State<AnalyticsAiChatTabWidget> {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
     _controller.clear();
-    context.read<AnalyticsAiChatCubit>().sendUserMessage(text);
+    context.read<AnalyticsAiChatCubit>().sendUserMessage(text, context);
     setState(() {});
   }
 
@@ -39,11 +39,14 @@ class _AnalyticsAiChatTabWidgetState extends State<AnalyticsAiChatTabWidget> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return BlocConsumer<AnalyticsAiChatCubit, AnalyticsAiChatState>(
-      listenWhen: (p, c) => c.errorMessage != null && c.errorMessage != p.errorMessage,
+      listenWhen: (p, c) =>
+          c.errorMessage != null && c.errorMessage != p.errorMessage,
       listener: (context, state) {
         final msg = state.errorMessage;
         if (msg != null) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(msg)));
           context.read<AnalyticsAiChatCubit>().clearError();
         }
       },
@@ -79,7 +82,9 @@ class _AnalyticsAiChatTabWidgetState extends State<AnalyticsAiChatTabWidget> {
               itemBuilder: (context, index) {
                 final message = state.messages[index];
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: AppSizing.spaceBtwItems),
+                  padding: const EdgeInsets.only(
+                    bottom: AppSizing.spaceBtwItems,
+                  ),
                   child: _AnalyticsAiChatBubble(message: message),
                 );
               },
@@ -243,9 +248,7 @@ class _TypingDotsState extends State<_TypingDots>
               children: List.generate(3, (i) {
                 final phase = (t + i * 0.2) % 1.0;
                 final opacity =
-                    0.25 +
-                    0.55 *
-                        (1 - (phase - 0.5).abs() * 2).clamp(0.0, 1.0);
+                    0.25 + 0.55 * (1 - (phase - 0.5).abs() * 2).clamp(0.0, 1.0);
                 return Padding(
                   padding: const EdgeInsets.only(right: 4),
                   child: Container(
