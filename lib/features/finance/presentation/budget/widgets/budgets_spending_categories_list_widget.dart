@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class BudgetsSpendingCategoriesListWidget extends StatelessWidget {
@@ -23,7 +24,7 @@ class BudgetsSpendingCategoriesListWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         TitledSection(
-          title: 'Spending by category',
+          title: context.l10n.budgetCategories,
           children: [
             for (int i = 0; i < total; i++) ...[
               if (i > 0) const SizedBox(height: AppSizing.spaceBtwItemsExtra),
@@ -134,7 +135,7 @@ class _SpendingCategoryCard extends StatelessWidget {
                 AmountDividerWidget(leftAmount: spent, rightAmount: limit),
                 Text(
                   exceeded
-                      ? 'Limit exceeded'
+                      ? context.l10n.limitExceeded
                       : '${((limit - spent) / limit * 100).clamp(0, 100).toStringAsFixed(0)}% remaining',
                   style: AppTextStyles.listTileSubtitle(context).copyWith(
                     color: exceeded

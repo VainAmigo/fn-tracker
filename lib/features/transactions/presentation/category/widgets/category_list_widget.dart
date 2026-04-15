@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class CategoryListWidget extends StatefulWidget {
@@ -49,9 +50,9 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
           CategoriesError() => Center(
             child: Text(state.message, textAlign: TextAlign.center),
           ),
-          CategoriesEmpty() => const EmptyCardWidget(
-            title: 'No categories',
-            subtitle: 'Create you first category',
+          CategoriesEmpty() => EmptyCardWidget(
+            title: context.l10n.noCategories,
+            subtitle: context.l10n.createYourFirstCategory,
           ),
           CategoriesLoaded() => _buildList(context, state.categories, currency),
         };
@@ -76,7 +77,7 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
         if (index == categories.length) {
           final colorScheme = Theme.of(context).colorScheme;
           return CategoryCard(
-            title: 'New category',
+            title: context.l10n.newCategory,
             leading: Container(
               height: AppSizing.heightS,
               decoration: BoxDecoration(
@@ -109,7 +110,7 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
           title: category.name,
           subtitle: category.limitValue != null
               ? AmountFormatter.formatWithDots(
-                  'Limit',
+                  context.l10n.limit,
                   '${category.limitValue} ${currency.symbol}',
                 )
               : null,
@@ -143,9 +144,9 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
           confirmDismiss: (_) async {
             final result = await showDeleteEntityDialog(
               context,
-              title: 'Удалить категорию?',
+              title: context.l10n.deleteCategoryTitle,
               message:
-                  'Удалить категорию «${category.name}»? Выберите способ удаления.',
+                  '${context.l10n.deleteCategoryMessage} «${category.name}»? ${context.l10n.deleteCategoryMessageHint}',
             );
             if (result == null || result == DeleteEntityResult.cancel) {
               return false;
@@ -158,9 +159,9 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
             _pendingDeleteResult = null;
             if (result != null && result != DeleteEntityResult.cancel) {
               context.read<CategoriesCubit>().deleteCategory(
-                    categoryId: category.categoryId,
-                    deleteTransactions: result == DeleteEntityResult.deleteFull,
-                  );
+                categoryId: category.categoryId,
+                deleteTransactions: result == DeleteEntityResult.deleteFull,
+              );
             }
           },
           background: Container(

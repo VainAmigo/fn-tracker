@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class WalletFormView extends StatefulWidget {
@@ -99,8 +100,8 @@ class _WalletFormViewState extends State<WalletFormView> {
             SnackBar(
               content: Text(
                 _isEditing
-                    ? 'Wallet updated successfully'
-                    : 'Wallet created successfully',
+                    ? context.l10n.walletUpdatedSuccessfully
+                    : context.l10n.walletCreatedSuccessfully,
               ),
             ),
           );
@@ -118,7 +119,7 @@ class _WalletFormViewState extends State<WalletFormView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_isEditing ? 'Update Wallet' : 'Create Wallet'),
+          title: Text(_isEditing ? context.l10n.updateWallet : context.l10n.createWallet),
           scrolledUnderElevation: 0,
         ),
         body: SafeArea(
@@ -138,8 +139,7 @@ class _WalletFormViewState extends State<WalletFormView> {
                         const SizedBox(height: AppSizing.spaceBtwElements),
                         _buildPreview(context),
                         CustomTextFormField(
-                          label: 'Wallet name',
-                          hintText: 'e.g. Cash',
+                          label: context.l10n.walletName,
                           controller: _nameController,
                         ),
                         CreateCategoryIconPickerWidget(
@@ -161,7 +161,7 @@ class _WalletFormViewState extends State<WalletFormView> {
                 ),
                 const SizedBox(height: AppSizing.spaceBtwElements),
                 PrimaryButton(
-                  text: _isEditing ? 'Update' : 'Create',
+                  text: _isEditing ? context.l10n.updateWallet : context.l10n.createWallet,
                   onPressed: isLoading ? null : _submitWallet,
                   isLoading: isLoading,
                 ),
@@ -197,7 +197,7 @@ class _WalletFormViewState extends State<WalletFormView> {
     if (name.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Name is required')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.nameIsRequired)));
       return;
     }
 

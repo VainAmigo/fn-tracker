@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Верхняя карточка с бюджетом за период, советом и графиком BudgetDailyChart.
@@ -21,11 +22,11 @@ class BudgetSummaryCard extends StatelessWidget {
   final List<BudgetHistoryEntry> history;
   final List<TransactionModel> transactions;
 
-  static String _periodLabel(DatePickerPeriod period) {
+  static String _periodLabel(DatePickerPeriod period, BuildContext context) {
     return switch (period) {
-      YearlyPeriod() => 'Yearly budget',
-      MonthlyPeriod() => 'Monthly budget',
-      WeeklyPeriod() => 'Weekly budget',
+      YearlyPeriod() => context.l10n.yearlyBudget,
+      MonthlyPeriod() => context.l10n.monthlyBudget,
+      WeeklyPeriod() => context.l10n.weeklyBudget,
     };
   }
 
@@ -60,7 +61,7 @@ class BudgetSummaryCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    _periodLabel(period),
+                    _periodLabel(period, context),
                     style: AppTextStyles.text12w400(context),
                   ),
                   AmountTextWidget(

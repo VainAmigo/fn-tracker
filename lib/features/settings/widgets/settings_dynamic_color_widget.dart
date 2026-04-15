@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:provider/provider.dart';
 
 /// Переключатель использования динамических цветов Android 12+ (Material You).
@@ -12,9 +13,9 @@ class SettingsDynamicColorWidget extends StatelessWidget {
 
     return SwitchListTile(
       contentPadding: EdgeInsets.zero,
-      title: const Text('Цвета устройства (Material You)'),
+      title: Text(context.l10n.dynamicColorsOfTheDevice),
       subtitle: Text(
-        'На Android 12+ тема подстраивается под обои. На остальных платформах или если цвета недоступны — используется палитра ниже.',
+        context.l10n.dynamicColorsOfTheDeviceDescription,
         style: Theme.of(context).textTheme.bodySmall,
       ),
       value: themeProvider.state.preferDynamicColor,

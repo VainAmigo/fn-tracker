@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:provider/provider.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
@@ -26,8 +27,8 @@ class SettingsCurrencyWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ModalSheetTitleWidget(
-            title: 'Currency and formats',
-            subtitle: 'Select your currency and number format',
+            title: context.l10n.currencyAndFormats,
+            subtitle: context.l10n.selectYourCurrencyAndNumberFormat,
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
           Column(

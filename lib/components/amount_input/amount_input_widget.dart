@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/utils/expression_evaluator.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Блок ввода суммы с кастомной клавиатурой.
@@ -14,7 +15,7 @@ class AmountInputWidget extends StatefulWidget {
     required this.currency,
     this.initialAmount = '',
     this.onAmountChanged,
-    this.label = 'ENTER AMOUNT',
+    this.label,
     this.enableCalculator = false,
   });
 
@@ -28,7 +29,7 @@ class AmountInputWidget extends StatefulWidget {
   final void Function(String amount)? onAmountChanged;
 
   /// Подпись над полем.
-  final String label;
+  final String? label;
 
   /// Включить режим калькулятора с операторами + - * /.
   final bool enableCalculator;
@@ -109,7 +110,7 @@ class _AmountInputWidgetState extends State<AmountInputWidget> {
         AmountDisplay(
           amount: _amount,
           currency: widget.currency,
-          label: widget.label,
+          label: widget.label ?? context.l10n.enterAmount,
           expression: hasOperator ? _amount : null,
           computedResult: computedResult,
         ),

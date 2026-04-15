@@ -16,13 +16,13 @@ enum ExportColumn {
   String title(AppLocalizations l10n) {
     return switch (this) {
       date => l10n.exportColumnDate,
-      createdAt => l10n.exportColumnCreatedAt,
+      createdAt => l10n.createdAt,
       type => l10n.exportColumnType,
-      amount => l10n.exportColumnAmount,
+      amount => l10n.amount,
       currency => l10n.exportColumnCurrency,
       category => l10n.exportColumnCategory,
       wallet => l10n.exportColumnWallet,
-      note => l10n.exportColumnNote,
+      note => l10n.note,
       transactionId => l10n.exportColumnTransactionId,
     };
   }

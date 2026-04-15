@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AnalyticsErrorPlaceholderWidget extends StatelessWidget {
@@ -24,7 +25,7 @@ class AnalyticsErrorPlaceholderWidget extends StatelessWidget {
         ),
         const SizedBox(height: AppSizing.spaceBtwItems),
         PrimaryButton(
-          text: 'Повторить',
+          text: context.l10n.retry,
           size: PrimaryButtonSize.xSmall,
           rounded: true,
           backgroundColor: Colors.transparent,

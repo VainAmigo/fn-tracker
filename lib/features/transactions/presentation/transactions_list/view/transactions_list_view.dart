@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class TransactionsListView extends StatefulWidget {
@@ -34,7 +35,7 @@ class _TransactionsListViewState extends State<TransactionsListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transactions'),
+        title: Text(context.l10n.transactions),
         scrolledUnderElevation: 0,
       ),
       body: SafeArea(

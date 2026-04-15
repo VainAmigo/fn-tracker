@@ -1,4 +1,5 @@
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,7 @@ class AmountDisplay extends StatelessWidget {
     super.key,
     required this.amount,
     required this.currency,
-    this.label = 'ENTER AMOUNT',
+    this.label,
     this.expression,
     this.computedResult,
   });
@@ -25,7 +26,7 @@ class AmountDisplay extends StatelessWidget {
   final Currency currency;
 
   /// Подпись над полем (например "ВВЕДИТЕ СУММУ").
-  final String label;
+  final String? label;
 
   /// Выражение для отображения в режиме калькулятора (например "65*44").
   final String? expression;
@@ -48,7 +49,7 @@ class AmountDisplay extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            label.toUpperCase(),
+            label?.toUpperCase() ?? context.l10n.enterAmount.toUpperCase(),
             style: AppTextStyles.amountDisplayTitle(context),
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),

@@ -13,7 +13,7 @@ class ExportSettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Export settings'),
+        title: Text(context.l10n.exportSettings),
         scrolledUnderElevation: 0,
       ),
       body: SafeArea(
@@ -32,29 +32,29 @@ class ExportSettingsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TitledSection(
-                    title: 'Period',
+                    title: context.l10n.period,
                     children: [
                       SegmentedControl<ExportPeriodPreset>(
-                        segments: const [
+                        segments: [
                           SegmentItem(
                             value: ExportPeriodPreset.week,
-                            label: 'Week',
+                            label: context.l10n.week,
                           ),
                           SegmentItem(
                             value: ExportPeriodPreset.month,
-                            label: 'Month',
+                            label: context.l10n.month,
                           ),
                           SegmentItem(
                             value: ExportPeriodPreset.threeMonths,
-                            label: '3M',
+                            label: context.l10n.threeMonths,
                           ),
                           SegmentItem(
                             value: ExportPeriodPreset.sixMonths,
-                            label: '6M',
+                            label: context.l10n.sixMonths,
                           ),
                           SegmentItem(
                             value: ExportPeriodPreset.custom,
-                            label: 'Custom',
+                            label: context.l10n.custom,
                           ),
                         ],
                         selectedValue: state.settings.periodPreset,
@@ -84,7 +84,7 @@ class ExportSettingsView extends StatelessWidget {
                                 const SizedBox(width: AppSizing.spaceBtwItems),
                                 Expanded(
                                   child: Text(
-                                    _periodSubtitle(state.settings),
+                                    _periodSubtitle(state.settings, context),
                                     style: AppTextStyles.text14w400(context),
                                   ),
                                 ),
@@ -97,7 +97,7 @@ class ExportSettingsView extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSizing.spaceBtwElements),
                   Text(
-                    'Selected columns',
+                    context.l10n.selectedColumns,
                     style: AppTextStyles.sectionTitle(context),
                   ),
                   const SizedBox(height: AppSizing.spaceBtwItems),
@@ -173,7 +173,7 @@ class ExportSettingsView extends StatelessWidget {
                           if (available.isNotEmpty) ...[
                             const SizedBox(height: AppSizing.spaceBtwElements),
                             TitledSection(
-                              title: 'Available',
+                              title: context.l10n.available,
                               children: [
                                 ...available.map(
                                   (column) => Card(
@@ -222,7 +222,7 @@ class ExportSettingsView extends StatelessWidget {
                     ),
                   ),
                   PrimaryButton(
-                    text: 'Save settings',
+                    text: context.l10n.save,
                     rounded: true,
                     size: PrimaryButtonSize.xSmall,
                     backgroundColor: Colors.transparent,
@@ -233,7 +233,7 @@ class ExportSettingsView extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSizing.spaceBtwItems),
                   PrimaryButton(
-                    text: 'Export',
+                    text: context.l10n.export,
                     rounded: true,
                     onPressed: state.isExporting
                         ? null
@@ -281,7 +281,7 @@ class ExportSettingsView extends StatelessWidget {
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Settings saved')));
+    ).showSnackBar(SnackBar(content: Text(context.l10n.settingsSaved)));
   }
 
   Future<void> _runExportFromSettings(BuildContext context) async {
@@ -292,23 +292,24 @@ class ExportSettingsView extends StatelessWidget {
     );
     if (!context.mounted) return;
     final text = switch (status) {
-      ExportRunStatus.success => 'Export file is ready',
+      ExportRunStatus.success => context.l10n.exportFileIsReady,
       ExportRunStatus.successWithoutShare =>
-        'File created, but share dialog is unavailable on this device',
-      ExportRunStatus.noData => 'No data for selected period',
-      ExportRunStatus.missingPeriod => 'Choose period in export settings',
+        context.l10n.fileCreatedButShareDialogIsUnavailableOnThisDevice,
+      ExportRunStatus.noData => context.l10n.noDataForSelectedPeriod,
+      ExportRunStatus.missingPeriod =>
+        context.l10n.choosePeriodInExportSettings,
       ExportRunStatus.failed =>
-        'Failed to export data: ${cubit.state.lastError ?? 'unknown error'}',
+        '${context.l10n.failedToExportData}: ${cubit.state.lastError ?? context.l10n.unknownError}',
     };
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
-  String _periodSubtitle(ExportSettings settings) {
+  String _periodSubtitle(ExportSettings settings, BuildContext context) {
     if (settings.periodPreset == ExportPeriodPreset.custom &&
         settings.customStart != null &&
         settings.customEnd != null) {
-      return 'Custom: ${settings.customStart!.formatDotDate} - ${settings.customEnd!.formatDotDate}';
+      return '${context.l10n.custom}: ${settings.customStart!.formatDotDate} - ${settings.customEnd!.formatDotDate}';
     }
-    return 'Custom period';
+    return context.l10n.customPeriod;
   }
 }

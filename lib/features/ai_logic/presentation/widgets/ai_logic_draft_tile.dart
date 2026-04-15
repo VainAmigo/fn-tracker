@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AiLogicDraftTile extends StatefulWidget {
@@ -26,19 +27,6 @@ class AiLogicDraftTile extends StatefulWidget {
   final VoidCallback onAccountTap;
   final VoidCallback onCategoryTap;
   final VoidCallback onDateTap;
-
-  static const _typeSegments = [
-    SegmentItem<TransactionType>(
-      value: TransactionType.expense,
-      label: 'Expense',
-      icon: Icons.arrow_downward,
-    ),
-    SegmentItem<TransactionType>(
-      value: TransactionType.income,
-      label: 'Income',
-      icon: Icons.arrow_upward,
-    ),
-  ];
 
   @override
   State<AiLogicDraftTile> createState() => _AiLogicDraftTileState();
@@ -66,6 +54,19 @@ class _AiLogicDraftTileState extends State<AiLogicDraftTile> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final typeSegments = [
+      SegmentItem<TransactionType>(
+        value: TransactionType.expense,
+        label: l10n.expense,
+        icon: Icons.arrow_downward,
+      ),
+      SegmentItem<TransactionType>(
+        value: TransactionType.income,
+        label: l10n.income,
+        icon: Icons.arrow_upward,
+      ),
+    ];
     final colorScheme = Theme.of(context).colorScheme;
     final scheme = colorScheme;
     final isExpense = widget.draft.transactionType == TransactionType.expense;
@@ -88,7 +89,7 @@ class _AiLogicDraftTileState extends State<AiLogicDraftTile> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SegmentedControl<TransactionType>(
-              segments: AiLogicDraftTile._typeSegments,
+              segments: typeSegments,
               height: AppSizing.heightS,
               selectedValue: widget.draft.transactionType,
               onChanged: (value) {
@@ -108,10 +109,10 @@ class _AiLogicDraftTileState extends State<AiLogicDraftTile> {
                     context,
                     title: account.name,
                     subtitle: widget.goal != null
-                        ? 'Goal'
+                        ? l10n.goal
                         : isExpense
-                        ? 'Take from'
-                        : 'Add to',
+                        ? l10n.from
+                        : l10n.to,
                     color: account.color,
                     icon: account.icon,
                     onTap: widget.onAccountTap,
@@ -122,7 +123,7 @@ class _AiLogicDraftTileState extends State<AiLogicDraftTile> {
                   Expanded(
                     child: CategoryCard(
                       radius: CardRadius.single,
-                      title: widget.category?.name ?? 'Category',
+                      title: widget.category?.name ?? l10n.category,
                       trailing: Icon(
                         Icons.arrow_forward_ios,
                         color: colorScheme.onSurface,
@@ -158,7 +159,7 @@ class _AiLogicDraftTileState extends State<AiLogicDraftTile> {
             const SizedBox(height: AppSizing.spaceBtwElements),
             CustomTextFormField(
               controller: _amountController,
-              label: 'Amount',
+              label: l10n.amount,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
@@ -180,8 +181,8 @@ class _AiLogicDraftTileState extends State<AiLogicDraftTile> {
             ),
             CustomTextFormField(
               controller: _noteController,
-              label: 'Note',
-              hintText: 'Up to 5 words',
+              label: l10n.note,
+              hintText: l10n.upTo5Words,
               onChanged: (v) {
                 widget.onDraftChanged(widget.draft.copyWith(note: v));
               },
@@ -233,7 +234,7 @@ class _AiLogicDraftTileState extends State<AiLogicDraftTile> {
       );
     }
     return (
-      name: 'Wallet',
+      name: context.l10n.wallet,
       color: Colors.grey,
       icon: Icons.account_balance_wallet,
     );
@@ -243,8 +244,8 @@ class _AiLogicDraftTileState extends State<AiLogicDraftTile> {
     final now = DateUtils.dateOnly(DateTime.now());
     final selected = DateUtils.dateOnly(d);
     final yesterday = now.subtract(const Duration(days: 1));
-    if (selected == now) return 'Today';
-    if (selected == yesterday) return 'Yesterday';
+    if (selected == now) return context.l10n.today;
+    if (selected == yesterday) return context.l10n.yesterday;
     return selected.formatDotDate;
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class GoalDetailsModalSheetWidget extends StatelessWidget {
@@ -40,36 +41,36 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ModalSheetTitleWidget(title: 'Goal details'),
+          ModalSheetTitleWidget(title: context.l10n.goalDetailsTitle),
           const SizedBox(height: AppSizing.spaceBtwElements),
           GoalCardWidget(goal: goal),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           _InfoRow(
-            label: 'Сумма цели',
+            label: context.l10n.goalAmount,
             value: AmountFormatter.format(goal.targetAmount),
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),
           _InfoRow(
-            label: 'Сумма завершения',
+            label: context.l10n.completedAmount,
             value: goal.completedAmount != null
                 ? AmountFormatter.format(goal.completedAmount!)
                 : '—',
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),
           _InfoRow(
-            label: 'Создано',
+            label: context.l10n.createdAt,
             value: goal.createdAt.formatMonthDay(context),
           ),
           if (goal.completedAt != null) ...[
             const SizedBox(height: AppSizing.spaceBtwItems),
             _InfoRow(
-              label: 'Завершено',
+              label: context.l10n.completed,
               value: goal.completedAt!.formatMonthDay(context),
             ),
           ],
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           PrimaryButton(
-            text: 'History',
+            text: context.l10n.history,
             icon: Icons.history,
             size: PrimaryButtonSize.xSmall,
             rounded: true,
@@ -95,16 +96,16 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
               }
             },
             child: PrimaryButton(
-              text: 'Delete',
+              text: context.l10n.delete,
               icon: Icons.delete,
               size: PrimaryButtonSize.medium,
               rounded: false,
               onPressed: () async {
                 final result = await showDeleteEntityDialog(
                   context,
-                  title: 'Удалить цель?',
+                  title: context.l10n.deleteGoalTitle,
                   message:
-                      'Удалить цель «${goal.name}»? Выберите способ удаления.',
+                      '${context.l10n.deleteGoalMessage} «${goal.name}»? ${context.l10n.deleteGoalMessage}?',
                 );
                 if (!context.mounted || result == null || result == DeleteEntityResult.cancel) return;
                 context.read<GoalsCubit>().deleteGoal(
@@ -132,9 +133,9 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ModalSheetTitleWidget(
-            title: 'Goal details',
+            title: context.l10n.goalDetailsTitle,
             action: PrimaryButton(
-              text: 'Edit',
+              text: context.l10n.edit,
               onPressed: onEdit,
               size: PrimaryButtonSize.xSmall,
               rounded: true,
@@ -146,7 +147,7 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
           const SizedBox(height: AppSizing.spaceBtwItems),
           SwitchListTile(
             title: Text(
-              'Скрыть сумму',
+              context.l10n.hideAmount,
               style: AppTextStyles.text16w400(context),
             ),
             value: goal.hideAmount,
@@ -154,11 +155,11 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
           ),
           SwitchListTile(
             title: Text(
-              'Скрыть цель',
+              context.l10n.hideGoal,
               style: AppTextStyles.text16w400(context),
             ),
             subtitle: Text(
-              'Будет видна только в блоке «Скрытые карточки»',
+              context.l10n.hideGoalSubtitle,
               style: AppTextStyles.text14w400(context),
             ),
             value: goal.isHidden,
@@ -166,7 +167,7 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           PrimaryButton(
-            text: 'History',
+            text: context.l10n.history,
             icon: Icons.history,
             size: PrimaryButtonSize.xSmall,
             rounded: true,
@@ -187,7 +188,7 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
               ),
               const SizedBox(width: AppSizing.spaceBtwItems),
               Text(
-                'Created ${goal.createdAt.formatMonthDay}',
+                '${context.l10n.createdAt} ${goal.createdAt.formatMonthDay}',
                 style: AppTextStyles.text14w400(context),
               ),
             ],
@@ -212,7 +213,7 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                   }
                 },
                 child: PrimaryButton(
-                  text: 'Delete',
+                  text: context.l10n.delete,
                   icon: Icons.delete,
                   iconOnly: true,
                   fullWidth: false,
@@ -222,9 +223,9 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                   onPressed: () async {
                     final result = await showDeleteEntityDialog(
                       context,
-                      title: 'Удалить цель?',
+                      title: context.l10n.deleteGoalTitle,
                       message:
-                          'Удалить цель «${goal.name}»? Выберите способ удаления.',
+                          '${context.l10n.deleteGoalMessage} «${goal.name}»? ${context.l10n.deleteGoalMessage}?',
                     );
                     if (!context.mounted || result == null || result == DeleteEntityResult.cancel) return;
                     context.read<GoalsCubit>().deleteGoal(
@@ -250,7 +251,7 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                 },
                 child: Flexible(
                   child: PrimaryButton(
-                    text: targetReached ? 'Complete' : 'Deposit',
+                    text: targetReached ? context.l10n.complete : context.l10n.deposit,
                     icon: Icons.add,
                     size: PrimaryButtonSize.large,
                     rounded: true,

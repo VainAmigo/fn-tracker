@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class CategoriesTabView extends StatelessWidget {
@@ -14,12 +15,12 @@ class CategoriesTabView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitledSection(
-            title: 'Categories',
+            title: context.l10n.categories,
             action: PrimaryButton(
               onPressed: () {
                 Navigator.of(context).pushNamed(AppRouter.createCategory);
               },
-              text: 'Create category',
+              text: context.l10n.createCategory,
               size: PrimaryButtonSize.xSmall,
               rounded: true,
               fullWidth: false,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Режим применения бюджета: заменить всё или с определённой даты.
@@ -28,14 +29,14 @@ class BudgetEffectiveDateSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SegmentedControl<BudgetEffectiveDateMode>(
-          segments: const [
+          segments: [
             SegmentItem(
               value: BudgetEffectiveDateMode.replaceAll,
-              label: 'Replace all',
+              label: context.l10n.replaceAll,
             ),
             SegmentItem(
               value: BudgetEffectiveDateMode.fromDate,
-              label: 'From date',
+              label: context.l10n.fromDate,
             ),
           ],
           selectedValue: mode,
@@ -45,7 +46,7 @@ class BudgetEffectiveDateSelector extends StatelessWidget {
           const SizedBox(height: AppSizing.spaceBtwElements),
           FormCardWidget(
             title: effectiveDate.dayKey,
-            subtitle: 'Effective from',
+            subtitle: context.l10n.effectiveFrom,
             trailing: Icon(
               Icons.calendar_today,
               size: AppSizing.iconSizeS,

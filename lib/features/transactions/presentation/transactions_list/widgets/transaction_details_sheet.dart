@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Bottom sheet с деталями транзакции: сумма, имя, описание, кошелёк, дата.
@@ -61,8 +62,8 @@ class TransactionDetailsSheet extends StatelessWidget {
 
     final name = category?.name ?? goal?.name ?? transaction.categoryId ?? '—';
     final typeLabel = transaction.type == TransactionType.income
-        ? 'Income'
-        : 'Expense';
+        ? context.l10n.income
+        : context.l10n.expense;
 
     return Padding(
       padding: const EdgeInsets.only(
@@ -89,7 +90,7 @@ class TransactionDetailsSheet extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           CategoryCard(
-            subtitle: 'Category',
+            subtitle: context.l10n.category,
             title: name,
             leading: _detailLeading(
               context,
@@ -101,7 +102,7 @@ class TransactionDetailsSheet extends StatelessWidget {
           if (transaction.note != null && transaction.note!.isNotEmpty) ...[
             const SizedBox(height: AppSizing.spaceBtwItemsExtra),
             CategoryCard(
-              subtitle: 'Description',
+              subtitle: context.l10n.description,
               title: transaction.note ?? '—',
               leading: _detailLeading(
                 context,
@@ -114,8 +115,8 @@ class TransactionDetailsSheet extends StatelessWidget {
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           CategoryCard(
             subtitle: transaction.type == TransactionType.income
-                ? 'To'
-                : 'From',
+                ? context.l10n.to
+                : context.l10n.from,
             title: wallet?.name ?? '—',
             leading: _detailLeading(
               context,
@@ -131,7 +132,7 @@ class TransactionDetailsSheet extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           CategoryCard(
-            subtitle: 'Date',
+            subtitle: context.l10n.date,
             title: transaction.date.formatDayMonthYearUpper(context),
             leading: _detailLeading(
               context,

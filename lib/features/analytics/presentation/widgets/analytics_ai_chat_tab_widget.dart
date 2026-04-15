@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AnalyticsAiChatTabWidget extends StatefulWidget {
@@ -54,10 +55,10 @@ class _AnalyticsAiChatTabWidgetState extends State<AnalyticsAiChatTabWidget> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TabTitleWidget(
-              title: 'Deep analytics',
-              subtitle: 'Ask about your analytics for this period',
+              title: context.l10n.deepAnalytics,
+              subtitle: context.l10n.askAboutYourAnalyticsForThisPeriod,
               action: IconButton(
-                tooltip: 'Clear chat',
+                tooltip: context.l10n.clearChat,
                 onPressed: canClear ? _clearChat : null,
                 icon: Icon(
                   Icons.delete_outline_rounded,
@@ -90,7 +91,7 @@ class _AnalyticsAiChatTabWidgetState extends State<AnalyticsAiChatTabWidget> {
                 Expanded(
                   child: CustomTextFormField(
                     controller: _controller,
-                    hintText: 'Ask about your analytics…',
+                    hintText: context.l10n.askAboutYourAnalyticsForThisPeriod,
                     maxLines: 1,
                     keyboardType: TextInputType.multiline,
                     readOnly: sending,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/finance/data/models/scheduled_payment_model.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class ScheduledPaymentTypePickerWidget extends StatelessWidget {
@@ -46,7 +47,7 @@ class ScheduledPaymentTypePickerWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const ModalSheetTitleWidget(title: 'Type of scheduled payment'),
+          ModalSheetTitleWidget(title: context.l10n.typeOfScheduledPayment),
           const SizedBox(height: AppSizing.spaceBtwSections),
           _card(context, c, ScheduledPaymentType.subscription),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),

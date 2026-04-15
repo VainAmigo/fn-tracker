@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +16,7 @@ class BudgetFormModalSheet extends StatefulWidget {
     this.initialAmount,
     this.isEdit = false,
     this.onSave,
-    this.saveLabel = 'Save',
+    this.saveLabel,
     this.title,
   });
 
@@ -27,7 +28,7 @@ class BudgetFormModalSheet extends StatefulWidget {
     bool replaceAll,
   })?
   onSave;
-  final String saveLabel;
+  final String? saveLabel;
   final String? title;
 
   /// Показать sheet для создания/редактирования бюджета.
@@ -37,7 +38,7 @@ class BudgetFormModalSheet extends StatefulWidget {
     bool isEdit = false,
     void Function(double amount, {String? effectiveDayKey, bool replaceAll})?
     onSave,
-    String saveLabel = 'Save',
+    String? saveLabel,
     String? title,
   }) {
     return AppBottomSheet.showFittedModalBottomSheet<void>(
@@ -48,7 +49,7 @@ class BudgetFormModalSheet extends StatefulWidget {
         initialAmount: initialAmount,
         isEdit: isEdit,
         onSave: onSave,
-        saveLabel: saveLabel,
+        saveLabel: saveLabel ?? context.l10n.save,
         title: title,
       ),
     );
@@ -87,10 +88,10 @@ class _BudgetFormModalSheetState extends State<BudgetFormModalSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ModalSheetTitleWidget(
-            title: widget.title ?? 'Budget',
+            title: widget.title ?? context.l10n.budget,
             action: widget.isEdit
                 ? PrimaryButton(
-                    text: 'info',
+                    text: context.l10n.info,
                     onPressed: () => BudgetInfoModalSheet.show(context),
                     size: PrimaryButtonSize.xSmall,
                     fullWidth: false,
@@ -120,7 +121,7 @@ class _BudgetFormModalSheetState extends State<BudgetFormModalSheet> {
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),
           PrimaryButton(
-            text: widget.saveLabel,
+            text: widget.saveLabel ?? context.l10n.save,
             onPressed: () {
               final parsed = AmountFormUtils.parseAmount(_amountText);
               if (parsed == null || parsed <= 0) return;

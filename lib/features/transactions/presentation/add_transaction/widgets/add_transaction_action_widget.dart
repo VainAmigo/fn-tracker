@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AddTransactionActionWidget extends StatefulWidget {
@@ -73,9 +74,11 @@ class _AddTransactionActionWidgetState
     final shade = findShadeById(colorId);
     final icon = findIconById(iconId);
     return (
-      name: hasGoal ? goal.name : (wallet?.name ?? 'Wallet'),
+      name: hasGoal ? goal.name : (wallet?.name ?? context.l10n.wallet),
       color: shade?.color ?? (hasGoal ? colorScheme.primary : Colors.grey),
-      icon: icon?.icon ?? (hasGoal ? Icons.flag_rounded : Icons.account_balance_wallet),
+      icon:
+          icon?.icon ??
+          (hasGoal ? Icons.flag_rounded : Icons.account_balance_wallet),
     );
   }
 
@@ -112,9 +115,9 @@ class _AddTransactionActionWidgetState
 
     String dateTitle;
     if (selected == now) {
-      dateTitle = 'Today';
+      dateTitle = context.l10n.today;
     } else if (selected == yesterday) {
-      dateTitle = 'Yesterday';
+      dateTitle = context.l10n.yesterday;
     } else {
       dateTitle =
           '${selected.day.toString().padLeft(2, '0')}.${selected.month.toString().padLeft(2, '0')}.${selected.year}';
@@ -130,7 +133,7 @@ class _AddTransactionActionWidgetState
                 child: _buildAccountCard(
                   context,
                   title: accountFrom.name,
-                  subtitle: 'Transfer from',
+                  subtitle: context.l10n.from,
                   color: accountFrom.color,
                   icon: accountFrom.icon,
                   onTap: () => _showAccountsPicker(
@@ -145,7 +148,7 @@ class _AddTransactionActionWidgetState
                 child: _buildAccountCard(
                   context,
                   title: accountTo.name,
-                  subtitle: 'Transfer to',
+                  subtitle: context.l10n.to,
                   color: accountTo.color,
                   icon: accountTo.icon,
                   onTap: () => _showAccountsPicker(
@@ -161,10 +164,10 @@ class _AddTransactionActionWidgetState
                   context,
                   title: account.name,
                   subtitle: widget.selectedGoal != null
-                      ? 'Goal'
+                      ? context.l10n.goal
                       : widget.selectedType == TransactionType.expense
-                      ? 'Take from'
-                      : 'Add to',
+                      ? context.l10n.from
+                      : context.l10n.to,
                   color: account.color,
                   icon: account.icon,
                   onTap: () => _showAccountsPicker(context),
@@ -175,7 +178,7 @@ class _AddTransactionActionWidgetState
                 Expanded(
                   child: CategoryCard(
                     radius: CardRadius.single,
-                    title: widget.selectedCategory?.name ?? 'Category',
+                    title: widget.selectedCategory?.name ?? context.l10n.category,
                     trailing: Icon(
                       Icons.arrow_forward_ios,
                       color: Theme.of(context).colorScheme.onSurface,
@@ -232,7 +235,7 @@ class _AddTransactionActionWidgetState
             Expanded(
               child: _buildTileWidget(
                 context,
-                widget.note.trim().isEmpty ? 'Add note' : widget.note,
+                widget.note.trim().isEmpty ? context.l10n.addNote : widget.note,
                 Icon(
                   Icons.edit,
                   color: colorScheme.onSecondary,
@@ -383,16 +386,16 @@ class _AddTransactionActionWidgetState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ModalSheetTitleWidget(title: 'Add Note'),
+            ModalSheetTitleWidget(title: context.l10n.addNote),
             const SizedBox(height: AppSizing.spaceBtwElements),
             CustomTextFormField(
               autofocus: true,
-              hintText: 'Enter your note',
+              hintText: context.l10n.enterYourNote,
               controller: _noteController,
             ),
             const SizedBox(height: AppSizing.spaceBtwSections),
             PrimaryButton(
-              text: 'Save',
+              text: context.l10n.save,
               onPressed: () {
                 widget.onNoteChanged(_noteController.text.trim());
                 Navigator.of(context).pop();

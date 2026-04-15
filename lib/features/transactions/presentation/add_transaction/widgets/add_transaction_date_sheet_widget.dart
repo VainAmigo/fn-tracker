@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AddTransactionDateSheetWidget extends StatelessWidget {
@@ -26,10 +27,10 @@ class AddTransactionDateSheetWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ModalSheetTitleWidget(title: 'Select date'),
+          ModalSheetTitleWidget(title: context.l10n.selectDate),
           const SizedBox(height: AppSizing.spaceBtwSections),
           PrimaryButton(
-            text: 'Choose date',
+            text: context.l10n.chooseDate,
             onPressed: () async {
               final picked = await showDatePicker(
                 context: context,
@@ -67,7 +68,7 @@ class AddTransactionDateSheetWidget extends StatelessWidget {
           child: _buildDateRowElement(
             context,
             selected == yesterday,
-            'Yesterday',
+            context.l10n.yesterday,
             () {
               onDateSelected(yesterday);
               Navigator.of(context).pop();
@@ -78,7 +79,7 @@ class AddTransactionDateSheetWidget extends StatelessWidget {
           child: _buildDateRowElement(
             context,
             selected == now,
-            'Today',
+            context.l10n.today,
             () {
               onDateSelected(now);
               Navigator.of(context).pop();

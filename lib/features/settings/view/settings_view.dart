@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class SettingsView extends StatelessWidget {
@@ -18,17 +18,17 @@ class SettingsView extends StatelessWidget {
           child: Column(
             children: [
               TabTitleWidget(
-                title: 'Settings',
-                subtitle: 'Manage your account and preferences',
+                title: context.l10n.settings,
+                subtitle: context.l10n.manageYourAccountAndPreferences,
               ),
               const SizedBox(height: AppSizing.spaceBtwSections),
 
               TitledSection(
-                title: 'App settings',
+                title: context.l10n.appSettings,
                 children: [
                   _buildSettingsListTile(
                     context,
-                    'App Theme',
+                    context.l10n.appTheme,
                     Icons.palette,
                     isFirst: true,
                     onTap: () {
@@ -41,7 +41,7 @@ class SettingsView extends StatelessWidget {
                   const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                   _buildSettingsListTile(
                     context,
-                    'Language',
+                    context.l10n.language,
                     Icons.language,
                     onTap: () {
                       AppBottomSheet.showFittedModalBottomSheet(
@@ -53,7 +53,7 @@ class SettingsView extends StatelessWidget {
                   const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                   _buildSettingsListTile(
                     context,
-                    'Currency and formats',
+                    context.l10n.currencyAndFormats,
                     Icons.attach_money,
                     isLast: true,
                     onTap: () {
@@ -68,18 +68,18 @@ class SettingsView extends StatelessWidget {
               const SizedBox(height: AppSizing.spaceBtwElements),
 
               TitledSection(
-                title: 'Privacy',
+                title: context.l10n.privacy,
                 children: [
                   _buildSettingsListTile(
                     context,
-                    'Privacy Policy',
+                    context.l10n.privacyPolicy,
                     Icons.privacy_tip,
                     isFirst: true,
                   ),
                   const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                   _buildSettingsListTile(
                     context,
-                    'Security',
+                    context.l10n.security,
                     Icons.security,
                     isLast: true,
                   ),
@@ -89,15 +89,37 @@ class SettingsView extends StatelessWidget {
               const SizedBox(height: AppSizing.spaceBtwSections),
               _buildSettingsListTile(
                 context,
-                'Sign out',
+                context.l10n.signOut,
                 Icons.logout,
                 isFirst: true,
                 isLast: true,
-                onTap: () => context.read<AuthCubit>().logout(),
+                onTap: () {
+                  showSignOutConfirmationDialog(context);
+                },
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<bool?> showSignOutConfirmationDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.signOut),
+        content: Text(context.l10n.signOutConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(context.l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(context.l10n.signOut),
+          ),
+        ],
       ),
     );
   }

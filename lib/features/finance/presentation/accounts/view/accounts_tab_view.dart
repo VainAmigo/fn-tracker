@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AccountsTabWidget extends StatelessWidget {
@@ -15,12 +16,12 @@ class AccountsTabWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitledSection(
-            title: 'Wallets',
+            title: context.l10n.wallets,
             action: PrimaryButton(
               onPressed: () {
                 Navigator.of(context).pushNamed(AppRouter.createWallet);
               },
-              text: 'Create wallet',
+              text: context.l10n.createWallet,
               size: PrimaryButtonSize.xSmall,
               rounded: true,
               fullWidth: false,
@@ -36,11 +37,11 @@ class AccountsTabWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
           TitledSection(
-            title: 'Your goals',
+            title: context.l10n.yourGoals,
             action: PrimaryButton(
               onPressed: () =>
                   Navigator.of(context).pushNamed(AppRouter.createGoal),
-              text: 'New goal',
+              text: context.l10n.newGoal,
               size: PrimaryButtonSize.xSmall,
               rounded: true,
               fullWidth: false,
@@ -124,7 +125,7 @@ class AccountsTabWidget extends StatelessWidget {
   Future<void> _onChangePin(BuildContext context) async {
     final result = await ChangePinFormModalSheet.show(
       context,
-      title: 'Сменить PIN',
+      title: context.l10n.changePin,
       onSubmit: (currentPin, newPin) async {
         return HiddenWalletsService.instance.changePin(
           currentPin: currentPin,
@@ -135,7 +136,7 @@ class AccountsTabWidget extends StatelessWidget {
     if (result == true && context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('PIN успешно изменён')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.pinSuccessfullyChanged)));
     }
   }
 
@@ -189,11 +190,11 @@ class AccountsTabWidget extends StatelessWidget {
     if (!context.mounted) return false;
     final result = await PasswordFormModalSheet.show(
       context,
-      title: 'Установите PIN',
-      subtitle: 'PIN потребуется для просмотра скрытых карточек',
+      title: context.l10n.setPin,
+      subtitle: context.l10n.pinRequiredForHiddenCards,
       isSetMode: true,
-      submitLabel: 'Установить',
-      confirmLabel: 'Установить',
+      submitLabel: context.l10n.setPin,
+      confirmLabel: context.l10n.setPin,
       onSubmit: (pin) async {
         await HiddenWalletsService.instance.setPin(pin);
         return true;
@@ -224,15 +225,15 @@ class AccountsTabWidget extends StatelessWidget {
   Future<bool?> _showHiddenCardsPasswordSheet(BuildContext context) {
     return PasswordFormModalSheet.show(
       context,
-      title: 'Скрытые карточки',
-      subtitle: 'Введите PIN для просмотра',
-      submitLabel: 'Открыть',
+      title: context.l10n.hiddenCards,
+      subtitle: context.l10n.enterPinToView,
+      submitLabel: context.l10n.open,
       onSubmit: (pin) async {
         final valid = await HiddenWalletsService.instance.verifyPin(pin);
         if (!valid) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Неверный PIN')),
+              SnackBar(content: Text(context.l10n.invalidPin)),
             );
           }
           return false;

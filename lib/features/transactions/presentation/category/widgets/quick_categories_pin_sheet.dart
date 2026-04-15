@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class QuickCategoriesPinSheet extends StatefulWidget {
@@ -121,8 +122,8 @@ class _QuickCategoriesPinSheetState extends State<QuickCategoriesPinSheet> {
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           ModalSheetTitleWidget(
-            title: 'Pinned Categories',
-            subtitle: 'Select categories to show in quick access on home',
+            title: context.l10n.pinnedCategories,
+            subtitle: context.l10n.selectCategoriesToShowInQuickAccess,
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           Flexible(
@@ -147,7 +148,7 @@ class _QuickCategoriesPinSheetState extends State<QuickCategoriesPinSheet> {
                         if (categories.isEmpty) {
                           return Center(
                             child: Text(
-                              'Create categories first',
+                              context.l10n.createCategoriesFirst,
                               style: AppTextStyles.listTileSubtitle(context),
                             ),
                           );
@@ -170,7 +171,7 @@ class _QuickCategoriesPinSheetState extends State<QuickCategoriesPinSheet> {
                             children: [
                               if (pinnedCategories.isNotEmpty) ...[
                                 Text(
-                                  'Pinned',
+                                  context.l10n.pinned,
                                   style: AppTextStyles.sectionTitle(context),
                                 ),
                                 const SizedBox(height: AppSizing.spaceBtwItems),
@@ -215,7 +216,7 @@ class _QuickCategoriesPinSheetState extends State<QuickCategoriesPinSheet> {
                               ],
                               if (unpinnedCategories.isNotEmpty) ...[
                                 Text(
-                                  'Unpinned',
+                                  context.l10n.available,
                                   style: AppTextStyles.sectionTitle(context),
                                 ),
                                 const SizedBox(height: AppSizing.spaceBtwItems),
@@ -253,7 +254,7 @@ class _QuickCategoriesPinSheetState extends State<QuickCategoriesPinSheet> {
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           PrimaryButton(
-            text: 'Save',
+            text: context.l10n.save,
             onPressed: _isSaving ? null : () => _onSave(context),
             size: PrimaryButtonSize.medium,
             rounded: true,

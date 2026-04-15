@@ -1,5 +1,6 @@
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 import 'package:flutter/material.dart';
 
@@ -21,18 +22,18 @@ class SettingsThemeWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ModalSheetTitleWidget(
-            title: 'App Theme',
+            title: context.l10n.appTheme,
           ),
           const SizedBox(height: AppSizing.spaceBtwSections),
           TitledSection(
-            title: 'Theme mode',
+            title: context.l10n.themeMode,
             children: [
               SettingsThemeModeWidget(),
             ],
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           TitledSection(
-            title: 'Theme',
+            title: context.l10n.theme,
             children: [
               const SettingsDynamicColorWidget(),
               const SizedBox(height: AppSizing.spaceBtwElements),

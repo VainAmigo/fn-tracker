@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 
 class WalletHiddenListSheet extends StatelessWidget {
   const WalletHiddenListSheet({
@@ -18,7 +19,7 @@ class WalletHiddenListSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HiddenCardsSheet<WalletModel>(
-      title: 'Скрытые карточки',
+      title: context.l10n.hiddenCards,
       items: wallets,
       itemBuilder: (wallet) => WalletCardWidget(
         wallet: wallet,

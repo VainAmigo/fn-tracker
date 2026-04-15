@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Модальное окно для смены PIN скрытых кошельков.
@@ -67,19 +68,19 @@ class _ChangePinFormModalSheetState extends State<ChangePinFormModalSheet> {
 
   Future<void> _submit() async {
     if (_currentPin.isEmpty) {
-      setState(() => _errorText = 'Введите текущий PIN');
+      setState(() => _errorText = context.l10n.enterCurrentPin);
       return;
     }
     if (_newPin.isEmpty) {
-      setState(() => _errorText = 'Введите новый PIN');
+      setState(() => _errorText = context.l10n.enterNewPin);
       return;
     }
     if (_newPin != _confirmPin) {
-      setState(() => _errorText = 'Новый PIN не совпадает');
+      setState(() => _errorText = context.l10n.newPinDoesNotMatch);
       return;
     }
     if (_currentPin == _newPin) {
-      setState(() => _errorText = 'Новый PIN должен отличаться');
+      setState(() => _errorText = context.l10n.newPinMustBeDifferent);
       return;
     }
 
@@ -89,7 +90,7 @@ class _ChangePinFormModalSheetState extends State<ChangePinFormModalSheet> {
     if (success) {
       Navigator.of(context).pop(true);
     } else {
-      setState(() => _errorText = 'Неверный текущий PIN');
+      setState(() => _errorText = context.l10n.invalidCurrentPin);
     }
   }
 
@@ -114,21 +115,21 @@ class _ChangePinFormModalSheetState extends State<ChangePinFormModalSheet> {
             const SizedBox(height: AppSizing.spaceBtwItems),
           ],
           _PinDisplay(
-            label: 'Текущий PIN',
+            label: context.l10n.currentPin,
             value: _currentPin,
             isFocused: _focusedField == 0,
             onTap: () => setState(() => _focusedField = 0),
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),
           _PinDisplay(
-            label: 'Новый PIN',
+            label: context.l10n.newPin,
             value: _newPin,
             isFocused: _focusedField == 1,
             onTap: () => setState(() => _focusedField = 1),
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),
           _PinDisplay(
-            label: 'Подтвердите новый PIN',
+            label: context.l10n.confirmNewPin,
             value: _confirmPin,
             isFocused: _focusedField == 2,
             onTap: () => setState(() => _focusedField = 2),
@@ -147,7 +148,7 @@ class _ChangePinFormModalSheetState extends State<ChangePinFormModalSheet> {
           AmountKeyboard(onKeyPressed: _onKeyPressed),
           const SizedBox(height: AppSizing.spaceBtwElements),
           PrimaryButton(
-            text: 'Сменить PIN',
+            text: context.l10n.changePin,
             onPressed: () => _submit(),
             size: PrimaryButtonSize.medium,
           ),

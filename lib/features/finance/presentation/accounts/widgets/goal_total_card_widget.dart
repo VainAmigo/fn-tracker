@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class GoalTotalCardWidget extends StatelessWidget {
@@ -25,7 +26,7 @@ class GoalTotalCardWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total progress',
+                context.l10n.totalProgress,
                 style: AppTextStyles.text14w400(
                   context,
                   color: colorScheme.onSecondary,
@@ -61,7 +62,7 @@ class GoalTotalCardWidget extends StatelessWidget {
                 styel: AppTextStyles.text14w400(context),
               ),
               Text(
-                'Remaining: ${AmountFormatter.format(total.remaining)}',
+                '${context.l10n.remaining}: ${AmountFormatter.format(total.remaining)}',
                 style: AppTextStyles.text14w400(context),
               ),
             ],
@@ -73,17 +74,17 @@ class GoalTotalCardWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _StatItem(
-                label: 'Goals',
+                label: context.l10n.goals,
                 value: '${total.goalsCount}',
                 context: context,
               ),
               _StatItem(
-                label: 'Active',
+                label: context.l10n.active,
                 value: '${total.activeCount}',
                 context: context,
               ),
               _StatItem(
-                label: 'Completed',
+                label: context.l10n.completed,
                 value: '${total.completedCount}',
                 context: context,
               ),

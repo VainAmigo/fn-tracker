@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AnalyticsSummaryCardsWidget extends StatelessWidget {
@@ -27,11 +28,11 @@ class AnalyticsSummaryCardsWidget extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _buildCard(context, 'Доход', totalIncome),
+          _buildCard(context, context.l10n.income, totalIncome),
           const SizedBox(width: AppSizing.spaceBtwItemsExtra),
-          _buildCard(context, 'Расход', totalExpense),
+          _buildCard(context, context.l10n.expense, totalExpense),
           const SizedBox(width: AppSizing.spaceBtwItemsExtra),
-          _buildCard(context, 'Баланс', balance),
+          _buildCard(context, context.l10n.balance, balance),
         ],
       ),
     );

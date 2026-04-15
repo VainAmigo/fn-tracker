@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -12,14 +13,14 @@ class AmountFormModalSheet extends StatefulWidget {
     super.key,
     this.initialAmount,
     this.onSave,
-    this.saveLabel = 'Save',
+    this.saveLabel,
     this.title,
     this.enableCalculator = false,
   });
 
   final double? initialAmount;
   final void Function(double amount)? onSave;
-  final String saveLabel;
+  final String? saveLabel;
   final String? title;
   final bool enableCalculator;
 
@@ -31,7 +32,7 @@ class AmountFormModalSheet extends StatefulWidget {
     BuildContext context, {
     double? initialAmount,
     void Function(double amount)? onSave,
-    String saveLabel = 'Save',
+    String? saveLabel,
     String? title,
     bool enableCalculator = false,
   }) {
@@ -42,7 +43,7 @@ class AmountFormModalSheet extends StatefulWidget {
       child: AmountFormModalSheet(
         initialAmount: initialAmount,
         onSave: onSave,
-        saveLabel: saveLabel,
+        saveLabel: saveLabel ?? context.l10n.save,
         title: title,
         enableCalculator: enableCalculator,
       ),
@@ -80,10 +81,7 @@ class _AmountFormModalSheetState extends State<AmountFormModalSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (widget.title != null) ...[
-            Text(
-              widget.title!,
-              style: AppTextStyles.text20w600(context),
-            ),
+            Text(widget.title!, style: AppTextStyles.text20w600(context)),
             const SizedBox(height: AppSizing.spaceBtwItems),
           ],
           AmountInputWidget(
@@ -93,7 +91,7 @@ class _AmountFormModalSheetState extends State<AmountFormModalSheet> {
             onAmountChanged: (amount) => setState(() => _amountText = amount),
           ),
           PrimaryButton(
-            text: widget.saveLabel,
+            text: widget.saveLabel ?? context.l10n.save,
             onPressed: () {
               final parsed = AmountFormUtils.parseAmount(
                 _amountText,

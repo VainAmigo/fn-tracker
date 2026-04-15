@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class ScheduledPaymentFormView extends StatefulWidget {
@@ -152,7 +153,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scheduled Payment'),
+        title: Text(context.l10n.scheduledPayment),
         scrolledUnderElevation: 0,
       ),
       body: SafeArea(
@@ -172,8 +173,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                           Expanded(
                             child: CustomTextFormField(
                               controller: _nameController,
-                              label: 'Название',
-                              hintText: 'например, Аренда',
+                              label: context.l10n.paymentName,
                             ),
                           ),
                         ],
@@ -182,8 +182,8 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                       FormCardWidget(
                         title: _paymentAmount != null
                             ? AmountFormatter.format(_paymentAmount!)
-                            : 'Payment amount',
-                        subtitle: 'How much do you want to pay?',
+                            : context.l10n.amount,
+                        subtitle: context.l10n.paymentAmountDescription,
                         icon: Icon(
                           Icons.attach_money,
                           size: AppSizing.iconSizeM,
@@ -194,7 +194,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                           initialAmount: _paymentAmount,
                           onSave: (amount) =>
                               setState(() => _paymentAmount = amount),
-                          saveLabel: 'Save',
+                          saveLabel: context.l10n.save,
                           enableCalculator: true,
                         ),
                       ),
@@ -204,7 +204,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                         children: [
                           FormCardWidget(
                             title: _frequencyTitle(context),
-                            subtitle: 'Frequency',
+                            subtitle: context.l10n.frequency,
                             icon: Icon(
                               Icons.cached,
                               size: AppSizing.iconSizeM,
@@ -226,7 +226,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                           Expanded(
                             child: FormCardWidget(
                               title: _dateTitle(context),
-                              subtitle: 'Payment date',
+                              subtitle: context.l10n.paymentDate,
                               icon: Icon(
                                 Icons.date_range,
                                 size: AppSizing.iconSizeM,
@@ -240,14 +240,14 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                       if (_previewNextDate != null) ...[
                         const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                         Text(
-                          'Следующий платёж: ${_previewNextDate!.formatDotDate}',
+                          '${context.l10n.nextPayment}: ${_previewNextDate!.formatDotDate}',
                           style: AppTextStyles.text14w400(context),
                         ),
                       ],
                       const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                       FormCardWidget(
                         title: _paymentType.label,
-                        subtitle: 'Тип планового платежа',
+                        subtitle: context.l10n.scheduledPaymentType,
                         icon: Icon(
                           Icons.subscriptions,
                           size: AppSizing.iconSizeM,
@@ -271,8 +271,8 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                           ? FormCardWidget(
                               title: _selectedGoal?.name ??
                                   _selectedWallet?.name ??
-                                  'Кошелёк или цель',
-                              subtitle: 'Выберите кошелёк или цель',
+                                  context.l10n.walletOrGoal,
+                              subtitle: context.l10n.selectWalletOrGoal,
                               icon: _buildAccountIcon(colorScheme),
                               onTap: () => _openAccountPicker(context),
                             )
@@ -283,16 +283,16 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                                   child: FormCardWidget(
                                     title: _selectedGoal?.name ??
                                         _selectedWallet?.name ??
-                                        'Wallet',
-                                    subtitle: 'Выберите кошелёк',
+                                        context.l10n.wallet,
+                                    subtitle: context.l10n.selectWallet,
                                     icon: _buildAccountIcon(colorScheme),
                                     onTap: () => _openAccountPicker(context),
                                   ),
                                 ),
                                 Expanded(
                                   child: FormCardWidget(
-                                    title: _selectedCategory?.name ?? 'Category',
-                                    subtitle: 'Выберите категорию',
+                                    title: _selectedCategory?.name ?? context.l10n.category,
+                                    subtitle: context.l10n.selectCategory,
                                     icon: _buildCategoryIcon(colorScheme),
                                     onTap: () => _openCategoryPicker(context),
                                   ),
@@ -304,7 +304,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
                         children: [
                           Expanded(
                             child: Text(
-                              'Enable auto-payment',
+                              context.l10n.enableAutoPayment,
                               style: AppTextStyles.text14w400(context),
                             ),
                           ),
@@ -335,7 +335,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
               ),
               const SizedBox(height: AppSizing.spaceBtwElements),
               PrimaryButton(
-                text: widget.payment != null ? 'Сохранить' : 'Создать',
+                text: widget.payment != null ? context.l10n.save : context.l10n.createScheduledPayment,
                 onPressed: _isSaving ? null : _save,
               ),
               const SizedBox(height: AppSizing.spaceBtwElements),
@@ -393,19 +393,19 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
     if (name.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Введите название')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.enterName)));
       return;
     }
     if (_paymentAmount == null || _paymentAmount! <= 0) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Укажите сумму')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.enterAmount)));
       return;
     }
     if (_paymentType == ScheduledPaymentType.regularIncome) {
       if (_selectedWallet == null && _selectedGoal == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Выберите кошелёк или цель')),
+          SnackBar(content: Text(context.l10n.selectWalletOrGoal)),
         );
         return;
       }
@@ -413,13 +413,13 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
       if (_selectedWallet == null && _selectedGoal == null) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Выберите кошелёк')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.selectWallet)));
         return;
       }
       if (_selectedCategory == null) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Выберите категорию')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.selectCategory)));
         return;
       }
     }
@@ -427,13 +427,13 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
         _paymentDate == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Выберите дату')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.selectDate)));
       return;
     }
     if (_isMultiSelect && _paymentDates.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Выберите дату или дни')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.selectDateOrDays)));
       return;
     }
 
@@ -448,7 +448,7 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
     if (nextDate == null && _frequency == ScheduledPaymentFrequency.oneTime) {
       setState(() => _isSaving = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Дата платежа должна быть в будущем')),
+        SnackBar(content: Text(context.l10n.paymentDateMustBeInTheFuture)),
       );
       return;
     }
@@ -699,9 +699,9 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
 
   String _frequencyTitle(BuildContext context) {
     return switch (_frequency) {
-      ScheduledPaymentFrequency.oneTime => 'Единожды',
-      ScheduledPaymentFrequency.monthly => 'Ежемесячно',
-      ScheduledPaymentFrequency.yearly => 'Ежегодно',
+      ScheduledPaymentFrequency.oneTime => context.l10n.once,
+      ScheduledPaymentFrequency.monthly => context.l10n.monthly,
+      ScheduledPaymentFrequency.yearly => context.l10n.yearly,
     };
   }
 
@@ -712,22 +712,22 @@ class _ScheduledPaymentFormViewState extends State<ScheduledPaymentFormView> {
           _paymentDates
               .map(
                 (d) => d.day == DateTime(d.year, d.month + 1, 0).day
-                    ? 'End of month'
+                    ? context.l10n.endOfMonth
                     : d.day.toString(),
               )
               .join(', '),
         ScheduledPaymentFrequency.yearly =>
           _paymentDates.map((d) => d.formatMonthDay).join(', '),
-        _ => 'Date',
+        _ => context.l10n.date,
       };
     }
-    if (_paymentDate == null) return 'Date';
+    if (_paymentDate == null) return context.l10n.date;
     final d = _paymentDate!;
     return switch (_frequency) {
       ScheduledPaymentFrequency.oneTime => d.formatDotDate,
       ScheduledPaymentFrequency.monthly =>
         d.day == DateTime(d.year, d.month + 1, 0).day
-            ? 'End of month'
+            ? context.l10n.endOfMonth
             : '${d.day}',
       ScheduledPaymentFrequency.yearly => d.formatMonthDay(context),
     };

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class QuickWidgetCategoriesSheet extends StatefulWidget {
@@ -22,7 +23,8 @@ class QuickWidgetCategoriesSheet extends StatefulWidget {
       _QuickWidgetCategoriesSheetState();
 }
 
-class _QuickWidgetCategoriesSheetState extends State<QuickWidgetCategoriesSheet> {
+class _QuickWidgetCategoriesSheetState
+    extends State<QuickWidgetCategoriesSheet> {
   final Set<String> _selectedIds = {};
   List<String> _selectedOrder = [];
   bool _initialized = false;
@@ -78,115 +80,127 @@ class _QuickWidgetCategoriesSheetState extends State<QuickWidgetCategoriesSheet>
             ),
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
-          const ModalSheetTitleWidget(
-            title: 'Widget Categories',
-            subtitle: 'Select custom categories for the home screen widget',
+          ModalSheetTitleWidget(
+            title: context.l10n.widgetCategories,
+            subtitle: context.l10n.selectCustomCategoriesForTheHomeScreenWidget,
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           Flexible(
-            child: BlocBuilder<QuickCategoriesSettingsCubit, QuickCategoriesSettingsState>(
-              builder: (context, settingsState) {
-                return BlocBuilder<CategoriesCubit, CategoriesState>(
-                  builder: (context, categoriesState) {
-                    final categories = switch (categoriesState) {
-                      CategoriesLoaded s => s.categories,
-                      _ => <CategoryModel>[],
-                    };
-                    _init(categories, settingsState.customWidgetOrder);
-                    final categoryMap = {
-                      for (final c in categories) c.categoryId: c,
-                    };
-                    final selectedCategories = _selectedOrder
-                        .where(categoryMap.containsKey)
-                        .map((id) => categoryMap[id]!)
-                        .toList();
-                    final unselectedCategories = categories
-                        .where((c) => !_selectedIds.contains(c.categoryId))
-                        .toList();
+            child:
+                BlocBuilder<
+                  QuickCategoriesSettingsCubit,
+                  QuickCategoriesSettingsState
+                >(
+                  builder: (context, settingsState) {
+                    return BlocBuilder<CategoriesCubit, CategoriesState>(
+                      builder: (context, categoriesState) {
+                        final categories = switch (categoriesState) {
+                          CategoriesLoaded s => s.categories,
+                          _ => <CategoryModel>[],
+                        };
+                        _init(categories, settingsState.customWidgetOrder);
+                        final categoryMap = {
+                          for (final c in categories) c.categoryId: c,
+                        };
+                        final selectedCategories = _selectedOrder
+                            .where(categoryMap.containsKey)
+                            .map((id) => categoryMap[id]!)
+                            .toList();
+                        final unselectedCategories = categories
+                            .where((c) => !_selectedIds.contains(c.categoryId))
+                            .toList();
 
-                    return SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          if (selectedCategories.isNotEmpty) ...[
-                            Text(
-                              'Selected',
-                              style: AppTextStyles.sectionTitle(context),
-                            ),
-                            const SizedBox(height: AppSizing.spaceBtwItems),
-                            ReorderableListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              buildDefaultDragHandles: false,
-                              itemCount: selectedCategories.length,
-                              onReorder: _reorderSelected,
-                              itemBuilder: (context, index) {
-                                final category = selectedCategories[index];
-                                return KeyedSubtree(
-                                  key: ValueKey(category.categoryId),
-                                  child: _buildCategoryCard(
-                                    context: context,
-                                    category: category,
-                                    isSelected: true,
-                                    showDragHandle: true,
-                                    reorderIndex: index,
-                                    radius: radiusForIndex(
-                                      index,
-                                      selectedCategories.length,
-                                    ),
-                                    onTap: () {
-                                      setState(() {
-                                        _selectedIds.remove(category.categoryId);
-                                        _selectedOrder.remove(category.categoryId);
-                                      });
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(height: AppSizing.spaceBtwElements),
-                          ],
-                          if (unselectedCategories.isNotEmpty) ...[
-                            Text(
-                              'Available',
-                              style: AppTextStyles.sectionTitle(context),
-                            ),
-                            const SizedBox(height: AppSizing.spaceBtwItems),
-                            ...unselectedCategories.map(
-                              (category) => Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: AppSizing.spaceBtwItemsExtra,
+                        return SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (selectedCategories.isNotEmpty) ...[
+                                Text(
+                                  context.l10n.pinned,
+                                  style: AppTextStyles.sectionTitle(context),
                                 ),
-                                child: _buildCategoryCard(
-                                  context: context,
-                                  category: category,
-                                  isSelected: false,
-                                  showDragHandle: false,
-                                  radius: radiusForIndex(
-                                    unselectedCategories.indexOf(category),
-                                    unselectedCategories.length,
-                                  ),
-                                  onTap: () {
-                                    setState(() {
-                                      _selectedIds.add(category.categoryId);
-                                      _selectedOrder.add(category.categoryId);
-                                    });
+                                const SizedBox(height: AppSizing.spaceBtwItems),
+                                ReorderableListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  buildDefaultDragHandles: false,
+                                  itemCount: selectedCategories.length,
+                                  onReorder: _reorderSelected,
+                                  itemBuilder: (context, index) {
+                                    final category = selectedCategories[index];
+                                    return KeyedSubtree(
+                                      key: ValueKey(category.categoryId),
+                                      child: _buildCategoryCard(
+                                        context: context,
+                                        category: category,
+                                        isSelected: true,
+                                        showDragHandle: true,
+                                        reorderIndex: index,
+                                        radius: radiusForIndex(
+                                          index,
+                                          selectedCategories.length,
+                                        ),
+                                        onTap: () {
+                                          setState(() {
+                                            _selectedIds.remove(
+                                              category.categoryId,
+                                            );
+                                            _selectedOrder.remove(
+                                              category.categoryId,
+                                            );
+                                          });
+                                        },
+                                      ),
+                                    );
                                   },
                                 ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
+                                const SizedBox(
+                                  height: AppSizing.spaceBtwElements,
+                                ),
+                              ],
+                              if (unselectedCategories.isNotEmpty) ...[
+                                Text(
+                                  context.l10n.available,
+                                  style: AppTextStyles.sectionTitle(context),
+                                ),
+                                const SizedBox(height: AppSizing.spaceBtwItems),
+                                ...unselectedCategories.map(
+                                  (category) => Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: AppSizing.spaceBtwItemsExtra,
+                                    ),
+                                    child: _buildCategoryCard(
+                                      context: context,
+                                      category: category,
+                                      isSelected: false,
+                                      showDragHandle: false,
+                                      radius: radiusForIndex(
+                                        unselectedCategories.indexOf(category),
+                                        unselectedCategories.length,
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedIds.add(category.categoryId);
+                                          _selectedOrder.add(
+                                            category.categoryId,
+                                          );
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
+                ),
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           PrimaryButton(
-            text: 'Save',
+            text: context.l10n.save,
             onPressed: _isSaving ? null : () => _onSave(context),
             size: PrimaryButtonSize.medium,
             rounded: true,

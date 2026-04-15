@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class CategoryFormView extends StatefulWidget {
@@ -97,10 +98,10 @@ class _CategoryFormViewState extends State<CategoryFormView> {
         if (state is CategoriesLoaded || state is CategoriesEmpty) {
           _isSubmitting = false;
           final message = _isDeleting
-              ? 'Category deleted'
+              ? context.l10n.categoryDeleted
               : _isEditing
-                  ? 'Category updated successfully'
-                  : 'Category created successfully';
+                  ? context.l10n.categoryUpdatedSuccessfully
+                  : context.l10n.categoryCreatedSuccessfully;
           _isDeleting = false;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(message)),
@@ -120,7 +121,7 @@ class _CategoryFormViewState extends State<CategoryFormView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_isEditing ? 'Update Category' : 'Create Category'),
+          title: Text(_isEditing ? context.l10n.updateCategory : context.l10n.createCategory),
           scrolledUnderElevation: 0,
         ),
         body: SafeArea(
@@ -140,13 +141,12 @@ class _CategoryFormViewState extends State<CategoryFormView> {
                         const SizedBox(height: AppSizing.spaceBtwElements),
                         _buildPreview(context),
                         CustomTextFormField(
-                          label: 'Category name',
-                          hintText: 'e.g. Groceries',
+                          label: context.l10n.categoryName,
                           controller: _nameController,
                         ),
                         FormCardWidget(
-                          title: _limit ?? 'no limit',
-                          subtitle: 'Monthly limit',
+                          title: _limit ?? context.l10n.noLimit,
+                          subtitle: context.l10n.monthlyLimit,
                           icon: Icon(
                             Icons.data_usage_rounded,
                             color: colorScheme.onSecondary,
@@ -174,7 +174,7 @@ class _CategoryFormViewState extends State<CategoryFormView> {
                 const SizedBox(height: AppSizing.spaceBtwElements),
                 if (_isEditing) ...[
                   PrimaryButton(
-                    text: 'Delete',
+                    text: context.l10n.delete,
                     backgroundColor: colorScheme.primary.withValues(alpha: 0.3),
                     foregroundColor: colorScheme.primary,
                     size: PrimaryButtonSize.small,
@@ -185,7 +185,7 @@ class _CategoryFormViewState extends State<CategoryFormView> {
                   const SizedBox(height: AppSizing.spaceBtwItems),
                 ],
                 PrimaryButton(
-                  text: _isEditing ? 'Update' : 'Create',
+                  text: _isEditing ? context.l10n.update : context.l10n.create,
                   onPressed: isLoading ? null : _submitCategory,
                   isLoading: isLoading,
                 ),
@@ -223,7 +223,7 @@ class _CategoryFormViewState extends State<CategoryFormView> {
     AmountFormModalSheet.show(
       context,
       initialAmount: initialAmount,
-      saveLabel: 'Save',
+      saveLabel: context.l10n.save,
       onSave: (amount) => setState(() => _limit = amount.toString()),
     );
   }
@@ -231,9 +231,9 @@ class _CategoryFormViewState extends State<CategoryFormView> {
   Future<void> _deleteCategory() async {
     final result = await showDeleteEntityDialog(
       context,
-      title: 'Удалить категорию?',
+      title: context.l10n.deleteCategoryTitle,
       message:
-          'Удалить категорию «${widget.category!.name}»? Выберите способ удаления.',
+          '${context.l10n.deleteCategoryMessage} «${widget.category!.name}»? ${context.l10n.deleteCategoryMessageHint}',
     );
     if (!mounted ||
         result == null ||
@@ -255,7 +255,7 @@ class _CategoryFormViewState extends State<CategoryFormView> {
     if (name.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Name is required')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.nameIsRequired)));
       return;
     }
 

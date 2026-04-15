@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class BudgetDonutStatWidget extends StatelessWidget {
@@ -57,7 +58,7 @@ class BudgetDonutStatWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    exceeded ? 'Overspent' : 'Spent',
+                    exceeded ? context.l10n.overspent : context.l10n.spent,
                     style: AppTextStyles.text16w400(context),
                   ),
                   AmountTextWidget(
@@ -68,8 +69,8 @@ class BudgetDonutStatWidget extends StatelessWidget {
                   ),
                   Text(
                     exceeded
-                        ? 'Budget exceeded'
-                        : '$remainingPercent% remaining',
+                        ? context.l10n.budgetExceeded
+                        : '$remainingPercent% ${context.l10n.remaining}',
                     style: AppTextStyles.tabSubTitle(context),
                   ),
                 ],

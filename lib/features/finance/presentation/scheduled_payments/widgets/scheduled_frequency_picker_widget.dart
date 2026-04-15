@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/finance/data/models/scheduled_payment_model.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class ScheduledFrequencyPickerWidget extends StatelessWidget {
@@ -46,19 +47,19 @@ class ScheduledFrequencyPickerWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const ModalSheetTitleWidget(title: 'Payment frequency'),
+          ModalSheetTitleWidget(title: context.l10n.paymentFrequency),
           const SizedBox(height: AppSizing.spaceBtwSections),
           _card(
             context,
             c,
             ScheduledPaymentFrequency.yearly,
-            'Ежегодно',
+            context.l10n.yearly,
             height: AppSizing.heightL,
           ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          _card(context, c, ScheduledPaymentFrequency.monthly, 'Ежемесячно'),
+          _card(context, c, ScheduledPaymentFrequency.monthly, context.l10n.monthly),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          _card(context, c, ScheduledPaymentFrequency.oneTime, 'Единожды'),
+          _card(context, c, ScheduledPaymentFrequency.oneTime, context.l10n.once),
         ],
       ),
     );

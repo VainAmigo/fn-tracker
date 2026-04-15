@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AddTransactionAccountsSheetWidget extends StatelessWidget {
-  const AddTransactionAccountsSheetWidget({
-    super.key,
-    this.excludedAccount,
-  });
+  const AddTransactionAccountsSheetWidget({super.key, this.excludedAccount});
 
   /// Account that cannot be selected (e.g. the "other" account in transfer)
   final Object? excludedAccount;
@@ -35,9 +33,12 @@ class AddTransactionAccountsSheetWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ModalSheetTitleWidget(title: 'Choose account'),
+          ModalSheetTitleWidget(title: context.l10n.chooseAccount),
           const SizedBox(height: AppSizing.spaceBtwElements),
-          Text('Your wallets', style: AppTextStyles.listTileTitle(context)),
+          Text(
+            context.l10n.yourWallets,
+            style: AppTextStyles.listTileTitle(context),
+          ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           Flexible(
             child: SingleChildScrollView(
@@ -49,8 +50,8 @@ class AddTransactionAccountsSheetWidget extends StatelessWidget {
                   if (excludedAccount != null &&
                       _isSameAccount(wallet, excludedAccount!)) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Cannot select the same account'),
+                      SnackBar(
+                        content: Text(context.l10n.cannotSelectSameAccount),
                       ),
                     );
                     return;
@@ -61,7 +62,10 @@ class AddTransactionAccountsSheetWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),
-          Text('Your goals', style: AppTextStyles.listTileTitle(context)),
+          Text(
+            context.l10n.yourGoals,
+            style: AppTextStyles.listTileTitle(context),
+          ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           Flexible(
             child: SingleChildScrollView(
@@ -72,8 +76,8 @@ class AddTransactionAccountsSheetWidget extends StatelessWidget {
                   if (excludedAccount != null &&
                       _isSameAccount(goal, excludedAccount!)) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Cannot select the same account'),
+                      SnackBar(
+                        content: Text(context.l10n.cannotSelectSameAccount),
                       ),
                     );
                     return;

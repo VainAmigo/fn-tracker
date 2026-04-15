@@ -3,15 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 enum _ScheduledPaymentsTab { subscriptions, regular, regularIncome }
 
 extension on _ScheduledPaymentsTab {
-  String get label => switch (this) {
-    _ScheduledPaymentsTab.subscriptions => 'Подписки',
-    _ScheduledPaymentsTab.regular => 'Регулярные платежи',
-    _ScheduledPaymentsTab.regularIncome => 'Регулярный доход',
+  String label(BuildContext context) => switch (this) {
+    _ScheduledPaymentsTab.subscriptions => context.l10n.subscriptions,
+    _ScheduledPaymentsTab.regular => context.l10n.regularPayments,
+    _ScheduledPaymentsTab.regularIncome => context.l10n.regularIncomePayments,
   };
 }
 
@@ -53,7 +54,7 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
                 Text(state.message),
                 const SizedBox(height: 16),
                 PrimaryButton(
-                  text: 'Повторить',
+                  text: context.l10n.repeat,
                   onPressed: () =>
                       context.read<ScheduledPaymentsCubit>().loadPayments(),
                 ),
@@ -103,7 +104,7 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
                 items: _ScheduledPaymentsTab.values,
                 selectedValue: _selectedTab,
                 onChanged: (v) => setState(() => _selectedTab = v),
-                labelBuilder: (t) => t.label,
+                labelBuilder: (t) => t.label(context),
               ),
               const SizedBox(height: AppSizing.spaceBtwElements),
               _buildTabContent(
@@ -177,7 +178,7 @@ class _ScheduledPaymentsTabViewState extends State<ScheduledPaymentsTabView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ModalSheetTitleWidget(
-              title: 'Платежи на $day',
+              title: '${context.l10n.paymentsOn} $day',
               subtitle:
                   '${_calendarMonth.toString().padLeft(2, '0')}.$_calendarYear',
             ),
@@ -286,7 +287,7 @@ class _AddPaymentCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: AppSizing.spaceBtwItems),
-            Text('Добавить', style: AppTextStyles.text16w400(context)),
+            Text(context.l10n.add, style: AppTextStyles.text16w400(context)),
           ],
         ),
       ),

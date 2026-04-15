@@ -383,7 +383,7 @@ class _AppMainViewState extends State<AppMainView> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       PrimaryButton(
-                        text: 'Add with voice',
+                        text: context.l10n.addWithVoice,
                         onPressed: () {
                           setState(() => _fabMenuOpen = false);
                           Navigator.of(context).pushNamed(
@@ -399,7 +399,7 @@ class _AppMainViewState extends State<AppMainView> {
                         rounded: true,
                       ),
                       PrimaryButton(
-                        text: 'Add with file',
+                        text: context.l10n.addWithFile,
                         onPressed: () {
                           setState(() => _fabMenuOpen = false);
                           Navigator.of(context).pushNamed(
@@ -415,7 +415,7 @@ class _AppMainViewState extends State<AppMainView> {
                         rounded: true,
                       ),
                       PrimaryButton(
-                        text: 'Add manually',
+                        text: context.l10n.addManually,
                         onPressed: () {
                           setState(() => _fabMenuOpen = false);
                           Navigator.of(

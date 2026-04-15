@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
@@ -26,19 +27,6 @@ class _AiLogicViewState extends State<AiLogicView> {
   bool _speechAvailable = false;
   bool _listening = false;
   bool _saving = false;
-
-  static const _segments = [
-    SegmentItem<AiInputTab>(
-      value: AiInputTab.voice,
-      label: 'Голос',
-      icon: Icons.mic_rounded,
-    ),
-    SegmentItem<AiInputTab>(
-      value: AiInputTab.attachment,
-      label: 'Файл',
-      icon: Icons.attach_file_rounded,
-    ),
-  ];
 
   @override
   void initState() {
@@ -76,7 +64,7 @@ class _AiLogicViewState extends State<AiLogicView> {
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Добавление траты')),
+          appBar: AppBar(title: Text(context.l10n.addTransaction)),
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -95,6 +83,19 @@ class _AiLogicViewState extends State<AiLogicView> {
   Widget _buildInput(BuildContext context, AiLogicState state) {
     final isParsing = state is AiLogicParsing;
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
+    final segments = [
+      SegmentItem<AiInputTab>(
+        value: AiInputTab.voice,
+        label: l10n.voice,
+        icon: Icons.mic_rounded,
+      ),
+      SegmentItem<AiInputTab>(
+        value: AiInputTab.attachment,
+        label: l10n.file,
+        icon: Icons.attach_file_rounded,
+      ),
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -103,13 +104,13 @@ class _AiLogicViewState extends State<AiLogicView> {
             child: Column(
               children: [
                 TabTitleWidget(
-                  title: 'Добавление траты с помощью AI',
+                  title: l10n.addTransactionWithAi,
                   subtitle:
-                      'Введите траты вручную или используйте готовые шаблоны',
+                      l10n.enterTransactionsManuallyOrUseTemplates,
                 ),
                 const SizedBox(height: AppSizing.spaceBtwElements),
                 SegmentedControl<AiInputTab>(
-                  segments: _segments,
+                  segments: segments,
                   height: AppSizing.heightS,
                   selectedValue: _inputTab,
                   onChanged: (v) => setState(() => _inputTab = v),
@@ -120,7 +121,7 @@ class _AiLogicViewState extends State<AiLogicView> {
                     _inputTab == AiInputTab.attachment) ...[
                   const SizedBox(height: AppSizing.spaceBtwElements),
                   Text(
-                    state.attachmentName ?? 'Вложение',
+                    state.attachmentName ?? l10n.attachment,
                     style: AppTextStyles.listTileTitle(context),
                   ),
                   const SizedBox(height: AppSizing.spaceBtwItems),
@@ -141,7 +142,7 @@ class _AiLogicViewState extends State<AiLogicView> {
                     onPressed: isParsing
                         ? null
                         : () => context.read<AiLogicCubit>().clearAttachment(),
-                    text: 'Убрать файл',
+                    text: l10n.removeFile,
                     icon: Icons.folder_delete_outlined,
                     size: PrimaryButtonSize.xSmall,
                     rounded: true,
@@ -154,7 +155,7 @@ class _AiLogicViewState extends State<AiLogicView> {
                     controller: _textController,
                     maxLines: 3,
                     readOnly: isParsing,
-                    hintText: 'Текст можно отредактировать',
+                    hintText: l10n.textCanBeEdited,
                   ),
                 ],
               ],
@@ -216,7 +217,7 @@ class _AiLogicViewState extends State<AiLogicView> {
                       ),
                     ),
                     PrimaryButton(
-                      text: 'Отменить и вернуться к вводу',
+                      text: context.l10n.cancelAndReturnToInput,
                       onPressed: () =>
                           context.read<AiLogicCubit>().backToInput(),
                       icon: Icons.arrow_back_rounded,
@@ -229,8 +230,8 @@ class _AiLogicViewState extends State<AiLogicView> {
                     const SizedBox(height: AppSizing.spaceBtwItems),
                     PrimaryButton(
                       text: state.drafts.length > 1
-                          ? 'Сохранить все'
-                          : 'Сохранить',
+                          ? context.l10n.saveAll
+                          : context.l10n.save,
                       isLoading: _saving,
                       rounded: true,
                       fullWidth: true,
@@ -326,12 +327,12 @@ class _AiLogicViewState extends State<AiLogicView> {
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_camera_outlined),
-                title: const Text('Камера'),
+                title: Text(context.l10n.camera),
                 onTap: () => Navigator.of(sheetContext).pop(ImageSource.camera),
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library_outlined),
-                title: const Text('Галерея'),
+                title: Text(context.l10n.gallery),
                 onTap: () =>
                     Navigator.of(sheetContext).pop(ImageSource.gallery),
               ),

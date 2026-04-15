@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Универсальный sheet для отображения скрытых карточек (кошельков или целей).
@@ -44,7 +45,7 @@ class HiddenCardsSheet<T> extends StatelessWidget {
             TextButton.icon(
               onPressed: onChangePin,
               icon: const Icon(Icons.lock_reset),
-              label: const Text('Сменить PIN'),
+              label: Text(context.l10n.changePin),
             ),
           ],
           const SizedBox(height: AppSizing.bottomPadding),

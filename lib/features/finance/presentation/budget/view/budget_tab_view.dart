@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class WalletBudgetTabWidget extends StatefulWidget {
@@ -124,8 +125,8 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
       context,
       initialAmount: existingBudget?.amount,
       isEdit: existingBudget != null,
-      saveLabel: 'Save',
-      title: existingBudget != null ? 'Edit budget' : 'Create budget',
+      saveLabel: context.l10n.save,
+      title: existingBudget != null ? context.l10n.editBudget : context.l10n.createBudget,
       onSave: (amount, {String? effectiveDayKey, bool replaceAll = false}) {
         if (existingBudget != null) {
           context.read<BudgetCubit>().updateBudget(
@@ -155,12 +156,12 @@ class _NoBudgetPlaceholder extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'No budget found. Please create one.',
+          context.l10n.noBudgetFound,
           style: AppTextStyles.text16w400(context),
         ),
         const SizedBox(height: AppSizing.spaceBtwItems),
         PrimaryButton(
-          text: 'Create budget',
+          text: context.l10n.createBudget,
           size: PrimaryButtonSize.xSmall,
           rounded: true,
           backgroundColor: Colors.transparent,
@@ -184,12 +185,12 @@ class _BudgetErrorPlaceholder extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Something went wrong. Please try again later.',
+          context.l10n.somethingWentWrong,
           style: AppTextStyles.text16w400(context),
         ),
         const SizedBox(height: AppSizing.spaceBtwItems),
         PrimaryButton(
-          text: 'Retry',
+          text: context.l10n.retry,
           size: PrimaryButtonSize.xSmall,
           rounded: true,
           backgroundColor: Colors.transparent,

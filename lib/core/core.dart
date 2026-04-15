@@ -8,6 +8,7 @@ export 'utils/auth_validation_utils.dart';
 export 'utils/card_radius_utils.dart';
 export 'utils/amount_formatter.dart';
 export 'utils/amount_form_utils.dart';
+export 'utils/expression_evaluator.dart';
 export 'utils/date_formatter.dart';
 export 'utils/month.dart';
 export 'utils/weekday.dart';

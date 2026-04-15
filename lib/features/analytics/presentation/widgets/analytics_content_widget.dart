@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AnalyticsContentWidget extends StatefulWidget {
@@ -104,7 +105,7 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TitledSection(
-          title: _selectedTabIndex == 3 ? 'AI assistant' : 'Spending chart',
+          title: _selectedTabIndex == 3 ? context.l10n.aiAssistant : context.l10n.spendingChart,
           action: _buildTabBar(context),
           children: [
             IndexedStack(

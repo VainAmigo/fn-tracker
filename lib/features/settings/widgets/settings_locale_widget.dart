@@ -25,7 +25,7 @@ class SettingsLocaleWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ModalSheetTitleWidget(title: 'Language'),
+          ModalSheetTitleWidget(title: context.l10n.language),
           const SizedBox(height: AppSizing.spaceBtwSections),
           Column(
             children: [

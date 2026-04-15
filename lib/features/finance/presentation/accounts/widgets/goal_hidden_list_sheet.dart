@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 
 class GoalHiddenListSheet extends StatelessWidget {
   const GoalHiddenListSheet({
@@ -16,7 +17,7 @@ class GoalHiddenListSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HiddenCardsSheet<GoalModel>(
-      title: 'Скрытые карточки',
+      title: context.l10n.hiddenCards,
       items: goals,
       itemBuilder: (goal) => GoalCardWidget(goal: goal),
       onItemTap: onGoalSelected,

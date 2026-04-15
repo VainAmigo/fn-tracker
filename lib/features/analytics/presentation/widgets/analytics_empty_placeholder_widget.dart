@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AnalyticsEmptyPlaceholderWidget extends StatelessWidget {
@@ -14,7 +15,7 @@ class AnalyticsEmptyPlaceholderWidget extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            'Нет данных за выбранный период',
+            context.l10n.noDataForSelectedPeriod,
             style: AppTextStyles.text16w400(context),
           ),
         ),

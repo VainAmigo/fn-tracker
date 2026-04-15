@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class GoalsListWidget extends StatefulWidget {
@@ -69,7 +70,7 @@ class _GoalsListWidgetState extends State<GoalsListWidget> {
       itemBuilder: (context, index) {
         if (index == goals.length) {
           return CategoryCard(
-            title: 'New goal',
+            title: context.l10n.newGoal,
             leading: Container(
               height: AppSizing.heightS,
               decoration: BoxDecoration(

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class CategoriesDetailModalSheetWidget extends StatelessWidget {
@@ -29,9 +30,9 @@ class CategoriesDetailModalSheetWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ModalSheetTitleWidget(
-            title: 'Category details',
+            title: context.l10n.categoryDetails,
             action: PrimaryButton(
-              text: 'Edit',
+              text: context.l10n.edit,
               onPressed: onEdit,
               size: PrimaryButtonSize.xSmall,
               rounded: true,
@@ -43,7 +44,7 @@ class CategoriesDetailModalSheetWidget extends StatelessWidget {
             title: category.name,
             subtitle: category.limitValue != null
                 ? AmountFormatter.formatWithDots(
-                    'Limit',
+                    context.l10n.limit,
                     '${category.limitValue} ${currency.symbol}',
                   )
                 : null,
@@ -65,7 +66,7 @@ class CategoriesDetailModalSheetWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           PrimaryButton(
-            text: 'History',
+            text: context.l10n.history,
             icon: Icons.history,
             size: PrimaryButtonSize.xSmall,
             rounded: true,
@@ -99,7 +100,7 @@ class CategoriesDetailModalSheetWidget extends StatelessWidget {
                   }
                 },
                 child: PrimaryButton(
-                  text: 'Delete',
+                  text: context.l10n.delete,
                   icon: Icons.delete,
                   iconOnly: true,
                   fullWidth: false,
@@ -109,9 +110,9 @@ class CategoriesDetailModalSheetWidget extends StatelessWidget {
                   onPressed: () async {
                     final result = await showDeleteEntityDialog(
                       context,
-                      title: 'Удалить категорию?',
+                      title: context.l10n.deleteCategoryTitle,
                       message:
-                          'Удалить категорию «${category.name}»? Выберите способ удаления.',
+                          '${context.l10n.deleteCategoryMessage} «${category.name}»? ${context.l10n.deleteCategoryMessageHint}',
                     );
                     if (!context.mounted ||
                         result == null ||
@@ -128,7 +129,7 @@ class CategoriesDetailModalSheetWidget extends StatelessWidget {
               ),
               Flexible(
                 child: PrimaryButton(
-                  text: 'Add transaction',
+                  text: context.l10n.addTransaction,
                   icon: Icons.add,
                   size: PrimaryButtonSize.large,
                   rounded: true,

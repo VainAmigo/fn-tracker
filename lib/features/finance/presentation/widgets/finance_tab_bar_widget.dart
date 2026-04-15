@@ -25,7 +25,7 @@ class FinanceTabBarWidget extends StatelessWidget {
           items: FinanceTab.values,
           selectedValue: selectedTab,
           onChanged: onChanged,
-          labelBuilder: (tab) => tab.label,
+          labelBuilder: (tab) => tab.label(context),
           leftPadding: 0,
         ),
       ],

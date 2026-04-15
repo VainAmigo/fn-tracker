@@ -4,6 +4,7 @@ import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/features/finance/presentation/accounts/widgets/goal_tab.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class GoalListWithTotalWidget extends StatefulWidget {
@@ -59,11 +60,12 @@ class _GoalListWithTotalWidgetState extends State<GoalListWithTotalWidget> {
         };
 
         if (goalsModel == null || goalsModel.goals.isEmpty) {
-          return const Center(child: Text('Целей пока нет'));
+          return Center(child: Text(context.l10n.noGoals));
         }
 
-        final visibleGoals =
-            goalsModel.goals.where((g) => !g.isHidden).toList();
+        final visibleGoals = goalsModel.goals
+            .where((g) => !g.isHidden)
+            .toList();
         final hiddenGoals = goalsModel.goals.where((g) => g.isHidden).toList();
         final hasHidden = hiddenGoals.isNotEmpty;
 
@@ -81,7 +83,7 @@ class _GoalListWithTotalWidgetState extends State<GoalListWithTotalWidget> {
               items: GoalTab.values,
               selectedValue: _selectedTab,
               onChanged: (tab) => setState(() => _selectedTab = tab),
-              labelBuilder: (tab) => tab.label,
+              labelBuilder: (tab) => tab.label(context),
               leftPadding: 0,
             ),
             const SizedBox(height: AppSizing.spaceBtwElements),
@@ -129,10 +131,7 @@ class _GoalListWithTotalWidgetState extends State<GoalListWithTotalWidget> {
 }
 
 class _HiddenGoalsPlaceholder extends StatelessWidget {
-  const _HiddenGoalsPlaceholder({
-    required this.count,
-    this.onTap,
-  });
+  const _HiddenGoalsPlaceholder({required this.count, this.onTap});
 
   final int count;
   final VoidCallback? onTap;
@@ -141,8 +140,8 @@ class _HiddenGoalsPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return CategoryCard(
-      title: 'Скрытые карточки',
-      subtitle: '$count ${_pluralize(count)}',
+      title: context.l10n.hiddenCards,
+      subtitle: '$count ${_pluralize(count, context)}',
       leading: Container(
         height: AppSizing.heightS,
         decoration: BoxDecoration(
@@ -163,11 +162,11 @@ class _HiddenGoalsPlaceholder extends StatelessWidget {
     );
   }
 
-  String _pluralize(int n) {
-    if (n % 10 == 1 && n % 100 != 11) return 'карточка';
+  String _pluralize(int n, BuildContext context) {
+    if (n % 10 == 1 && n % 100 != 11) return context.l10n.card;
     if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) {
-      return 'карточки';
+      return context.l10n.cards;
     }
-    return 'карточек';
+    return context.l10n.cards;
   }
 }

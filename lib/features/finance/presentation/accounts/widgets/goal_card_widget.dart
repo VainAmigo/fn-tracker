@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class GoalCardWidget extends StatelessWidget {
@@ -64,7 +65,7 @@ class GoalCardWidget extends StatelessWidget {
               ),
             ),
             Text(
-              'Завершено',
+              context.l10n.completed,
               style: AppTextStyles.text14w400(context)
                   .copyWith(color: colorScheme.onSurface),
             ),
@@ -157,13 +158,13 @@ class GoalCardWidget extends StatelessWidget {
                     ? const SizedBox.shrink()
                     : targetReached
                         ? Text(
-                            'Complete',
+                            context.l10n.complete,
                             style: AppTextStyles.text14w400(
                               context,
                             ).copyWith(color: colorScheme.onSurface),
                           )
                         : Text(
-                            'Remaining: ${AmountFormatter.format(remaining)}',
+                            '${context.l10n.remaining}: ${AmountFormatter.format(remaining)}',
                             style: AppTextStyles.text14w400(context),
                           ),
               ],

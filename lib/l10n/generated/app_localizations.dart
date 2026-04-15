@@ -370,6 +370,12 @@ abstract class AppLocalizations {
   /// **'Income'**
   String get income;
 
+  /// No description provided for @transfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get transfer;
+
   /// No description provided for @deleteEntityCancel.
   ///
   /// In en, this message translates to:
@@ -418,11 +424,11 @@ abstract class AppLocalizations {
   /// **'Date'**
   String get exportColumnDate;
 
-  /// No description provided for @exportColumnCreatedAt.
+  /// No description provided for @createdAt.
   ///
   /// In en, this message translates to:
   /// **'Created at'**
-  String get exportColumnCreatedAt;
+  String get createdAt;
 
   /// No description provided for @exportColumnType.
   ///
@@ -430,11 +436,11 @@ abstract class AppLocalizations {
   /// **'Type'**
   String get exportColumnType;
 
-  /// No description provided for @exportColumnAmount.
+  /// No description provided for @amount.
   ///
   /// In en, this message translates to:
   /// **'Amount'**
-  String get exportColumnAmount;
+  String get amount;
 
   /// No description provided for @exportColumnCurrency.
   ///
@@ -454,11 +460,11 @@ abstract class AppLocalizations {
   /// **'Wallet'**
   String get exportColumnWallet;
 
-  /// No description provided for @exportColumnNote.
+  /// No description provided for @note.
   ///
   /// In en, this message translates to:
   /// **'Note'**
-  String get exportColumnNote;
+  String get note;
 
   /// No description provided for @exportColumnTransactionId.
   ///
@@ -723,6 +729,1626 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a fixed list of categories for the home screen'**
   String get chooseFixedCategories;
+
+  /// No description provided for @available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// No description provided for @createCategoriesFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Create categories first'**
+  String get createCategoriesFirst;
+
+  /// No description provided for @pinnedCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned Categories'**
+  String get pinnedCategories;
+
+  /// No description provided for @selectCategoriesToShowInQuickAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Select categories to show in quick access on home'**
+  String get selectCategoriesToShowInQuickAccess;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @widgetCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Widget Categories'**
+  String get widgetCategories;
+
+  /// No description provided for @selectCustomCategoriesForTheHomeScreenWidget.
+  ///
+  /// In en, this message translates to:
+  /// **'Select custom categories for the home screen widget'**
+  String get selectCustomCategoriesForTheHomeScreenWidget;
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
+
+  /// No description provided for @category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get category;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @to.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get to;
+
+  /// No description provided for @from.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get from;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @manageYourAccountAndPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your account and preferences'**
+  String get manageYourAccountAndPreferences;
+
+  /// No description provided for @appSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'App settings'**
+  String get appSettings;
+
+  /// No description provided for @appTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'App theme'**
+  String get appTheme;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @currencyAndFormats.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency and formats'**
+  String get currencyAndFormats;
+
+  /// No description provided for @privacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get privacy;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get signOut;
+
+  /// No description provided for @signOutConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to sign out?'**
+  String get signOutConfirmation;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @selectYourCurrencyAndNumberFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your currency and number format'**
+  String get selectYourCurrencyAndNumberFormat;
+
+  /// No description provided for @dynamicColorsOfTheDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Dynamic colors of the device'**
+  String get dynamicColorsOfTheDevice;
+
+  /// No description provided for @dynamicColorsOfTheDeviceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'On Android 12+ the theme is adapted to the device. On other platforms or if colors are not available, the palette below is used.'**
+  String get dynamicColorsOfTheDeviceDescription;
+
+  /// No description provided for @system.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get system;
+
+  /// No description provided for @dark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get dark;
+
+  /// No description provided for @light.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get light;
+
+  /// No description provided for @themeMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme mode'**
+  String get themeMode;
+
+  /// No description provided for @theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
+  /// No description provided for @addTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add transaction'**
+  String get addTransaction;
+
+  /// No description provided for @amountCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount cannot be empty'**
+  String get amountCannotBeEmpty;
+
+  /// No description provided for @amountMustBeGreaterThanZero.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount must be greater than zero'**
+  String get amountMustBeGreaterThanZero;
+
+  /// No description provided for @selectBothSourceAndDestinationAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Select both source and destination accounts'**
+  String get selectBothSourceAndDestinationAccounts;
+
+  /// No description provided for @sourceAndDestinationMustBeDifferent.
+  ///
+  /// In en, this message translates to:
+  /// **'Source and destination must be different'**
+  String get sourceAndDestinationMustBeDifferent;
+
+  /// No description provided for @selectWalletOrGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a wallet or goal'**
+  String get selectWalletOrGoal;
+
+  /// No description provided for @categoryCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Category cannot be empty'**
+  String get categoryCannotBeEmpty;
+
+  /// No description provided for @addNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Add note'**
+  String get addNote;
+
+  /// No description provided for @enterYourNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your note'**
+  String get enterYourNote;
+
+  /// No description provided for @wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get wallet;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get goal;
+
+  /// No description provided for @chooseCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose category'**
+  String get chooseCategory;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get selectDate;
+
+  /// No description provided for @chooseDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose date'**
+  String get chooseDate;
+
+  /// No description provided for @chooseAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose account'**
+  String get chooseAccount;
+
+  /// No description provided for @yourWallets.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wallets'**
+  String get yourWallets;
+
+  /// No description provided for @yourGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'Your goals'**
+  String get yourGoals;
+
+  /// No description provided for @cannotSelectSameAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot select the same account'**
+  String get cannotSelectSameAccount;
+
+  /// No description provided for @addWithVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Add with voice'**
+  String get addWithVoice;
+
+  /// No description provided for @addWithFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Add with file'**
+  String get addWithFile;
+
+  /// No description provided for @addManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Add manually'**
+  String get addManually;
+
+  /// No description provided for @voice.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice'**
+  String get voice;
+
+  /// No description provided for @file.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get file;
+
+  /// No description provided for @addTransactionWithAi.
+  ///
+  /// In en, this message translates to:
+  /// **'Add transaction with AI'**
+  String get addTransactionWithAi;
+
+  /// No description provided for @enterTransactionsManuallyOrUseTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter transactions manually or use templates'**
+  String get enterTransactionsManuallyOrUseTemplates;
+
+  /// No description provided for @attachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment'**
+  String get attachment;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// No description provided for @removeFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove file'**
+  String get removeFile;
+
+  /// No description provided for @textCanBeEdited.
+  ///
+  /// In en, this message translates to:
+  /// **'Text can be edited'**
+  String get textCanBeEdited;
+
+  /// No description provided for @cancelAndReturnToInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel and return to input'**
+  String get cancelAndReturnToInput;
+
+  /// No description provided for @saveAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Save all'**
+  String get saveAll;
+
+  /// No description provided for @returnToInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to input'**
+  String get returnToInput;
+
+  /// No description provided for @listening.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening...'**
+  String get listening;
+
+  /// No description provided for @listen.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen'**
+  String get listen;
+
+  /// No description provided for @photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get photo;
+
+  /// No description provided for @pdf.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF'**
+  String get pdf;
+
+  /// No description provided for @processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing...'**
+  String get processing;
+
+  /// No description provided for @recognize.
+  ///
+  /// In en, this message translates to:
+  /// **'Recognize'**
+  String get recognize;
+
+  /// No description provided for @upTo5Words.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 5 words'**
+  String get upTo5Words;
+
+  /// No description provided for @yourFinancesAndSavings.
+  ///
+  /// In en, this message translates to:
+  /// **'Your finances and savings'**
+  String get yourFinancesAndSavings;
+
+  /// No description provided for @budget.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get budget;
+
+  /// No description provided for @accounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts'**
+  String get accounts;
+
+  /// No description provided for @categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categories;
+
+  /// No description provided for @scheduledPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled payments'**
+  String get scheduledPayments;
+
+  /// No description provided for @editBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit budget'**
+  String get editBudget;
+
+  /// No description provided for @createBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Create budget'**
+  String get createBudget;
+
+  /// No description provided for @noBudgetFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No budget found. Please create one.'**
+  String get noBudgetFound;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again later.'**
+  String get somethingWentWrong;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @budgetDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget details'**
+  String get budgetDetails;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @deleteBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete budget?'**
+  String get deleteBudget;
+
+  /// No description provided for @deleteBudgetConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this budget?'**
+  String get deleteBudgetConfirmation;
+
+  /// No description provided for @noHistoryEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'No history entries'**
+  String get noHistoryEntries;
+
+  /// No description provided for @editHistoryEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit history entry'**
+  String get editHistoryEntry;
+
+  /// No description provided for @deleteHistoryEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete history entry?'**
+  String get deleteHistoryEntry;
+
+  /// No description provided for @budgetExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget exceeded'**
+  String get budgetExceeded;
+
+  /// No description provided for @remaining.
+  ///
+  /// In en, this message translates to:
+  /// **'remaining'**
+  String get remaining;
+
+  /// No description provided for @overspent.
+  ///
+  /// In en, this message translates to:
+  /// **'Overspent'**
+  String get overspent;
+
+  /// No description provided for @replaceAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace all'**
+  String get replaceAll;
+
+  /// No description provided for @fromDate.
+  ///
+  /// In en, this message translates to:
+  /// **'From date'**
+  String get fromDate;
+
+  /// No description provided for @effectiveFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Effective from'**
+  String get effectiveFrom;
+
+  /// No description provided for @info.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get info;
+
+  /// No description provided for @aboutBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'About budget'**
+  String get aboutBudget;
+
+  /// No description provided for @budgetDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget is a monthly spending limit. You can track how much you spend against it and add new amounts when your budget changes.'**
+  String get budgetDescription;
+
+  /// No description provided for @addOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Add options'**
+  String get addOptions;
+
+  /// No description provided for @replaceAllDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Replaces all budget history with the new amount. Use when you want to reset your budget completely.'**
+  String get replaceAllDescription;
+
+  /// No description provided for @fromDateDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds a new budget amount effective from a specific date. Previous entries remain in history.'**
+  String get fromDateDescription;
+
+  /// No description provided for @yearlyBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly budget'**
+  String get yearlyBudget;
+
+  /// No description provided for @monthlyBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly budget'**
+  String get monthlyBudget;
+
+  /// No description provided for @weeklyBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly budget'**
+  String get weeklyBudget;
+
+  /// No description provided for @budgetCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget categories'**
+  String get budgetCategories;
+
+  /// No description provided for @limitExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit exceeded'**
+  String get limitExceeded;
+
+  /// No description provided for @wallets.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallets'**
+  String get wallets;
+
+  /// No description provided for @createWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Create wallet'**
+  String get createWallet;
+
+  /// No description provided for @newGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'New goal'**
+  String get newGoal;
+
+  /// No description provided for @changePin.
+  ///
+  /// In en, this message translates to:
+  /// **'Change PIN'**
+  String get changePin;
+
+  /// No description provided for @pinSuccessfullyChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN successfully changed'**
+  String get pinSuccessfullyChanged;
+
+  /// No description provided for @setPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Set PIN'**
+  String get setPin;
+
+  /// No description provided for @pinRequiredForHiddenCards.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN is required for hidden cards'**
+  String get pinRequiredForHiddenCards;
+
+  /// No description provided for @hiddenCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden cards'**
+  String get hiddenCards;
+
+  /// No description provided for @enterPinToView.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter PIN to view'**
+  String get enterPinToView;
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// No description provided for @invalidPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid PIN'**
+  String get invalidPin;
+
+  /// No description provided for @goalUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal updated successfully'**
+  String get goalUpdatedSuccessfully;
+
+  /// No description provided for @goalCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal created successfully'**
+  String get goalCreatedSuccessfully;
+
+  /// No description provided for @updateGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Update goal'**
+  String get updateGoal;
+
+  /// No description provided for @createGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Create goal'**
+  String get createGoal;
+
+  /// No description provided for @goalName.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal name'**
+  String get goalName;
+
+  /// No description provided for @targetAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Target amount'**
+  String get targetAmount;
+
+  /// No description provided for @howMuchDoYouWantToSave.
+  ///
+  /// In en, this message translates to:
+  /// **'How much do you want to save?'**
+  String get howMuchDoYouWantToSave;
+
+  /// No description provided for @progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get progress;
+
+  /// No description provided for @enterValidTargetAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid target amount'**
+  String get enterValidTargetAmount;
+
+  /// No description provided for @nameIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get nameIsRequired;
+
+  /// No description provided for @walletUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet updated successfully'**
+  String get walletUpdatedSuccessfully;
+
+  /// No description provided for @walletCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet created successfully'**
+  String get walletCreatedSuccessfully;
+
+  /// No description provided for @updateWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Update wallet'**
+  String get updateWallet;
+
+  /// No description provided for @walletName.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet name'**
+  String get walletName;
+
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// No description provided for @complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get complete;
+
+  /// No description provided for @goalDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal details'**
+  String get goalDetailsTitle;
+
+  /// No description provided for @goalAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal amount'**
+  String get goalAmount;
+
+  /// No description provided for @completedAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed amount'**
+  String get completedAmount;
+
+  /// No description provided for @completedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed at'**
+  String get completedAt;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get history;
+
+  /// No description provided for @deleteGoalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete goal?'**
+  String get deleteGoalTitle;
+
+  /// No description provided for @deleteGoalMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this goal?'**
+  String get deleteGoalMessage;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @hideAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide amount'**
+  String get hideAmount;
+
+  /// No description provided for @hideGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide goal'**
+  String get hideGoal;
+
+  /// No description provided for @hideGoalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Will be visible only in the \"Hidden cards\" block'**
+  String get hideGoalSubtitle;
+
+  /// No description provided for @deleteGoalMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the way to delete the goal'**
+  String get deleteGoalMessageHint;
+
+  /// No description provided for @deposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit'**
+  String get deposit;
+
+  /// No description provided for @noGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'No goals yet'**
+  String get noGoals;
+
+  /// No description provided for @card.
+  ///
+  /// In en, this message translates to:
+  /// **'card'**
+  String get card;
+
+  /// No description provided for @cards.
+  ///
+  /// In en, this message translates to:
+  /// **'cards'**
+  String get cards;
+
+  /// No description provided for @inProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get inProgress;
+
+  /// No description provided for @totalProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Total progress'**
+  String get totalProgress;
+
+  /// No description provided for @goals.
+  ///
+  /// In en, this message translates to:
+  /// **'Goals'**
+  String get goals;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @walletDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet details'**
+  String get walletDetails;
+
+  /// No description provided for @hideWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide wallet'**
+  String get hideWallet;
+
+  /// No description provided for @hideWalletSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Will be visible only in the \"Hidden cards\" block'**
+  String get hideWalletSubtitle;
+
+  /// No description provided for @deleteWalletTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete wallet?'**
+  String get deleteWalletTitle;
+
+  /// No description provided for @deleteWalletMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this wallet?'**
+  String get deleteWalletMessage;
+
+  /// No description provided for @deleteWalletMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the way to delete the wallet'**
+  String get deleteWalletMessageHint;
+
+  /// No description provided for @noWallets.
+  ///
+  /// In en, this message translates to:
+  /// **'No wallets yet'**
+  String get noWallets;
+
+  /// No description provided for @createYourFirstWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first wallet'**
+  String get createYourFirstWallet;
+
+  /// No description provided for @newWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'New wallet'**
+  String get newWallet;
+
+  /// No description provided for @categoryDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Category details'**
+  String get categoryDetails;
+
+  /// No description provided for @createCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Create category'**
+  String get createCategory;
+
+  /// No description provided for @limit.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit'**
+  String get limit;
+
+  /// No description provided for @deleteCategoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete category?'**
+  String get deleteCategoryTitle;
+
+  /// No description provided for @deleteCategoryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this category?'**
+  String get deleteCategoryMessage;
+
+  /// No description provided for @deleteCategoryMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the way to delete the category'**
+  String get deleteCategoryMessageHint;
+
+  /// No description provided for @scheduledPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled payment'**
+  String get scheduledPayment;
+
+  /// No description provided for @paymentName.
+  ///
+  /// In en, this message translates to:
+  /// **'payment name'**
+  String get paymentName;
+
+  /// No description provided for @paymentAmountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'How much do you want to pay?'**
+  String get paymentAmountDescription;
+
+  /// No description provided for @frequency.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency'**
+  String get frequency;
+
+  /// No description provided for @paymentDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment date'**
+  String get paymentDate;
+
+  /// No description provided for @scheduledPaymentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled payment type'**
+  String get scheduledPaymentType;
+
+  /// No description provided for @nextPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Next payment'**
+  String get nextPayment;
+
+  /// No description provided for @walletOrGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet or goal'**
+  String get walletOrGoal;
+
+  /// No description provided for @selectWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Select wallet'**
+  String get selectWallet;
+
+  /// No description provided for @selectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select category'**
+  String get selectCategory;
+
+  /// No description provided for @enableAutoPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable auto-payment'**
+  String get enableAutoPayment;
+
+  /// No description provided for @enterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter name'**
+  String get enterName;
+
+  /// No description provided for @enterAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter amount'**
+  String get enterAmount;
+
+  /// No description provided for @selectDateOrDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date or days'**
+  String get selectDateOrDays;
+
+  /// No description provided for @paymentDateMustBeInTheFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment date must be in the future'**
+  String get paymentDateMustBeInTheFuture;
+
+  /// No description provided for @once.
+  ///
+  /// In en, this message translates to:
+  /// **'Once'**
+  String get once;
+
+  /// No description provided for @monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly;
+
+  /// No description provided for @yearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get yearly;
+
+  /// No description provided for @weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get weekly;
+
+  /// No description provided for @endOfMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'End of month'**
+  String get endOfMonth;
+
+  /// No description provided for @subscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions'**
+  String get subscriptions;
+
+  /// No description provided for @regularPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular payments'**
+  String get regularPayments;
+
+  /// No description provided for @regularIncomePayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular income payments'**
+  String get regularIncomePayments;
+
+  /// No description provided for @repeat.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat'**
+  String get repeat;
+
+  /// No description provided for @paymentsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments on'**
+  String get paymentsOn;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @paymentFrequency.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment frequency'**
+  String get paymentFrequency;
+
+  /// No description provided for @paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get paused;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @daysOfMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Days of month'**
+  String get daysOfMonth;
+
+  /// No description provided for @dayOfMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Day of month'**
+  String get dayOfMonth;
+
+  /// No description provided for @paymentDatesInYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment dates in year'**
+  String get paymentDatesInYear;
+
+  /// No description provided for @dateMonthDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Date (month & day)'**
+  String get dateMonthDay;
+
+  /// No description provided for @selectDateForOneTimePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date for one-time payment'**
+  String get selectDateForOneTimePayment;
+
+  /// No description provided for @paymentWillBeMadeOnSelectedDaysOfMonthEveryMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment will be made on selected days of month every month'**
+  String get paymentWillBeMadeOnSelectedDaysOfMonthEveryMonth;
+
+  /// No description provided for @paymentWillBeMadeOnSelectedDayOfMonthEveryMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment will be made on selected day of month every month'**
+  String get paymentWillBeMadeOnSelectedDayOfMonthEveryMonth;
+
+  /// No description provided for @paymentWillBeMadeOnSelectedDatesEveryYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment will be made on selected dates every year'**
+  String get paymentWillBeMadeOnSelectedDatesEveryYear;
+
+  /// No description provided for @paymentWillBeMadeOnSelectedDateMonthDayEveryYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment will be made on selected date (month & day) every year'**
+  String get paymentWillBeMadeOnSelectedDateMonthDayEveryYear;
+
+  /// No description provided for @first.
+  ///
+  /// In en, this message translates to:
+  /// **'First'**
+  String get first;
+
+  /// No description provided for @second.
+  ///
+  /// In en, this message translates to:
+  /// **'Second'**
+  String get second;
+
+  /// No description provided for @third.
+  ///
+  /// In en, this message translates to:
+  /// **'Third'**
+  String get third;
+
+  /// No description provided for @th.
+  ///
+  /// In en, this message translates to:
+  /// **'th'**
+  String get th;
+
+  /// No description provided for @selectedDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected days'**
+  String get selectedDays;
+
+  /// No description provided for @pressToSelectDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Press to select days'**
+  String get pressToSelectDays;
+
+  /// No description provided for @chooseMonthAndDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose month and day'**
+  String get chooseMonthAndDay;
+
+  /// No description provided for @addDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Add date'**
+  String get addDate;
+
+  /// No description provided for @editScheduledPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit scheduled payment'**
+  String get editScheduledPayment;
+
+  /// No description provided for @paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get paid;
+
+  /// No description provided for @autoCreateTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-create transaction'**
+  String get autoCreateTransaction;
+
+  /// No description provided for @pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pause;
+
+  /// No description provided for @pay.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay'**
+  String get pay;
+
+  /// No description provided for @typeOfScheduledPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Type of scheduled payment'**
+  String get typeOfScheduledPayment;
+
+  /// No description provided for @createScheduledPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Create scheduled payment'**
+  String get createScheduledPayment;
+
+  /// No description provided for @categoryDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Category deleted'**
+  String get categoryDeleted;
+
+  /// No description provided for @categoryUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Category updated successfully'**
+  String get categoryUpdatedSuccessfully;
+
+  /// No description provided for @categoryCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Category created successfully'**
+  String get categoryCreatedSuccessfully;
+
+  /// No description provided for @updateCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Update category'**
+  String get updateCategory;
+
+  /// No description provided for @categoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Category name'**
+  String get categoryName;
+
+  /// No description provided for @noLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'No limit'**
+  String get noLimit;
+
+  /// No description provided for @monthlyLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly limit'**
+  String get monthlyLimit;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @noCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'No categories'**
+  String get noCategories;
+
+  /// No description provided for @createYourFirstCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first category'**
+  String get createYourFirstCategory;
+
+  /// No description provided for @newCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'New category'**
+  String get newCategory;
+
+  /// No description provided for @icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get icon;
+
+  /// No description provided for @exportSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Export settings'**
+  String get exportSettings;
+
+  /// No description provided for @period.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get period;
+
+  /// No description provided for @month.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get month;
+
+  /// No description provided for @custom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get custom;
+
+  /// No description provided for @selectedColumns.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected columns'**
+  String get selectedColumns;
+
+  /// No description provided for @settingsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved'**
+  String get settingsSaved;
+
+  /// No description provided for @export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get export;
+
+  /// No description provided for @exportFileIsReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Export file is ready'**
+  String get exportFileIsReady;
+
+  /// No description provided for @fileCreatedButShareDialogIsUnavailableOnThisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'File created, but share dialog is unavailable on this device'**
+  String get fileCreatedButShareDialogIsUnavailableOnThisDevice;
+
+  /// No description provided for @noDataForSelectedPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'No data for selected period'**
+  String get noDataForSelectedPeriod;
+
+  /// No description provided for @choosePeriodInExportSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose period in export settings'**
+  String get choosePeriodInExportSettings;
+
+  /// No description provided for @failedToExportData.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to export data'**
+  String get failedToExportData;
+
+  /// No description provided for @unknownError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error'**
+  String get unknownError;
+
+  /// No description provided for @customPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom period'**
+  String get customPeriod;
+
+  /// No description provided for @deepAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep analytics'**
+  String get deepAnalytics;
+
+  /// No description provided for @askAboutYourAnalyticsForThisPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask about your analytics for this period'**
+  String get askAboutYourAnalyticsForThisPeriod;
+
+  /// No description provided for @clearChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear chat'**
+  String get clearChat;
+
+  /// No description provided for @askAboutYourAnalyticsForThisPeriodHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask about your analytics…'**
+  String get askAboutYourAnalyticsForThisPeriodHint;
+
+  /// No description provided for @aiAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'AI assistant'**
+  String get aiAssistant;
+
+  /// No description provided for @spendingChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending chart'**
+  String get spendingChart;
+
+  /// No description provided for @balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get balance;
+
+  /// No description provided for @enterCurrentPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter current PIN'**
+  String get enterCurrentPin;
+
+  /// No description provided for @enterNewPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter new PIN'**
+  String get enterNewPin;
+
+  /// No description provided for @newPinDoesNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'New PIN does not match'**
+  String get newPinDoesNotMatch;
+
+  /// No description provided for @newPinMustBeDifferent.
+  ///
+  /// In en, this message translates to:
+  /// **'New PIN must be different'**
+  String get newPinMustBeDifferent;
+
+  /// No description provided for @invalidCurrentPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid current PIN'**
+  String get invalidCurrentPin;
+
+  /// No description provided for @currentPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Current PIN'**
+  String get currentPin;
+
+  /// No description provided for @newPin.
+  ///
+  /// In en, this message translates to:
+  /// **'New PIN'**
+  String get newPin;
+
+  /// No description provided for @confirmNewPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new PIN'**
+  String get confirmNewPin;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @pinDoesNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN does not match'**
+  String get pinDoesNotMatch;
+
+  /// No description provided for @enterPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter PIN'**
+  String get enterPin;
+
+  /// No description provided for @confirmPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm PIN'**
+  String get confirmPin;
+
+  /// No description provided for @pin.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN'**
+  String get pin;
 }
 
 class _AppLocalizationsDelegate

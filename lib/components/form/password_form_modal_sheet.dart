@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Модальное окно для ввода PIN (для доступа к скрытым кошелькам).
@@ -9,17 +10,18 @@ class PasswordFormModalSheet extends StatefulWidget {
     super.key,
     this.title,
     this.subtitle,
-    this.submitLabel = 'Открыть',
+    this.submitLabel,
     this.isSetMode = false,
-    this.confirmLabel = 'Подтвердить',
+    this.confirmLabel,
     required this.onSubmit,
   });
 
   final String? title;
   final String? subtitle;
-  final String submitLabel;
+  final String? submitLabel;
   final bool isSetMode;
-  final String confirmLabel;
+  final String? confirmLabel;
+
   /// Возвращает true при успехе (модалка закроется), false при ошибке.
   final Future<bool> Function(String password) onSubmit;
 
@@ -28,9 +30,9 @@ class PasswordFormModalSheet extends StatefulWidget {
     BuildContext context, {
     String? title,
     String? subtitle,
-    String submitLabel = 'Открыть',
+    String? submitLabel,
     bool isSetMode = false,
-    String confirmLabel = 'Подтвердить',
+    String? confirmLabel,
     required Future<bool> Function(String password) onSubmit,
   }) {
     return AppBottomSheet.showFittedModalBottomSheet<bool>(
@@ -40,9 +42,9 @@ class PasswordFormModalSheet extends StatefulWidget {
       child: PasswordFormModalSheet(
         title: title,
         subtitle: subtitle,
-        submitLabel: submitLabel,
+        submitLabel: submitLabel ?? context.l10n.open,
         isSetMode: isSetMode,
-        confirmLabel: confirmLabel,
+        confirmLabel: confirmLabel ?? context.l10n.confirm,
         onSubmit: onSubmit,
       ),
     );
@@ -81,12 +83,12 @@ class _PasswordFormModalSheetState extends State<PasswordFormModalSheet> {
 
   Future<void> _submit() async {
     if (_pin.isEmpty) {
-      setState(() => _errorText = 'Введите PIN');
+      setState(() => _errorText = context.l10n.enterPin);
       return;
     }
     if (widget.isSetMode) {
       if (_confirmPin != _pin) {
-        setState(() => _errorText = 'PIN не совпадает');
+        setState(() => _errorText = context.l10n.pinDoesNotMatch);
         return;
       }
     }
@@ -110,21 +112,15 @@ class _PasswordFormModalSheetState extends State<PasswordFormModalSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (widget.title != null) ...[
-            Text(
-              widget.title!,
-              style: AppTextStyles.text20w600(context),
-            ),
+            Text(widget.title!, style: AppTextStyles.text20w600(context)),
             const SizedBox(height: AppSizing.spaceBtwItems),
           ],
           if (widget.subtitle != null) ...[
-            Text(
-              widget.subtitle!,
-              style: AppTextStyles.text16w400(context),
-            ),
+            Text(widget.subtitle!, style: AppTextStyles.text16w400(context)),
             const SizedBox(height: AppSizing.spaceBtwItems),
           ],
           _PinDisplay(
-            label: 'PIN',
+            label: context.l10n.pin,
             value: _pin,
             isFocused: _focusedField == 0,
             onTap: () => setState(() => _focusedField = 0),
@@ -132,7 +128,7 @@ class _PasswordFormModalSheetState extends State<PasswordFormModalSheet> {
           if (widget.isSetMode) ...[
             const SizedBox(height: AppSizing.spaceBtwItems),
             _PinDisplay(
-              label: 'Подтвердите PIN',
+              label: context.l10n.confirmPin,
               value: _confirmPin,
               isFocused: _focusedField == 1,
               onTap: () => setState(() => _focusedField = 1),
@@ -152,7 +148,9 @@ class _PasswordFormModalSheetState extends State<PasswordFormModalSheet> {
           AmountKeyboard(onKeyPressed: _onKeyPressed),
           const SizedBox(height: AppSizing.spaceBtwElements),
           PrimaryButton(
-            text: widget.isSetMode ? widget.confirmLabel : widget.submitLabel,
+            text: widget.isSetMode
+                ? widget.confirmLabel ?? context.l10n.confirm
+                : widget.submitLabel ?? context.l10n.open,
             onPressed: () => _submit(),
             size: PrimaryButtonSize.medium,
           ),
@@ -207,9 +205,9 @@ class _PinDisplay extends StatelessWidget {
             const SizedBox(height: AppSizing.spaceBtwItems),
             Text(
               value.isEmpty ? '—' : '•' * value.length,
-              style: AppTextStyles.text20w600(context).copyWith(
-                letterSpacing: 4,
-              ),
+              style: AppTextStyles.text20w600(
+                context,
+              ).copyWith(letterSpacing: 4),
             ),
           ],
         ),

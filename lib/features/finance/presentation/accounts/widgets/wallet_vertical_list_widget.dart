@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class WalletVerticalListWidget extends StatefulWidget {
@@ -62,7 +63,7 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
         }
 
         if (wallets.isEmpty) {
-          return const Center(child: Text('Кошельков пока нет'));
+          return Center(child: Text(context.l10n.noWallets));
         }
 
         final total = wallets.length + 1;
@@ -78,7 +79,7 @@ class _WalletVerticalListWidgetState extends State<WalletVerticalListWidget> {
             if (index == wallets.length) {
               final colorScheme = Theme.of(context).colorScheme;
               return CategoryCard(
-                title: 'New wallet',
+                title: context.l10n.newWallet,
                 leading: Container(
                   height: AppSizing.heightS,
                   decoration: BoxDecoration(

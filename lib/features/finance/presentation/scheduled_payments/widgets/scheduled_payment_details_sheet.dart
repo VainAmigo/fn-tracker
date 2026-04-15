@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class ScheduledPaymentDetailsSheet extends StatefulWidget {
@@ -92,9 +93,9 @@ class _ScheduledPaymentDetailsSheetState
       mainAxisSize: MainAxisSize.min,
       children: [
               ModalSheetTitleWidget(
-                title: 'Плановый платёж',
+                title: context.l10n.scheduledPayment,
                 action: PrimaryButton(
-                  text: 'Редактировать',
+                  text: context.l10n.edit,
                   onPressed: () {
                     Navigator.of(context).pop();
                     widget.onEdit();
@@ -130,7 +131,7 @@ class _ScheduledPaymentDetailsSheetState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Оплачено',
+                            context.l10n.paid,
                             style: AppTextStyles.text14w400(context).copyWith(
                               fontWeight: FontWeight.w600,
                               color: colorScheme.primary,
@@ -148,7 +149,7 @@ class _ScheduledPaymentDetailsSheetState
               ],
               const SizedBox(height: AppSizing.spaceBtwElements),
               PrimaryButton(
-                text: 'История',
+                text: context.l10n.history,
                 icon: Icons.history,
                 size: PrimaryButtonSize.xSmall,
                 rounded: true,
@@ -164,7 +165,7 @@ class _ScheduledPaymentDetailsSheetState
               ),
               const SizedBox(height: AppSizing.spaceBtwElements),
               _InfoRow(
-                label: 'Автосоздание транзакции',
+                label: context.l10n.autoCreateTransaction,
                 value: widget.payment.autoCreateTransaction ? 'Да' : 'Нет',
               ),
               const SizedBox(height: AppSizing.spaceBtwElements),
@@ -173,7 +174,7 @@ class _ScheduledPaymentDetailsSheetState
                 spacing: AppSizing.spaceBtwItemsExtra,
                 children: [
                   PrimaryButton(
-                    text: 'Приостановить',
+                    text: context.l10n.pause,
                     icon: Icons.pause,
                     iconOnly: true,
                     onPressed: widget.onPause,
@@ -185,7 +186,7 @@ class _ScheduledPaymentDetailsSheetState
                     fullWidth: false,
                   ),
                   PrimaryButton(
-                    text: 'Удалить',
+                    text: context.l10n.delete,
                     onPressed: widget.onDelete,
                     size: PrimaryButtonSize.large,
                     paddingStyle: PrimaryButtonPaddingStyle.slim,
@@ -199,11 +200,11 @@ class _ScheduledPaymentDetailsSheetState
                   Expanded(
                     child: PrimaryButton(
                       text: isPaid
-                          ? 'Повторить'
+                          ? context.l10n.repeat
                           : widget.payment.type ==
                                   ScheduledPaymentType.regularIncome
-                              ? 'Зачислить'
-                              : 'Оплатить',
+                              ? context.l10n.deposit
+                              : context.l10n.pay,
                       size: PrimaryButtonSize.large,
                       onPressed: isPaid
                           ? () {

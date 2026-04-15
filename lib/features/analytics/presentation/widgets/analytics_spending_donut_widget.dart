@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AnalyticsSpendingDonutWidget extends StatelessWidget {
@@ -52,7 +53,7 @@ class AnalyticsSpendingDonutWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'SPENT',
+              context.l10n.spent,
               style: AppTextStyles.text12w400(
                 context,
               ).copyWith(color: colorScheme.onSurface.withValues(alpha: 0.6)),

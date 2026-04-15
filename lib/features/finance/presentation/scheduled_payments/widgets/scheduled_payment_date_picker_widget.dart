@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/finance/data/models/scheduled_payment_model.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Виджет выбора даты/дня в зависимости от частоты платежа.
@@ -166,7 +167,7 @@ class _ScheduledPaymentDatePickerWidgetState
               widget.frequency == ScheduledPaymentFrequency.oneTime) ...[
             const SizedBox(height: AppSizing.spaceBtwSections),
             PrimaryButton(
-              text: 'Done',
+              text: context.l10n.done,
               onPressed: widget.frequency == ScheduledPaymentFrequency.oneTime
                   ? _onDaySave
                   : _onMultiSelectDone,
@@ -181,25 +182,28 @@ class _ScheduledPaymentDatePickerWidgetState
 
   String _sheetTitle(BuildContext context) {
     return switch (widget.frequency) {
-      ScheduledPaymentFrequency.oneTime => 'Единожды',
+      ScheduledPaymentFrequency.oneTime => context.l10n.once,
       ScheduledPaymentFrequency.monthly =>
-        _isMultiSelect ? 'Days of month' : 'Day of month',
+        _isMultiSelect ? context.l10n.daysOfMonth : context.l10n.dayOfMonth,
       ScheduledPaymentFrequency.yearly =>
-        _isMultiSelect ? 'Payment dates in year' : 'Date (month & day)',
+        _isMultiSelect
+            ? context.l10n.paymentDatesInYear
+            : context.l10n.dateMonthDay,
     };
   }
 
   String _sheetSubtitle(BuildContext context) {
     return switch (widget.frequency) {
-      ScheduledPaymentFrequency.oneTime => 'Выберите дату для одноразового платежа',
+      ScheduledPaymentFrequency.oneTime =>
+        context.l10n.selectDateForOneTimePayment,
       ScheduledPaymentFrequency.monthly =>
         _isMultiSelect
-            ? 'Payment will be made on selected days of month every month'
-            : 'Payment will be made on selected day of month every month',
+            ? context.l10n.paymentWillBeMadeOnSelectedDaysOfMonthEveryMonth
+            : context.l10n.paymentWillBeMadeOnSelectedDayOfMonthEveryMonth,
       ScheduledPaymentFrequency.yearly =>
         _isMultiSelect
-            ? 'Payment will be made on selected dates every year'
-            : 'Payment will be made on selected date (month & day) every year',
+            ? context.l10n.paymentWillBeMadeOnSelectedDatesEveryYear
+            : context.l10n.paymentWillBeMadeOnSelectedDateMonthDayEveryYear,
     };
   }
 
@@ -271,13 +275,13 @@ class _ScheduledPaymentDatePickerWidgetState
     return page < 28 ? page + 1 : _endOfMonthDay;
   }
 
-  static String _monthDayLabel(int day) {
-    if (day == _endOfMonthDay) return 'End of month';
+  String _monthDayLabel(int day, BuildContext context) {
+    if (day == _endOfMonthDay) return context.l10n.endOfMonth;
     return switch (day) {
-      1 => '1st',
-      2 => '2nd',
-      3 => '3rd',
-      _ => '${day}th',
+      1 => context.l10n.first,
+      2 => context.l10n.second,
+      3 => context.l10n.third,
+      _ => '$day${context.l10n.th}',
     };
   }
 
@@ -291,15 +295,15 @@ class _ScheduledPaymentDatePickerWidgetState
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Day of each month',
+          context.l10n.dayOfMonth,
           style: AppTextStyles.text14w400(
             context,
           ).copyWith(color: colorScheme.onSurfaceVariant),
         ),
         Text(
           _selectedMonthDays.isNotEmpty
-              ? 'Selected days: ${_selectedMonthDays.map(_monthDayLabel).join(', ')}'
-              : 'Press to select days',
+              ? '${context.l10n.selectedDays}: ${_selectedMonthDays.map((d) => _monthDayLabel(d, context)).join(', ')}'
+              : context.l10n.pressToSelectDays,
           style: AppTextStyles.text14w400(context),
         ),
         const SizedBox(height: AppSizing.spaceBtwItems),
@@ -350,7 +354,7 @@ class _ScheduledPaymentDatePickerWidgetState
                               ? colorScheme.onSurface
                               : colorScheme.onSecondary),
                   ),
-                  child: Center(child: Text(_monthDayLabel(day))),
+                  child: Center(child: Text(_monthDayLabel(day, context))),
                 ),
               );
             },
@@ -366,7 +370,7 @@ class _ScheduledPaymentDatePickerWidgetState
     }
     final ref = widget.initialDate ?? DateTime.now();
     return PrimaryButton(
-      text: 'Choose month and day',
+      text: context.l10n.chooseMonthAndDay,
       onPressed: () async {
         final now = DateTime.now();
         final initial = DateTime(now.year, ref.month, ref.day.clamp(1, 28));
@@ -401,7 +405,7 @@ class _ScheduledPaymentDatePickerWidgetState
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Repeat on selected dates every year',
+          context.l10n.paymentWillBeMadeOnSelectedDatesEveryYear,
           style: AppTextStyles.text14w400(
             context,
           ).copyWith(color: colorScheme.onSurfaceVariant),
@@ -420,7 +424,7 @@ class _ScheduledPaymentDatePickerWidgetState
               );
               if (index == _selectedYearlyDates.length) {
                 return FormCardWidget(
-                  title: 'Add date',
+                  title: context.l10n.addDate,
                   icon: Icon(
                     Icons.add,
                     size: AppSizing.iconSizeM,

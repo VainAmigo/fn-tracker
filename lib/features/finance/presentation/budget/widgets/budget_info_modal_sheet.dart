@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Модалка с информацией о бюджете и вариантах добавления.
@@ -30,18 +31,17 @@ class BudgetInfoModalSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ModalSheetTitleWidget(title: 'About budget'),
+          ModalSheetTitleWidget(title: context.l10n.aboutBudget),
           const SizedBox(height: AppSizing.spaceBtwElements),
           Text(
-            'Budget is a monthly spending limit. You can track how much you spend '
-            'against it and add new amounts when your budget changes.',
+            context.l10n.budgetDescription,
             style: AppTextStyles.text14w400(context).copyWith(
               color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           Text(
-            'Add options',
+            context.l10n.addOptions,
             style: AppTextStyles.text14w400(context).copyWith(
               fontWeight: FontWeight.w600,
               color: colorScheme.onSurface,
@@ -49,18 +49,16 @@ class BudgetInfoModalSheet extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),
           BudgetInfoTile(
-            title: 'Replace all',
+            title: context.l10n.replaceAll,
             description:
-                'Replaces all budget history with the new amount. Use when you '
-                'want to reset your budget completely.',
+                context.l10n.replaceAllDescription,
             icon: Icons.refresh,
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),
           BudgetInfoTile(
-            title: 'From date',
+            title: context.l10n.fromDate,
             description:
-                'Adds a new budget amount effective from a specific date. '
-                'Previous entries remain in history.',
+                context.l10n.fromDateDescription,
             icon: Icons.calendar_today,
           ),
         ],

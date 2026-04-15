@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class GoalFormView extends StatefulWidget {
@@ -106,8 +107,8 @@ class _GoalFormViewState extends State<GoalFormView> {
             SnackBar(
               content: Text(
                 _isEditing
-                    ? 'Goal updated successfully'
-                    : 'Goal created successfully',
+                    ? context.l10n.goalUpdatedSuccessfully
+                    : context.l10n.goalCreatedSuccessfully,
               ),
             ),
           );
@@ -125,7 +126,7 @@ class _GoalFormViewState extends State<GoalFormView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_isEditing ? 'Update Goal' : 'Create Goal'),
+          title: Text(_isEditing ? context.l10n.updateGoal : context.l10n.createGoal),
           scrolledUnderElevation: 0,
         ),
         body: SafeArea(
@@ -145,15 +146,14 @@ class _GoalFormViewState extends State<GoalFormView> {
                         const SizedBox(height: AppSizing.spaceBtwElements),
                         _buildPreview(context),
                         CustomTextFormField(
-                          label: 'Goal name',
-                          hintText: 'e.g. Trip to Bali',
+                          label: context.l10n.goalName,
                           controller: _nameController,
                         ),
                         FormCardWidget(
                           title: _targetAmount != null
                               ? AmountFormatter.format(_targetAmount!)
-                              : 'Target amount',
-                          subtitle: 'How much do you want to save?',
+                              : context.l10n.targetAmount,
+                          subtitle: context.l10n.howMuchDoYouWantToSave,
                           icon: Icon(
                             Icons.attach_money,
                             size: AppSizing.iconSizeM,
@@ -164,7 +164,7 @@ class _GoalFormViewState extends State<GoalFormView> {
                             initialAmount: _targetAmount,
                             onSave: (amount) =>
                                 setState(() => _targetAmount = amount),
-                            saveLabel: 'Save',
+                            saveLabel: context.l10n.save,
                           ),
                         ),
                         if (_isEditing) _buildProgressInfo(context),
@@ -187,7 +187,7 @@ class _GoalFormViewState extends State<GoalFormView> {
                 ),
                 const SizedBox(height: AppSizing.spaceBtwElements),
                 PrimaryButton(
-                  text: _isEditing ? 'Update' : 'Create',
+                  text: _isEditing ? context.l10n.updateGoal : context.l10n.createGoal,
                   onPressed: isLoading ? null : _submitGoal,
                   isLoading: isLoading,
                 ),
@@ -231,7 +231,7 @@ class _GoalFormViewState extends State<GoalFormView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Progress', style: AppTextStyles.text14w400(context)),
+        Text(context.l10n.progress, style: AppTextStyles.text14w400(context)),
         const SizedBox(height: AppSizing.spaceBtwElements),
         LinearProgressIndicator(
           value: percent / 100,
@@ -249,7 +249,7 @@ class _GoalFormViewState extends State<GoalFormView> {
               styel: AppTextStyles.text14w400(context),
             ),
             Text(
-              'Remaining: \$${remaining.toStringAsFixed(0)}',
+              '${context.l10n.remaining}: \$${remaining.toStringAsFixed(0)}',
               style: AppTextStyles.text14w400(context),
             ),
           ],
@@ -265,13 +265,13 @@ class _GoalFormViewState extends State<GoalFormView> {
     if (name.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Name is required')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.nameIsRequired)));
       return;
     }
 
     if (targetAmount == null || targetAmount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid target amount')),
+        SnackBar(content: Text(context.l10n.enterValidTargetAmount)),
       );
       return;
     }

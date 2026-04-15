@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class WalletDetailsModalSheetWidget extends StatelessWidget {
@@ -31,9 +32,9 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ModalSheetTitleWidget(
-            title: 'Wallet details',
+            title: context.l10n.walletDetails,
             action: PrimaryButton(
-              text: 'Edit',
+              text: context.l10n.edit,
               onPressed: onEdit,
               size: PrimaryButtonSize.xSmall,
               rounded: true,
@@ -49,7 +50,7 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
           const SizedBox(height: AppSizing.spaceBtwItems),
           SwitchListTile(
             title: Text(
-              'Скрыть сумму',
+              context.l10n.hideAmount,
               style: AppTextStyles.text16w400(context),
             ),
             value: wallet.hideAmount,
@@ -57,11 +58,11 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
           ),
           SwitchListTile(
             title: Text(
-              'Скрыть кошелёк',
+              context.l10n.hideWallet,
               style: AppTextStyles.text16w400(context),
             ),
             subtitle: Text(
-              'Будет виден только в блоке «Скрытые карточки»',
+              context.l10n.hideWalletSubtitle,
               style: AppTextStyles.text14w400(context),
             ),
             value: wallet.isHidden,
@@ -69,7 +70,7 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           PrimaryButton(
-            text: 'History',
+            text: context.l10n.history,
             icon: Icons.history,
             size: PrimaryButtonSize.xSmall,
             rounded: true,
@@ -100,7 +101,7 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
                   }
                 },
                 child: PrimaryButton(
-                  text: 'Delete',
+                  text: context.l10n.delete,
                   icon: Icons.delete,
                   iconOnly: true,
                   fullWidth: false,
@@ -110,9 +111,9 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
                   onPressed: () async {
                     final result = await showDeleteEntityDialog(
                       context,
-                      title: 'Удалить кошелёк?',
+                      title: context.l10n.deleteWalletTitle,
                       message:
-                          'Удалить кошелёк «${wallet.name}»? Выберите способ удаления.',
+                          '${context.l10n.deleteWalletMessage} «${wallet.name}»? ${context.l10n.deleteWalletMessageHint}',
                     );
                     if (!context.mounted || result == null || result == DeleteEntityResult.cancel) return;
                     context.read<WalletCubit>().deleteWallet(
@@ -125,7 +126,7 @@ class WalletDetailsModalSheetWidget extends StatelessWidget {
               ),
               Flexible(
                 child: PrimaryButton(
-                  text: 'Deposit',
+                  text: context.l10n.deposit,
                   icon: Icons.add,
                   size: PrimaryButtonSize.large,
                   rounded: true,

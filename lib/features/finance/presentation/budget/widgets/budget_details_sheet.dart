@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Bottom sheet с деталями бюджета, историей изменений и кнопками Edit/Delete.
@@ -54,7 +55,7 @@ class BudgetDetailsSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ModalSheetTitleWidget(title: 'Budget details'),
+          ModalSheetTitleWidget(title: context.l10n.budgetDetails),
           const SizedBox(height: AppSizing.spaceBtwItems),
           _BudgetHistoryList(
             budgetId: budget.id,
@@ -80,7 +81,7 @@ class BudgetDetailsSheet extends StatelessWidget {
                   }
                 },
                 child: PrimaryButton(
-                  text: 'Delete',
+                  text: context.l10n.delete,
                   icon: Icons.delete,
                   iconOnly: true,
                   fullWidth: false,
@@ -92,8 +93,8 @@ class BudgetDetailsSheet extends StatelessWidget {
                   onPressed: () async {
                     final result = await showDeleteEntityDialog(
                       context,
-                      title: 'Delete budget?',
-                      message: 'Are you sure you want to delete this budget?',
+                      title: context.l10n.deleteBudget,
+                      message: context.l10n.deleteBudgetConfirmation,
                     );
                     if (!context.mounted ||
                         result == null ||
@@ -106,7 +107,7 @@ class BudgetDetailsSheet extends StatelessWidget {
               ),
               Expanded(
                 child: PrimaryButton(
-                  text: 'Edit budget',
+                  text: context.l10n.editBudget,
                   icon: Icons.edit,
                   size: PrimaryButtonSize.large,
                   rounded: true,
@@ -144,7 +145,7 @@ class _BudgetHistoryList extends StatelessWidget {
       children: [
         if (sorted.isEmpty)
           Text(
-            'No history entries',
+            context.l10n.noHistoryEntries,
             style: AppTextStyles.text14w400(
               context,
             ).copyWith(color: colorScheme.onSurface),
@@ -165,7 +166,7 @@ class _BudgetHistoryList extends StatelessWidget {
     BudgetHistoryEntryFormSheet.show(
       context,
       entry: entry,
-      title: 'Edit history entry',
+      title: context.l10n.editHistoryEntry,
       onSave: (amount, effectiveDayKey) {
         context.read<BudgetCubit>().updateBudgetHistoryEntry(
           budgetId: budgetId,
@@ -184,18 +185,18 @@ class _BudgetHistoryList extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete history entry?'),
+        title: Text(context.l10n.deleteHistoryEntry),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(ctx).colorScheme.error,
             ),
-            child: const Text('Delete'),
+            child: Text(context.l10n.delete),
           ),
         ],
       ),
@@ -253,12 +254,12 @@ class _HistoryEntryTile extends StatelessWidget {
             IconButton(
               onPressed: onEdit,
               icon: Icon(Icons.edit, size: 20, color: colorScheme.onSecondary),
-              tooltip: 'Edit',
+              tooltip: context.l10n.edit,
             ),
             IconButton(
               onPressed: onDelete,
               icon: Icon(Icons.delete, size: 20, color: colorScheme.error),
-              tooltip: 'Delete',
+              tooltip: context.l10n.delete,
             ),
           ],
         ),

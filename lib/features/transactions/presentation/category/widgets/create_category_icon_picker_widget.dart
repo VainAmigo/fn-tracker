@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class CreateCategoryIconPickerWidget extends StatefulWidget {
@@ -46,7 +47,7 @@ class _CreateCategoryIconPickerWidgetState
     final group = categoryIconGroups[_selectedGroupIndex];
 
     return TitledSection(
-      title: 'Icon',
+      title: context.l10n.icon,
       children: [
         _buildGroupSelector(),
         const SizedBox(height: AppSizing.spaceBtwElements),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -11,20 +12,20 @@ class BudgetHistoryEntryFormSheet extends StatefulWidget {
     super.key,
     this.entry,
     this.onSave,
-    this.saveLabel = 'Save',
+    this.saveLabel,
     this.title,
   });
 
   final BudgetHistoryEntry? entry;
   final void Function(double amount, String effectiveDayKey)? onSave;
-  final String saveLabel;
+  final String? saveLabel;
   final String? title;
 
   static Future<void> show(
     BuildContext context, {
     BudgetHistoryEntry? entry,
     void Function(double amount, String effectiveDayKey)? onSave,
-    String saveLabel = 'Save',
+    String? saveLabel,
     String? title,
   }) {
     return AppBottomSheet.showFittedModalBottomSheet<void>(
@@ -34,7 +35,7 @@ class BudgetHistoryEntryFormSheet extends StatefulWidget {
       child: BudgetHistoryEntryFormSheet(
         entry: entry,
         onSave: onSave,
-        saveLabel: saveLabel,
+        saveLabel: saveLabel ?? context.l10n.save,
         title: title,
       ),
     );
@@ -82,7 +83,7 @@ class _BudgetHistoryEntryFormSheetState
           ],
           FormCardWidget(
             title: _effectiveDate.dayKey,
-            subtitle: 'Effective from',
+            subtitle: context.l10n.effectiveFrom,
             trailing: Icon(
               Icons.calendar_today,
               size: AppSizing.iconSizeS,
@@ -109,7 +110,7 @@ class _BudgetHistoryEntryFormSheetState
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),
           PrimaryButton(
-            text: widget.saveLabel,
+            text: widget.saveLabel ?? context.l10n.save,
             onPressed: () {
               final parsed = AmountFormUtils.parseAmount(_amountText);
               if (parsed == null || parsed <= 0) return;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/components/segmented/custom_tab_widget.dart';
 import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 /// Режим пикера: год / месяц / неделя.
@@ -327,9 +328,9 @@ class _MonthPickerScrollWidgetState extends State<MonthPickerScrollWidget> {
                   selectedValue: _mode,
                   onChanged: _onModeChanged,
                   labelBuilder: (mode) => switch (mode) {
-                    PickerMode.yearly => 'Yearly',
-                    PickerMode.monthly => 'Monthly',
-                    PickerMode.weekly => 'Weekly',
+                    PickerMode.yearly => context.l10n.yearly,
+                    PickerMode.monthly => context.l10n.monthly,
+                    PickerMode.weekly => context.l10n.weekly,
                   },
                   leftPadding: 0,
                 ),

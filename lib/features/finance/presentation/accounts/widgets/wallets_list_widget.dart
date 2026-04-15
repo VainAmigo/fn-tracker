@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class WalletsListWidget extends StatefulWidget {
@@ -36,9 +37,9 @@ class _WalletsListWidgetState extends State<WalletsListWidget> {
         return switch (state) {
           WalletsInitial() => const SizedBox.shrink(),
           WalletsLoading() => const Center(child: CircularProgressIndicator()),
-          WalletsEmpty() => const EmptyCardWidget(
-            title: 'No wallets',
-            subtitle: 'Create your first wallet',
+          WalletsEmpty() => EmptyCardWidget(
+            title: context.l10n.noWallets,
+            subtitle: context.l10n.createYourFirstWallet,
           ),
           WalletsLoaded() => _Body(
             wallets: state.wallets,
@@ -135,13 +136,13 @@ class _HiddenCardsPlaceholder extends StatelessWidget {
           ),
           const SizedBox(height: AppSizing.spaceBtwItems),
           Text(
-            'Скрытые карточки',
+            context.l10n.hiddenCards,
             style: AppTextStyles.text20w600(context),
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
           Text(
-            '$count ${_pluralize(count)}',
+            '$count ${_pluralize(count, context)}',
             style: AppTextStyles.text16w400(context),
           ),
         ],
@@ -149,11 +150,11 @@ class _HiddenCardsPlaceholder extends StatelessWidget {
     );
   }
 
-  String _pluralize(int n) {
-    if (n % 10 == 1 && n % 100 != 11) return 'карточка';
+  String _pluralize(int n, BuildContext context) {
+    if (n % 10 == 1 && n % 100 != 11) return context.l10n.card;
     if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) {
-      return 'карточки';
+      return context.l10n.cards;
     }
-    return 'карточек';
+    return context.l10n.cards;
   }
 }

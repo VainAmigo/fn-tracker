@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 import 'package:fn_tracker/features/finance/data/models/scheduled_payment_model.dart';
 
@@ -86,7 +87,7 @@ class ScheduledPaymentCard extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                       Text(
-                        _formatFrequency(payment),
+                        _formatFrequency(payment, context),
                         style: AppTextStyles.text12w400(context),
                       ),
                     ],
@@ -109,13 +110,13 @@ class ScheduledPaymentCard extends StatelessWidget {
                 const SizedBox(width: AppSizing.spaceBtwItemsExtra),
                 // Цветовая индикация срочности — подсветка карточки, если платёж сегодня/завтра (например, оранжевый/красный акцент).
                 Text(
-                  'Следующий платёж: ${payment.nextDate.formatDotDate}',
+                  '${context.l10n.nextPayment}: ${payment.nextDate.formatDotDate}',
                   style: AppTextStyles.text12w400(context),
                 ),
                 const Spacer(),
                 if (payment.isPaused)
                   Text(
-                    'Приостановлено',
+                    context.l10n.paused,
                     style: AppTextStyles.text12w400(context).copyWith(
                       color: colorScheme.onSecondary,
                     ),
@@ -128,14 +129,14 @@ class ScheduledPaymentCard extends StatelessWidget {
     );
   }
 
-  String _formatFrequency(ScheduledPaymentModel p) {
+  String _formatFrequency(ScheduledPaymentModel p, dynamic context) {
     switch (p.frequency) {
       case ScheduledPaymentFrequency.oneTime:
-        return 'Единожды';
+        return context.l10n.once;
       case ScheduledPaymentFrequency.monthly:
-        return 'Ежемесячно';
+        return context.l10n.monthly;
       case ScheduledPaymentFrequency.yearly:
-        return 'Ежегодно';
+        return context.l10n.yearly;
     }
   }
 }

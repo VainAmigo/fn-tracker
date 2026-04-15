@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
-import 'package:fn_tracker/core/utils/date_keys_extention.dart';
-import 'package:fn_tracker/core/utils/expression_evaluator.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AddTransactionView extends StatefulWidget {
@@ -67,29 +66,29 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     }
   }
 
-  static const _segments = [
-    SegmentItem<TransactionType>(
-      value: TransactionType.expense,
-      label: 'Expense',
-      icon: Icons.arrow_downward,
-    ),
-    SegmentItem<TransactionType>(
-      value: TransactionType.transfer,
-      label: 'Transfer',
-      icon: Icons.swap_horiz,
-    ),
-    SegmentItem<TransactionType>(
-      value: TransactionType.income,
-      label: 'Income',
-      icon: Icons.arrow_upward,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final currency = context.watch<CurrencyProvider>().currency;
     final txState = context.watch<AddTransactionCubit>().state;
     final isSaving = txState is AddTransactionCreating;
+    final l10n = context.l10n;
+    final segments = [
+      SegmentItem<TransactionType>(
+        value: TransactionType.expense,
+        label: l10n.expense,
+        icon: Icons.arrow_downward,
+      ),
+      SegmentItem<TransactionType>(
+        value: TransactionType.transfer,
+        label: l10n.transfer,
+        icon: Icons.swap_horiz,
+      ),
+      SegmentItem<TransactionType>(
+        value: TransactionType.income,
+        label: l10n.income,
+        icon: Icons.arrow_upward,
+      ),
+    ];
 
     return BlocListener<AddTransactionCubit, AddTransactionState>(
       listener: (context, state) {
@@ -105,7 +104,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Add Transaction')),
+        appBar: AppBar(title: Text(context.l10n.addTransaction)),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -115,7 +114,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SegmentedControl<TransactionType>(
-                  segments: _segments,
+                  segments: segments,
                   height: AppSizing.heightM,
                   selectedValue: _selectedType,
                   onChanged: (value) => setState(() {
@@ -207,7 +206,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                   children: [
                     Expanded(
                       child: PrimaryButton(
-                        text: 'Save',
+                        text: context.l10n.save,
                         size: PrimaryButtonSize.medium,
                         rounded: true,
                         isLoading: isSaving,
@@ -216,7 +215,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                       ),
                     ),
                     PrimaryButton(
-                      text: 'AI',
+                      text: '',
                       size: PrimaryButtonSize.medium,
                       rounded: true,
                       fullWidth: false,
@@ -288,24 +287,24 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   }
 
   String? _validateInputs() {
-    if (_amount.isEmpty) return 'Amount cannot be empty';
-    if (_effectiveAmount <= 0) return 'Amount must be greater than zero';
+    if (_amount.isEmpty) return context.l10n.amountCannotBeEmpty;
+    if (_effectiveAmount <= 0) return context.l10n.amountMustBeGreaterThanZero;
     if (_selectedType == TransactionType.transfer) {
       final from = _selectedWalletFrom != null || _selectedGoalFrom != null;
       final to = _selectedWalletTo != null || _selectedGoalTo != null;
-      if (!from || !to) return 'Select both source and destination accounts';
+      if (!from || !to) return context.l10n.selectBothSourceAndDestinationAccounts;
       final fromId = _selectedWalletFrom?.id ?? _selectedGoalFrom?.id;
       final toId = _selectedWalletTo?.id ?? _selectedGoalTo?.id;
-      if (fromId == toId) return 'Source and destination must be different';
+      if (fromId == toId) return context.l10n.sourceAndDestinationMustBeDifferent;
     } else {
       if (_selectedWallet == null && _selectedGoal == null) {
-        return 'Select a wallet or goal';
+        return context.l10n.selectWalletOrGoal;
       }
     }
     if (_selectedType == TransactionType.expense &&
         _selectedCategory == null &&
         _selectedGoal == null) {
-      return 'Category cannot be empty';
+      return context.l10n.categoryCannotBeEmpty;
     }
     return null;
   }

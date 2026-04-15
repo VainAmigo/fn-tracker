@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 
 class AddTransactionCategorySheetWidget extends StatelessWidget {
@@ -19,7 +20,7 @@ class AddTransactionCategorySheetWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ModalSheetTitleWidget(title: 'Choose category'),
+          ModalSheetTitleWidget(title: context.l10n.chooseCategory),
           const SizedBox(height: AppSizing.spaceBtwElements),
 
           Flexible(
