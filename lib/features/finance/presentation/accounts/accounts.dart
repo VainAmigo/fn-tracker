@@ -6,6 +6,7 @@ export 'widgets/wallet_vertical_list_widget.dart';
 export 'widgets/wallets_list_widget.dart';
 export 'widgets/goal_card_widget.dart';
 export 'widgets/goal_total_card_widget.dart';
+export 'widgets/goal_ai_advice_section_widget.dart';
 export 'widgets/goal_list_with_total_widget.dart';
 export 'widgets/goals_list_widget.dart';
 export 'widgets/goal_details_modal_sheet_widget.dart';

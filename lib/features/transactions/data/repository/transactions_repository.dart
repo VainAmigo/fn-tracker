@@ -1,6 +1,8 @@
 import 'package:fn_tracker/features/transactions/data/models/transaction_model.dart';
 
 abstract class TransactionsRepository {
+  Future<List<TransactionModel>> getAllUserTransactions();
+
   Future<List<TransactionModel>> getUserTransactionsByPeriod({
     required String start,
     required String end,

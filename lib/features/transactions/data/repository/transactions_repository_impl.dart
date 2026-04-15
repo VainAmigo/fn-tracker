@@ -14,6 +14,26 @@ class TransactionsRepositoryImpl
       FirestorePaths.transactionsRef(firebaseFirestore, uid);
 
   @override
+  Future<List<TransactionModel>> getAllUserTransactions() async {
+    final uid = requireUid();
+    return FirebaseLogger.withLogging<List<TransactionModel>>(
+      'Firestore.getAllUserTransactions',
+      {},
+      () async {
+        final snapshot = await _transactionsRef(
+          uid,
+        ).orderBy('createdAt', descending: true).get();
+        return snapshot.docs
+            .map((doc) => TransactionModel.fromJson(doc.data()))
+            .toList();
+      },
+      serializeResponse: (t) => {'count': t.length},
+    ).catchError(
+      (e) => throw Exception('Failed to fetch all transactions: $e'),
+    );
+  }
+
+  @override
   Future<List<TransactionModel>> getUserTransactionsByPeriod({
     required String start,
     required String end,
@@ -170,8 +190,9 @@ class TransactionsRepositoryImpl
         }
       },
       serializeResponse: (_) => {'ok': true},
-    ).catchError((e) =>
-        throw Exception('Failed to delete transactions by wallet: $e'));
+    ).catchError(
+      (e) => throw Exception('Failed to delete transactions by wallet: $e'),
+    );
   }
 
   @override
@@ -212,8 +233,9 @@ class TransactionsRepositoryImpl
         }
       },
       serializeResponse: (_) => {'ok': true},
-    ).catchError((e) =>
-        throw Exception('Failed to delete transactions by goal: $e'));
+    ).catchError(
+      (e) => throw Exception('Failed to delete transactions by goal: $e'),
+    );
   }
 
   @override
@@ -241,8 +263,9 @@ class TransactionsRepositoryImpl
         }
       },
       serializeResponse: (_) => {'ok': true},
-    ).catchError((e) =>
-        throw Exception('Failed to delete transactions by category: $e'));
+    ).catchError(
+      (e) => throw Exception('Failed to delete transactions by category: $e'),
+    );
   }
 
   @override

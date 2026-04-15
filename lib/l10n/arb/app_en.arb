@@ -755,6 +755,28 @@
   "@enterPin": {},
   "confirmPin": "Confirm PIN",
   "@confirmPin": {},
+  "aiGoalAdviceTitle": "AI savings advice",
+  "@aiGoalAdviceTitle": {},
+  "aiGoalAdviceSingleGoalHint": "Ask how to save faster for this goal based on your real data.",
+  "@aiGoalAdviceSingleGoalHint": {},
+  "aiGoalAdviceAllGoalsHint": "Ask for advice on how to optimize savings across all your goals.",
+  "@aiGoalAdviceAllGoalsHint": {},
+  "aiGoalAdviceQuestionHint": "For example: what should I cut first to reach the goal faster?",
+  "@aiGoalAdviceQuestionHint": {},
+  "aiGoalAdviceAsk": "Get advice",
+  "@aiGoalAdviceAsk": {},
+  "aiGoalAdviceTotalAsk": "AI tips for all goals",
+  "@aiGoalAdviceTotalAsk": {},
+  "aiGoalAdviceTotalTitle": "AI tips for all goals",
+  "@aiGoalAdviceTotalTitle": {},
+  "aiGoalAdviceDefaultQuestionAll": "Analyze all my goals, wallets, categories, and transactions. Give a short plan: which goals to prioritize, what spending to reduce first, and how to speed up my savings overall.",
+  "@aiGoalAdviceDefaultQuestionAll": {},
+  "aiGoalAdviceDefaultQuestionSingle": "Analyze all my data and give practical advice on how to reach the goal \"{goalName}\" faster: where to cut spending first and how much I should top up regularly.",
+  "@aiGoalAdviceDefaultQuestionSingle": {
+    "placeholders": {
+      "goalName": {}
+    }
+  },
   "pin": "PIN",
   "@pin": {}
 }

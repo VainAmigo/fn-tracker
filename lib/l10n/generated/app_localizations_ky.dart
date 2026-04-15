@@ -573,7 +573,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get upTo5Words => '5 сөзгө чейин';
 
   @override
-  String get yourFinancesAndSavings => 'Финанстар жана үнөмдөөлөрүңүз';
+  String get yourFinancesAndSavings => 'Финанстар жана чогултууларыңыз';
 
   @override
   String get budget => 'Бюджет';
@@ -1171,6 +1171,39 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get confirmPin => 'PINди тастыктаңыз';
+
+  @override
+  String get aiGoalAdviceTitle => 'ИИ топтоо кеңештери';
+
+  @override
+  String get aiGoalAdviceSingleGoalHint =>
+      'Өз маалыматтарыңызга таянып ушул максатка тезирээк топтоо жолун сураңыз.';
+
+  @override
+  String get aiGoalAdviceAllGoalsHint =>
+      'Бардык максаттар боюнча топтоону кантип жакшыраак бөлүштүрүүнү сураңыз.';
+
+  @override
+  String get aiGoalAdviceQuestionHint =>
+      'Мисалы: максатка тез жетүү үчүн эмнени биринчи кыскартсам болот?';
+
+  @override
+  String get aiGoalAdviceAsk => 'Кеңеш алуу';
+
+  @override
+  String get aiGoalAdviceTotalAsk => 'Бардык максаттар боюнча ИИ кеңештер';
+
+  @override
+  String get aiGoalAdviceTotalTitle => 'Бардык максаттар боюнча ИИ кеңештер';
+
+  @override
+  String get aiGoalAdviceDefaultQuestionAll =>
+      'Бардык максаттарымды, капчыктарымды, категорияларымды жана транзакцияларымды талдап бер. Кыска план бер: кайсы максаттарды артыкчылыкка коюу керек, кайсы чыгымдарды биринчи кыскартуу керек жана жалпы топтоону кантип ылдамдатсам болот.';
+
+  @override
+  String aiGoalAdviceDefaultQuestionSingle(Object goalName) {
+    return 'Бардык маалыматтарымды талдап, \"$goalName\" максатына тезирээк жетүү үчүн практикалык кеңеш бер: кайсы чыгымдарды биринчи кыскартуу керек жана канча өлчөмдө туруктуу топтоп туруу керек.';
+  }
 
   @override
   String get pin => 'PIN';

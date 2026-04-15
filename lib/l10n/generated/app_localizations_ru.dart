@@ -1170,5 +1170,38 @@ class AppLocalizationsRu extends AppLocalizations {
   String get confirmPin => 'Подтвердите PIN';
 
   @override
+  String get aiGoalAdviceTitle => 'ИИ-советы по накоплению';
+
+  @override
+  String get aiGoalAdviceSingleGoalHint =>
+      'Спросите, как быстрее накопить именно на эту цель на основе ваших данных.';
+
+  @override
+  String get aiGoalAdviceAllGoalsHint =>
+      'Спросите, как лучше распределить накопления между всеми целями.';
+
+  @override
+  String get aiGoalAdviceQuestionHint =>
+      'Например: что сократить в первую очередь, чтобы быстрее закрыть цель?';
+
+  @override
+  String get aiGoalAdviceAsk => 'Получить совет';
+
+  @override
+  String get aiGoalAdviceTotalAsk => 'ИИ-советы по всем целям';
+
+  @override
+  String get aiGoalAdviceTotalTitle => 'ИИ-советы по всем целям';
+
+  @override
+  String get aiGoalAdviceDefaultQuestionAll =>
+      'Проанализируй все мои цели, кошельки, категории и транзакции. Дай короткий план: какие цели приоритизировать, какие траты сократить в первую очередь и как ускорить накопления в целом.';
+
+  @override
+  String aiGoalAdviceDefaultQuestionSingle(Object goalName) {
+    return 'Проанализируй все мои данные и дай практичные советы, как быстрее закрыть цель \"$goalName\": какие траты сокращать в первую очередь и сколько регулярно откладывать.';
+  }
+
+  @override
   String get pin => 'PIN';
 }

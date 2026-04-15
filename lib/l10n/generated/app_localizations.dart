@@ -2344,6 +2344,60 @@ abstract class AppLocalizations {
   /// **'Confirm PIN'**
   String get confirmPin;
 
+  /// No description provided for @aiGoalAdviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI savings advice'**
+  String get aiGoalAdviceTitle;
+
+  /// No description provided for @aiGoalAdviceSingleGoalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask how to save faster for this goal based on your real data.'**
+  String get aiGoalAdviceSingleGoalHint;
+
+  /// No description provided for @aiGoalAdviceAllGoalsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for advice on how to optimize savings across all your goals.'**
+  String get aiGoalAdviceAllGoalsHint;
+
+  /// No description provided for @aiGoalAdviceQuestionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For example: what should I cut first to reach the goal faster?'**
+  String get aiGoalAdviceQuestionHint;
+
+  /// No description provided for @aiGoalAdviceAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Get advice'**
+  String get aiGoalAdviceAsk;
+
+  /// No description provided for @aiGoalAdviceTotalAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'AI tips for all goals'**
+  String get aiGoalAdviceTotalAsk;
+
+  /// No description provided for @aiGoalAdviceTotalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI tips for all goals'**
+  String get aiGoalAdviceTotalTitle;
+
+  /// No description provided for @aiGoalAdviceDefaultQuestionAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze all my goals, wallets, categories, and transactions. Give a short plan: which goals to prioritize, what spending to reduce first, and how to speed up my savings overall.'**
+  String get aiGoalAdviceDefaultQuestionAll;
+
+  /// No description provided for @aiGoalAdviceDefaultQuestionSingle.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze all my data and give practical advice on how to reach the goal \"{goalName}\" faster: where to cut spending first and how much I should top up regularly.'**
+  String aiGoalAdviceDefaultQuestionSingle(Object goalName);
+
   /// No description provided for @pin.
   ///
   /// In en, this message translates to:

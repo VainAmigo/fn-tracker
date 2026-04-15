@@ -1174,5 +1174,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmPin => 'Confirm PIN';
 
   @override
+  String get aiGoalAdviceTitle => 'AI savings advice';
+
+  @override
+  String get aiGoalAdviceSingleGoalHint =>
+      'Ask how to save faster for this goal based on your real data.';
+
+  @override
+  String get aiGoalAdviceAllGoalsHint =>
+      'Ask for advice on how to optimize savings across all your goals.';
+
+  @override
+  String get aiGoalAdviceQuestionHint =>
+      'For example: what should I cut first to reach the goal faster?';
+
+  @override
+  String get aiGoalAdviceAsk => 'Get advice';
+
+  @override
+  String get aiGoalAdviceTotalAsk => 'AI tips for all goals';
+
+  @override
+  String get aiGoalAdviceTotalTitle => 'AI tips for all goals';
+
+  @override
+  String get aiGoalAdviceDefaultQuestionAll =>
+      'Analyze all my goals, wallets, categories, and transactions. Give a short plan: which goals to prioritize, what spending to reduce first, and how to speed up my savings overall.';
+
+  @override
+  String aiGoalAdviceDefaultQuestionSingle(Object goalName) {
+    return 'Analyze all my data and give practical advice on how to reach the goal \"$goalName\" faster: where to cut spending first and how much I should top up regularly.';
+  }
+
+  @override
   String get pin => 'PIN';
 }

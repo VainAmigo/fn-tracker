@@ -90,6 +90,38 @@ class GoalTotalCardWidget extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: AppSizing.spaceBtwElements),
+          PrimaryButton(
+            text: context.l10n.aiGoalAdviceTotalAsk,
+            icon: Icons.auto_awesome_rounded,
+            size: PrimaryButtonSize.xSmall,
+            rounded: true,
+            onPressed: () => AppBottomSheet.showFittedModalBottomSheet(
+              context,
+              child: const _GoalTotalAiAdviceSheet(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GoalTotalAiAdviceSheet extends StatelessWidget {
+  const _GoalTotalAiAdviceSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(AppSizing.defaultPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ModalSheetTitleWidget(title: context.l10n.aiGoalAdviceTotalTitle),
+          const SizedBox(height: AppSizing.spaceBtwElements),
+          const GoalAiAdviceSectionWidget(compact: true),
+          const SizedBox(height: AppSizing.bottomPadding),
         ],
       ),
     );

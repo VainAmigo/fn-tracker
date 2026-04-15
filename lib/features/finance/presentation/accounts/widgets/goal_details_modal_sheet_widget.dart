@@ -31,10 +31,7 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
     return _buildInProgressModal(context, colorScheme, targetReached);
   }
 
-  Widget _buildCompletedModal(
-    BuildContext context,
-    ColorScheme colorScheme,
-  ) {
+  Widget _buildCompletedModal(BuildContext context, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.all(AppSizing.defaultPadding),
       child: Column(
@@ -82,6 +79,8 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
+          GoalAiAdviceSectionWidget(goal: goal),
+          const SizedBox(height: AppSizing.spaceBtwElements),
           BlocListener<GoalsCubit, GoalsState>(
             listenWhen: (prev, curr) =>
                 curr is GoalsLoaded || curr is GoalsError,
@@ -90,9 +89,9 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                 Navigator.of(context).pop();
               }
               if (state is GoalsError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(state.message)));
               }
             },
             child: PrimaryButton(
@@ -107,11 +106,15 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                   message:
                       '${context.l10n.deleteGoalMessage} «${goal.name}»? ${context.l10n.deleteGoalMessage}?',
                 );
-                if (!context.mounted || result == null || result == DeleteEntityResult.cancel) return;
+                if (!context.mounted ||
+                    result == null ||
+                    result == DeleteEntityResult.cancel) {
+                  return;
+                }
                 context.read<GoalsCubit>().deleteGoal(
-                      goalId: goal.id,
-                      deleteTransactions: result == DeleteEntityResult.deleteFull,
-                    );
+                  goalId: goal.id,
+                  deleteTransactions: result == DeleteEntityResult.deleteFull,
+                );
               },
             ),
           ),
@@ -132,68 +135,83 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ModalSheetTitleWidget(
-            title: context.l10n.goalDetailsTitle,
-            action: PrimaryButton(
-              text: context.l10n.edit,
-              onPressed: onEdit,
-              size: PrimaryButtonSize.xSmall,
-              rounded: true,
-              fullWidth: false,
-            ),
-          ),
-          const SizedBox(height: AppSizing.spaceBtwElements),
-          GoalCardWidget(goal: goal),
-          const SizedBox(height: AppSizing.spaceBtwItems),
-          SwitchListTile(
-            title: Text(
-              context.l10n.hideAmount,
-              style: AppTextStyles.text16w400(context),
-            ),
-            value: goal.hideAmount,
-            onChanged: (_) => onHideAmountChanged(!goal.hideAmount),
-          ),
-          SwitchListTile(
-            title: Text(
-              context.l10n.hideGoal,
-              style: AppTextStyles.text16w400(context),
-            ),
-            subtitle: Text(
-              context.l10n.hideGoalSubtitle,
-              style: AppTextStyles.text14w400(context),
-            ),
-            value: goal.isHidden,
-            onChanged: (_) => onHideGoalChanged(!goal.isHidden),
-          ),
-          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
-          PrimaryButton(
-            text: context.l10n.history,
-            icon: Icons.history,
-            size: PrimaryButtonSize.xSmall,
-            rounded: true,
-            backgroundColor: colorScheme.tertiary.withValues(alpha: 0.3),
-            foregroundColor: colorScheme.tertiary,
-            onPressed: () => Navigator.of(context).pushNamed(
-              AppRouter.transactionsById,
-              arguments: {'idType': TransactionIdType.goal, 'id': goal.id},
-            ),
-          ),
-          const SizedBox(height: AppSizing.spaceBtwElements),
-          Row(
-            children: [
-              Icon(
-                Icons.calendar_today_rounded,
-                size: AppSizing.iconSizeXS,
-                color: colorScheme.onSecondary,
+          Flexible(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ModalSheetTitleWidget(
+                    title: context.l10n.goalDetailsTitle,
+                    action: PrimaryButton(
+                      text: context.l10n.edit,
+                      onPressed: onEdit,
+                      size: PrimaryButtonSize.xSmall,
+                      rounded: true,
+                      fullWidth: false,
+                    ),
+                  ),
+                  const SizedBox(height: AppSizing.spaceBtwElements),
+                  GoalCardWidget(goal: goal),
+                  const SizedBox(height: AppSizing.spaceBtwItems),
+                  SwitchListTile(
+                    title: Text(
+                      context.l10n.hideAmount,
+                      style: AppTextStyles.text16w400(context),
+                    ),
+                    value: goal.hideAmount,
+                    onChanged: (_) => onHideAmountChanged(!goal.hideAmount),
+                  ),
+                  SwitchListTile(
+                    title: Text(
+                      context.l10n.hideGoal,
+                      style: AppTextStyles.text16w400(context),
+                    ),
+                    subtitle: Text(
+                      context.l10n.hideGoalSubtitle,
+                      style: AppTextStyles.text14w400(context),
+                    ),
+                    value: goal.isHidden,
+                    onChanged: (_) => onHideGoalChanged(!goal.isHidden),
+                  ),
+                  const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+                  PrimaryButton(
+                    text: context.l10n.history,
+                    icon: Icons.history,
+                    size: PrimaryButtonSize.xSmall,
+                    rounded: true,
+                    backgroundColor: colorScheme.tertiary.withValues(
+                      alpha: 0.3,
+                    ),
+                    foregroundColor: colorScheme.tertiary,
+                    onPressed: () => Navigator.of(context).pushNamed(
+                      AppRouter.transactionsById,
+                      arguments: {
+                        'idType': TransactionIdType.goal,
+                        'id': goal.id,
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: AppSizing.spaceBtwElements),
+                  GoalAiAdviceSectionWidget(goal: goal),
+                  const SizedBox(height: AppSizing.spaceBtwElements),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_rounded,
+                        size: AppSizing.iconSizeXS,
+                        color: colorScheme.onSecondary,
+                      ),
+                      const SizedBox(width: AppSizing.spaceBtwItems),
+                      Text(
+                        '${context.l10n.createdAt} ${goal.createdAt.formatMonthDay}',
+                        style: AppTextStyles.text14w400(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSizing.spaceBtwElements),
+                ],
               ),
-              const SizedBox(width: AppSizing.spaceBtwItems),
-              Text(
-                '${context.l10n.createdAt} ${goal.createdAt.formatMonthDay}',
-                style: AppTextStyles.text14w400(context),
-              ),
-            ],
+            ),
           ),
-          const SizedBox(height: AppSizing.spaceBtwElements),
           Row(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -207,9 +225,9 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                     Navigator.of(context).pop();
                   }
                   if (state is GoalsError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(state.message)));
                   }
                 },
                 child: PrimaryButton(
@@ -227,12 +245,16 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                       message:
                           '${context.l10n.deleteGoalMessage} «${goal.name}»? ${context.l10n.deleteGoalMessage}?',
                     );
-                    if (!context.mounted || result == null || result == DeleteEntityResult.cancel) return;
+                    if (!context.mounted ||
+                        result == null ||
+                        result == DeleteEntityResult.cancel) {
+                      return;
+                    }
                     context.read<GoalsCubit>().deleteGoal(
-                          goalId: goal.id,
-                          deleteTransactions:
-                              result == DeleteEntityResult.deleteFull,
-                        );
+                      goalId: goal.id,
+                      deleteTransactions:
+                          result == DeleteEntityResult.deleteFull,
+                    );
                   },
                 ),
               ),
@@ -241,9 +263,9 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                     curr is GoalsError || curr is GoalsCompleteGoalSuccess,
                 listener: (context, state) {
                   if (state is GoalsError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(state.message)));
                   }
                   if (state is GoalsCompleteGoalSuccess) {
                     Navigator.of(context).pop();
@@ -251,7 +273,9 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                 },
                 child: Flexible(
                   child: PrimaryButton(
-                    text: targetReached ? context.l10n.complete : context.l10n.deposit,
+                    text: targetReached
+                        ? context.l10n.complete
+                        : context.l10n.deposit,
                     icon: Icons.add,
                     size: PrimaryButtonSize.large,
                     rounded: true,
@@ -260,10 +284,9 @@ class GoalDetailsModalSheetWidget extends StatelessWidget {
                         context.read<GoalsCubit>().completeGoal(goal: goal);
                       } else {
                         Navigator.of(context).pop();
-                        Navigator.of(context).pushNamed(
-                          AppRouter.addTransaction,
-                          arguments: goal,
-                        );
+                        Navigator.of(
+                          context,
+                        ).pushNamed(AppRouter.addTransaction, arguments: goal);
                       }
                     },
                   ),
@@ -292,8 +315,9 @@ class _InfoRow extends StatelessWidget {
         Text(label, style: AppTextStyles.text14w400(context)),
         Text(
           value,
-          style: AppTextStyles.text14w400(context)
-              .copyWith(fontWeight: FontWeight.w600),
+          style: AppTextStyles.text14w400(
+            context,
+          ).copyWith(fontWeight: FontWeight.w600),
         ),
       ],
     );

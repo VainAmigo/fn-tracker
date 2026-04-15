@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
+import 'package:fn_tracker/l10n/l10.dart';
 
 class AnalyticsAiChatCubit extends Cubit<AnalyticsAiChatState> {
   AnalyticsAiChatCubit({required AiAnalyticsChatRepository repository})
@@ -65,7 +67,7 @@ class AnalyticsAiChatCubit extends Cubit<AnalyticsAiChatState> {
     emit(const AnalyticsAiChatState());
   }
 
-  Future<void> sendUserMessage(String rawText) async {
+  Future<void> sendUserMessage(String rawText, BuildContext context) async {
     final text = rawText.trim();
     if (text.isEmpty || state.isSending) return;
 
@@ -76,14 +78,15 @@ class AnalyticsAiChatCubit extends Cubit<AnalyticsAiChatState> {
     if (boundKey == null || contextJson == null || contextJson.isEmpty) {
       emit(
         state.copyWith(
-          errorMessage: 'Нет данных аналитики для выбранного периода.',
+          errorMessage: context.l10n.noDataForSelectedPeriod,
         ),
       );
       return;
     }
 
-    final attachPayload =
-        state.lastAttachedPeriodKey != boundKey ? contextJson : null;
+    final attachPayload = state.lastAttachedPeriodKey != boundKey
+        ? contextJson
+        : null;
 
     final userMessage = AnalyticsAiChatMessage(
       role: AnalyticsAiMessageRole.user,
@@ -134,7 +137,9 @@ class AnalyticsAiChatCubit extends Cubit<AnalyticsAiChatState> {
             (role: 'model', text: reply),
           ],
           isSending: false,
-          lastAttachedPeriodKey: attachPayload != null ? boundKey : state.lastAttachedPeriodKey,
+          lastAttachedPeriodKey: attachPayload != null
+              ? boundKey
+              : state.lastAttachedPeriodKey,
         ),
       );
     } catch (e) {
