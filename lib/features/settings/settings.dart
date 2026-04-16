@@ -1,4 +1,6 @@
 export 'view/settings_view.dart';
+export 'view/security_view.dart';
+export 'view/privacy_policy_view.dart';
 export 'widgets/settings_currency_widget.dart';
 export 'widgets/settings_locale_widget.dart';
 export 'widgets/settings_theme_mode_widget.dart';

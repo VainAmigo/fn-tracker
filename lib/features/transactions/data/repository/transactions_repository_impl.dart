@@ -23,23 +23,27 @@ class TransactionsRepositoryImpl
       collection: _collectionPath(uid),
       filters: {'orderBy': 'createdAt DESC'},
       fn: () async {
-        final snapshot = await _transactionsRef(uid)
-            .orderBy('createdAt', descending: true)
-            .get();
+        final snapshot = await _transactionsRef(
+          uid,
+        ).orderBy('createdAt', descending: true).get();
         return snapshot.docs
             .map((doc) => TransactionModel.fromJson(doc.data()))
             .toList();
       },
       serialize: (list) => {
         '_docsCount': list.length,
-        '_docs': list.map((t) => {
-          'id': t.id,
-          'amount': t.amount,
-          'type': t.type.toJson(),
-          'dayKey': t.dayKey,
-          'walletId': t.walletId,
-          'categoryId': t.categoryId,
-        }).toList(),
+        '_docs': list
+            .map(
+              (t) => {
+                'id': t.id,
+                'amount': t.amount,
+                'type': t.type.toJson(),
+                'dayKey': t.dayKey,
+                'walletId': t.walletId,
+                'categoryId': t.categoryId,
+              },
+            )
+            .toList(),
       },
     );
   }
@@ -70,14 +74,18 @@ class TransactionsRepositoryImpl
       },
       serialize: (list) => {
         '_docsCount': list.length,
-        '_docs': list.map((t) => {
-          'id': t.id,
-          'amount': t.amount,
-          'type': t.type.toJson(),
-          'dayKey': t.dayKey,
-          'categoryId': t.categoryId,
-          'walletId': t.walletId,
-        }).toList(),
+        '_docs': list
+            .map(
+              (t) => {
+                'id': t.id,
+                'amount': t.amount,
+                'type': t.type.toJson(),
+                'dayKey': t.dayKey,
+                'categoryId': t.categoryId,
+                'walletId': t.walletId,
+              },
+            )
+            .toList(),
       },
     );
   }
@@ -118,12 +126,16 @@ class TransactionsRepositoryImpl
       },
       serialize: (list) => {
         '_docsCount': list.length,
-        '_docs': list.map((t) => {
-          'id': t.id,
-          'amount': t.amount,
-          'type': t.type.toJson(),
-          'dayKey': t.dayKey,
-        }).toList(),
+        '_docs': list
+            .map(
+              (t) => {
+                'id': t.id,
+                'amount': t.amount,
+                'type': t.type.toJson(),
+                'dayKey': t.dayKey,
+              },
+            )
+            .toList(),
       },
     );
   }

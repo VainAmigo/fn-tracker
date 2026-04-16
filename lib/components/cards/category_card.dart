@@ -47,7 +47,7 @@ class CategoryCard extends StatelessWidget {
           children: [
             if (leading != null) ...[
               leading!,
-              const SizedBox(width: AppSizing.spaceBtwItems),
+              const SizedBox(width: AppSizing.spaceBtwElements),
             ],
             Expanded(
               child: Column(

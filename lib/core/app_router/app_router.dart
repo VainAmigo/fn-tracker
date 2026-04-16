@@ -30,6 +30,9 @@ final class AppRouter {
   static const updateScheduledPayment = '/update-scheduled-payment';
   static const analyticsExportSettings = '/analytics-export-settings';
 
+  static const privacyPolicy = '/privacy-policy';
+  static const security = '/security';
+
   static Route<void> onGenerateRoute(RouteSettings settings) {
     return switch (settings.name) {
       main => MaterialPageRoute(
@@ -53,10 +56,7 @@ final class AppRouter {
         builder: (_) => const AuthInitView(),
       ),
       aiLogic => MaterialPageRoute(
-        settings: RouteSettings(
-          name: aiLogic,
-          arguments: settings.arguments,
-        ),
+        settings: RouteSettings(name: aiLogic, arguments: settings.arguments),
         builder: (context) {
           final args = settings.arguments as AiLogicEntryArgs?;
           final mode = args?.mode ?? AiLogicEntryMode.voice;
@@ -65,12 +65,14 @@ final class AppRouter {
               entryMode: mode,
               categoryRepo: CategoryRepository(),
               financeRepo: FinanceRepository(
-                transactionsRepo:
-                    context.read<TransactionsCubit>().transactionsRepo,
+                transactionsRepo: context
+                    .read<TransactionsCubit>()
+                    .transactionsRepo,
               ),
               parseRepo: AiExpenseParseRepositoryImpl(),
-              transactionsRepo:
-                  context.read<TransactionsCubit>().transactionsRepo,
+              transactionsRepo: context
+                  .read<TransactionsCubit>()
+                  .transactionsRepo,
             ),
             child: const AiLogicView(),
           );
@@ -164,6 +166,14 @@ final class AppRouter {
       analyticsExportSettings => MaterialPageRoute(
         settings: const RouteSettings(name: analyticsExportSettings),
         builder: (_) => const ExportSettingsView(),
+      ),
+      privacyPolicy => MaterialPageRoute(
+        settings: const RouteSettings(name: privacyPolicy),
+        builder: (_) => const PrivacyPolicyView(),
+      ),
+      security => MaterialPageRoute(
+        settings: const RouteSettings(name: security),
+        builder: (_) => const SecurityView(),
       ),
       _ => throw Exception(
         'No builder specified for route named: [${settings.name}]',

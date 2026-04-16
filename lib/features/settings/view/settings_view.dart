@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
+import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
@@ -75,6 +77,9 @@ class SettingsView extends StatelessWidget {
                     context.l10n.privacyPolicy,
                     Icons.privacy_tip,
                     isFirst: true,
+                    onTap: () {
+                      Navigator.of(context).pushNamed(AppRouter.privacyPolicy);
+                    },
                   ),
                   const SizedBox(height: AppSizing.spaceBtwItemsExtra),
                   _buildSettingsListTile(
@@ -82,6 +87,9 @@ class SettingsView extends StatelessWidget {
                     context.l10n.security,
                     Icons.security,
                     isLast: true,
+                    onTap: () {
+                      Navigator.of(context).pushNamed(AppRouter.security);
+                    },
                   ),
                 ],
               ),
@@ -116,7 +124,10 @@ class SettingsView extends StatelessWidget {
             child: Text(context.l10n.cancel),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () {
+              context.read<AuthCubit>().logout();
+              Navigator.of(context).pop(true);
+            },
             child: Text(context.l10n.signOut),
           ),
         ],

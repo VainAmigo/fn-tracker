@@ -55,9 +55,13 @@ class _Body extends StatelessWidget {
     final categoriesState = context.watch<CategoriesCubit>().state;
     final categories = BlocStateExtractors.extractCategories(categoriesState);
     final categoryMap = {for (final c in categories) c.categoryId: c};
-    final goals = BlocStateExtractors.extractGoals(context.watch<GoalsCubit>().state);
+    final goals = BlocStateExtractors.extractGoals(
+      context.watch<GoalsCubit>().state,
+    );
     final goalMap = {for (final g in goals) g.id: g};
-    final wallets = BlocStateExtractors.extractWallets(context.watch<WalletCubit>().state);
+    final wallets = BlocStateExtractors.extractWallets(
+      context.watch<WalletCubit>().state,
+    );
     final walletMap = {
       for (final w in wallets)
         if (w.id != null) w.id!: w,
@@ -68,9 +72,10 @@ class _Body extends StatelessWidget {
       walletMap,
       goalMap,
     );
-    final lastItems = visibleTransactions.length > 10
-        ? visibleTransactions.sublist(visibleTransactions.length - 10)
-        : visibleTransactions;
+    final sortedTransactions = _sortTransactions(visibleTransactions);
+    final lastItems = sortedTransactions.length > 10
+        ? sortedTransactions.take(10).toList()
+        : sortedTransactions;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -113,41 +118,41 @@ class _Body extends StatelessWidget {
               final radius = radiusForIndex(index, lastItems.length);
 
               return CategoryCard(
-                  title:
-                      category?.name ??
-                      goal?.name ??
-                      wallet?.name ??
-                      'Unknown category',
-                  subtitle: isGoalTransaction
-                      ? 'Goal'
-                      : tx.note != null && tx.note!.isNotEmpty
-                      ? tx.note
-                      : null,
-                  leading: Container(
-                    height: AppSizing.heightS,
-                    decoration: BoxDecoration(
-                      color: resolvedColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(
-                        AppSizing.borderRadius8,
-                      ),
-                    ),
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Icon(
-                        icon?.icon ?? Icons.category,
-                        size: AppSizing.iconSizeM,
-                        color: resolvedColor,
-                      ),
+                title:
+                    category?.name ??
+                    goal?.name ??
+                    wallet?.name ??
+                    'Unknown category',
+                subtitle: isGoalTransaction
+                    ? 'Goal'
+                    : tx.note != null && tx.note!.isNotEmpty
+                    ? tx.note
+                    : null,
+                leading: Container(
+                  height: AppSizing.heightS,
+                  decoration: BoxDecoration(
+                    color: resolvedColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(
+                      AppSizing.borderRadius8,
                     ),
                   ),
-                  trailing: AmountTextWidget(
-                    amount: tx.amount,
-                    type: tx.type,
-                    showSignPrefix: true,
-                    style: AppTextStyles.listTileTitle(context),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Icon(
+                      icon?.icon ?? Icons.category,
+                      size: AppSizing.iconSizeM,
+                      color: resolvedColor,
+                    ),
                   ),
-                  radius: radius,
-                );
+                ),
+                trailing: AmountTextWidget(
+                  amount: tx.amount,
+                  type: tx.type,
+                  showSignPrefix: true,
+                  style: AppTextStyles.listTileTitle(context),
+                ),
+                radius: radius,
+              );
             },
           ),
         ],
@@ -169,4 +174,13 @@ class _Body extends StatelessWidget {
     }).toList();
   }
 
+  List<TransactionModel> _sortTransactions(List<TransactionModel> transactions) {
+    final sorted = List<TransactionModel>.from(transactions);
+    sorted.sort((a, b) {
+      final dayCompare = b.dayKey.compareTo(a.dayKey);
+      if (dayCompare != 0) return dayCompare;
+      return b.createdAt.compareTo(a.createdAt);
+    });
+    return sorted;
+  }
 }
