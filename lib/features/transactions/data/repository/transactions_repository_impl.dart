@@ -13,23 +13,34 @@ class TransactionsRepositoryImpl
   CollectionReference<Map<String, dynamic>> _transactionsRef(String uid) =>
       FirestorePaths.transactionsRef(firebaseFirestore, uid);
 
+  String _collectionPath(String uid) => 'users/$uid/transactions';
+
   @override
   Future<List<TransactionModel>> getAllUserTransactions() async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<List<TransactionModel>>(
-      'Firestore.getAllUserTransactions',
-      {},
-      () async {
-        final snapshot = await _transactionsRef(
-          uid,
-        ).orderBy('createdAt', descending: true).get();
+    return FirebaseLogger.query(
+      operation: 'getAllUserTransactions',
+      collection: _collectionPath(uid),
+      filters: {'orderBy': 'createdAt DESC'},
+      fn: () async {
+        final snapshot = await _transactionsRef(uid)
+            .orderBy('createdAt', descending: true)
+            .get();
         return snapshot.docs
             .map((doc) => TransactionModel.fromJson(doc.data()))
             .toList();
       },
-      serializeResponse: (t) => {'count': t.length},
-    ).catchError(
-      (e) => throw Exception('Failed to fetch all transactions: $e'),
+      serialize: (list) => {
+        '_docsCount': list.length,
+        '_docs': list.map((t) => {
+          'id': t.id,
+          'amount': t.amount,
+          'type': t.type.toJson(),
+          'dayKey': t.dayKey,
+          'walletId': t.walletId,
+          'categoryId': t.categoryId,
+        }).toList(),
+      },
     );
   }
 
@@ -39,10 +50,15 @@ class TransactionsRepositoryImpl
     required String end,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<List<TransactionModel>>(
-      'Firestore.getUserTransactionsByPeriod',
-      {'start': start, 'end': end},
-      () async {
+    return FirebaseLogger.query(
+      operation: 'getUserTransactionsByPeriod',
+      collection: _collectionPath(uid),
+      filters: {
+        'dayKey >=': start,
+        'dayKey <=': end,
+        'orderBy': 'createdAt DESC',
+      },
+      fn: () async {
         final snapshot = await _transactionsRef(uid)
             .where('dayKey', isGreaterThanOrEqualTo: start)
             .where('dayKey', isLessThanOrEqualTo: end)
@@ -52,8 +68,18 @@ class TransactionsRepositoryImpl
             .map((doc) => TransactionModel.fromJson(doc.data()))
             .toList();
       },
-      serializeResponse: (t) => {'count': t.length},
-    ).catchError((e) => throw Exception('Failed to fetch transactions: $e'));
+      serialize: (list) => {
+        '_docsCount': list.length,
+        '_docs': list.map((t) => {
+          'id': t.id,
+          'amount': t.amount,
+          'type': t.type.toJson(),
+          'dayKey': t.dayKey,
+          'categoryId': t.categoryId,
+          'walletId': t.walletId,
+        }).toList(),
+      },
+    );
   }
 
   @override
@@ -70,10 +96,16 @@ class TransactionsRepositoryImpl
       TransactionIdType.goal => 'goalId',
       TransactionIdType.scheduledPayment => 'scheduledPaymentId',
     };
-    return FirebaseLogger.withLogging<List<TransactionModel>>(
-      'Firestore.getUserTransactionsById',
-      {'id': id, 'idType': idType.name, 'start': start, 'end': end},
-      () async {
+    return FirebaseLogger.query(
+      operation: 'getUserTransactionsById',
+      collection: _collectionPath(uid),
+      filters: {
+        idFieldName: id,
+        'dayKey >=': start,
+        'dayKey <=': end,
+        'orderBy': 'createdAt DESC',
+      },
+      fn: () async {
         final snapshot = await _transactionsRef(uid)
             .where(idFieldName, isEqualTo: id)
             .where('dayKey', isGreaterThanOrEqualTo: start)
@@ -84,8 +116,16 @@ class TransactionsRepositoryImpl
             .map((doc) => TransactionModel.fromJson(doc.data()))
             .toList();
       },
-      serializeResponse: (t) => {'count': t.length},
-    ).catchError((e) => throw Exception('Failed to fetch transaction: $e'));
+      serialize: (list) => {
+        '_docsCount': list.length,
+        '_docs': list.map((t) => {
+          'id': t.id,
+          'amount': t.amount,
+          'type': t.type.toJson(),
+          'dayKey': t.dayKey,
+        }).toList(),
+      },
+    );
   }
 
   @override
@@ -93,14 +133,19 @@ class TransactionsRepositoryImpl
     required TransactionModel transaction,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<TransactionModel>(
-      'Firestore.addTransaction',
-      {
+    return FirebaseLogger.mutation(
+      operation: 'addTransaction',
+      collection: _collectionPath(uid),
+      data: {
         'amount': transaction.amount,
         'type': transaction.type.toJson(),
         'dayKey': transaction.dayKey,
+        'walletId': transaction.walletId,
+        'categoryId': transaction.categoryId,
+        'goalId': transaction.goalId,
+        'note': transaction.note,
       },
-      () async {
+      fn: () async {
         final createdAt = Timestamp.now();
         final docRef = _transactionsRef(uid).doc();
         final model = TransactionModel(
@@ -137,29 +182,36 @@ class TransactionsRepositoryImpl
         });
         return model;
       },
-      serializeResponse: (m) => {'id': m.id, 'amount': m.amount},
-    ).catchError((e) => throw Exception('Failed to add transaction: $e'));
+      serialize: (m) => {
+        'id': m.id,
+        'amount': m.amount,
+        'type': m.type.toJson(),
+        'walletId': m.walletId,
+        'categoryId': m.categoryId,
+      },
+    );
   }
 
   @override
   Future<void> deleteTransaction({required String id}) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.deleteTransaction',
-      {'id': id},
-      () => _transactionsRef(uid).doc(id).delete(),
-      serializeResponse: (_) => {'ok': true},
-    ).catchError((e) => throw Exception('Failed to delete transaction: $e'));
+    return FirebaseLogger.mutation(
+      operation: 'deleteTransaction',
+      collection: _collectionPath(uid),
+      docId: id,
+      fn: () => _transactionsRef(uid).doc(id).delete(),
+    );
   }
 
   @override
   Future<void> deleteTransactionsByWalletId(String walletId) async {
     if (walletId.isEmpty) return;
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.deleteTransactionsByWalletId',
-      {'walletId': walletId},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'deleteTransactionsByWalletId',
+      collection: _collectionPath(uid),
+      data: {'walletId': walletId},
+      fn: () async {
         final allSnapshot = await _transactionsRef(uid).get();
         final toDelete = <DocumentReference<Map<String, dynamic>>>[];
         final transferIdsToFind = <String>{};
@@ -189,9 +241,7 @@ class TransactionsRepositoryImpl
           await batch.commit();
         }
       },
-      serializeResponse: (_) => {'ok': true},
-    ).catchError(
-      (e) => throw Exception('Failed to delete transactions by wallet: $e'),
+      serialize: (_) => {'deleted': 'batch'},
     );
   }
 
@@ -199,10 +249,11 @@ class TransactionsRepositoryImpl
   Future<void> deleteTransactionsByGoalId(String goalId) async {
     if (goalId.isEmpty) return;
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.deleteTransactionsByGoalId',
-      {'goalId': goalId},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'deleteTransactionsByGoalId',
+      collection: _collectionPath(uid),
+      data: {'goalId': goalId},
+      fn: () async {
         final allSnapshot = await _transactionsRef(uid).get();
         final toDelete = <DocumentReference<Map<String, dynamic>>>[];
         final transferIdsToFind = <String>{};
@@ -232,9 +283,7 @@ class TransactionsRepositoryImpl
           await batch.commit();
         }
       },
-      serializeResponse: (_) => {'ok': true},
-    ).catchError(
-      (e) => throw Exception('Failed to delete transactions by goal: $e'),
+      serialize: (_) => {'deleted': 'batch'},
     );
   }
 
@@ -242,10 +291,11 @@ class TransactionsRepositoryImpl
   Future<void> deleteTransactionsByCategoryId(String categoryId) async {
     if (categoryId.isEmpty) return;
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.deleteTransactionsByCategoryId',
-      {'categoryId': categoryId},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'deleteTransactionsByCategoryId',
+      collection: _collectionPath(uid),
+      data: {'categoryId': categoryId},
+      fn: () async {
         final allSnapshot = await _transactionsRef(uid).get();
         final toDelete = <DocumentReference<Map<String, dynamic>>>[];
         for (final doc in allSnapshot.docs) {
@@ -262,9 +312,7 @@ class TransactionsRepositoryImpl
           await batch.commit();
         }
       },
-      serializeResponse: (_) => {'ok': true},
-    ).catchError(
-      (e) => throw Exception('Failed to delete transactions by category: $e'),
+      serialize: (_) => {'deleted': 'batch'},
     );
   }
 
@@ -274,10 +322,15 @@ class TransactionsRepositoryImpl
     required String endDayKey,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<HomePageStatModel>(
-      'Firestore.getHomePageStats',
-      {'startDayKey': startDayKey, 'endDayKey': endDayKey},
-      () async {
+    return FirebaseLogger.query(
+      operation: 'getHomePageStats',
+      collection: _collectionPath(uid),
+      filters: {
+        'dayKey >=': startDayKey,
+        'dayKey <=': endDayKey,
+        'orderBy': 'dayKey DESC',
+      },
+      fn: () async {
         final snapshot = await _transactionsRef(uid)
             .where('dayKey', isGreaterThanOrEqualTo: startDayKey)
             .where('dayKey', isLessThanOrEqualTo: endDayKey)
@@ -309,10 +362,11 @@ class TransactionsRepositoryImpl
           homeChartStat: dailyTotals,
         );
       },
-      serializeResponse: (s) => {
+      serialize: (s) => {
         'totalExpense': s.totalExpense,
         'daysCount': s.homeChartStat.length,
+        'dailyTotals': s.homeChartStat,
       },
-    ).catchError((e) => throw Exception('Failed to get home page stats: $e'));
+    );
   }
 }

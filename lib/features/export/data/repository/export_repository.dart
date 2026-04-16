@@ -17,16 +17,23 @@ class ExportRepository with FirestoreUserContext implements ExportRepoImpl {
   CollectionReference<Map<String, dynamic>> _goalsRef(String uid) =>
       FirestorePaths.goalsRef(firebaseFirestore, uid);
 
+  String _path(String uid) => 'users/$uid';
+
   @override
   Future<List<ExportItem>> getTransactionsForExport({
     required String startDayKey,
     required String endDayKey,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<List<ExportItem>>(
-      'Firestore.getTransactionsForExport',
-      {'startDayKey': startDayKey, 'endDayKey': endDayKey},
-      () async {
+    return FirebaseLogger.query(
+      operation: 'getTransactionsForExport',
+      collection: '${_path(uid)}/{transactions,categories,wallets,goals}',
+      filters: {
+        'dayKey >=': startDayKey,
+        'dayKey <=': endDayKey,
+        'orderBy': 'createdAt DESC',
+      },
+      fn: () async {
         final results = await Future.wait([
           _transactionsRef(uid)
               .where('dayKey', isGreaterThanOrEqualTo: startDayKey)
@@ -95,7 +102,16 @@ class ExportRepository with FirestoreUserContext implements ExportRepoImpl {
             )
             .toList();
       },
-      serializeResponse: (list) => {'count': list.length},
+      serialize: (list) => {
+        '_docsCount': list.length,
+        '_docs': list.map((e) => {
+          'date': e.date.toIso8601String(),
+          'type': e.type.toJson(),
+          'amount': e.amount,
+          'categoryName': e.categoryName,
+          'walletName': e.walletName,
+        }).toList(),
+      },
     );
   }
 }

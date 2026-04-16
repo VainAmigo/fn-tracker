@@ -13,13 +13,16 @@ class CategoryRepository
   CollectionReference<Map<String, dynamic>> _categoriesRef(String uid) =>
       FirestorePaths.categoriesRef(firebaseFirestore, uid);
 
+  String _collectionPath(String uid) => 'users/$uid/categories';
+
   @override
   Future<List<CategoryModel>> getUserCategories() async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<List<CategoryModel>>(
-      'Firestore.getUserCategories',
-      {},
-      () async {
+    return FirebaseLogger.query(
+      operation: 'getUserCategories',
+      collection: _collectionPath(uid),
+      filters: {'orderBy': 'createdAt DESC'},
+      fn: () async {
         final snapshot = await _categoriesRef(uid)
             .orderBy('createdAt', descending: true)
             .get();
@@ -27,18 +30,32 @@ class CategoryRepository
             .map((doc) => CategoryModel.fromJson(doc.data()))
             .toList();
       },
-      serializeResponse: (c) => {'count': c.length},
-    ).catchError((e) =>
-        throw Exception('Failed to fetch categories with subCategories: $e'));
+      serialize: (list) => {
+        '_docsCount': list.length,
+        '_docs': list.map((c) => {
+          'categoryId': c.categoryId,
+          'name': c.name,
+          'colorId': c.colorId,
+          'iconId': c.iconId,
+          'limitValue': c.limitValue,
+        }).toList(),
+      },
+    );
   }
 
   @override
   Future<CategoryModel> addCategory({CategoryModel? category}) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<CategoryModel>(
-      'Firestore.addCategory',
-      {'name': category!.name},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'addCategory',
+      collection: _collectionPath(uid),
+      data: {
+        'name': category!.name,
+        'colorId': category.colorId,
+        'iconId': category.iconId,
+        'limitValue': category.limitValue,
+      },
+      fn: () async {
         final now = Timestamp.now();
         final docRef = _categoriesRef(uid).doc();
         final model = CategoryModel(
@@ -59,8 +76,11 @@ class CategoryRepository
         });
         return model;
       },
-      serializeResponse: (c) => {'categoryId': c.categoryId, 'name': c.name},
-    ).catchError((e) => throw Exception('Failed to add category: $e'));
+      serialize: (c) => {
+        'categoryId': c.categoryId,
+        'name': c.name,
+      },
+    );
   }
 
   @override
@@ -68,33 +88,39 @@ class CategoryRepository
     required CategoryModel category,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<CategoryModel>(
-      'Firestore.updateCategory',
-      {'categoryId': category.categoryId, 'name': category.name},
-      () async {
+    final updateData = {
+      'name': category.name,
+      'colorId': category.colorId,
+      'iconId': category.iconId,
+      'isQuick': category.isQuick,
+      'limitValue': category.limitValue,
+    };
+    return FirebaseLogger.mutation(
+      operation: 'updateCategory',
+      collection: _collectionPath(uid),
+      docId: category.categoryId,
+      data: updateData,
+      fn: () async {
         final docRef = _categoriesRef(uid).doc(category.categoryId);
-        await docRef.update({
-          'name': category.name,
-          'colorId': category.colorId,
-          'iconId': category.iconId,
-          'isQuick': category.isQuick,
-          'limitValue': category.limitValue,
-        });
+        await docRef.update(updateData);
         final snapshot = await docRef.get();
         return CategoryModel.fromJson(snapshot.data()!);
       },
-      serializeResponse: (c) => {'categoryId': c.categoryId},
-    ).catchError((e) => throw Exception('Failed to update category: $e'));
+      serialize: (c) => {
+        'categoryId': c.categoryId,
+        'name': c.name,
+      },
+    );
   }
 
   @override
   Future<void> deleteCategory({required String categoryId}) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.deleteCategory',
-      {'categoryId': categoryId},
-      () => _categoriesRef(uid).doc(categoryId).delete(),
-      serializeResponse: (_) => {'ok': true},
-    ).catchError((e) => throw Exception('Failed to delete category: $e'));
+    return FirebaseLogger.mutation(
+      operation: 'deleteCategory',
+      collection: _collectionPath(uid),
+      docId: categoryId,
+      fn: () => _categoriesRef(uid).doc(categoryId).delete(),
+    );
   }
 }

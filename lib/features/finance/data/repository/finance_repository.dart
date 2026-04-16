@@ -36,13 +36,16 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
   CollectionReference<Map<String, dynamic>> _scheduledPaymentsRef(String uid) =>
       FirestorePaths.scheduledPaymentsRef(firebaseFirestore, uid);
 
+  String _path(String uid, String sub) => 'users/$uid/$sub';
+
   @override
   Future<WalletModel> addWallet({required WalletModel wallet}) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<WalletModel>(
-      'Firestore.addWallet',
-      {'name': wallet.name},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'addWallet',
+      collection: _path(uid, 'wallets'),
+      data: wallet.toJson(),
+      fn: () async {
         final existing = await _walletsRef(uid).get();
         final isFirst = existing.docs.isEmpty;
         final docRef = _walletsRef(uid).doc();
@@ -50,17 +53,19 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
         await docRef.set(created.toJson());
         return created;
       },
-      serializeResponse: (w) => {'id': w.id, 'name': w.name},
-    ).catchError((e) => throw Exception('Failed to add wallet: $e'));
+      serialize: (w) => w.toJson(),
+    );
   }
 
   @override
   Future<WalletModel> updateWallet({required WalletModel wallet}) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<WalletModel>(
-      'Firestore.updateWallet',
-      {'id': wallet.id, 'name': wallet.name},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'updateWallet',
+      collection: _path(uid, 'wallets'),
+      docId: wallet.id,
+      data: wallet.toJson(),
+      fn: () async {
         if (wallet.isDefault) {
           await setDefaultWallet(wallet.id!);
         }
@@ -68,8 +73,8 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
         await docRef.update(wallet.toJson());
         return wallet;
       },
-      serializeResponse: (w) => {'id': w.id},
-    ).catchError((e) => throw Exception('Failed to update wallet: $e'));
+      serialize: (w) => w.toJson(),
+    );
   }
 
   @override
@@ -78,10 +83,12 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
     required bool deleteTransactions,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.deleteWallet',
-      {'id': id, 'deleteTransactions': deleteTransactions},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'deleteWallet',
+      collection: _path(uid, 'wallets'),
+      docId: id,
+      data: {'deleteTransactions': deleteTransactions},
+      fn: () async {
         if (deleteTransactions) {
           await _transactionsRepo.deleteTransactionsByWalletId(id);
         }
@@ -95,17 +102,17 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
           }
         }
       },
-      serializeResponse: (_) => {'ok': true},
-    ).catchError((e) => throw Exception('Failed to delete wallet: $e'));
+    );
   }
 
   @override
   Future<void> setDefaultWallet(String walletId) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.setDefaultWallet',
-      {'walletId': walletId},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'setDefaultWallet',
+      collection: _path(uid, 'wallets'),
+      data: {'walletId': walletId},
+      fn: () async {
         final snapshot = await _walletsRef(uid).get();
         final batch = firebaseFirestore.batch();
         for (final doc in snapshot.docs) {
@@ -113,17 +120,17 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
         }
         await batch.commit();
       },
-      serializeResponse: (_) => {'ok': true},
-    ).catchError((e) => throw Exception('Failed to set default wallet: $e'));
+    );
   }
 
   @override
   Future<List<WalletModel>> getWallets() async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<List<WalletModel>>(
-      'Firestore.getWallets',
-      {},
-      () async {
+    return FirebaseLogger.query(
+      operation: 'getWallets',
+      collection: _path(uid, 'wallets'),
+      filters: {'orderBy': 'isDefault DESC'},
+      fn: () async {
         final results = await Future.wait([
           _walletsRef(uid).orderBy('isDefault', descending: true).get(),
           _transactionsRef(uid).get(),
@@ -149,8 +156,17 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
             .map((w) => w.copyWith(balance: balances[w.id] ?? 0))
             .toList();
       },
-      serializeResponse: (w) => {'count': w.length},
-    ).catchError((e) => throw Exception('Failed to get wallets: $e'));
+      serialize: (wallets) => {
+        '_docsCount': wallets.length,
+        '_docs': wallets.map((w) => {
+          'id': w.id,
+          'name': w.name,
+          'balance': w.balance,
+          'isDefault': w.isDefault,
+          'isHidden': w.isHidden,
+        }).toList(),
+      },
+    );
   }
 
   @override
@@ -159,10 +175,11 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
     required String endDayKey,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<BudgetStatModel>(
-      'Firestore.getBudgetStats',
-      {'startDayKey': startDayKey, 'endDayKey': endDayKey},
-      () async {
+    return FirebaseLogger.query(
+      operation: 'getBudgetStats',
+      collection: _path(uid, 'budget + transactions + categories'),
+      filters: {'dayKey >=': startDayKey, 'dayKey <=': endDayKey},
+      fn: () async {
         final results = await Future.wait([
           _budgetsRef(uid).get(),
           _transactionsRef(uid)
@@ -220,20 +237,27 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
           categorySpending: categorySpending,
         );
       },
-      serializeResponse: (s) => {
-        'transactionsCount': s.transactions.length,
+      serialize: (s) => {
+        'budgetAmount': s.budget?.amount,
         'totalForPeriod': s.totalForPeriod,
+        'transactionsCount': s.transactions.length,
+        'categoriesCount': s.categorySpending.length,
+        '_docs': s.categorySpending.map((cs) => {
+          'category': cs.category.name,
+          'amount': cs.amount,
+        }).toList(),
       },
-    ).catchError((e) => throw Exception('Failed to get budget stats: $e'));
+    );
   }
 
   @override
   Future<BudgetModel> createBudget({required BudgetModel budget}) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<BudgetModel>(
-      'Firestore.createBudget',
-      {'amount': budget.amount},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'createBudget',
+      collection: _path(uid, 'budget'),
+      data: {'amount': budget.amount},
+      fn: () async {
         final docRef = _budgetsRef(uid).doc();
         final budgetId = docRef.id;
         final now = DateTime.now();
@@ -248,8 +272,8 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
         });
         return BudgetModel(id: budgetId, amount: budget.amount);
       },
-      serializeResponse: (b) => {'id': b.id, 'amount': b.amount},
-    ).catchError((e) => throw Exception('Failed to create budget: $e'));
+      serialize: (b) => {'id': b.id, 'amount': b.amount},
+    );
   }
 
   @override
@@ -259,15 +283,16 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
     bool replaceAll = false,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<BudgetModel>(
-      'Firestore.updateBudget',
-      {
-        'id': budget.id,
+    return FirebaseLogger.mutation(
+      operation: 'updateBudget',
+      collection: _path(uid, 'budget'),
+      docId: budget.id,
+      data: {
         'amount': budget.amount,
         'effectiveDayKey': effectiveDayKey,
         'replaceAll': replaceAll,
       },
-      () async {
+      fn: () async {
         final docRef = _budgetsRef(uid).doc(budget.id);
         await docRef.update(budget.toJson());
         final now = DateTime.now();
@@ -288,17 +313,18 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
         });
         return budget;
       },
-      serializeResponse: (b) => {'id': b.id},
-    ).catchError((e) => throw Exception('Failed to update budget: $e'));
+      serialize: (b) => {'id': b.id, 'amount': b.amount},
+    );
   }
 
   @override
   Future<List<BudgetHistoryEntry>> getBudgetHistory(String budgetId) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<List<BudgetHistoryEntry>>(
-      'Firestore.getBudgetHistory',
-      {'budgetId': budgetId},
-      () async {
+    return FirebaseLogger.query(
+      operation: 'getBudgetHistory',
+      collection: _path(uid, 'budget/$budgetId/history'),
+      filters: {'orderBy': 'effectiveDayKey'},
+      fn: () async {
         final snapshot = await _budgetHistoryRef(uid, budgetId)
             .orderBy('effectiveDayKey')
             .get();
@@ -306,8 +332,15 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
             .map((doc) => BudgetHistoryEntry.fromJson(doc.id, doc.data()))
             .toList();
       },
-      serializeResponse: (h) => {'count': h.length},
-    ).catchError((e) => throw Exception('Failed to get budget history: $e'));
+      serialize: (list) => {
+        '_docsCount': list.length,
+        '_docs': list.map((e) => {
+          'id': e.id,
+          'amount': e.amount,
+          'effectiveDayKey': e.effectiveDayKey,
+        }).toList(),
+      },
+    );
   }
 
   @override
@@ -316,12 +349,12 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
     required BudgetHistoryEntry entry,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.addBudgetHistoryEntry',
-      {'budgetId': budgetId, 'amount': entry.amount},
-      () => _budgetHistoryRef(uid, budgetId).add(entry.toJson()),
-      serializeResponse: (_) => {'ok': true},
-    ).catchError((e) => throw Exception('Failed to add budget history: $e'));
+    return FirebaseLogger.mutation(
+      operation: 'addBudgetHistoryEntry',
+      collection: _path(uid, 'budget/$budgetId/history'),
+      data: entry.toJson(),
+      fn: () => _budgetHistoryRef(uid, budgetId).add(entry.toJson()),
+    );
   }
 
   @override
@@ -330,14 +363,15 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
     required BudgetHistoryEntry entry,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.updateBudgetHistoryEntry',
-      {'budgetId': budgetId, 'entryId': entry.id},
-      () => _budgetHistoryRef(uid, budgetId)
+    return FirebaseLogger.mutation(
+      operation: 'updateBudgetHistoryEntry',
+      collection: _path(uid, 'budget/$budgetId/history'),
+      docId: entry.id,
+      data: entry.toJson(),
+      fn: () => _budgetHistoryRef(uid, budgetId)
           .doc(entry.id)
           .update(entry.toJson()),
-      serializeResponse: (_) => {'ok': true},
-    ).catchError((e) => throw Exception('Failed to update budget history: $e'));
+    );
   }
 
   @override
@@ -346,12 +380,12 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
     required String entryId,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.deleteBudgetHistoryEntry',
-      {'budgetId': budgetId, 'entryId': entryId},
-      () => _budgetHistoryRef(uid, budgetId).doc(entryId).delete(),
-      serializeResponse: (_) => {'ok': true},
-    ).catchError((e) => throw Exception('Failed to delete budget history: $e'));
+    return FirebaseLogger.mutation(
+      operation: 'deleteBudgetHistoryEntry',
+      collection: _path(uid, 'budget/$budgetId/history'),
+      docId: entryId,
+      fn: () => _budgetHistoryRef(uid, budgetId).doc(entryId).delete(),
+    );
   }
 
   @override
@@ -374,10 +408,11 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
   @override
   Future<void> deleteBudget(String id) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.deleteBudget',
-      {'id': id},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'deleteBudget',
+      collection: _path(uid, 'budget'),
+      docId: id,
+      fn: () async {
         final historyRef = _budgetHistoryRef(uid, id);
         final snapshot = await historyRef.get();
         for (final doc in snapshot.docs) {
@@ -385,17 +420,16 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
         }
         await _budgetsRef(uid).doc(id).delete();
       },
-      serializeResponse: (_) => {'ok': true},
-    ).catchError((e) => throw Exception('Failed to delete budget: $e'));
+    );
   }
 
   @override
   Future<GoalsModel> getGoals() async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<GoalsModel>(
-      'Firestore.getGoals',
-      {},
-      () async {
+    return FirebaseLogger.query(
+      operation: 'getGoals',
+      collection: _path(uid, 'goals + transactions'),
+      fn: () async {
         final results = await Future.wait([
           _goalsRef(uid).get(),
           _transactionsRef(uid).where('goalId', isNull: false).get(),
@@ -431,64 +465,79 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
           ),
         );
       },
-      serializeResponse: (g) => {'goalsCount': g.goals.length},
-    ).catchError((e) => throw Exception('Failed to get goals: $e'));
+      serialize: (g) => {
+        '_docsCount': g.goals.length,
+        '_docs': g.goals.map((goal) => {
+          'id': goal.id,
+          'name': goal.name,
+          'targetAmount': goal.targetAmount,
+          'progress': goal.progress,
+          'isCompleted': goal.isCompleted,
+        }).toList(),
+        'totalProgress': g.totalGoal.totalProgress,
+        'totalTarget': g.totalGoal.totalTargetAmount,
+      },
+    );
   }
 
   @override
   Future<GoalModel> createGoal({required GoalModel goal}) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<GoalModel>(
-      'Firestore.createGoal',
-      {'name': goal.name, 'targetAmount': goal.targetAmount},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'createGoal',
+      collection: _path(uid, 'goals'),
+      data: goal.toJson(),
+      fn: () async {
         final docRef = _goalsRef(uid).doc();
         final created = goal.copyWith(id: docRef.id);
         await docRef.set(created.toJson());
         return created;
       },
-      serializeResponse: (g) => {'id': g.id, 'name': g.name},
-    ).catchError((e) => throw Exception('Failed to create goal: $e'));
+      serialize: (g) => {'id': g.id, 'name': g.name},
+    );
   }
 
   @override
   Future<GoalModel> updateGoal({required GoalModel goal}) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<GoalModel>(
-      'Firestore.updateGoal',
-      {'id': goal.id, 'name': goal.name},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'updateGoal',
+      collection: _path(uid, 'goals'),
+      docId: goal.id,
+      data: goal.toJson(),
+      fn: () async {
         final docRef = _goalsRef(uid).doc(goal.id);
         await docRef.update(goal.toJson());
         return goal;
       },
-      serializeResponse: (g) => {'id': g.id},
-    ).catchError((e) => throw Exception('Failed to update goal: $e'));
+      serialize: (g) => {'id': g.id, 'name': g.name},
+    );
   }
 
   @override
   Future<void> deleteGoal(String id, {required bool deleteTransactions}) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.deleteGoal',
-      {'id': id, 'deleteTransactions': deleteTransactions},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'deleteGoal',
+      collection: _path(uid, 'goals'),
+      docId: id,
+      data: {'deleteTransactions': deleteTransactions},
+      fn: () async {
         if (deleteTransactions) {
           await _transactionsRepo.deleteTransactionsByGoalId(id);
         }
         await _goalsRef(uid).doc(id).delete();
       },
-      serializeResponse: (_) => {'ok': true},
-    ).catchError((e) => throw Exception('Failed to delete goal: $e'));
+    );
   }
 
   @override
   Future<List<ScheduledPaymentModel>> getScheduledPayments() async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<List<ScheduledPaymentModel>>(
-      'Firestore.getScheduledPayments',
-      {},
-      () async {
+    return FirebaseLogger.query(
+      operation: 'getScheduledPayments',
+      collection: _path(uid, 'scheduled_payments'),
+      fn: () async {
         final snapshot = await _scheduledPaymentsRef(uid).get();
         final models = <ScheduledPaymentModel>[];
         for (final doc in snapshot.docs) {
@@ -510,9 +559,16 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
         );
         return models;
       },
-      serializeResponse: (m) => {'count': m.length},
-    ).catchError((e) =>
-        throw Exception('Failed to get scheduled payments: $e'));
+      serialize: (list) => {
+        '_docsCount': list.length,
+        '_docs': list.map((p) => {
+          'id': p.id,
+          'amount': p.amount,
+          'frequency': p.frequency.toJson(),
+          'nextDate': p.nextDate.toIso8601String(),
+        }).toList(),
+      },
+    );
   }
 
   @override
@@ -520,10 +576,16 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
     required ScheduledPaymentModel payment,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<ScheduledPaymentModel>(
-      'Firestore.createScheduledPayment',
-      {'amount': payment.amount, 'frequency': payment.frequency.toJson()},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'createScheduledPayment',
+      collection: _path(uid, 'scheduled_payments'),
+      data: {
+        'amount': payment.amount,
+        'frequency': payment.frequency.toJson(),
+        'walletId': payment.walletId,
+        'categoryId': payment.categoryId,
+      },
+      fn: () async {
         final docRef = _scheduledPaymentsRef(uid).doc();
         final now = DateTime.now();
         final nextDate = ScheduledPaymentDateService.calculateNextDate(
@@ -541,9 +603,12 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
         await docRef.set(created.toJson());
         return created;
       },
-      serializeResponse: (p) => {'id': p.id},
-    ).catchError((e) =>
-        throw Exception('Failed to create scheduled payment: $e'));
+      serialize: (p) => {
+        'id': p.id,
+        'amount': p.amount,
+        'nextDate': p.nextDate.toIso8601String(),
+      },
+    );
   }
 
   @override
@@ -551,10 +616,15 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
     required ScheduledPaymentModel payment,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<ScheduledPaymentModel>(
-      'Firestore.updateScheduledPayment',
-      {'id': payment.id},
-      () async {
+    return FirebaseLogger.mutation(
+      operation: 'updateScheduledPayment',
+      collection: _path(uid, 'scheduled_payments'),
+      docId: payment.id,
+      data: {
+        'amount': payment.amount,
+        'frequency': payment.frequency.toJson(),
+      },
+      fn: () async {
         final nextDate = ScheduledPaymentDateService.calculateNextDate(
           frequency: payment.frequency,
           paymentDate: payment.paymentDate,
@@ -568,20 +638,21 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
         await _scheduledPaymentsRef(uid).doc(payment.id).update(updated.toJson());
         return updated;
       },
-      serializeResponse: (p) => {'id': p.id},
-    ).catchError((e) =>
-        throw Exception('Failed to update scheduled payment: $e'));
+      serialize: (p) => {
+        'id': p.id,
+        'nextDate': p.nextDate.toIso8601String(),
+      },
+    );
   }
 
   @override
   Future<void> deleteScheduledPayment(String id) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<void>(
-      'Firestore.deleteScheduledPayment',
-      {'id': id},
-      () => _scheduledPaymentsRef(uid).doc(id).delete(),
-      serializeResponse: (_) => {'ok': true},
-    ).catchError((e) =>
-        throw Exception('Failed to delete scheduled payment: $e'));
+    return FirebaseLogger.mutation(
+      operation: 'deleteScheduledPayment',
+      collection: _path(uid, 'scheduled_payments'),
+      docId: id,
+      fn: () => _scheduledPaymentsRef(uid).doc(id).delete(),
+    );
   }
 }

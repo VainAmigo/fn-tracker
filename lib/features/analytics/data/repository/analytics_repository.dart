@@ -22,6 +22,8 @@ class AnalyticsRepository
   CollectionReference<Map<String, dynamic>> _goalsRef(String uid) =>
       FirestorePaths.goalsRef(firebaseFirestore, uid);
 
+  String _path(String uid) => 'users/$uid';
+
   @override
   Future<AnalyticsModel> getAnalytics({
     required String startDayKey,
@@ -29,10 +31,15 @@ class AnalyticsRepository
     required DatePickerPeriod period,
   }) async {
     final uid = requireUid();
-    return FirebaseLogger.withLogging<AnalyticsModel>(
-      'Firestore.getAnalytics',
-      {'startDayKey': startDayKey, 'endDayKey': endDayKey},
-      () async {
+    return FirebaseLogger.query(
+      operation: 'getAnalytics',
+      collection: '${_path(uid)}/{transactions,categories,wallets,goals}',
+      filters: {
+        'dayKey >=': startDayKey,
+        'dayKey <=': endDayKey,
+        'period': period.runtimeType.toString(),
+      },
+      fn: () async {
         final results = await Future.wait([
           _transactionsRef(uid)
               .where('dayKey', isGreaterThanOrEqualTo: startDayKey)
@@ -192,9 +199,14 @@ class AnalyticsRepository
           daySpending: daySpending,
         );
       },
-      serializeResponse: (a) => {
+      serialize: (a) => {
         'totalIncome': a.totalIncome,
         'totalExpense': a.totalExpense,
+        'categoriesCount': a.categorySpending.length,
+        '_docs': a.categorySpending.map((cs) => {
+          'category': cs.category.name,
+          'amount': cs.amount,
+        }).toList(),
       },
     );
   }
