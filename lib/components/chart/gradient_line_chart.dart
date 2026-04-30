@@ -2,6 +2,26 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+/// Суммирует соседние значения для графика: при [values].length > 12 — окна по 2,
+/// при > 24 — по 3 (хвост меньшего размера суммируется в последнюю точку).
+List<double> mergeChartBuckets(List<double> values) {
+  if (values.isEmpty) return const [];
+  final n = values.length;
+  final size = n > 24 ? 3 : (n > 12 ? 2 : 1);
+  if (size == 1) return List<double>.from(values);
+
+  final out = <double>[];
+  for (var i = 0; i < n; i += size) {
+    final end = math.min(i + size, n);
+    var sum = 0.0;
+    for (var j = i; j < end; j++) {
+      sum += values[j];
+    }
+    out.add(sum);
+  }
+  return out;
+}
+
 /// How to use
 /// 1. Create a list of values
 /// SizedBox(

@@ -67,9 +67,10 @@ class _HomeViewState extends State<HomeView> {
             : HomePageStatModel(totalExpense: 0.0, homeChartStat: const []);
 
         final rawValues = homePageStat.homeChartStat;
-        final values = rawValues.length == 1
-            ? <double>[rawValues.first, rawValues.first]
-            : rawValues;
+        final merged = mergeChartBuckets(rawValues);
+        final values = merged.length == 1
+            ? <double>[merged.first, merged.first]
+            : merged;
 
         return Scaffold(
           body: Stack(
