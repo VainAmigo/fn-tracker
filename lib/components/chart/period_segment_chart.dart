@@ -107,12 +107,14 @@ class CategorySegmentData {
 ///
 /// Сегменты фиксированной ширины, диаграмма с горизонтальным скроллом.
 /// При старте прокручивается к сегменту с [isInitialVisible].
-/// При нажатии на сегмент показывается сумма сверху, разбивка по категориям
-/// в столбце и список категорий под диаграммой.
+/// При нажатии на сегмент показывается сумма сверху и разбивка по категориям
+/// в столбце. Список категорий под диаграммой строит экран-родитель (аналитика).
 ///
 /// Пример:
 /// ```dart
 /// PeriodSegmentChart(
+///   selectedBarIndex: 0,
+///   onBarSelected: (i) { ... },
 ///   bars: [
 ///     PeriodSegmentData(
 ///       label: '21 MAR',
@@ -125,7 +127,6 @@ class CategorySegmentData {
 ///     ),
 ///     ...
 ///   ],
-///   currency: currency,
 /// )
 /// ```
 
@@ -135,6 +136,8 @@ class PeriodSegmentChart extends StatefulWidget {
   const PeriodSegmentChart({
     super.key,
     required this.bars,
+    required this.selectedBarIndex,
+    required this.onBarSelected,
     this.segmentWidth = AppSizing.heightM,
     this.segmentGap = AppSizing.spaceBtwItemsExtra,
     this.chartHeight = _defaultChartHeight,
@@ -149,13 +152,19 @@ class PeriodSegmentChart extends StatefulWidget {
 
   final List<PeriodSegmentData> bars;
 
+  /// Индекс выбранного столбца (состояние держит родитель).
+  final int selectedBarIndex;
+
+  /// Выбор столбца по тапу.
+  final ValueChanged<int> onBarSelected;
+
   /// Фиксированная ширина одного сегмента (столбца).
   final double segmentWidth;
 
   /// Зазор между столбцами.
   final double segmentGap;
 
-  /// Высота области диаграммы (без подписей и списка категорий).
+  /// Высота области диаграммы (без подписей).
   final double chartHeight;
 
   /// Радиус скругления столбцов.
@@ -186,7 +195,6 @@ class PeriodSegmentChart extends StatefulWidget {
 class _PeriodSegmentChartState extends State<PeriodSegmentChart>
     with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
-  int? _selectedIndex;
   late AnimationController _animationController;
   late Animation<double> _animation;
 
@@ -202,9 +210,7 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart>
       curve: widget.animationCurve,
     );
     _animationController.forward();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _scrollToInitialVisible(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToSelectedBar());
   }
 
   @override
@@ -212,28 +218,28 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart>
     super.didUpdateWidget(oldWidget);
     if (!listEquals(oldWidget.bars, widget.bars)) {
       _animationController.forward(from: 0);
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _scrollToInitialVisible(),
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToSelectedBar());
+    } else if (oldWidget.selectedBarIndex != widget.selectedBarIndex) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToSelectedBar());
     }
   }
 
-  void _scrollToInitialVisible() {
-    final index = widget.bars.indexWhere((b) => b.isInitialVisible);
-    if (index >= 0 && _scrollController.hasClients) {
-      final itemWidth = widget.segmentWidth + widget.segmentGap;
-      final viewportWidth = _scrollController.position.viewportDimension;
-      final offset =
-          (index * itemWidth) - (viewportWidth / 2) + (itemWidth / 2);
-      _scrollController.animateTo(
-        math.max(0, offset),
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
-      );
-      if (_selectedIndex == null) {
-        setState(() => _selectedIndex = index);
-      }
+  void _scrollToSelectedBar() {
+    final index = widget.selectedBarIndex;
+    if (index < 0 ||
+        index >= widget.bars.length ||
+        !_scrollController.hasClients) {
+      return;
     }
+    final itemWidth = widget.segmentWidth + widget.segmentGap;
+    final viewportWidth = _scrollController.position.viewportDimension;
+    final offset =
+        (index * itemWidth) - (viewportWidth / 2) + (itemWidth / 2);
+    _scrollController.animateTo(
+      math.max(0, offset),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   @override
@@ -281,7 +287,7 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart>
                           final hasVisibleSegments =
                               bar.total > 0 &&
                               bar.segments.any((s) => s.value > 0);
-                          final isSelected = _selectedIndex == i;
+                          final isSelected = widget.selectedBarIndex == i;
                           final isLast = i == widget.bars.length - 1;
                           final barWidth = isLast
                               ? widget.segmentWidth
@@ -302,7 +308,7 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart>
                               progress: _animation.value,
                               onTap: hasVisibleSegments
                                   ? () {
-                                      setState(() => _selectedIndex = i);
+                                      widget.onBarSelected(i);
                                       widget.onSegmentTap?.call(i);
                                     }
                                   : null,
@@ -317,19 +323,6 @@ class _PeriodSegmentChartState extends State<PeriodSegmentChart>
             ),
           ),
         ),
-        if (_selectedIndex != null &&
-            _selectedIndex! < widget.bars.length &&
-            widget.bars[_selectedIndex!].segments.any((s) => s.value > 0)) ...[
-          const SizedBox(height: AppSizing.spaceBtwItems),
-          AnimatedBuilder(
-            animation: _animation,
-            builder: (context, _) => _CategoryBreakdownList(
-              segments: widget.bars[_selectedIndex!].segments,
-              total: widget.bars[_selectedIndex!].total,
-              progress: _animation.value,
-            ),
-          ),
-        ],
       ],
     );
   }
@@ -569,125 +562,6 @@ class _StackedBar extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _CategoryBreakdownList extends StatelessWidget {
-  const _CategoryBreakdownList({
-    required this.segments,
-    required this.total,
-    this.progress = 1.0,
-  });
-
-  final List<CategorySegmentData> segments;
-  final double total;
-  final double progress;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final validSegments = segments.where((s) => s.value > 0).toList();
-    if (validSegments.isEmpty) return const SizedBox.shrink();
-
-    final maxValue = validSegments
-        .map((s) => s.value)
-        .fold<double>(0, (a, b) => math.max(a, b));
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (var i = 0; i < validSegments.length; i++) ...[
-          if (i > 0) const SizedBox(height: AppSizing.spaceBtwItems),
-          _CategoryBreakdownRow(
-            segment: validSegments[i],
-            maxValue: maxValue,
-            colorScheme: colorScheme,
-            progress: progress,
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-class _CategoryBreakdownRow extends StatelessWidget {
-  const _CategoryBreakdownRow({
-    required this.segment,
-    required this.maxValue,
-    required this.colorScheme,
-    this.progress = 1.0,
-  });
-
-  static const double _minBarWidth = 90;
-  static const double _maxBarWidth = 200;
-  static const double _barHeight = AppSizing.heightS;
-
-  final CategorySegmentData segment;
-  final double maxValue;
-  final ColorScheme colorScheme;
-  final double progress;
-
-  @override
-  Widget build(BuildContext context) {
-    final fraction = maxValue > 0
-        ? (segment.value / maxValue).clamp(0.0, 1.0)
-        : 0.0;
-    final barWidth =
-        _minBarWidth + (_maxBarWidth - _minBarWidth) * fraction * progress;
-
-    return Row(
-      children: [
-        Container(
-          height: AppSizing.heightS,
-          width: AppSizing.heightS,
-          decoration: BoxDecoration(
-            color: segment.color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
-          ),
-          child: Icon(
-            segment.icon ?? Icons.category,
-            size: AppSizing.iconSizeM,
-            color: segment.color,
-          ),
-        ),
-        const SizedBox(width: AppSizing.spaceBtwItems),
-        Expanded(
-          child: Text(
-            segment.name,
-            style: AppTextStyles.listTileTitle(context),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        const SizedBox(width: AppSizing.spaceBtwItems),
-        Container(
-          height: _barHeight,
-          constraints: BoxConstraints(minWidth: _minBarWidth),
-          width: barWidth,
-          decoration: BoxDecoration(
-            color: segment.color.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizing.defaultPadding / 2,
-          ),
-          alignment: Alignment.centerRight,
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerRight,
-            child: AmountTextWidget(
-              amount: segment.value,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              style: AppTextStyles.text14w400(context).copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

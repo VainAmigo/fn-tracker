@@ -31,15 +31,19 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   Future<void> loadTransactionsById(
     TransactionIdType idType,
     String id,
-    TransactionPeriod period,
-  ) async {
+    TransactionPeriod period, {
+    String? startDayKey,
+    String? endDayKey,
+  }) async {
     try {
       emit(TransactionsLoading());
+      final start = startDayKey ?? period.dateRange.start.dayKey;
+      final end = endDayKey ?? period.dateRange.end.dayKey;
       final transactions = await transactionsRepo.getUserTransactionsById(
         idType: idType,
         id: id,
-        start: period.dateRange.start.dayKey,
-        end: period.dateRange.end.dayKey,
+        start: start,
+        end: end,
       );
       if (transactions.isEmpty) {
         emit(TransactionsEmpty());

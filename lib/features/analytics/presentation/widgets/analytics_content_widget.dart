@@ -28,7 +28,9 @@ class AnalyticsContentWidget extends StatefulWidget {
 
 class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
   late int _selectedTabIndex;
-  List<int> _visualOrder = List<int>.from(AnalyticsTabOrderStorage.defaultOrder);
+  List<int> _visualOrder = List<int>.from(
+    AnalyticsTabOrderStorage.defaultOrder,
+  );
 
   @override
   void initState() {
@@ -105,17 +107,24 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TitledSection(
-          title: _selectedTabIndex == 3 ? context.l10n.aiAssistant : context.l10n.spendingChart,
+          title: _selectedTabIndex == 3
+              ? context.l10n.aiAssistant
+              : context.l10n.spendingChart,
           action: _buildTabBar(context),
           children: [
             IndexedStack(
               index: _selectedTabIndex,
               sizing: StackFit.passthrough,
               children: [
-                _DonutTabContent(key: const ValueKey('donut'), data: data),
+                _DonutTabContent(
+                  key: const ValueKey('donut'),
+                  data: data,
+                  period: widget.period,
+                ),
                 _BarTabContent(
                   key: ValueKey('bar_${widget.period.startDayKey}'),
                   data: data,
+                  period: widget.period,
                 ),
                 _HeatmapTabContent(
                   key: ValueKey('heatmap_${widget.period.startDayKey}'),
@@ -158,7 +167,9 @@ class _AnalyticsContentWidgetState extends State<AnalyticsContentWidget> {
               },
               icon: Icon(
                 _analyticsTabIcon(logical),
-                color: _selectedTabIndex == logical ? activeColor : inactiveColor,
+                color: _selectedTabIndex == logical
+                    ? activeColor
+                    : inactiveColor,
               ),
             ),
           );
@@ -187,9 +198,14 @@ String _analyticsTabTooltip(int logicalIndex) {
 }
 
 class _DonutTabContent extends StatelessWidget {
-  const _DonutTabContent({super.key, required this.data});
+  const _DonutTabContent({
+    super.key,
+    required this.data,
+    required this.period,
+  });
 
   final AnalyticsModel data;
+  final DatePickerPeriod period;
 
   @override
   Widget build(BuildContext context) {
@@ -225,6 +241,11 @@ class _DonutTabContent extends StatelessWidget {
               return SpendingCategoriesListWidget(
                 categorySpending: data.categorySpending,
                 progress: progress,
+                onCategoryTap: (spending) => _showCategoryTransactionsSheet(
+                  context,
+                  spending: spending,
+                  period: period,
+                ),
               );
             },
           ),
@@ -234,14 +255,52 @@ class _DonutTabContent extends StatelessWidget {
   }
 }
 
-class _BarTabContent extends StatelessWidget {
-  const _BarTabContent({super.key, required this.data});
+class _BarTabContent extends StatefulWidget {
+  const _BarTabContent({super.key, required this.data, required this.period});
 
   final AnalyticsModel data;
+  final DatePickerPeriod period;
+
+  @override
+  State<_BarTabContent> createState() => _BarTabContentState();
+}
+
+class _BarTabContentState extends State<_BarTabContent> {
+  late int _selectedBarIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedBarIndex = _initialBarIndex(widget.data.periodSegments);
+  }
+
+  @override
+  void didUpdateWidget(covariant _BarTabContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.data.periodSegments != widget.data.periodSegments) {
+      setState(() {
+        _selectedBarIndex = _clampBarIndex(
+          _initialBarIndex(widget.data.periodSegments),
+          widget.data.periodSegments.length,
+        );
+      });
+    }
+  }
+
+  int _initialBarIndex(List<PeriodSegmentItem> segments) {
+    final idx = segments.indexWhere((s) => s.isInitialVisible);
+    return idx >= 0 ? idx : 0;
+  }
+
+  int _clampBarIndex(int index, int length) {
+    if (length <= 0) return 0;
+    return index.clamp(0, length - 1);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bars = data.periodSegments
+    final segments = widget.data.periodSegments;
+    final bars = segments
         .map(
           (s) => PeriodSegmentData.fromCategorySpendingList(
             label: s.label,
@@ -251,16 +310,58 @@ class _BarTabContent extends StatelessWidget {
         )
         .toList();
 
+    final idx = _clampBarIndex(_selectedBarIndex, segments.length);
+    final selectedSegment = segments.isEmpty ? null : segments[idx];
+    final listAnimationKey = selectedSegment == null
+        ? const ValueKey('bar_list_empty')
+        : ValueKey(
+            Object.hash(
+              idx,
+              selectedSegment.total,
+              Object.hashAll(
+                selectedSegment.categorySpending.map(
+                  (s) => Object.hash(s.category.categoryId, s.amount),
+                ),
+              ),
+            ),
+          );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnalyticsSummaryCardsWidget(
-          totalIncome: data.totalIncome,
-          totalExpense: data.totalExpense,
-          balance: data.balance,
+          totalIncome: widget.data.totalIncome,
+          totalExpense: widget.data.totalExpense,
+          balance: widget.data.balance,
         ),
         const SizedBox(height: AppSizing.spaceBtwElements),
-        PeriodSegmentChart(bars: bars),
+        if (segments.isNotEmpty)
+          PeriodSegmentChart(
+            bars: bars,
+            selectedBarIndex: idx,
+            onBarSelected: (i) => setState(() => _selectedBarIndex = i),
+          ),
+        if (selectedSegment != null &&
+            selectedSegment.categorySpending.any((c) => c.amount > 0)) ...[
+          const SizedBox(height: AppSizing.spaceBtwSections),
+          TweenAnimationBuilder<double>(
+            key: listAnimationKey,
+            tween: Tween(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.easeOutCubic,
+            builder: (context, progress, _) {
+              return SpendingCategoriesListWidget(
+                categorySpending: selectedSegment.categorySpending,
+                progress: progress,
+                onCategoryTap: (spending) => _showCategoryTransactionsSheet(
+                  context,
+                  spending: spending,
+                  period: _barSegmentPeriod(widget.period, idx),
+                ),
+              );
+            },
+          ),
+        ],
       ],
     );
   }
@@ -361,6 +462,11 @@ class _HeatmapTabContentState extends State<_HeatmapTabContent> {
             return SpendingCategoriesListWidget(
               categorySpending: selectedDay.categorySpending,
               progress: progress,
+              onCategoryTap: (spending) => _showCategoryTransactionsSheet(
+                context,
+                spending: spending,
+                period: _heatmapDayPeriod(selectedDay.date),
+              ),
             );
           },
         ),
@@ -379,4 +485,60 @@ class _HeatmapTabContentState extends State<_HeatmapTabContent> {
 
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
+/// Период одного календарного дня (для списка категорий в heatmap).
+WeeklyPeriod _heatmapDayPeriod(DateTime day) {
+  final start = DateTime(day.year, day.month, day.day);
+  final end = DateTime(day.year, day.month, day.day, 23, 59, 59);
+  return WeeklyPeriod(start: start, end: end);
+}
+
+/// Период, соответствующий столбцу bar-графика (день месяца / месяц года / день недели).
+DatePickerPeriod _barSegmentPeriod(
+  DatePickerPeriod analyticsPeriod,
+  int segmentIndex,
+) {
+  return switch (analyticsPeriod) {
+    YearlyPeriod(:final year) => MonthlyPeriod(
+        year: year,
+        month: Month.fromValue(segmentIndex + 1),
+      ),
+    MonthlyPeriod(:final year, :final month) => _heatmapDayPeriod(
+        DateTime(year, month.value, segmentIndex + 1),
+      ),
+    WeeklyPeriod(:final start, :final end) => _heatmapDayPeriod(
+        _dateForWeekdayInWeek(start, end, segmentIndex + 1),
+      ),
+  };
+}
+
+DateTime _dateForWeekdayInWeek(
+  DateTime weekStart,
+  DateTime weekEnd,
+  int weekday,
+) {
+  var cursor = DateTime(weekStart.year, weekStart.month, weekStart.day);
+  final last = DateTime(weekEnd.year, weekEnd.month, weekEnd.day);
+  while (!cursor.isAfter(last)) {
+    if (cursor.weekday == weekday) return cursor;
+    cursor = cursor.add(const Duration(days: 1));
+  }
+  return DateTime(weekStart.year, weekStart.month, weekStart.day);
+}
+
+void _showCategoryTransactionsSheet(
+  BuildContext context, {
+  required CategorySpending spending,
+  required DatePickerPeriod period,
+}) {
+  AppBottomSheet.showFittedModalBottomSheet(
+    context,
+    child: TransactionsListByIdView(
+      idType: TransactionIdType.category,
+      id: spending.category.categoryId,
+      analyticsPeriod: period,
+      listTitle: spending.category.name,
+    ),
+  );
 }

@@ -4,6 +4,7 @@ import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/theme/themes.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SecurityView extends StatelessWidget {
   const SecurityView({super.key});
@@ -54,6 +55,19 @@ class SecurityView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSizing.spaceBtwSections),
+
+              CategoryCard(
+                title: 'Привезать к Google аккаунт',
+                subtitle: 'Привяжите ваш Google аккаунт для доступа в приложение',
+                radius: CardRadius.single,
+                leading: SvgPicture.asset(
+                      'assets/icons/google_icon.svg',
+                      width: AppSizing.iconSizeM,
+                      height: AppSizing.iconSizeM,
+                    ),
+              ),
+              const SizedBox(height: AppSizing.spaceBtwSections),
+
               TitledSection(
                 title: 'Безопасность',
                 children: [

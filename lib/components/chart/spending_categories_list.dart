@@ -12,16 +12,19 @@ class SpendingCategoriesListWidget extends StatelessWidget {
     super.key,
     required this.categorySpending,
     this.progress = 1.0,
+    this.onCategoryTap,
   });
 
   final List<CategorySpending> categorySpending;
   final double progress;
+  final ValueChanged<CategorySpending>? onCategoryTap;
 
   @override
   Widget build(BuildContext context) {
-    final segments = categorySpending
+    final spendingsPositive =
+        categorySpending.where((s) => s.amount > 0).toList();
+    final segments = spendingsPositive
         .map((s) => CategorySegmentData.fromCategorySpending(s))
-        .where((s) => s.value > 0)
         .toList();
     if (segments.isEmpty) return const SizedBox.shrink();
 
@@ -40,6 +43,9 @@ class SpendingCategoriesListWidget extends StatelessWidget {
             maxValue: maxValue,
             colorScheme: colorScheme,
             progress: progress,
+            onTap: onCategoryTap != null
+                ? () => onCategoryTap!(spendingsPositive[i])
+                : null,
           ),
         ],
       ],
@@ -53,6 +59,7 @@ class _SpendingCategoryRow extends StatelessWidget {
     required this.maxValue,
     required this.colorScheme,
     this.progress = 1.0,
+    this.onTap,
   });
 
   static const double _minBarWidth = 90;
@@ -62,6 +69,7 @@ class _SpendingCategoryRow extends StatelessWidget {
   final double maxValue;
   final ColorScheme colorScheme;
   final double progress;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +79,7 @@ class _SpendingCategoryRow extends StatelessWidget {
     final barWidth =
         _minBarWidth + (_maxBarWidth - _minBarWidth) * fraction * progress;
 
-    return Row(
+    final row = Row(
       children: [
         Container(
           height: AppSizing.heightS,
@@ -120,6 +128,20 @@ class _SpendingCategoryRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+
+    if (onTap == null) return row;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: row,
+        ),
+      ),
     );
   }
 }
