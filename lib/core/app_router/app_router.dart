@@ -170,7 +170,7 @@ final class AppRouter {
       ),
       privacyPolicy => MaterialPageRoute(
         settings: const RouteSettings(name: privacyPolicy),
-        builder: (_) => const PrivacyPolicyView(),
+        builder: (_) => const AccountView(),
       ),
       security => MaterialPageRoute(
         settings: const RouteSettings(name: security),

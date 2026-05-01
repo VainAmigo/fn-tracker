@@ -1206,6 +1206,123 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pin => 'PIN';
 
   @override
+  String get authErrorGeneric => 'Что-то пошло не так. Попробуйте ещё раз.';
+
+  @override
+  String get authErrorAccountExistsWithDifferentCredential =>
+      'Аккаунт с этой почтой уже есть, но с другим способом входа.';
+
+  @override
+  String get authErrorCredentialAlreadyInUse =>
+      'Этот аккаунт Google уже привязан к другому пользователю.';
+
+  @override
+  String get authErrorProviderAlreadyLinked =>
+      'Google уже привязан к этому аккаунту.';
+
+  @override
+  String get authErrorRequiresRecentLogin =>
+      'Из соображений безопасности выйдите и войдите снова, затем привяжите Google.';
+
+  @override
+  String get authErrorInvalidCredential =>
+      'Неверные данные. Проверьте аккаунт Google или попробуйте снова.';
+
+  @override
+  String get authErrorUserDisabled => 'Этот аккаунт отключён.';
+
+  @override
+  String get authErrorNetwork => 'Ошибка сети. Проверьте подключение.';
+
+  @override
+  String get authErrorNotSignedIn => 'Вы не вошли в аккаунт.';
+
+  @override
+  String get authErrorGoogleSignIn =>
+      'Не удалось войти через Google. Проверьте настройки в Firebase Console.';
+
+  @override
+  String get linkGoogleTitle => 'Привязать Google';
+
+  @override
+  String get linkGoogleSubtitle =>
+      'Вход через Google на этом устройстве с тем же профилем';
+
+  @override
+  String get googleAlreadyLinkedTitle => 'Google привязан';
+
+  @override
+  String get googleAlreadyLinkedSubtitle =>
+      'Вы можете входить через Google на этом устройстве';
+
+  @override
+  String get googleLinkedSuccessfully => 'Аккаунт Google привязан';
+
+  @override
+  String get displayNameLabel => 'Отображаемое имя';
+
+  @override
+  String get displayNameNotSet => 'Не установлено';
+
+  @override
+  String get displayNameTapToSet => 'Нажмите, чтобы изменить имя';
+
+  @override
+  String get displayNameWhenSet => 'Имя в приложении';
+
+  @override
+  String get editDisplayNameTitle => 'Изменить имя';
+
+  @override
+  String get displayNameUpdated => 'Имя обновлено';
+
+  @override
+  String get displayNameTooLong =>
+      'Слишком длинное имя (не более 120 символов)';
+
+  @override
+  String get deleteUserDataSectionTitle => 'Данные и аккаунт';
+
+  @override
+  String get deleteUserDataButton => 'Удалить все данные';
+
+  @override
+  String get deleteUserDataTitle => 'Удалить все данные?';
+
+  @override
+  String get deleteUserDataMessage =>
+      'Будут безвозвратно удалены все транзакции, кошельки, цели, категории, бюджеты и настройки в приложении. Вход и профиль (почта, имя) сохранятся.';
+
+  @override
+  String get deleteUserDataConfirm => 'Удалить данные';
+
+  @override
+  String get deleteAccountButton => 'Удалить аккаунт';
+
+  @override
+  String get deleteAccountTitle => 'Удалить аккаунт?';
+
+  @override
+  String get deleteAccountMessage =>
+      'Аккаунт и все данные будут безвозвратно удалены. Это действие нельзя отменить.';
+
+  @override
+  String get deleteAccountConfirm => 'Удалить аккаунт';
+
+  @override
+  String get enterPasswordToConfirmDelete => 'Введите пароль для подтверждения';
+
+  @override
+  String get continueWithGoogleToConfirmDelete =>
+      'Войдите через Google для подтверждения';
+
+  @override
+  String get userDataDeleted => 'Все данные удалены';
+
+  @override
+  String get accountDeleted => 'Аккаунт удалён';
+
+  @override
   String get changePassword => 'Смена пароля';
 
   @override
@@ -1226,4 +1343,16 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get passwordChangeEmailOnly =>
       'Смена пароля доступна только при входе по почте';
+
+  @override
+  String get account => 'Аккаунт';
+
+  @override
+  String get accountTitle => 'Ваш аккаунт';
+
+  @override
+  String get accountSubtitle => 'Настройте ваш аккаунт';
+
+  @override
+  String get accountSettings => 'Настройки аккаунта';
 }

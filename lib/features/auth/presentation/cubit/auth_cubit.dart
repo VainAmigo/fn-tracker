@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/auth/auth.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -101,6 +102,97 @@ class AuthCubit extends HydratedCubit<AuthState> {
 
   /// Смена пароля (email/password). Не эмитит [AuthLoading], чтобы не закрывать главный экран.
   /// При успехе возвращает `null`. При ошибке — текст ошибки (состояние снова [Authenticated]).
+  Future<GoogleSignInOutcome> signInWithGoogle() async {
+    emit(AuthLoading());
+    try {
+      final outcome = await authRepo.signInWithGoogle();
+      switch (outcome) {
+        case GoogleSignInSuccess(:final user, :final isNewProfile):
+          _currentUser = user;
+          if (isNewProfile) {
+            await dataSeeder?.seed();
+          }
+          emit(Authenticated(user));
+        case GoogleSignInCancelled():
+          emit(Unauthenticated());
+        case GoogleSignInFailure():
+          emit(Unauthenticated());
+      }
+      return outcome;
+    } catch (e) {
+      emit(Unauthenticated());
+      return GoogleSignInFailure(debugMessage: e.toString());
+    }
+  }
+
+  Future<GoogleLinkOutcome> linkGoogleAccount() async {
+    try {
+      return await authRepo.linkGoogleAccount();
+    } catch (e) {
+      return GoogleLinkFailure(debugMessage: e.toString());
+    }
+  }
+
+  /// Подтянуть профиль из Firestore / Auth (например, после привязки Google).
+  Future<void> refreshProfile() async {
+    final u = await authRepo.getCurrentUser();
+    if (u != null) {
+      _currentUser = u;
+      emit(Authenticated(u));
+    }
+  }
+
+  Future<String?> deleteAllUserData() async {
+    try {
+      await authRepo.deleteAllUserData();
+      final u = await authRepo.getCurrentUser();
+      if (u != null) {
+        _currentUser = u;
+        emit(Authenticated(u));
+      }
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future<OAuthCredential?> obtainGoogleReauthCredential() async {
+    try {
+      return await authRepo.obtainGoogleReauthCredential();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<String?> deleteAccount({
+    String? emailPassword,
+    OAuthCredential? googleCredential,
+  }) async {
+    try {
+      await authRepo.deleteAccount(
+        emailPassword: emailPassword,
+        googleCredential: googleCredential,
+      );
+      _currentUser = null;
+      emit(Unauthenticated());
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  /// Обновляет имя профиля. При успехе — `null`, иначе текст ошибки.
+  Future<String?> updateDisplayName(String displayName) async {
+    try {
+      final updated = await authRepo.updateDisplayName(displayName);
+      _currentUser = updated;
+      emit(Authenticated(updated));
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
   Future<String?> reauthenticateAndChangePassword(
     String currentPassword,
     String newPassword,

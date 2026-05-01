@@ -1209,6 +1209,122 @@ class AppLocalizationsKy extends AppLocalizations {
   String get pin => 'PIN';
 
   @override
+  String get authErrorGeneric => 'Ката кетти. Кайра аракет кылыңыз.';
+
+  @override
+  String get authErrorAccountExistsWithDifferentCredential =>
+      'Бул электрондук почта менен аккаунт бар, бирок башка кирүү ыкмасы менен.';
+
+  @override
+  String get authErrorCredentialAlreadyInUse =>
+      'Бул Google аккаунты башка колдонуучуга байланышкан.';
+
+  @override
+  String get authErrorProviderAlreadyLinked =>
+      'Google буга чейин бул аккаунтка байланышкан.';
+
+  @override
+  String get authErrorRequiresRecentLogin =>
+      'Коопсуздук үчүн чыгып, кайра кирип, анан Google байлаңыз.';
+
+  @override
+  String get authErrorInvalidCredential =>
+      'Туура эмес маалымат. Google аккаунтуңузду текшериңиз же кайра аракет кылыңыз.';
+
+  @override
+  String get authErrorUserDisabled => 'Бул аккаунт өчүрүлгөн.';
+
+  @override
+  String get authErrorNetwork => 'Тармак катасы. Туташууну текшериңиз.';
+
+  @override
+  String get authErrorNotSignedIn => 'Сиз аккаунтка кирген жоксуз.';
+
+  @override
+  String get authErrorGoogleSignIn =>
+      'Google аркылуу кирүү ишке ашкан жок. Firebase Console жөндөөлөрүн текшериңиз.';
+
+  @override
+  String get linkGoogleTitle => 'Google байлоо';
+
+  @override
+  String get linkGoogleSubtitle =>
+      'Ошол эле профиль менен бул түзмөктө Google аркылуу кирүү';
+
+  @override
+  String get googleAlreadyLinkedTitle => 'Google байланган';
+
+  @override
+  String get googleAlreadyLinkedSubtitle =>
+      'Сиз бул түзмөктө Google аркылуу кире аласыз';
+
+  @override
+  String get googleLinkedSuccessfully => 'Google аккаунты ийгиликтүү байланды';
+
+  @override
+  String get displayNameLabel => 'Көрсөтүлгөн ат';
+
+  @override
+  String get displayNameNotSet => 'Коюлган жок';
+
+  @override
+  String get displayNameTapToSet => 'Атты өзгөртүү үчүн басыңыз';
+
+  @override
+  String get displayNameWhenSet => 'Колдонмодогу ат';
+
+  @override
+  String get editDisplayNameTitle => 'Атты өзгөртүү';
+
+  @override
+  String get displayNameUpdated => 'Ат жаңыланды';
+
+  @override
+  String get displayNameTooLong => 'Ат өтө узун (максимум 120 символ)';
+
+  @override
+  String get deleteUserDataSectionTitle => 'Маалымат жана аккаунт';
+
+  @override
+  String get deleteUserDataButton => 'Бардык маалыматты өчүрүү';
+
+  @override
+  String get deleteUserDataTitle => 'Бардык маалыматты өчүрүү?';
+
+  @override
+  String get deleteUserDataMessage =>
+      'Колдонмодогу бардык транзакциялар, капчыктар, максаттар, категориялар, бюджеттер жана жөндөөлөр түбөлүк өчүрүлөт. Кирүү жана профиль (почта, ат) сакталат.';
+
+  @override
+  String get deleteUserDataConfirm => 'Маалыматты өчүрүү';
+
+  @override
+  String get deleteAccountButton => 'Аккаунтту өчүрүү';
+
+  @override
+  String get deleteAccountTitle => 'Аккаунтту өчүрүү?';
+
+  @override
+  String get deleteAccountMessage =>
+      'Аккаунт жана бардык маалыматтар түбөлүк өчүрүлөт. Бул аракатты жокко чыгарбайсыз.';
+
+  @override
+  String get deleteAccountConfirm => 'Аккаунтту өчүрүү';
+
+  @override
+  String get enterPasswordToConfirmDelete => 'Ырастоо үчүн сырсөздү киргизиңиз';
+
+  @override
+  String get continueWithGoogleToConfirmDelete =>
+      'Ырастоо үчүн Google менен кириңиз';
+
+  @override
+  String get userDataDeleted => 'Бардык маалымат өчүрүлдү';
+
+  @override
+  String get accountDeleted => 'Аккаунт өчүрүлдү';
+
+  @override
   String get changePassword => 'Сырсөздү өзгөртүү';
 
   @override
@@ -1229,4 +1345,16 @@ class AppLocalizationsKy extends AppLocalizations {
   @override
   String get passwordChangeEmailOnly =>
       'Сырсөздү өзгөртүү электрондук почта менен кирүүдө гана жеткиликтүү';
+
+  @override
+  String get account => 'Аккаунт';
+
+  @override
+  String get accountTitle => 'Сиздин аккаунтыңыз';
+
+  @override
+  String get accountSubtitle => 'Сиздин аккаунтыңызды башкаруу';
+
+  @override
+  String get accountSettings => 'Аккаунттын башкаруу';
 }

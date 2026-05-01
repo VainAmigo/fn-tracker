@@ -1210,6 +1210,122 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pin => 'PIN';
 
   @override
+  String get authErrorGeneric => 'Something went wrong. Please try again.';
+
+  @override
+  String get authErrorAccountExistsWithDifferentCredential =>
+      'An account already exists with this email but a different sign-in method.';
+
+  @override
+  String get authErrorCredentialAlreadyInUse =>
+      'This Google account is already linked to another user.';
+
+  @override
+  String get authErrorProviderAlreadyLinked =>
+      'Google is already linked to this account.';
+
+  @override
+  String get authErrorRequiresRecentLogin =>
+      'For security, sign out and sign in again, then try linking Google.';
+
+  @override
+  String get authErrorInvalidCredential =>
+      'Invalid credentials. Check your Google account or try again.';
+
+  @override
+  String get authErrorUserDisabled => 'This account has been disabled.';
+
+  @override
+  String get authErrorNetwork => 'Network error. Check your connection.';
+
+  @override
+  String get authErrorNotSignedIn => 'You are not signed in.';
+
+  @override
+  String get authErrorGoogleSignIn =>
+      'Google Sign-In failed. Check app configuration in Firebase Console.';
+
+  @override
+  String get linkGoogleTitle => 'Link Google account';
+
+  @override
+  String get linkGoogleSubtitle =>
+      'Sign in with Google on this device using the same profile';
+
+  @override
+  String get googleAlreadyLinkedTitle => 'Google linked';
+
+  @override
+  String get googleAlreadyLinkedSubtitle =>
+      'You can sign in with Google on this device';
+
+  @override
+  String get googleLinkedSuccessfully => 'Google account linked';
+
+  @override
+  String get displayNameLabel => 'Display name';
+
+  @override
+  String get displayNameNotSet => 'Not set';
+
+  @override
+  String get displayNameTapToSet => 'Tap to change your display name';
+
+  @override
+  String get displayNameWhenSet => 'Display name';
+
+  @override
+  String get editDisplayNameTitle => 'Edit display name';
+
+  @override
+  String get displayNameUpdated => 'Display name updated';
+
+  @override
+  String get displayNameTooLong => 'Name is too long (max 120 characters)';
+
+  @override
+  String get deleteUserDataSectionTitle => 'Data & account';
+
+  @override
+  String get deleteUserDataButton => 'Delete all data';
+
+  @override
+  String get deleteUserDataTitle => 'Delete all data?';
+
+  @override
+  String get deleteUserDataMessage =>
+      'All transactions, wallets, goals, categories, budgets, and settings in the app will be permanently deleted. Your login and profile (email, name) will stay.';
+
+  @override
+  String get deleteUserDataConfirm => 'Delete data';
+
+  @override
+  String get deleteAccountButton => 'Delete account';
+
+  @override
+  String get deleteAccountTitle => 'Delete account?';
+
+  @override
+  String get deleteAccountMessage =>
+      'Your account and all data will be permanently removed. This cannot be undone.';
+
+  @override
+  String get deleteAccountConfirm => 'Delete account';
+
+  @override
+  String get enterPasswordToConfirmDelete => 'Enter your password to confirm';
+
+  @override
+  String get continueWithGoogleToConfirmDelete =>
+      'Sign in with Google to confirm';
+
+  @override
+  String get userDataDeleted => 'All data has been deleted';
+
+  @override
+  String get accountDeleted => 'Account deleted';
+
+  @override
   String get changePassword => 'Change password';
 
   @override
@@ -1230,4 +1346,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passwordChangeEmailOnly =>
       'Password change is only available for email sign-in';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get accountTitle => 'Your account';
+
+  @override
+  String get accountSubtitle => 'Manage your account';
+
+  @override
+  String get accountSettings => 'Account settings';
 }

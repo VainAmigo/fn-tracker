@@ -123,15 +123,22 @@ class _RegisterViewState extends State<RegisterView> {
                     },
                   ),
                   const SizedBox(height: AppSizing.spaceBtwSections),
-                  PrimaryButton(
-                    text: context.l10n.continueWithGoogle,
-                    size: PrimaryButtonSize.large,
-                    leading: SvgPicture.asset(
-                      'assets/icons/google_icon.svg',
-                      width: AppSizing.iconSizeM,
-                      height: AppSizing.iconSizeM,
-                    ),
-                    onPressed: () {},
+                  BlocBuilder<AuthCubit, AuthState>(
+                    builder: (context, state) {
+                      final busy = state is AuthLoading;
+                      return PrimaryButton(
+                        text: context.l10n.continueWithGoogle,
+                        size: PrimaryButtonSize.large,
+                        leading: SvgPicture.asset(
+                          'assets/icons/google_icon.svg',
+                          width: AppSizing.iconSizeM,
+                          height: AppSizing.iconSizeM,
+                        ),
+                        onPressed: busy
+                            ? null
+                            : () => runGoogleSignInFlow(context),
+                      );
+                    },
                   ),
                 ],
               ),

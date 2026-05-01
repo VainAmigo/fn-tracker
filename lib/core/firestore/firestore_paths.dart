@@ -10,6 +10,7 @@ abstract final class FirestorePaths {
   static const String goals = 'goals';
   static const String budget = 'budget';
   static const String scheduledPayments = 'scheduled_payments';
+  static const String settings = 'settings';
 
   static CollectionReference<Map<String, dynamic>> userCollection(
     FirebaseFirestore firestore,
@@ -60,4 +61,10 @@ abstract final class FirestorePaths {
     String uid,
   ) =>
       userCollection(firestore, uid, scheduledPayments);
+
+  static CollectionReference<Map<String, dynamic>> settingsRef(
+    FirebaseFirestore firestore,
+    String uid,
+  ) =>
+      userCollection(firestore, uid, settings);
 }

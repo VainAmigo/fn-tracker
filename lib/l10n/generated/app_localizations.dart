@@ -2404,6 +2404,216 @@ abstract class AppLocalizations {
   /// **'PIN'**
   String get pin;
 
+  /// No description provided for @authErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get authErrorGeneric;
+
+  /// No description provided for @authErrorAccountExistsWithDifferentCredential.
+  ///
+  /// In en, this message translates to:
+  /// **'An account already exists with this email but a different sign-in method.'**
+  String get authErrorAccountExistsWithDifferentCredential;
+
+  /// No description provided for @authErrorCredentialAlreadyInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This Google account is already linked to another user.'**
+  String get authErrorCredentialAlreadyInUse;
+
+  /// No description provided for @authErrorProviderAlreadyLinked.
+  ///
+  /// In en, this message translates to:
+  /// **'Google is already linked to this account.'**
+  String get authErrorProviderAlreadyLinked;
+
+  /// No description provided for @authErrorRequiresRecentLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'For security, sign out and sign in again, then try linking Google.'**
+  String get authErrorRequiresRecentLogin;
+
+  /// No description provided for @authErrorInvalidCredential.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid credentials. Check your Google account or try again.'**
+  String get authErrorInvalidCredential;
+
+  /// No description provided for @authErrorUserDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has been disabled.'**
+  String get authErrorUserDisabled;
+
+  /// No description provided for @authErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Check your connection.'**
+  String get authErrorNetwork;
+
+  /// No description provided for @authErrorNotSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not signed in.'**
+  String get authErrorNotSignedIn;
+
+  /// No description provided for @authErrorGoogleSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Sign-In failed. Check app configuration in Firebase Console.'**
+  String get authErrorGoogleSignIn;
+
+  /// No description provided for @linkGoogleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Link Google account'**
+  String get linkGoogleTitle;
+
+  /// No description provided for @linkGoogleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google on this device using the same profile'**
+  String get linkGoogleSubtitle;
+
+  /// No description provided for @googleAlreadyLinkedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google linked'**
+  String get googleAlreadyLinkedTitle;
+
+  /// No description provided for @googleAlreadyLinkedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You can sign in with Google on this device'**
+  String get googleAlreadyLinkedSubtitle;
+
+  /// No description provided for @googleLinkedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Google account linked'**
+  String get googleLinkedSuccessfully;
+
+  /// No description provided for @displayNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get displayNameLabel;
+
+  /// No description provided for @displayNameNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get displayNameNotSet;
+
+  /// No description provided for @displayNameTapToSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change your display name'**
+  String get displayNameTapToSet;
+
+  /// No description provided for @displayNameWhenSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get displayNameWhenSet;
+
+  /// No description provided for @editDisplayNameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit display name'**
+  String get editDisplayNameTitle;
+
+  /// No description provided for @displayNameUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name updated'**
+  String get displayNameUpdated;
+
+  /// No description provided for @displayNameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is too long (max 120 characters)'**
+  String get displayNameTooLong;
+
+  /// No description provided for @deleteUserDataSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data & account'**
+  String get deleteUserDataSectionTitle;
+
+  /// No description provided for @deleteUserDataButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all data'**
+  String get deleteUserDataButton;
+
+  /// No description provided for @deleteUserDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all data?'**
+  String get deleteUserDataTitle;
+
+  /// No description provided for @deleteUserDataMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'All transactions, wallets, goals, categories, budgets, and settings in the app will be permanently deleted. Your login and profile (email, name) will stay.'**
+  String get deleteUserDataMessage;
+
+  /// No description provided for @deleteUserDataConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete data'**
+  String get deleteUserDataConfirm;
+
+  /// No description provided for @deleteAccountButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccountButton;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account?'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account and all data will be permanently removed. This cannot be undone.'**
+  String get deleteAccountMessage;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @enterPasswordToConfirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password to confirm'**
+  String get enterPasswordToConfirmDelete;
+
+  /// No description provided for @continueWithGoogleToConfirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google to confirm'**
+  String get continueWithGoogleToConfirmDelete;
+
+  /// No description provided for @userDataDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'All data has been deleted'**
+  String get userDataDeleted;
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted'**
+  String get accountDeleted;
+
   /// No description provided for @changePassword.
   ///
   /// In en, this message translates to:
@@ -2445,6 +2655,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password change is only available for email sign-in'**
   String get passwordChangeEmailOnly;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @accountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account'**
+  String get accountTitle;
+
+  /// No description provided for @accountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your account'**
+  String get accountSubtitle;
+
+  /// No description provided for @accountSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Account settings'**
+  String get accountSettings;
 }
 
 class _AppLocalizationsDelegate

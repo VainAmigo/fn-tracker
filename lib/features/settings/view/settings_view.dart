@@ -74,8 +74,8 @@ class SettingsView extends StatelessWidget {
                 children: [
                   _buildSettingsListTile(
                     context,
-                    context.l10n.privacyPolicy,
-                    Icons.privacy_tip,
+                    context.l10n.account,
+                    Icons.person,
                     isFirst: true,
                     onTap: () {
                       Navigator.of(context).pushNamed(AppRouter.privacyPolicy);

@@ -59,7 +59,7 @@ class AuthInitView extends StatelessWidget {
                     width: AppSizing.iconSizeM,
                     height: AppSizing.iconSizeM,
                   ),
-                  onPressed: () {},
+                  onPressed: () => runGoogleSignInFlow(context),
                 ),
               ],
             ),

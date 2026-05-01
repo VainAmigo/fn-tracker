@@ -54,6 +54,14 @@ class AuthValidationUtils {
     return null;
   }
 
+  static String? displayNameField(String? value, BuildContext context) {
+    final v = value?.trim() ?? '';
+    if (v.length > 120) {
+      return context.l10n.displayNameTooLong;
+    }
+    return null;
+  }
+
   static String? confirmPassword(
     String? value,
     BuildContext context,

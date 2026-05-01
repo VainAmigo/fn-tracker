@@ -6,3 +6,5 @@ export 'view/auth_gate_view.dart';
 export 'view/change_password_view.dart';
 export 'widgets/full_with_logo_text_widget.dart';
 export 'cubit/auth_cubit.dart';
+export 'utils/firebase_auth_messages.dart';
+export 'utils/google_sign_in_flow.dart';
