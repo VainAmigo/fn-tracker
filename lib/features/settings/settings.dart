@@ -1,5 +1,8 @@
 export 'view/settings_view.dart';
 export 'view/security_view.dart';
+export 'security/app_lock_gate.dart';
+export 'security/app_lock_settings_controller.dart';
+export 'security/sensitive_unlock_coordinator.dart';
 export 'view/account_view.dart';
 export 'widgets/settings_currency_widget.dart';
 export 'widgets/settings_locale_widget.dart';

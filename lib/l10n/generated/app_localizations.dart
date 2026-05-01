@@ -2679,6 +2679,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account settings'**
   String get accountSettings;
+
+  /// No description provided for @securityIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'One PIN protects hidden wallets and goals, and can lock the whole app. Biometrics use the same check when enabled.'**
+  String get securityIntro;
+
+  /// No description provided for @pinSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN code'**
+  String get pinSectionTitle;
+
+  /// No description provided for @pinSetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the PIN used for the app lock and hidden cards.'**
+  String get pinSetSubtitle;
+
+  /// No description provided for @pinNotSetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a PIN when you hide a wallet or tap here to set it now.'**
+  String get pinNotSetSubtitle;
+
+  /// No description provided for @appLockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock app on open'**
+  String get appLockTitle;
+
+  /// No description provided for @appLockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for PIN or biometrics after launching the app'**
+  String get appLockSubtitle;
+
+  /// No description provided for @biometricUnlockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric unlock'**
+  String get biometricUnlockTitle;
+
+  /// No description provided for @biometricUnlockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use fingerprint or Face ID before entering PIN when available'**
+  String get biometricUnlockSubtitle;
+
+  /// No description provided for @unlockAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App is locked'**
+  String get unlockAppTitle;
+
+  /// No description provided for @unlockAppSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock to continue'**
+  String get unlockAppSubtitle;
+
+  /// No description provided for @biometricPromptUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm it is you'**
+  String get biometricPromptUnlock;
+
+  /// No description provided for @useBiometricButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Use biometrics'**
+  String get useBiometricButton;
+
+  /// No description provided for @biometricsHintNoneEnrolled.
+  ///
+  /// In en, this message translates to:
+  /// **'No fingerprint or Face ID is set up on this device. Add one in system Settings → Security, then open this screen again.'**
+  String get biometricsHintNoneEnrolled;
+
+  /// No description provided for @biometricsHintUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'This device does not report biometric hardware (common on some emulators).'**
+  String get biometricsHintUnsupported;
+
+  /// No description provided for @biometricsHintProbeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read biometric status. Fully restart the app, or run a clean rebuild after adding biometrics support.'**
+  String get biometricsHintProbeFailed;
 }
 
 class _AppLocalizationsDelegate

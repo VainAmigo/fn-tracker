@@ -1357,4 +1357,57 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get accountSettings => 'Аккаунттын башкаруу';
+
+  @override
+  String get securityIntro =>
+      'Бир PIN жашыруу капчыктарды жана максаттарды коргойт, колдонмону толугу менен бөгөттөөгө болот. Биометрия ошол эле текшерүүдөн өтөт.';
+
+  @override
+  String get pinSectionTitle => 'PIN-код';
+
+  @override
+  String get pinSetSubtitle =>
+      'Колдонмону бөгөттөө жана жашыруу карталар үчүн PIN өзгөртүү.';
+
+  @override
+  String get pinNotSetSubtitle =>
+      'Капчыкты жашырганда PIN коюңуз же бул жерди басыңыз.';
+
+  @override
+  String get appLockTitle => 'Колдонмону ачканда бөгөттөө';
+
+  @override
+  String get appLockSubtitle =>
+      'Колдонмо ачылгандан кийин PIN же биометрия сура';
+
+  @override
+  String get biometricUnlockTitle => 'Биометрия менен кирүү';
+
+  @override
+  String get biometricUnlockSubtitle =>
+      'Мүмкүн болсо, алгач манжа изи же Face ID, керек болсо PIN';
+
+  @override
+  String get unlockAppTitle => 'Колдонмо бөгөттөлгөн';
+
+  @override
+  String get unlockAppSubtitle => 'Улантуу үчүн бөгөттү ачыңыз';
+
+  @override
+  String get biometricPromptUnlock => 'Бул сиз экениңизди ырастаңыз';
+
+  @override
+  String get useBiometricButton => 'Биометрия';
+
+  @override
+  String get biometricsHintNoneEnrolled =>
+      'Түзмөктө манжа изи же Face ID кошулган эмес. Системанын жөндөөлөрүнөн кошуңуз, андан кийин бул экранды кайра ачыңыз.';
+
+  @override
+  String get biometricsHintUnsupported =>
+      'Түзмөк биометрияны колдойт деп билбейт (эмуляторлордо көп учурда).';
+
+  @override
+  String get biometricsHintProbeFailed =>
+      'Биометриянын абалын аныктай алган жок. Колдонмону толугу менен кайра иштетиңиз же local_auth кошулгандан кийин таза кайра куруу жасаңыз.';
 }

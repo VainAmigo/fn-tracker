@@ -53,5 +53,7 @@
 	<string>Выбор фото чека для распознавания трат.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Съёмка чека для распознавания трат.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Face ID используется для входа в приложение и доступа к скрытым картам.</string>
 </dict>
 </plist>

@@ -103,7 +103,9 @@ class AccountsTabWidget extends StatelessWidget {
 
   Future<void> _onHiddenCardsSelected(BuildContext context) async {
     final walletCubit = context.read<WalletCubit>();
-    final result = await _showHiddenCardsPasswordSheet(context);
+    final result = await SensitiveUnlockCoordinator.verifyForSensitiveAction(
+      context,
+    );
     if (result != true || !context.mounted) return;
 
     final hiddenWallets = walletCubit.currentWallets
@@ -205,7 +207,9 @@ class AccountsTabWidget extends StatelessWidget {
 
   Future<void> _onHiddenGoalsSelected(BuildContext context) async {
     final goalsCubit = context.read<GoalsCubit>();
-    final result = await _showHiddenCardsPasswordSheet(context);
+    final result = await SensitiveUnlockCoordinator.verifyForSensitiveAction(
+      context,
+    );
     if (result != true || !context.mounted) return;
 
     final hiddenGoals =
@@ -219,27 +223,6 @@ class AccountsTabWidget extends StatelessWidget {
         onGoalSelected: (goal) => _onGoalSelected(context, goal),
         onChangePin: () => _onChangePin(context),
       ),
-    );
-  }
-
-  Future<bool?> _showHiddenCardsPasswordSheet(BuildContext context) {
-    return PasswordFormModalSheet.show(
-      context,
-      title: context.l10n.hiddenCards,
-      subtitle: context.l10n.enterPinToView,
-      submitLabel: context.l10n.open,
-      onSubmit: (pin) async {
-        final valid = await HiddenWalletsService.instance.verifyPin(pin);
-        if (!valid) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(context.l10n.invalidPin)),
-            );
-          }
-          return false;
-        }
-        return true;
-      },
     );
   }
 

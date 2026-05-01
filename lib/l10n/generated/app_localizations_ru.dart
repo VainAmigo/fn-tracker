@@ -1355,4 +1355,57 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get accountSettings => 'Настройки аккаунта';
+
+  @override
+  String get securityIntro =>
+      'Один PIN защищает скрытые кошельки и цели и может блокировать вход в приложение. Биометрия использует ту же проверку.';
+
+  @override
+  String get pinSectionTitle => 'PIN-код';
+
+  @override
+  String get pinSetSubtitle =>
+      'Сменить PIN для блокировки приложения и скрытых карт.';
+
+  @override
+  String get pinNotSetSubtitle =>
+      'Задайте PIN при скрытии кошелька или нажмите здесь.';
+
+  @override
+  String get appLockTitle => 'Блокировать приложение при запуске';
+
+  @override
+  String get appLockSubtitle =>
+      'Запрашивать PIN или биометрию после открытия приложения';
+
+  @override
+  String get biometricUnlockTitle => 'Вход по биометрии';
+
+  @override
+  String get biometricUnlockSubtitle =>
+      'Сначала отпечаток или Face ID, при необходимости — PIN';
+
+  @override
+  String get unlockAppTitle => 'Приложение заблокировано';
+
+  @override
+  String get unlockAppSubtitle => 'Разблокируйте, чтобы продолжить';
+
+  @override
+  String get biometricPromptUnlock => 'Подтвердите, что это вы';
+
+  @override
+  String get useBiometricButton => 'Биометрия';
+
+  @override
+  String get biometricsHintNoneEnrolled =>
+      'На устройстве не добавлен отпечаток или Face ID. Добавьте в настройках системы (Безопасность / Блокировка экрана), затем снова откройте этот экран.';
+
+  @override
+  String get biometricsHintUnsupported =>
+      'Устройство не сообщает о поддержке биометрии (часто так на эмуляторах).';
+
+  @override
+  String get biometricsHintProbeFailed =>
+      'Не удалось определить статус биометрии. Полностью перезапустите приложение или выполните чистую пересборку после подключения local_auth.';
 }

@@ -14,7 +14,7 @@ class AuthGateView extends StatelessWidget {
           return const _AuthLoadingView();
         }
         if (state is Authenticated) {
-          return const AppMainView();
+          return AppLockGate(child: const AppMainView());
         }
         return const AuthView();
       },

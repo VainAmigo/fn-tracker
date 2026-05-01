@@ -1358,4 +1358,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountSettings => 'Account settings';
+
+  @override
+  String get securityIntro =>
+      'One PIN protects hidden wallets and goals, and can lock the whole app. Biometrics use the same check when enabled.';
+
+  @override
+  String get pinSectionTitle => 'PIN code';
+
+  @override
+  String get pinSetSubtitle =>
+      'Change the PIN used for the app lock and hidden cards.';
+
+  @override
+  String get pinNotSetSubtitle =>
+      'Set a PIN when you hide a wallet or tap here to set it now.';
+
+  @override
+  String get appLockTitle => 'Lock app on open';
+
+  @override
+  String get appLockSubtitle =>
+      'Ask for PIN or biometrics after launching the app';
+
+  @override
+  String get biometricUnlockTitle => 'Biometric unlock';
+
+  @override
+  String get biometricUnlockSubtitle =>
+      'Use fingerprint or Face ID before entering PIN when available';
+
+  @override
+  String get unlockAppTitle => 'App is locked';
+
+  @override
+  String get unlockAppSubtitle => 'Unlock to continue';
+
+  @override
+  String get biometricPromptUnlock => 'Confirm it is you';
+
+  @override
+  String get useBiometricButton => 'Use biometrics';
+
+  @override
+  String get biometricsHintNoneEnrolled =>
+      'No fingerprint or Face ID is set up on this device. Add one in system Settings → Security, then open this screen again.';
+
+  @override
+  String get biometricsHintUnsupported =>
+      'This device does not report biometric hardware (common on some emulators).';
+
+  @override
+  String get biometricsHintProbeFailed =>
+      'Could not read biometric status. Fully restart the app, or run a clean rebuild after adding biometrics support.';
 }
