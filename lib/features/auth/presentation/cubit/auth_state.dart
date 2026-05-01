@@ -24,5 +24,3 @@ class AuthError extends AuthState {
 
   AuthError(this.message);
 }
-
-class AuthPasswordChanged extends AuthState {}

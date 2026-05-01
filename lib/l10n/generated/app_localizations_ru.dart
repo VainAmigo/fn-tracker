@@ -1204,4 +1204,26 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pin => 'PIN';
+
+  @override
+  String get changePassword => 'Смена пароля';
+
+  @override
+  String get changePasswordCardSubtitle => 'Нажмите, чтобы сменить пароль';
+
+  @override
+  String get currentPassword => 'Текущий пароль';
+
+  @override
+  String get newPassword => 'Новый пароль';
+
+  @override
+  String get enterYourCurrentPassword => 'Введите текущий пароль';
+
+  @override
+  String get passwordChangedSuccessfully => 'Пароль успешно изменён';
+
+  @override
+  String get passwordChangeEmailOnly =>
+      'Смена пароля доступна только при входе по почте';
 }

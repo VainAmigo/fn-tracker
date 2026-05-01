@@ -1207,4 +1207,26 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get pin => 'PIN';
+
+  @override
+  String get changePassword => 'Сырсөздү өзгөртүү';
+
+  @override
+  String get changePasswordCardSubtitle => 'Сырсөздү өзгөртүү үчүн басыңыз';
+
+  @override
+  String get currentPassword => 'Учурдагы сырсөз';
+
+  @override
+  String get newPassword => 'Жаңы сырсөз';
+
+  @override
+  String get enterYourCurrentPassword => 'Учурдагы сырсөздү киргизиңиз';
+
+  @override
+  String get passwordChangedSuccessfully => 'Сырсөз ийгиликтүү өзгөртүлдү';
+
+  @override
+  String get passwordChangeEmailOnly =>
+      'Сырсөздү өзгөртүү электрондук почта менен кирүүдө гана жеткиликтүү';
 }

@@ -32,6 +32,7 @@ final class AppRouter {
 
   static const privacyPolicy = '/privacy-policy';
   static const security = '/security';
+  static const changePassword = '/change-password';
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
     return switch (settings.name) {
@@ -174,6 +175,10 @@ final class AppRouter {
       security => MaterialPageRoute(
         settings: const RouteSettings(name: security),
         builder: (_) => const SecurityView(),
+      ),
+      changePassword => MaterialPageRoute(
+        settings: const RouteSettings(name: changePassword),
+        builder: (_) => const ChangePasswordView(),
       ),
       _ => throw Exception(
         'No builder specified for route named: [${settings.name}]',

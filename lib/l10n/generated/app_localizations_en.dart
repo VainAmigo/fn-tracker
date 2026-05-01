@@ -1208,4 +1208,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pin => 'PIN';
+
+  @override
+  String get changePassword => 'Change password';
+
+  @override
+  String get changePasswordCardSubtitle => 'Tap to change your password';
+
+  @override
+  String get currentPassword => 'Current password';
+
+  @override
+  String get newPassword => 'New password';
+
+  @override
+  String get enterYourCurrentPassword => 'Enter your current password';
+
+  @override
+  String get passwordChangedSuccessfully => 'Password changed successfully';
+
+  @override
+  String get passwordChangeEmailOnly =>
+      'Password change is only available for email sign-in';
 }

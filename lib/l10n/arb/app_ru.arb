@@ -387,5 +387,12 @@
   "aiGoalAdviceTotalTitle": "ИИ-советы по всем целям",
   "aiGoalAdviceDefaultQuestionAll": "Проанализируй все мои цели, кошельки, категории и транзакции. Дай короткий план: какие цели приоритизировать, какие траты сократить в первую очередь и как ускорить накопления в целом.",
   "aiGoalAdviceDefaultQuestionSingle": "Проанализируй все мои данные и дай практичные советы, как быстрее закрыть цель \"{goalName}\": какие траты сокращать в первую очередь и сколько регулярно откладывать.",
-  "pin": "PIN"
+  "pin": "PIN",
+  "changePassword": "Смена пароля",
+  "changePasswordCardSubtitle": "Нажмите, чтобы сменить пароль",
+  "currentPassword": "Текущий пароль",
+  "newPassword": "Новый пароль",
+  "enterYourCurrentPassword": "Введите текущий пароль",
+  "passwordChangedSuccessfully": "Пароль успешно изменён",
+  "passwordChangeEmailOnly": "Смена пароля доступна только при входе по почте"
 }

@@ -2403,6 +2403,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PIN'**
   String get pin;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get changePassword;
+
+  /// No description provided for @changePasswordCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change your password'**
+  String get changePasswordCardSubtitle;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get currentPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get newPassword;
+
+  /// No description provided for @enterYourCurrentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your current password'**
+  String get enterYourCurrentPassword;
+
+  /// No description provided for @passwordChangedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed successfully'**
+  String get passwordChangedSuccessfully;
+
+  /// No description provided for @passwordChangeEmailOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Password change is only available for email sign-in'**
+  String get passwordChangeEmailOnly;
 }
 
 class _AppLocalizationsDelegate

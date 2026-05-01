@@ -30,8 +30,7 @@ class AuthCubit extends HydratedCubit<AuthState> {
   Map<String, dynamic>? toJson(AuthState state) {
     if (state is AuthLoading ||
         state is AuthInitial ||
-        state is AuthError ||
-        state is AuthPasswordChanged) {
+        state is AuthError) {
       return null; // Do not persist — keep previous cached state
     }
     if (state is Authenticated) {
@@ -100,20 +99,26 @@ class AuthCubit extends HydratedCubit<AuthState> {
     emit(Unauthenticated());
   }
 
-  // change password
-  void reauthenticateAndChangePassword(
+  /// Смена пароля (email/password). Не эмитит [AuthLoading], чтобы не закрывать главный экран.
+  /// При успехе возвращает `null`. При ошибке — текст ошибки (состояние снова [Authenticated]).
+  Future<String?> reauthenticateAndChangePassword(
     String currentPassword,
     String newPassword,
   ) async {
-    emit(AuthLoading());
+    final userBefore = _currentUser;
+    if (userBefore == null) return 'User not authenticated';
     try {
       await authRepo.reauthenticateAndChangePassword(
         currentPassword,
         newPassword,
       );
-      emit(AuthPasswordChanged());
+      emit(Authenticated(userBefore));
+      return null;
     } catch (e) {
-      emit(AuthError(e.toString()));
+      final message = e.toString();
+      emit(AuthError(message));
+      emit(Authenticated(userBefore));
+      return message;
     }
   }
 }

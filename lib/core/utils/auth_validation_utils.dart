@@ -22,6 +22,21 @@ class AuthValidationUtils {
     return null;
   }
 
+  static String? currentPasswordForChange(
+    String? value,
+    BuildContext context, {
+    int minLength = 6,
+  }) {
+    final l10n = context.l10n;
+    if (value == null || value.isEmpty) {
+      return l10n.enterYourCurrentPassword;
+    }
+    if (value.length < minLength) {
+      return l10n.passwordMustBeAtLeast(minLength);
+    }
+    return null;
+  }
+
   static String? password(
     String? value,
     BuildContext context, {

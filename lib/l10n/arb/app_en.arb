@@ -778,5 +778,19 @@
     }
   },
   "pin": "PIN",
-  "@pin": {}
+  "@pin": {},
+  "changePassword": "Change password",
+  "@changePassword": {},
+  "changePasswordCardSubtitle": "Tap to change your password",
+  "@changePasswordCardSubtitle": {},
+  "currentPassword": "Current password",
+  "@currentPassword": {},
+  "newPassword": "New password",
+  "@newPassword": {},
+  "enterYourCurrentPassword": "Enter your current password",
+  "@enterYourCurrentPassword": {},
+  "passwordChangedSuccessfully": "Password changed successfully",
+  "@passwordChangedSuccessfully": {},
+  "passwordChangeEmailOnly": "Password change is only available for email sign-in",
+  "@passwordChangeEmailOnly": {}
 }
