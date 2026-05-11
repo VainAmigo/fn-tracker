@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fn_tracker/core/core.dart';
+import 'package:fn_tracker/l10n/generated/app_localizations.dart';
 import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 import 'package:fn_tracker/features/finance/data/models/scheduled_payment_model.dart';
@@ -129,14 +130,12 @@ class ScheduledPaymentCard extends StatelessWidget {
     );
   }
 
-  String _formatFrequency(ScheduledPaymentModel p, dynamic context) {
-    switch (p.frequency) {
-      case ScheduledPaymentFrequency.oneTime:
-        return context.l10n.once;
-      case ScheduledPaymentFrequency.monthly:
-        return context.l10n.monthly;
-      case ScheduledPaymentFrequency.yearly:
-        return context.l10n.yearly;
-    }
+  String _formatFrequency(ScheduledPaymentModel p, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return switch (p.frequency) {
+      ScheduledPaymentFrequency.oneTime => l10n.once,
+      ScheduledPaymentFrequency.monthly => l10n.monthly,
+      ScheduledPaymentFrequency.yearly => l10n.yearly,
+    };
   }
 }

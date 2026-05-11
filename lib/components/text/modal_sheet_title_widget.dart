@@ -37,7 +37,10 @@ class ModalSheetTitleWidget extends StatelessWidget {
             ],
           ),
         ),
-        if (action != null) ...[const Spacer(), action!],
+        if (action != null) ...[
+          const SizedBox(width: AppSizing.spaceBtwItemsExtra),
+          action!,
+        ],
       ],
     );
   }
