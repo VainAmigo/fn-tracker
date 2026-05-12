@@ -16,6 +16,13 @@ class HomeInfoListWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitledSection(
+            title: context.l10n.budget,
+            children: [
+              const HomeBudgetSummaryWidget(),
+              const SizedBox(height: AppSizing.spaceBtwElements),
+            ],
+          ),
+          TitledSection(
             title: context.l10n.wallets,
             action: PrimaryButton(
               text: context.l10n.settings,
