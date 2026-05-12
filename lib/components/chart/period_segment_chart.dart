@@ -508,10 +508,14 @@ class _StackedBar extends StatelessWidget {
       }
     }
 
+    // Перераспределение дефицита может увести высоту в минус, если у больших
+    // сегментов не хватает «запаса» — подрезаем до 0, чтобы не было лишнего
+    // пространства, которое позже превратится в переполнение Column'а.
+    heights = heights.map((h) => math.max(0.0, h)).toList();
+
     var totalHeights = heights.fold<double>(0, (a, b) => a + b);
     if (totalHeights > available && totalHeights > 0) {
-      final safeAvailable = math.max(0, available - 2);
-      final scale = safeAvailable / totalHeights;
+      final scale = available / totalHeights;
       heights = heights.map((h) => h * scale).toList();
     }
 
