@@ -3,7 +3,13 @@ import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/l10n/l10.dart';
 
 /// Табы экрана «Финансы». Единый источник истины для переключателя и контента.
-enum FinanceTab { budget, accounts, categories, scheduledPayments }
+enum FinanceTab {
+  budget,
+  accounts,
+  transactions,
+  categories,
+  scheduledPayments,
+}
 
 extension FinanceTabX on FinanceTab {
   String label(BuildContext context) {
@@ -12,6 +18,8 @@ extension FinanceTabX on FinanceTab {
         return context.l10n.budget;
       case FinanceTab.accounts:
         return context.l10n.accounts;
+      case FinanceTab.transactions:
+        return context.l10n.transactions;
       case FinanceTab.categories:
         return context.l10n.categories;
       case FinanceTab.scheduledPayments:

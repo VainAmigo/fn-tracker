@@ -312,6 +312,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get finance => 'Финансы';
 
   @override
+  String get financeTabOrderTitle => 'Порядок вкладок';
+
+  @override
+  String get financeTabOrderSubtitle =>
+      'Потяните за иконку слева, чтобы изменить порядок на экране «Финансы»';
+
+  @override
+  String get financeTabOrderSectionTitle => 'Порядок отображения';
+
+  @override
   String get analytics => 'Аналитика';
 
   @override

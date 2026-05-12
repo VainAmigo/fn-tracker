@@ -676,6 +676,24 @@ abstract class AppLocalizations {
   /// **'Finance'**
   String get finance;
 
+  /// No description provided for @financeTabOrderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tab order'**
+  String get financeTabOrderTitle;
+
+  /// No description provided for @financeTabOrderSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag by the handle on the left to reorder tabs on the Finance screen'**
+  String get financeTabOrderSubtitle;
+
+  /// No description provided for @financeTabOrderSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Display order'**
+  String get financeTabOrderSectionTitle;
+
   /// No description provided for @analytics.
   ///
   /// In en, this message translates to:

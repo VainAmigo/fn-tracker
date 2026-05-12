@@ -311,6 +311,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finance => 'Finance';
 
   @override
+  String get financeTabOrderTitle => 'Tab order';
+
+  @override
+  String get financeTabOrderSubtitle =>
+      'Drag by the handle on the left to reorder tabs on the Finance screen';
+
+  @override
+  String get financeTabOrderSectionTitle => 'Display order';
+
+  @override
   String get analytics => 'Analytics';
 
   @override

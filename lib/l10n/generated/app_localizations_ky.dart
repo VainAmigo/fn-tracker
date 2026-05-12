@@ -312,6 +312,16 @@ class AppLocalizationsKy extends AppLocalizations {
   String get finance => 'Финансы';
 
   @override
+  String get financeTabOrderTitle => 'Өтмөктөрдүн тартиби';
+
+  @override
+  String get financeTabOrderSubtitle =>
+      '«Финансы» экранындагы өтмөктөрдүн тартибин өзгөртүү үчүн сол жактагы белгини тартыңыз';
+
+  @override
+  String get financeTabOrderSectionTitle => 'Көрсөтүү тартиби';
+
+  @override
   String get analytics => 'Аналитика';
 
   @override

@@ -1,6 +1,8 @@
 export 'view/finance_view.dart';
 export 'widgets/finance_tab.dart';
 export 'widgets/finance_tab_bar_widget.dart';
+export 'widgets/finance_tab_order_storage.dart';
+export 'widgets/finance_tab_order_settings_sheet.dart';
 export 'budget/budget.dart';
 export 'accounts/accounts.dart';
 export 'categories/categories.dart';

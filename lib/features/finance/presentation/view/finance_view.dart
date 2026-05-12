@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/core/core.dart';
@@ -14,10 +16,12 @@ class FinanceView extends StatefulWidget {
 
 class _FinanceViewState extends State<FinanceView> {
   FinanceTab _selectedTab = FinanceTab.budget;
+  List<int> _visualOrder = List<int>.from(FinanceTabOrderStorage.defaultOrder);
 
   static const _tabBodies = [
     WalletBudgetTabWidget(),
     AccountsTabWidget(),
+    TransactionsListView(embedded: true),
     CategoriesTabView(),
     ScheduledPaymentsTabView(),
   ];
@@ -33,7 +37,35 @@ class _FinanceViewState extends State<FinanceView> {
       context.read<GoalsCubit>().loadGoals(),
       context.read<CategoriesCubit>().loadCategories(),
       context.read<ScheduledPaymentsCubit>().loadPayments(),
+      context.read<TransactionsCubit>().loadTransactionsByPeriod(
+        TransactionPeriod.month,
+      ),
     ]);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadTabOrder());
+  }
+
+  Future<void> _loadTabOrder() async {
+    final loaded = await FinanceTabOrderStorage.load();
+    if (!mounted) return;
+    setState(() {
+      _visualOrder = loaded;
+      _selectedTab = FinanceTab.values[loaded.first];
+    });
+  }
+
+  void _openTabOrderSettings() {
+    FinanceTabOrderSettingsSheet.show(
+      context,
+      initialOrder: _visualOrder,
+      onOrderChanged: (order) {
+        setState(() => _visualOrder = order);
+      },
+    );
   }
 
   @override
@@ -46,23 +78,22 @@ class _FinanceViewState extends State<FinanceView> {
           ),
           child: RefreshIndicator(
             onRefresh: _onRefresh,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FinanceTabBarWidget(
-                    title: context.l10n.yourFinancesAndSavings,
-                    selectedTab: _selectedTab,
-                    onChanged: (tab) =>
-                        setState(() => _selectedTab = tab),
-                  ),
-                  const SizedBox(height: AppSizing.spaceBtwElements),
-                  // Показываем только активный таб — высота экрана = высота его контента
-                  _tabBodies[_selectedTab.index],
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FinanceTabBarWidget(
+                  title: context.l10n.yourFinancesAndSavings,
+                  visualOrder: _visualOrder,
+                  selectedTab: _selectedTab,
+                  onChanged: (tab) =>
+                      setState(() => _selectedTab = tab),
+                  onTabOrderSettingsPressed: _openTabOrderSettings,
+                ),
+                const SizedBox(height: AppSizing.spaceBtwElements),
+                Expanded(
+                  child: _tabBodies[_selectedTab.index],
+                ),
+              ],
             ),
           ),
         ),
