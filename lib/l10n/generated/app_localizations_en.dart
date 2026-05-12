@@ -312,6 +312,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Show the «Hidden cards» card at the end of the list on the home screen';
 
   @override
+  String get homeLayoutSettingsTitle => 'Home screen';
+
+  @override
+  String get homeLayoutSettingsSubtitle =>
+      'Change the order of blocks and hide the ones you don’t need';
+
+  @override
+  String get homeLayoutShowOnHome => 'Show on home';
+
+  @override
+  String get homeLayoutOrderSectionTitle => 'Blocks';
+
+  @override
   String get home => 'Home';
 
   @override

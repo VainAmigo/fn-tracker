@@ -676,6 +676,30 @@ abstract class AppLocalizations {
   /// **'Show the «Hidden cards» card at the end of the list on the home screen'**
   String get homeWalletsShowHiddenPlaceholderSubtitle;
 
+  /// No description provided for @homeLayoutSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home screen'**
+  String get homeLayoutSettingsTitle;
+
+  /// No description provided for @homeLayoutSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the order of blocks and hide the ones you don’t need'**
+  String get homeLayoutSettingsSubtitle;
+
+  /// No description provided for @homeLayoutShowOnHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Show on home'**
+  String get homeLayoutShowOnHome;
+
+  /// No description provided for @homeLayoutOrderSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocks'**
+  String get homeLayoutOrderSectionTitle;
+
   /// No description provided for @home.
   ///
   /// In en, this message translates to:

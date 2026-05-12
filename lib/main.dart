@@ -74,6 +74,9 @@ class _AppViewState extends State<AppView> {
         BlocProvider<HomeWalletsSettingsCubit>(
           create: (context) => HomeWalletsSettingsCubit(),
         ),
+        BlocProvider<HomeLayoutSettingsCubit>(
+          create: (context) => HomeLayoutSettingsCubit(),
+        ),
         BlocProvider<TransactionsCubit>(
           create: (context) =>
               TransactionsCubit(transactionsRepo: transactionsRepo),
@@ -132,6 +135,7 @@ class _AppViewState extends State<AppView> {
             context.read<CategoriesCubit>().clearForLogout();
             context.read<QuickCategoriesSettingsCubit>().clearForLogout();
             context.read<HomeWalletsSettingsCubit>().clearForLogout();
+            context.read<HomeLayoutSettingsCubit>().clearForLogout();
             context.read<ScheduledPaymentsCubit>().clearForLogout();
             context.read<AnalyticsAiChatCubit>().resetForLogout();
           },

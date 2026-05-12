@@ -313,6 +313,19 @@ class AppLocalizationsKy extends AppLocalizations {
       'Башкы экрандагы тизмектин аягында «Жашырылган карталар» картасын көрсөтүү';
 
   @override
+  String get homeLayoutSettingsTitle => 'Башкы экран';
+
+  @override
+  String get homeLayoutSettingsSubtitle =>
+      'Блоктордун тартибин өзгөртүү жана керексиздерин жашыруу';
+
+  @override
+  String get homeLayoutShowOnHome => 'Башкыда көрсөтүү';
+
+  @override
+  String get homeLayoutOrderSectionTitle => 'Башкы блоктор';
+
+  @override
   String get home => 'Башкы';
 
   @override

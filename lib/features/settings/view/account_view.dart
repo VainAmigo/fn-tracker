@@ -469,6 +469,8 @@ class _AccountViewState extends State<AccountView> {
     if (!mounted) return;
     final (:start, :end) = MonthRangeUtils.currentMonth();
     context.read<QuickCategoriesSettingsCubit>().clearForLogout();
+    context.read<HomeLayoutSettingsCubit>().clearForLogout();
+    context.read<HomeWalletsSettingsCubit>().clearForLogout();
     await Future.wait([
       context.read<CategoriesCubit>().loadCategories(),
       context.read<WalletCubit>().loadWallets(),

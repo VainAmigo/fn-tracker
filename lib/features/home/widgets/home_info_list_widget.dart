@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/components.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/features/features.dart';
@@ -12,8 +13,41 @@ class HomeInfoListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSizing.defaultPadding),
-      child: Column(
+      child: BlocBuilder<HomeLayoutSettingsCubit, HomeLayoutSettingsState>(
+        builder: (context, layout) {
+          final children = <Widget>[];
+
+          for (final index in layout.sectionOrder) {
+            final section = HomeSection.values[index];
+            if (!layout.isSectionVisible(section)) continue;
+            children.add(_buildSection(context, section));
+          }
+          children.add(const SizedBox(height: AppSizing.spaceBtwElements));
+          children.add(
+            PrimaryButton(
+              text: context.l10n.edit,
+              size: PrimaryButtonSize.xSmall,
+              onPressed: () => HomeLayoutSettingsSheet.show(context),
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              foregroundColor: Theme.of(context).colorScheme.onSecondary,
+            ),
+          );
+          children.add(const SizedBox(height: AppSizing.bottomPadding));
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: children,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildSection(BuildContext context, HomeSection section) {
+    return switch (section) {
+      HomeSection.budget => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           TitledSection(
             title: context.l10n.budget,
@@ -22,6 +56,12 @@ class HomeInfoListWidget extends StatelessWidget {
               const SizedBox(height: AppSizing.spaceBtwElements),
             ],
           ),
+        ],
+      ),
+      HomeSection.wallets => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
           TitledSection(
             title: context.l10n.wallets,
             action: PrimaryButton(
@@ -36,6 +76,12 @@ class HomeInfoListWidget extends StatelessWidget {
               const SizedBox(height: AppSizing.spaceBtwElements),
             ],
           ),
+        ],
+      ),
+      HomeSection.quickCategories => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
           TitledSection(
             title: context.l10n.quickCategories,
             action: PrimaryButton(
@@ -45,8 +91,14 @@ class HomeInfoListWidget extends StatelessWidget {
               fullWidth: false,
               rounded: true,
             ),
-            children: [const QuickCategoriesWidget()],
+            children: const [QuickCategoriesWidget()],
           ),
+        ],
+      ),
+      HomeSection.lastTransactions => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
           TitledSection(
             title: context.l10n.lastTransactions,
             action: PrimaryButton(
@@ -62,13 +114,8 @@ class HomeInfoListWidget extends StatelessWidget {
               const SizedBox(height: AppSizing.spaceBtwElements),
             ],
           ),
-          PrimaryButton(
-            text: context.l10n.edit,
-            size: PrimaryButtonSize.xSmall,
-          ),
-          const SizedBox(height: AppSizing.bottomPadding),
         ],
       ),
-    );
+    };
   }
 }

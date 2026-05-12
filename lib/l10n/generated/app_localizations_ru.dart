@@ -314,6 +314,19 @@ class AppLocalizationsRu extends AppLocalizations {
       'Показывать карточку «Скрытые карточки» в конце списка на главной';
 
   @override
+  String get homeLayoutSettingsTitle => 'Главный экран';
+
+  @override
+  String get homeLayoutSettingsSubtitle =>
+      'Меняйте порядок блоков и отключайте ненужные';
+
+  @override
+  String get homeLayoutShowOnHome => 'Показывать на главной';
+
+  @override
+  String get homeLayoutOrderSectionTitle => 'Блоки главной';
+
+  @override
   String get home => 'Главная';
 
   @override
