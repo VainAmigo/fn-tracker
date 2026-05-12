@@ -299,6 +299,13 @@ class AppLocalizationsKy extends AppLocalizations {
   String get settings => 'Жөндөөлөр';
 
   @override
+  String get homeWalletsSettingsSubtitle =>
+      'Башкы экранда кайсы капчыктар көрүнөрүн тандаңыз';
+
+  @override
+  String get showOnHome => 'Башкыда көрсөтүү';
+
+  @override
   String get home => 'Башкы';
 
   @override

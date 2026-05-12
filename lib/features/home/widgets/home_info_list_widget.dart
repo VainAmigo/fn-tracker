@@ -16,6 +16,20 @@ class HomeInfoListWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitledSection(
+            title: context.l10n.wallets,
+            action: PrimaryButton(
+              text: context.l10n.settings,
+              onPressed: () => HomeWalletsSettingsSheet.show(context),
+              size: PrimaryButtonSize.xSmall,
+              fullWidth: false,
+              rounded: true,
+            ),
+            children: [
+              const HomeWalletsStripWidget(),
+              const SizedBox(height: AppSizing.spaceBtwElements),
+            ],
+          ),
+          TitledSection(
             title: context.l10n.quickCategories,
             action: PrimaryButton(
               text: context.l10n.settings,
@@ -41,6 +55,11 @@ class HomeInfoListWidget extends StatelessWidget {
               const SizedBox(height: AppSizing.spaceBtwElements),
             ],
           ),
+          PrimaryButton(
+            text: context.l10n.edit,
+            size: PrimaryButtonSize.xSmall,
+          ),
+          const SizedBox(height: AppSizing.bottomPadding),
         ],
       ),
     );

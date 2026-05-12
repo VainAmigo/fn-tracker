@@ -652,6 +652,18 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
+  /// No description provided for @homeWalletsSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which wallets appear on the home screen'**
+  String get homeWalletsSettingsSubtitle;
+
+  /// No description provided for @showOnHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Show on home'**
+  String get showOnHome;
+
   /// No description provided for @home.
   ///
   /// In en, this message translates to:

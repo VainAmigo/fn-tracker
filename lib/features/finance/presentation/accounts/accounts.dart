@@ -1,4 +1,5 @@
 export 'view/accounts_tab_view.dart';
+export 'wallet_sheet_flow.dart';
 export 'view/wallet_form_view.dart';
 export 'view/goal_form_view.dart';
 export 'widgets/wallet_card_widget.dart';

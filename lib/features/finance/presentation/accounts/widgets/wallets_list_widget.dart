@@ -11,11 +11,15 @@ class WalletsListWidget extends StatefulWidget {
     this.autoLoad = false,
     required this.onWalletSelected,
     this.onHiddenCardsSelected,
+    this.hiddenFromHomeIds,
   });
 
   final bool autoLoad;
   final ValueChanged<WalletModel> onWalletSelected;
   final VoidCallback? onHiddenCardsSelected;
+
+  /// Скрыть эти кошельки только в этом списке (например настройки главной).
+  final Set<String>? hiddenFromHomeIds;
 
   @override
   State<WalletsListWidget> createState() => _WalletsListWidgetState();
@@ -45,6 +49,7 @@ class _WalletsListWidgetState extends State<WalletsListWidget> {
             wallets: state.wallets,
             onWalletSelected: widget.onWalletSelected,
             onHiddenCardsSelected: widget.onHiddenCardsSelected,
+            hiddenFromHomeIds: widget.hiddenFromHomeIds,
           ),
           WalletsError() => Center(child: Text(state.message)),
         };
@@ -58,16 +63,26 @@ class _Body extends StatelessWidget {
     required this.wallets,
     required this.onWalletSelected,
     this.onHiddenCardsSelected,
+    this.hiddenFromHomeIds,
   });
 
   final List<WalletModel> wallets;
   final ValueChanged<WalletModel> onWalletSelected;
   final VoidCallback? onHiddenCardsSelected;
+  final Set<String>? hiddenFromHomeIds;
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width * 0.7;
-    final visibleWallets = wallets.where((w) => !w.isHidden).toList();
+    final hiddenHome = hiddenFromHomeIds;
+    final visibleWallets = wallets.where((w) {
+      if (w.isHidden) return false;
+      final id = w.id;
+      if (hiddenHome != null && id != null && hiddenHome.contains(id)) {
+        return false;
+      }
+      return true;
+    }).toList();
     final hiddenWallets = wallets.where((w) => w.isHidden).toList();
     final hasHidden = hiddenWallets.isNotEmpty;
 

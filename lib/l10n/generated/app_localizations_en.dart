@@ -298,6 +298,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
+  String get homeWalletsSettingsSubtitle =>
+      'Choose which wallets appear on the home screen';
+
+  @override
+  String get showOnHome => 'Show on home';
+
+  @override
   String get home => 'Home';
 
   @override

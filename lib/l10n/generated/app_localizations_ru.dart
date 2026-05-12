@@ -299,6 +299,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings => 'Настройки';
 
   @override
+  String get homeWalletsSettingsSubtitle =>
+      'Выберите кошельки, отображаемые на главном экране';
+
+  @override
+  String get showOnHome => 'Показывать на главной';
+
+  @override
   String get home => 'Главная';
 
   @override

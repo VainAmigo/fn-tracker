@@ -96,6 +96,8 @@
   "lastTransactions": "Акыркы транзакциялар",
   "viewAll": "Баарын көрүү",
   "settings": "Жөндөөлөр",
+  "homeWalletsSettingsSubtitle": "Башкы экранда кайсы капчыктар көрүнөрүн тандаңыз",
+  "showOnHome": "Башкыда көрсөтүү",
   "home": "Башкы",
   "finance": "Финансы",
   "analytics": "Аналитика",

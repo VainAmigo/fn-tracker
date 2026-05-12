@@ -96,6 +96,8 @@
   "lastTransactions": "Последние операции",
   "viewAll": "Смотреть все",
   "settings": "Настройки",
+  "homeWalletsSettingsSubtitle": "Выберите кошельки, отображаемые на главном экране",
+  "showOnHome": "Показывать на главной",
   "home": "Главная",
   "finance": "Финансы",
   "analytics": "Аналитика",
