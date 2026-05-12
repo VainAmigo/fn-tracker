@@ -1,11 +1,12 @@
 import 'app_palette.dart';
+import 'app_theme.dart';
 import 'app_theme_mode.dart';
 
 /// Состояние темы приложения: режим (система/светлая/тёмная) и палитра.
 class AppThemeState {
   const AppThemeState({
     this.themeMode = AppThemeMode.system,
-    this.palette = AppPalette.mintGreen,
+    this.palette = AppThemes.defaultPalette,
     this.preferDynamicColor = true,
   });
 

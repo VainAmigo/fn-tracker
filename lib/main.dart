@@ -170,7 +170,7 @@ class FnTracker extends StatelessWidget {
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'FN Tracker',
+          title: 'INFinance',
           initialRoute: AppRouter.main,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

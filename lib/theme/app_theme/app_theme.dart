@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'app_palette.dart';
 
 class AppThemes {
+  /// Палитра по умолчанию при первом запуске (до сохранённых настроек).
+  static const AppPalette defaultPalette = AppPalette.nordicFrost;
+
   /// Возвращает светлую или тёмную тему для выбранной палитры.
   static ThemeData themeFor(AppPalette palette, Brightness brightness) {
     switch (palette) {
