@@ -97,33 +97,63 @@ class _HomeWalletsSettingsSheetState extends State<HomeWalletsSettingsSheet> {
                         subtitle: context.l10n.createYourFirstWallet,
                       );
                     }
-                    return TitledSection(
-                      title: context.l10n.showOnHome,
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        for (var i = 0; i < configurable.length; i++)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: AppSizing.spaceBtwItemsExtra,
-                            ),
-                            child: _WalletVisibilityCard(
-                              wallet: configurable[i],
-                              isVisibleOnHome: !settingsState.hiddenFromHomeIds
-                                  .contains(configurable[i].id!),
-                              radius: radiusForIndex(i, configurable.length),
-                              onTap: () {
-                                final id = configurable[i].id!;
-                                final hiddenFromHome = settingsState
-                                    .hiddenFromHomeIds
-                                    .contains(id);
-                                context
-                                    .read<HomeWalletsSettingsCubit>()
-                                    .setWalletVisibleOnHome(
-                                      id,
-                                      hiddenFromHome,
-                                    );
-                              },
-                            ),
+                        TitledSection(
+                          title: context.l10n.showOnHome,
+                          children: [
+                            for (var i = 0; i < configurable.length; i++)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: AppSizing.spaceBtwItemsExtra,
+                                ),
+                                child: _WalletVisibilityCard(
+                                  wallet: configurable[i],
+                                  isVisibleOnHome: !settingsState
+                                      .hiddenFromHomeIds
+                                      .contains(configurable[i].id!),
+                                  radius: radiusForIndex(
+                                    i,
+                                    configurable.length,
+                                  ),
+                                  onTap: () {
+                                    final id = configurable[i].id!;
+                                    final hiddenFromHome = settingsState
+                                        .hiddenFromHomeIds
+                                        .contains(id);
+                                    context
+                                        .read<HomeWalletsSettingsCubit>()
+                                        .setWalletVisibleOnHome(
+                                          id,
+                                          hiddenFromHome,
+                                        );
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSizing.spaceBtwSections),
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            context.l10n.homeWalletsShowHiddenPlaceholderTitle,
+                            style: AppTextStyles.text16w400(context),
                           ),
+                          subtitle: Text(
+                            context
+                                .l10n.homeWalletsShowHiddenPlaceholderSubtitle,
+                            style: AppTextStyles.text14w400(context),
+                          ),
+                          value: settingsState
+                              .showHiddenWalletsPlaceholderOnHome,
+                          onChanged: (on) {
+                            context
+                                .read<HomeWalletsSettingsCubit>()
+                                .setShowHiddenWalletsPlaceholderOnHome(on);
+                          },
+                        ),
                       ],
                     );
                   },

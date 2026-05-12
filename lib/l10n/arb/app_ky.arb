@@ -98,6 +98,8 @@
   "settings": "Жөндөөлөр",
   "homeWalletsSettingsSubtitle": "Башкы экранда кайсы капчыктар көрүнөрүн тандаңыз",
   "showOnHome": "Башкыда көрсөтүү",
+  "homeWalletsShowHiddenPlaceholderTitle": "Жашырылган капчыктар",
+  "homeWalletsShowHiddenPlaceholderSubtitle": "Башкы экрандагы тизмектин аягында «Жашырылган карталар» картасын көрсөтүү",
   "home": "Башкы",
   "finance": "Финансы",
   "financeTabOrderTitle": "Өтмөктөрдүн тартиби",

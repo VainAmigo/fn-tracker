@@ -73,7 +73,6 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width * 0.7;
     final hiddenHome = hiddenFromHomeIds;
     final visibleWallets = wallets.where((w) {
       if (w.isHidden) return false;
@@ -85,42 +84,58 @@ class _Body extends StatelessWidget {
     }).toList();
     final hiddenWallets = wallets.where((w) => w.isHidden).toList();
     final hasHidden = hiddenWallets.isNotEmpty;
+    final showHiddenTile = hasHidden && onHiddenCardsSelected != null;
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (int i = 0; i < visibleWallets.length; i++) ...[
-              if (i > 0) const SizedBox(width: AppSizing.spaceBtwItems),
-              SizedBox(
-                width: width,
-                child: GestureDetector(
-                  onTap: () => onWalletSelected(visibleWallets[i]),
-                  child: WalletCardWidget(
-                    wallet: visibleWallets[i],
-                    isEnabled: false,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxW = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width;
+        final narrowW = MediaQuery.sizeOf(context).width * 0.7;
+        final singleWalletFullWidth =
+            visibleWallets.length == 1 && !showHiddenTile;
+        final itemWidth = singleWalletFullWidth ? maxW : narrowW;
+
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: singleWalletFullWidth
+              ? const NeverScrollableScrollPhysics()
+              : null,
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (int i = 0; i < visibleWallets.length; i++) ...[
+                  if (i > 0) const SizedBox(width: AppSizing.spaceBtwItems),
+                  SizedBox(
+                    width: itemWidth,
+                    child: GestureDetector(
+                      onTap: () => onWalletSelected(visibleWallets[i]),
+                      child: WalletCardWidget(
+                        wallet: visibleWallets[i],
+                        isEnabled: false,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
-            if (hasHidden) ...[
-              if (visibleWallets.isNotEmpty)
-                const SizedBox(width: AppSizing.spaceBtwItems),
-              SizedBox(
-                width: width,
-                child: GestureDetector(
-                  onTap: onHiddenCardsSelected,
-                  child: _HiddenCardsPlaceholder(
-                    count: hiddenWallets.length,
+                ],
+                if (showHiddenTile) ...[
+                  if (visibleWallets.isNotEmpty)
+                    const SizedBox(width: AppSizing.spaceBtwItems),
+                  SizedBox(
+                    width: narrowW,
+                    child: GestureDetector(
+                      onTap: onHiddenCardsSelected,
+                      child: _HiddenCardsPlaceholder(
+                        count: hiddenWallets.length,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

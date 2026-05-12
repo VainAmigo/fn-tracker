@@ -15,8 +15,9 @@ class HomeWalletsStripWidget extends StatelessWidget {
           hiddenFromHomeIds: settings.hiddenFromHomeIds,
           onWalletSelected: (wallet) =>
               WalletSheetFlow.openWalletDetails(context, wallet),
-          onHiddenCardsSelected: () =>
-              WalletSheetFlow.openHiddenWallets(context),
+          onHiddenCardsSelected: settings.showHiddenWalletsPlaceholderOnHome
+              ? () => WalletSheetFlow.openHiddenWallets(context)
+              : null,
         );
       },
     );

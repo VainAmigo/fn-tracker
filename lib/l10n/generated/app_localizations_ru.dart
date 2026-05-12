@@ -306,6 +306,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get showOnHome => 'Показывать на главной';
 
   @override
+  String get homeWalletsShowHiddenPlaceholderTitle =>
+      'Плитка скрытых кошельков';
+
+  @override
+  String get homeWalletsShowHiddenPlaceholderSubtitle =>
+      'Показывать карточку «Скрытые карточки» в конце списка на главной';
+
+  @override
   String get home => 'Главная';
 
   @override

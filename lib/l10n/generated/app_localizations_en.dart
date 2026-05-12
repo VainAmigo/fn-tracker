@@ -305,6 +305,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showOnHome => 'Show on home';
 
   @override
+  String get homeWalletsShowHiddenPlaceholderTitle => 'Hidden wallets tile';
+
+  @override
+  String get homeWalletsShowHiddenPlaceholderSubtitle =>
+      'Show the «Hidden cards» card at the end of the list on the home screen';
+
+  @override
   String get home => 'Home';
 
   @override

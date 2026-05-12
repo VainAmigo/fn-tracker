@@ -306,6 +306,13 @@ class AppLocalizationsKy extends AppLocalizations {
   String get showOnHome => 'Башкыда көрсөтүү';
 
   @override
+  String get homeWalletsShowHiddenPlaceholderTitle => 'Жашырылган капчыктар';
+
+  @override
+  String get homeWalletsShowHiddenPlaceholderSubtitle =>
+      'Башкы экрандагы тизмектин аягында «Жашырылган карталар» картасын көрсөтүү';
+
+  @override
   String get home => 'Башкы';
 
   @override

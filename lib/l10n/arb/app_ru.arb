@@ -98,6 +98,8 @@
   "settings": "Настройки",
   "homeWalletsSettingsSubtitle": "Выберите кошельки, отображаемые на главном экране",
   "showOnHome": "Показывать на главной",
+  "homeWalletsShowHiddenPlaceholderTitle": "Плитка скрытых кошельков",
+  "homeWalletsShowHiddenPlaceholderSubtitle": "Показывать карточку «Скрытые карточки» в конце списка на главной",
   "home": "Главная",
   "finance": "Финансы",
   "financeTabOrderTitle": "Порядок вкладок",

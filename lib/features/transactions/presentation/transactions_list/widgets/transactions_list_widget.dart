@@ -152,53 +152,37 @@ class _Body extends StatelessWidget {
         : null;
     final color = shade?.color ?? Colors.grey;
 
-    return Dismissible(
-      key: Key(tx.id),
-      direction: DismissDirection.endToStart,
-      onDismissed: (_) {
-        context.read<TransactionsCubit>().deleteTransaction(tx.id);
-      },
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+    return CategoryCard(
+      onTap: () => TransactionDetailsSheet.show(context, transaction: tx),
+      title:
+          category?.name ?? goal?.name ?? tx.categoryId ?? wallet?.name ?? '',
+      subtitle: _buildSubtitle(
+        isGoalTransaction: isGoalTransaction,
+        note: tx.note ?? '',
+        wallet: wallet,
+      ),
+      leading: Container(
+        height: AppSizing.heightS,
         decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: borderRadiusFor(radius),
+          color: color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
         ),
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      child: CategoryCard(
-        onTap: () => TransactionDetailsSheet.show(context, transaction: tx),
-        title:
-            category?.name ?? goal?.name ?? tx.categoryId ?? wallet?.name ?? '',
-        subtitle: _buildSubtitle(
-          isGoalTransaction: isGoalTransaction,
-          note: tx.note ?? '',
-          wallet: wallet,
-        ),
-        leading: Container(
-          height: AppSizing.heightS,
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
-          ),
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: Icon(
-              icon?.icon ?? Icons.category,
-              size: AppSizing.iconSizeM,
-              color: color,
-            ),
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Icon(
+            icon?.icon ?? Icons.category,
+            size: AppSizing.iconSizeM,
+            color: color,
           ),
         ),
-        trailing: AmountTextWidget(
-          amount: tx.amount,
-          type: tx.type,
-          showSignPrefix: true,
-          style: AppTextStyles.listTileTitle(context),
-        ),
-        radius: radius,
       ),
+      trailing: AmountTextWidget(
+        amount: tx.amount,
+        type: tx.type,
+        showSignPrefix: true,
+        style: AppTextStyles.listTileTitle(context),
+      ),
+      radius: radius,
     );
   }
 

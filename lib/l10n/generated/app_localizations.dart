@@ -664,6 +664,18 @@ abstract class AppLocalizations {
   /// **'Show on home'**
   String get showOnHome;
 
+  /// No description provided for @homeWalletsShowHiddenPlaceholderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden wallets tile'**
+  String get homeWalletsShowHiddenPlaceholderTitle;
+
+  /// No description provided for @homeWalletsShowHiddenPlaceholderSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the «Hidden cards» card at the end of the list on the home screen'**
+  String get homeWalletsShowHiddenPlaceholderSubtitle;
+
   /// No description provided for @home.
   ///
   /// In en, this message translates to:

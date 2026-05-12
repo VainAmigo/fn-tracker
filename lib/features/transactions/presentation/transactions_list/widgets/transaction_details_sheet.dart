@@ -28,9 +28,13 @@ class TransactionDetailsSheet extends StatelessWidget {
     final categoriesState = context.watch<CategoriesCubit>().state;
     final categories = BlocStateExtractors.extractCategories(categoriesState);
     final categoryMap = {for (final c in categories) c.categoryId: c};
-    final goals = BlocStateExtractors.extractGoals(context.watch<GoalsCubit>().state);
+    final goals = BlocStateExtractors.extractGoals(
+      context.watch<GoalsCubit>().state,
+    );
     final goalMap = {for (final g in goals) g.id: g};
-    final wallets = BlocStateExtractors.extractWallets(context.watch<WalletCubit>().state);
+    final wallets = BlocStateExtractors.extractWallets(
+      context.watch<WalletCubit>().state,
+    );
     final walletMap = {
       for (final w in wallets)
         if (w.id != null) w.id!: w,
@@ -141,11 +145,24 @@ class TransactionDetailsSheet extends StatelessWidget {
             ),
             radius: CardRadius.last,
           ),
+          const SizedBox(height: AppSizing.spaceBtwSections),
+          PrimaryButton(
+            text: context.l10n.delete,
+            size: PrimaryButtonSize.large,
+            onPressed: () {
+              context.read<TransactionsCubit>().deleteTransaction(
+                transaction.id,
+              );
+              Navigator.of(context).pop();
+            },
+            icon: Icons.delete_rounded,
+            backgroundColor: Theme.of(context).colorScheme.error,
+            foregroundColor: Theme.of(context).colorScheme.onError,
+          ),
         ],
       ),
     );
   }
-
 }
 
 Widget _detailLeading(
