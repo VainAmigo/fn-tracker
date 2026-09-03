@@ -139,7 +139,7 @@ class _QuickCategoriesWidgetState extends State<QuickCategoriesWidget> {
     final seen = <String>{};
     final result = <CategoryModel>[];
 
-    for (final tx in transactions.reversed) {
+    for (final tx in transactions) {
       final id = tx.categoryId;
       if (id != null &&
           id.isNotEmpty &&

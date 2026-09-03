@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fn_tracker/core/app_groups/category_color_palettes.dart';
 import 'package:fn_tracker/features/features.dart';
@@ -45,20 +46,24 @@ class AndroidWidgetBridge {
     if (_initialized) return;
     _initialized = true;
 
-    final initialCategoryId = await _methodChannel.invokeMethod<String>(
-      'consumeInitialCategoryId',
-    );
-    if (initialCategoryId != null && initialCategoryId.isNotEmpty) {
-      await onCategoryTap(initialCategoryId);
+    try {
+      final initialCategoryId = await _methodChannel.invokeMethod<String>(
+        'consumeInitialCategoryId',
+      );
+      if (initialCategoryId != null && initialCategoryId.isNotEmpty) {
+        await onCategoryTap(initialCategoryId);
+      }
+    } on MissingPluginException {
+      return;
     }
 
-    _subscription = _eventChannel
-        .receiveBroadcastStream()
-        .listen((dynamic value) async {
-          final id = value?.toString();
-          if (id == null || id.isEmpty) return;
-          await onCategoryTap(id);
-        });
+    _subscription = _eventChannel.receiveBroadcastStream().listen((
+      dynamic value,
+    ) async {
+      final id = value?.toString();
+      if (id == null || id.isEmpty) return;
+      await onCategoryTap(id);
+    });
   }
 
   static Future<void> dispose() async {
@@ -69,29 +74,54 @@ class AndroidWidgetBridge {
 
   static Future<void> syncCategories({
     required List<CategoryModel> categories,
-    required List<String> pinnedIds,
-    required List<String> recentIds,
+    required ColorScheme colorScheme,
+    required String emptyLabel,
   }) async {
     final payload = categories
         .map(
           (category) => AndroidWidgetCategoryPayload(
             id: category.categoryId,
             name: category.name,
-            color: findShadeById(category.colorId)?.color.toARGB32() ?? 0xFF9E9E9E,
+            color:
+                findShadeById(category.colorId)?.color.toARGB32() ?? 0xFF9E9E9E,
             iconId: category.iconId,
           ).toJson(),
         )
         .toList();
 
-    await _methodChannel.invokeMethod<void>('syncWidgetData', {
-      'categories_json': jsonEncode(payload),
-      'pinned_ids_json': jsonEncode(pinnedIds),
-      'recent_ids_json': jsonEncode(recentIds),
-      'updated_at_ms': DateTime.now().millisecondsSinceEpoch,
-    });
+    try {
+      await _methodChannel.invokeMethod<void>('syncWidgetData', {
+        'categories_json': jsonEncode(payload),
+        'empty_label': emptyLabel,
+        'theme_surface': colorScheme.surface.toARGB32(),
+        'theme_secondary': colorScheme.secondary.toARGB32(),
+        'theme_on_surface': colorScheme.onSurface.toARGB32(),
+        'theme_on_secondary': colorScheme.onSecondary.toARGB32(),
+        'theme_primary': colorScheme.primary.toARGB32(),
+        'updated_at_ms': DateTime.now().millisecondsSinceEpoch,
+      });
+    } on MissingPluginException {
+      return;
+    }
   }
 
-  static Future<void> clear() async {
-    await _methodChannel.invokeMethod<void>('clearWidgetData');
+  static Future<void> clear({
+    ColorScheme? colorScheme,
+    String emptyLabel = '',
+  }) async {
+    try {
+      await _methodChannel.invokeMethod<void>('clearWidgetData', {
+        'empty_label': emptyLabel,
+        if (colorScheme != null) ...{
+          'theme_surface': colorScheme.surface.toARGB32(),
+          'theme_secondary': colorScheme.secondary.toARGB32(),
+          'theme_on_surface': colorScheme.onSurface.toARGB32(),
+          'theme_on_secondary': colorScheme.onSecondary.toARGB32(),
+          'theme_primary': colorScheme.primary.toARGB32(),
+        },
+      });
+    } on MissingPluginException {
+      return;
+    }
   }
 }

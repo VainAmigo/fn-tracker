@@ -29,7 +29,8 @@ class MainActivity : FlutterFragmentActivity() {
                 }
 
                 "clearWidgetData" -> {
-                    clearWidgetData()
+                    val args = call.arguments as? Map<*, *> ?: emptyMap<String, Any>()
+                    clearWidgetData(args)
                     refreshWidgets()
                     result.success(null)
                 }
@@ -50,6 +51,20 @@ class MainActivity : FlutterFragmentActivity() {
                 "clearAnalyticsWidgetData" -> {
                     clearAnalyticsWidgetData()
                     refreshAnalyticsWidgets()
+                    result.success(null)
+                }
+
+                "syncWalletWidgetData" -> {
+                    val args = call.arguments as? Map<*, *> ?: emptyMap<String, Any>()
+                    saveWalletWidgetData(args)
+                    refreshWalletWidgets()
+                    result.success(null)
+                }
+
+                "clearWalletWidgetData" -> {
+                    val args = call.arguments as? Map<*, *> ?: emptyMap<String, Any>()
+                    clearWalletWidgetData(args)
+                    refreshWalletWidgets()
                     result.success(null)
                 }
 
@@ -94,12 +109,28 @@ class MainActivity : FlutterFragmentActivity() {
                 args["categories_json"] as? String ?: "[]"
             )
             .putString(
-                "flutter.widget_pinned_ids_json",
-                args["pinned_ids_json"] as? String ?: "[]"
+                "flutter.widget_categories_empty_label",
+                args["empty_label"] as? String ?: ""
             )
-            .putString(
-                "flutter.widget_recent_ids_json",
-                args["recent_ids_json"] as? String ?: "[]"
+            .putInt(
+                "flutter.widget_categories_theme_surface",
+                (args["theme_surface"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_categories_theme_secondary",
+                (args["theme_secondary"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_categories_theme_on_surface",
+                (args["theme_on_surface"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_categories_theme_on_secondary",
+                (args["theme_on_secondary"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_categories_theme_primary",
+                (args["theme_primary"] as? Number)?.toInt() ?: 0
             )
             .putLong(
                 "flutter.widget_updated_at_ms",
@@ -108,12 +139,34 @@ class MainActivity : FlutterFragmentActivity() {
             .apply()
     }
 
-    private fun clearWidgetData() {
+    private fun clearWidgetData(args: Map<*, *>) {
         val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
         prefs.edit()
             .putString("flutter.widget_categories_json", "[]")
-            .putString("flutter.widget_pinned_ids_json", "[]")
-            .putString("flutter.widget_recent_ids_json", "[]")
+            .putString(
+                "flutter.widget_categories_empty_label",
+                args["empty_label"] as? String ?: ""
+            )
+            .putInt(
+                "flutter.widget_categories_theme_surface",
+                (args["theme_surface"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_categories_theme_secondary",
+                (args["theme_secondary"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_categories_theme_on_surface",
+                (args["theme_on_surface"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_categories_theme_on_secondary",
+                (args["theme_on_secondary"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_categories_theme_primary",
+                (args["theme_primary"] as? Number)?.toInt() ?: 0
+            )
             .apply()
     }
 
@@ -173,5 +226,122 @@ class MainActivity : FlutterFragmentActivity() {
         val ids = manager.getAppWidgetIds(provider)
         if (ids.isEmpty()) return
         AnalyticsWidgetProvider.updateAll(this, manager, ids)
+    }
+
+    private fun saveWalletWidgetData(args: Map<*, *>) {
+        val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        prefs.edit()
+            .putBoolean(
+                "flutter.widget_wallet_has_wallet",
+                args["has_wallet"] as? Boolean ?: false
+            )
+            .putString(
+                "flutter.widget_wallet_name",
+                args["name"] as? String ?: ""
+            )
+            .putInt(
+                "flutter.widget_wallet_color",
+                (args["color"] as? Number)?.toInt() ?: 0xFF9E9E9E.toInt()
+            )
+            .putString(
+                "flutter.widget_wallet_icon_id",
+                args["icon_id"] as? String ?: ""
+            )
+            .putBoolean(
+                "flutter.widget_wallet_hide_amount",
+                args["hide_amount"] as? Boolean ?: false
+            )
+            .putString(
+                "flutter.widget_wallet_amount_prefix",
+                args["amount_prefix"] as? String ?: ""
+            )
+            .putString(
+                "flutter.widget_wallet_amount_integer",
+                args["amount_integer"] as? String ?: ""
+            )
+            .putString(
+                "flutter.widget_wallet_amount_suffix",
+                args["amount_suffix"] as? String ?: ""
+            )
+            .putString(
+                "flutter.widget_wallet_title",
+                args["title"] as? String ?: ""
+            )
+            .putString(
+                "flutter.widget_wallet_empty_label",
+                args["empty_label"] as? String ?: ""
+            )
+            .putInt(
+                "flutter.widget_wallet_theme_surface",
+                (args["theme_surface"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_wallet_theme_secondary",
+                (args["theme_secondary"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_wallet_theme_on_surface",
+                (args["theme_on_surface"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_wallet_theme_on_secondary",
+                (args["theme_on_secondary"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_wallet_theme_primary",
+                (args["theme_primary"] as? Number)?.toInt() ?: 0
+            )
+            .putLong(
+                "flutter.widget_wallet_updated_at_ms",
+                (args["updated_at_ms"] as? Number)?.toLong() ?: System.currentTimeMillis()
+            )
+            .apply()
+    }
+
+    private fun clearWalletWidgetData(args: Map<*, *>) {
+        val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        prefs.edit()
+            .putBoolean("flutter.widget_wallet_has_wallet", false)
+            .putString("flutter.widget_wallet_name", "")
+            .putString("flutter.widget_wallet_amount_prefix", "")
+            .putString("flutter.widget_wallet_amount_integer", "")
+            .putString("flutter.widget_wallet_amount_suffix", "")
+            .putString(
+                "flutter.widget_wallet_title",
+                args["title"] as? String ?: ""
+            )
+            .putString(
+                "flutter.widget_wallet_empty_label",
+                args["empty_label"] as? String ?: ""
+            )
+            .putInt(
+                "flutter.widget_wallet_theme_surface",
+                (args["theme_surface"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_wallet_theme_secondary",
+                (args["theme_secondary"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_wallet_theme_on_surface",
+                (args["theme_on_surface"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_wallet_theme_on_secondary",
+                (args["theme_on_secondary"] as? Number)?.toInt() ?: 0
+            )
+            .putInt(
+                "flutter.widget_wallet_theme_primary",
+                (args["theme_primary"] as? Number)?.toInt() ?: 0
+            )
+            .apply()
+    }
+
+    private fun refreshWalletWidgets() {
+        val manager = AppWidgetManager.getInstance(this)
+        val provider = ComponentName(this, WalletWidgetProvider::class.java)
+        val ids = manager.getAppWidgetIds(provider)
+        if (ids.isEmpty()) return
+        WalletWidgetProvider.updateAll(this, manager, ids)
     }
 }

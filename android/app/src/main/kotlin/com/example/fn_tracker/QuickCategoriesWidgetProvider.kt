@@ -6,15 +6,16 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.widget.RemoteViews
-import android.os.Build
 
 class QuickCategoriesWidgetProvider : AppWidgetProvider() {
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray
+        appWidgetIds: IntArray,
     ) {
         updateAll(context, appWidgetManager, appWidgetIds)
     }
@@ -23,7 +24,7 @@ class QuickCategoriesWidgetProvider : AppWidgetProvider() {
         context: Context,
         appWidgetManager: AppWidgetManager,
         appWidgetId: Int,
-        newOptions: Bundle
+        newOptions: Bundle,
     ) {
         updateAppWidget(context, appWidgetManager, appWidgetId)
     }
@@ -49,7 +50,7 @@ class QuickCategoriesWidgetProvider : AppWidgetProvider() {
         fun updateAppWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
-            appWidgetId: Int
+            appWidgetId: Int,
         ) {
             val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
             val minWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
@@ -60,13 +61,27 @@ class QuickCategoriesWidgetProvider : AppWidgetProvider() {
                 R.layout.widget_large
             }
 
+            val surface = QuickCategoriesWidgetData.themeColor(
+                context,
+                "flutter.widget_categories_theme_surface",
+                WidgetThemeColors.surface(context),
+            )
+            val onSurface = QuickCategoriesWidgetData.themeColor(
+                context,
+                "flutter.widget_categories_theme_on_surface",
+                WidgetThemeColors.onSurface(context),
+            )
+
             val views = RemoteViews(context.packageName, layoutRes)
-            views.setInt(R.id.widget_root, "setBackgroundColor", WidgetThemeColors.surface(context))
-            views.setTextColor(R.id.widget_empty, WidgetThemeColors.onSurface(context))
+            views.setInt(R.id.widget_root, "setBackgroundColor", surface)
+            views.setTextViewText(R.id.widget_empty, QuickCategoriesWidgetData.emptyLabel(context))
+            views.setTextColor(R.id.widget_empty, onSurface)
+
             val serviceIntent = Intent(context, QuickCategoriesWidgetService::class.java).apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                 putExtra(EXTRA_WIDGET_ID, appWidgetId)
                 putExtra(EXTRA_IS_COMPACT, isCompact)
+                data = Uri.parse(toUri(Intent.URI_INTENT_SCHEME))
             }
 
             views.setRemoteAdapter(R.id.widget_grid, serviceIntent)
@@ -74,12 +89,13 @@ class QuickCategoriesWidgetProvider : AppWidgetProvider() {
 
             val launchIntent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra(EXTRA_CATEGORY_ID, "")
             }
             val templatePendingIntent = PendingIntent.getActivity(
                 context,
                 appWidgetId,
                 launchIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag()
+                PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag(),
             )
             views.setPendingIntentTemplate(R.id.widget_grid, templatePendingIntent)
 

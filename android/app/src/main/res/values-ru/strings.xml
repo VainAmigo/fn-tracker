@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">INFinance</string>
+    <string name="quick_categories_widget_name">Быстрые категории</string>
+    <string name="quick_categories_widget_empty">Нет категорий</string>
+    <string name="analytics_widget_name">Аналитика</string>
+    <string name="wallet_widget_name">Кошелёк</string>
+    <string name="wallet_widget_empty">Пока нет кошельков</string>
+</resources>

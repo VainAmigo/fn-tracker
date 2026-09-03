@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fn_tracker/components/buttons/primary_button.dart';
 import 'package:fn_tracker/features/features.dart';
 import 'package:fn_tracker/features/main/services/android_analytics_widget_bridge.dart';
+import 'package:fn_tracker/features/main/services/android_wallet_widget_bridge.dart';
 import 'package:fn_tracker/features/main/services/android_widget_bridge.dart';
 import 'package:fn_tracker/core/core.dart';
 import 'package:fn_tracker/l10n/l10.dart';
@@ -16,10 +17,13 @@ class AppMainView extends StatefulWidget {
   State<AppMainView> createState() => _AppMainViewState();
 }
 
-class _AppMainViewState extends State<AppMainView> {
+class _AppMainViewState extends State<AppMainView> with WidgetsBindingObserver {
   int _selectedIndex = 0;
   bool _fabMenuOpen = false;
   final quickActions = QuickActions();
+  CurrencyProvider? _currencyProvider;
+  ThemeProvider? _themeProvider;
+  LocaleProvider? _localeProvider;
 
   static const _fabAnimDuration = Duration(milliseconds: 280);
   static const _fabMenuAnimDuration = Duration(milliseconds: 260);
@@ -29,6 +33,7 @@ class _AppMainViewState extends State<AppMainView> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Нельзя вызывать context.l10n / context.read в initState — только после кадра.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -36,13 +41,41 @@ class _AppMainViewState extends State<AppMainView> {
       _runAutoCreate();
       AndroidWidgetBridge.init(onCategoryTap: _openAddExpenseFromWidget);
       _syncWidgetData(context);
+      _syncWalletWidgetData(context);
+      _currencyProvider = context.read<CurrencyProvider>()
+        ..addListener(_onThemeCurrencyOrLocaleChanged);
+      _themeProvider = context.read<ThemeProvider>()
+        ..addListener(_onThemeCurrencyOrLocaleChanged);
+      _localeProvider = context.read<LocaleProvider>()
+        ..addListener(_onThemeCurrencyOrLocaleChanged);
     });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _currencyProvider?.removeListener(_onThemeCurrencyOrLocaleChanged);
+    _themeProvider?.removeListener(_onThemeCurrencyOrLocaleChanged);
+    _localeProvider?.removeListener(_onThemeCurrencyOrLocaleChanged);
     AndroidWidgetBridge.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    _scheduleHomeWidgetsSync();
+  }
+
+  void _onThemeCurrencyOrLocaleChanged() {
+    _scheduleHomeWidgetsSync();
+  }
+
+  void _scheduleHomeWidgetsSync() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _syncWidgetData(context);
+      _syncWalletWidgetData(context);
+    });
   }
 
   void _registerQuickActions() {
@@ -149,52 +182,100 @@ class _AppMainViewState extends State<AppMainView> {
   }
 
   Future<void> _syncWidgetData(BuildContext context) async {
+    final colorScheme = Theme.of(context).colorScheme;
+    final emptyLabel = context.l10n.noCategories;
     final categoriesState = context.read<CategoriesCubit>().state;
     if (categoriesState is! CategoriesLoaded) {
-      await AndroidWidgetBridge.clear();
+      await AndroidWidgetBridge.clear(
+        colorScheme: colorScheme,
+        emptyLabel: emptyLabel,
+      );
       return;
     }
 
-    final allCategories = categoriesState.categories;
-    final settings = context.read<QuickCategoriesSettingsCubit>().state;
-    final transactionsState = context.read<TransactionsCubit>().state;
-    final recentIds = <String>[];
+    final displayCategories = _categoriesForHomeWidget(
+      categories: categoriesState.categories,
+      settings: context.read<QuickCategoriesSettingsCubit>().state,
+      transactionsState: context.read<TransactionsCubit>().state,
+    );
 
+    await AndroidWidgetBridge.syncCategories(
+      categories: displayCategories,
+      colorScheme: colorScheme,
+      emptyLabel: emptyLabel,
+    );
+  }
+
+  List<CategoryModel> _categoriesForHomeWidget({
+    required List<CategoryModel> categories,
+    required QuickCategoriesSettingsState settings,
+    required TransactionsState transactionsState,
+  }) {
+    return switch (settings.widgetSource) {
+      WidgetCategoriesSource.custom => _categoriesByOrder(
+        categories,
+        settings.customWidgetOrder,
+      ),
+      WidgetCategoriesSource.system => switch (settings.displayMode) {
+        QuickCategoriesDisplayMode.pinned => _resolvePinnedCategories(
+          categories: categories,
+          pinnedOrder: settings.pinnedOrder,
+        ),
+        QuickCategoriesDisplayMode.recent => _recentCategories(
+          categories: categories,
+          transactionsState: transactionsState,
+        ),
+      },
+    };
+  }
+
+  List<CategoryModel> _categoriesByOrder(
+    List<CategoryModel> categories,
+    List<String> order,
+  ) {
+    if (order.isEmpty) return const [];
+    final byId = {
+      for (final category in categories) category.categoryId: category,
+    };
+    return [
+      for (final id in order)
+        if (byId[id] != null) byId[id]!,
+    ];
+  }
+
+  List<CategoryModel> _resolvePinnedCategories({
+    required List<CategoryModel> categories,
+    required List<String> pinnedOrder,
+  }) {
+    return _categoriesByOrder(
+      categories,
+      _resolvePinnedIds(categories: categories, pinnedOrder: pinnedOrder),
+    );
+  }
+
+  List<CategoryModel> _recentCategories({
+    required List<CategoryModel> categories,
+    required TransactionsState transactionsState,
+  }) {
     final txList = switch (transactionsState) {
       TransactionsLoaded() => transactionsState.transactions,
       TransactionDeleted() => transactionsState.transactions,
       _ => <TransactionModel>[],
     };
-
+    final byId = {
+      for (final category in categories) category.categoryId: category,
+    };
+    final result = <CategoryModel>[];
     for (final tx in txList) {
       final categoryId = tx.categoryId;
-      if (categoryId == null ||
-          categoryId.isEmpty ||
-          recentIds.contains(categoryId)) {
-        continue;
-      }
-      recentIds.add(categoryId);
-      if (recentIds.length >= 12) break;
+      if (categoryId == null || categoryId.isEmpty) continue;
+      final category = byId[categoryId];
+      if (category == null) continue;
+      if (result.any((item) => item.categoryId == categoryId)) continue;
+      result.add(category);
+      if (result.length >= 12) break;
     }
-
-    final defaultPinnedIds = _resolvePinnedIds(
-      categories: allCategories,
-      pinnedOrder: settings.pinnedOrder,
-    );
-
-    final (widgetPinnedIds, widgetRecentIds) = switch (settings.widgetSource) {
-      WidgetCategoriesSource.system => switch (settings.displayMode) {
-        QuickCategoriesDisplayMode.pinned => (defaultPinnedIds, <String>[]),
-        QuickCategoriesDisplayMode.recent => (recentIds, <String>[]),
-      },
-      WidgetCategoriesSource.custom => (settings.customWidgetOrder, <String>[]),
-    };
-
-    await AndroidWidgetBridge.syncCategories(
-      categories: allCategories,
-      pinnedIds: widgetPinnedIds,
-      recentIds: widgetRecentIds,
-    );
+    return result;
   }
 
   Future<void> _syncAnalyticsWidgetData(BuildContext context) async {
@@ -206,6 +287,42 @@ class _AppMainViewState extends State<AppMainView> {
     await AndroidAnalyticsWidgetBridge.syncAnalytics(
       data: state.data,
       periodLabel: _periodLabel(state.period),
+    );
+  }
+
+  Future<void> _syncWalletWidgetData(BuildContext context) async {
+    final colorScheme = Theme.of(context).colorScheme;
+    final title = context.l10n.wallet;
+    final emptyLabel = context.l10n.noWallets;
+    final currency = context.read<CurrencyProvider>().currency;
+    final walletsState = context.read<WalletCubit>().state;
+
+    if (walletsState is! WalletsLoaded) {
+      await AndroidWalletWidgetBridge.clear(
+        colorScheme: colorScheme,
+        title: title,
+        emptyLabel: emptyLabel,
+      );
+      return;
+    }
+
+    WalletModel? defaultWallet;
+    for (final wallet in walletsState.wallets) {
+      if (wallet.isDefault && !wallet.isHidden) {
+        defaultWallet = wallet;
+        break;
+      }
+    }
+    defaultWallet ??= walletsState.wallets
+        .where((wallet) => !wallet.isHidden)
+        .firstOrNull;
+
+    await AndroidWalletWidgetBridge.syncWallet(
+      wallet: defaultWallet,
+      currency: currency,
+      colorScheme: colorScheme,
+      title: title,
+      emptyLabel: emptyLabel,
     );
   }
 
@@ -276,6 +393,15 @@ class _AppMainViewState extends State<AppMainView> {
         BlocListener<AnalyticsCubit, AnalyticsState>(
           listener: (context, state) {
             _syncAnalyticsWidgetData(context);
+          },
+        ),
+        BlocListener<WalletCubit, WalletsState>(
+          listener: (context, state) {
+            if (state is WalletsLoaded ||
+                state is WalletsEmpty ||
+                state is WalletsInitial) {
+              _syncWalletWidgetData(context);
+            }
           },
         ),
         BlocListener<GoalsCubit, GoalsState>(
