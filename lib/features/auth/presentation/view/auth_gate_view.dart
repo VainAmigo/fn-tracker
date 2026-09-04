@@ -8,16 +8,18 @@ class AuthGateView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        if (state is AuthInitial || state is AuthLoading) {
-          return const _AuthLoadingView();
-        }
-        if (state is Authenticated) {
-          return AppLockGate(child: const AppMainView());
-        }
-        return const AuthView();
-      },
+    return AppUpdateHost(
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          if (state is AuthInitial || state is AuthLoading) {
+            return const _AuthLoadingView();
+          }
+          if (state is Authenticated) {
+            return AppLockGate(child: const AppMainView());
+          }
+          return const AuthView();
+        },
+      ),
     );
   }
 }

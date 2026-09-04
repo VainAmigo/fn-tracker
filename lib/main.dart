@@ -16,6 +16,7 @@ import 'theme/themes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  ShorebirdUpdateService.initializeRestart();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await GoogleSignIn.instance.initialize();
 
@@ -116,6 +117,10 @@ class _AppViewState extends State<AppView> {
         ),
         BlocProvider<ScheduledPaymentsCubit>(
           create: (context) => ScheduledPaymentsCubit(financeRepo: financeRepo),
+        ),
+        BlocProvider<AppUpdateCubit>(
+          create: (context) =>
+              AppUpdateCubit(appUpdateRepository: AppUpdateRepository()),
         ),
       ],
       child: MultiProvider(

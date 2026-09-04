@@ -2835,6 +2835,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not read biometric status. Fully restart the app, or run a clean rebuild after adding biometrics support.'**
   String get biometricsHintProbeFailed;
+
+  /// No description provided for @appUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'App updates'**
+  String get appUpdates;
+
+  /// No description provided for @appUpdateAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App update available'**
+  String get appUpdateAvailableTitle;
+
+  /// No description provided for @appUpdateAvailableSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Download the patch, then restart to run the new code.'**
+  String get appUpdateAvailableSubtitle;
+
+  /// No description provided for @appUpdateDownloadingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading the update…'**
+  String get appUpdateDownloadingSubtitle;
+
+  /// No description provided for @appUpdateRestartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart the app'**
+  String get appUpdateRestartTitle;
+
+  /// No description provided for @appUpdateRestartSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The update is installed. Restart to apply the new code.'**
+  String get appUpdateRestartSubtitle;
+
+  /// No description provided for @appUpdateRestartButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart app'**
+  String get appUpdateRestartButton;
+
+  /// No description provided for @appUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t download the update. Try again.'**
+  String get appUpdateFailed;
+
+  /// No description provided for @appUpdateRestartFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t restart automatically. Close the app completely and open it again.'**
+  String get appUpdateRestartFailed;
+
+  /// No description provided for @appUpdateUpToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re on the latest version'**
+  String get appUpdateUpToDate;
+
+  /// No description provided for @appUpdateUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates are available in a Shorebird release build'**
+  String get appUpdateUnavailable;
 }
 
 class _AppLocalizationsDelegate

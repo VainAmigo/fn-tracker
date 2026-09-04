@@ -1448,4 +1448,41 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get biometricsHintProbeFailed =>
       'Could not read biometric status. Fully restart the app, or run a clean rebuild after adding biometrics support.';
+
+  @override
+  String get appUpdates => 'App updates';
+
+  @override
+  String get appUpdateAvailableTitle => 'App update available';
+
+  @override
+  String get appUpdateAvailableSubtitle =>
+      'Download the patch, then restart to run the new code.';
+
+  @override
+  String get appUpdateDownloadingSubtitle => 'Downloading the update…';
+
+  @override
+  String get appUpdateRestartTitle => 'Restart the app';
+
+  @override
+  String get appUpdateRestartSubtitle =>
+      'The update is installed. Restart to apply the new code.';
+
+  @override
+  String get appUpdateRestartButton => 'Restart app';
+
+  @override
+  String get appUpdateFailed => 'Couldn\'t download the update. Try again.';
+
+  @override
+  String get appUpdateRestartFailed =>
+      'Couldn\'t restart automatically. Close the app completely and open it again.';
+
+  @override
+  String get appUpdateUpToDate => 'You\'re on the latest version';
+
+  @override
+  String get appUpdateUnavailable =>
+      'Updates are available in a Shorebird release build';
 }

@@ -1446,4 +1446,41 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get biometricsHintProbeFailed =>
       'Не удалось определить статус биометрии. Полностью перезапустите приложение или выполните чистую пересборку после подключения local_auth.';
+
+  @override
+  String get appUpdates => 'Обновления приложения';
+
+  @override
+  String get appUpdateAvailableTitle => 'Доступно обновление приложения';
+
+  @override
+  String get appUpdateAvailableSubtitle =>
+      'Скачайте патч, затем перезапустите приложение, чтобы применить новый код.';
+
+  @override
+  String get appUpdateDownloadingSubtitle => 'Загрузка обновления…';
+
+  @override
+  String get appUpdateRestartTitle => 'Перезапустить приложение';
+
+  @override
+  String get appUpdateRestartSubtitle =>
+      'Обновление установлено. Перезапустите, чтобы применить новый код.';
+
+  @override
+  String get appUpdateRestartButton => 'Перезапустить приложение';
+
+  @override
+  String get appUpdateFailed =>
+      'Не удалось скачать обновление. Попробуйте ещё раз.';
+
+  @override
+  String get appUpdateRestartFailed =>
+      'Не удалось перезапустить автоматически. Полностью закройте приложение и откройте снова.';
+
+  @override
+  String get appUpdateUpToDate => 'Установлена последняя версия';
+
+  @override
+  String get appUpdateUnavailable => 'Обновления доступны в Shorebird-сборке';
 }

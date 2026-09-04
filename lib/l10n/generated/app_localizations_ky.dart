@@ -1447,4 +1447,42 @@ class AppLocalizationsKy extends AppLocalizations {
   @override
   String get biometricsHintProbeFailed =>
       'Биометриянын абалын аныктай алган жок. Колдонмону толугу менен кайра иштетиңиз же local_auth кошулгандан кийин таза кайра куруу жасаңыз.';
+
+  @override
+  String get appUpdates => 'Колдонмонун жаңыртуулары';
+
+  @override
+  String get appUpdateAvailableTitle => 'Колдонмонун жаңыртуусу жеткиликтүү';
+
+  @override
+  String get appUpdateAvailableSubtitle =>
+      'Патчты жүктөп алыңыз, андан кийин жаңы кодду колдонуу үчүн колдонмону кайра иштетиңиз.';
+
+  @override
+  String get appUpdateDownloadingSubtitle => 'Жаңыртуу жүктөлүп жатат…';
+
+  @override
+  String get appUpdateRestartTitle => 'Колдонмону кайра иштетүү';
+
+  @override
+  String get appUpdateRestartSubtitle =>
+      'Жаңыртуу орнотулду. Жаңы кодду колдонуу үчүн кайра иштетиңиз.';
+
+  @override
+  String get appUpdateRestartButton => 'Колдонмону кайра иштетүү';
+
+  @override
+  String get appUpdateFailed =>
+      'Жаңыртууну жүктөй алган жок. Кайра аракет кылыңыз.';
+
+  @override
+  String get appUpdateRestartFailed =>
+      'Автоматтык түрдө кайра иштеткен жок. Колдонмону толугу менен жабыңыз жана кайра ачыңыз.';
+
+  @override
+  String get appUpdateUpToDate => 'Акыркы версия орнотулган';
+
+  @override
+  String get appUpdateUnavailable =>
+      'Жаңыртуулар Shorebird чогултуусунда жеткиликтүү';
 }

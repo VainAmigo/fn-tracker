@@ -7,3 +7,4 @@ export 'home/home.dart';
 export 'transactions/transactions.dart';
 export 'settings/settings.dart';
 export 'finance/finance.dart';
+export 'app_update/app_update.dart';

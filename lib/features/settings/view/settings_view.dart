@@ -57,11 +57,32 @@ class SettingsView extends StatelessWidget {
                     context,
                     context.l10n.currencyAndFormats,
                     Icons.attach_money,
-                    isLast: true,
                     onTap: () {
                       AppBottomSheet.showFittedModalBottomSheet(
                         context,
                         child: const SettingsCurrencyWidget(),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+                  BlocBuilder<AppUpdateCubit, AppUpdateState>(
+                    buildWhen: (prev, curr) =>
+                        prev is AppUpdateChecking || curr is AppUpdateChecking,
+                    builder: (context, state) {
+                      final checking = state is AppUpdateChecking;
+                      return _buildSettingsListTile(
+                        context,
+                        context.l10n.appUpdates,
+                        Icons.system_update_alt_rounded,
+                        isLast: true,
+                        showProgress: checking,
+                        onTap: checking
+                            ? null
+                            : () {
+                                context.read<AppUpdateCubit>().checkForUpdate(
+                                  userInitiated: true,
+                                );
+                              },
                       );
                     },
                   ),
@@ -141,6 +162,7 @@ class SettingsView extends StatelessWidget {
     IconData icon, {
     bool isLast = false,
     bool isFirst = false,
+    bool showProgress = false,
     Function()? onTap,
   }) {
     return ListTile(
@@ -158,10 +180,19 @@ class SettingsView extends StatelessWidget {
       ),
       leading: Icon(icon, color: Theme.of(context).colorScheme.onSecondary),
       title: Text(title, style: AppTextStyles.listTileTitle(context)),
-      trailing: Icon(
-        Icons.arrow_forward_ios,
-        color: Theme.of(context).colorScheme.onSecondary,
-      ),
+      trailing: showProgress
+          ? SizedBox(
+              width: AppSizing.iconSizeS,
+              height: AppSizing.iconSizeS,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            )
+          : Icon(
+              Icons.arrow_forward_ios,
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
     );
   }
 }
