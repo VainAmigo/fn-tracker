@@ -50,6 +50,24 @@ class AmountFormModalSheet extends StatefulWidget {
     );
   }
 
+  /// Показать sheet и вернуть сумму, либо `null` если закрыли без сохранения.
+  static Future<double?> pick(
+    BuildContext context, {
+    String? title,
+    String? saveLabel,
+    bool enableCalculator = false,
+  }) async {
+    double? result;
+    await show(
+      context,
+      title: title,
+      saveLabel: saveLabel,
+      enableCalculator: enableCalculator,
+      onSave: (amount) => result = amount,
+    );
+    return result;
+  }
+
   @override
   State<AmountFormModalSheet> createState() => _AmountFormModalSheetState();
 }

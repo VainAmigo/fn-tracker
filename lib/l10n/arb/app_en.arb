@@ -287,6 +287,8 @@
   "@signOutConfirmation": {},
   "cancel": "Cancel",
   "@cancel": {},
+  "skip": "Skip",
+  "@skip": {},
   "selectYourCurrencyAndNumberFormat": "Select your currency and number format",
   "@selectYourCurrencyAndNumberFormat": {},
   "dynamicColorsOfTheDevice": "Dynamic colors of the device",

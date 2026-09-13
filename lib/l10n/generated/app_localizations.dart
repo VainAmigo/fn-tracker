@@ -940,6 +940,12 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get cancel;
 
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
   /// No description provided for @selectYourCurrencyAndNumberFormat.
   ///
   /// In en, this message translates to:

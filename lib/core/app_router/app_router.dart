@@ -14,6 +14,7 @@ final class AppRouter {
 
   static const transactions = '/transactions';
   static const addTransaction = '/add-transaction';
+  static const quickAdd = '/quick-add';
   static const aiLogic = '/ai-logic';
   static const transactionsById = '/transactions-by-id';
 
@@ -34,7 +35,7 @@ final class AppRouter {
   static const security = '/security';
   static const changePassword = '/change-password';
 
-  static Route<void> onGenerateRoute(RouteSettings settings) {
+  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     return switch (settings.name) {
       main => MaterialPageRoute(
         settings: const RouteSettings(name: main),
@@ -78,6 +79,10 @@ final class AppRouter {
             child: const AiLogicView(),
           );
         },
+      ),
+      quickAdd => MaterialPageRoute(
+        settings: const RouteSettings(name: quickAdd),
+        builder: (_) => const QuickAddView(),
       ),
       addTransaction => MaterialPageRoute(
         settings: RouteSettings(

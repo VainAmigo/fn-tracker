@@ -456,6 +456,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get cancel => 'Отмена';
 
   @override
+  String get skip => 'Пропустить';
+
+  @override
   String get selectYourCurrencyAndNumberFormat =>
       'Выберите валюту и формат чисел';
 

@@ -453,6 +453,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancel => 'Cancel';
 
   @override
+  String get skip => 'Skip';
+
+  @override
   String get selectYourCurrencyAndNumberFormat =>
       'Select your currency and number format';
 

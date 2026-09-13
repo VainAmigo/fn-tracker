@@ -144,6 +144,7 @@
   "signOut": "Выйти",
   "signOutConfirmation": "Выйти из аккаунта?",
   "cancel": "Отмена",
+  "skip": "Пропустить",
   "selectYourCurrencyAndNumberFormat": "Выберите валюту и формат чисел",
   "dynamicColorsOfTheDevice": "Динамические цвета устройства",
   "dynamicColorsOfTheDeviceDescription": "На Android 12+ тема подстраивается под устройство. На других платформах или если цвета недоступны, используется палитра ниже.",

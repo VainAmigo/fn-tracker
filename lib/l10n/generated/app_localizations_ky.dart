@@ -455,6 +455,9 @@ class AppLocalizationsKy extends AppLocalizations {
   String get cancel => 'Жокко чыгаруу';
 
   @override
+  String get skip => 'Өткөрүп жиберүү';
+
+  @override
   String get selectYourCurrencyAndNumberFormat =>
       'Валюта жана сан форматын тандаңыз';
 

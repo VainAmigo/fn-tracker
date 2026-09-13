@@ -144,6 +144,7 @@
   "signOut": "Чыгуу",
   "signOutConfirmation": "Аккаунттан чыгасызбы?",
   "cancel": "Жокко чыгаруу",
+  "skip": "Өткөрүп жиберүү",
   "selectYourCurrencyAndNumberFormat": "Валюта жана сан форматын тандаңыз",
   "dynamicColorsOfTheDevice": "Түзмөктүн динамикалык түстөрү",
   "dynamicColorsOfTheDeviceDescription": "Android 12+де тема түзмөккө ылайыкталат. Башка платформаларда же түстөр жеткиликтүү эмес болсо, төмөнкү палитра колдонулат.",

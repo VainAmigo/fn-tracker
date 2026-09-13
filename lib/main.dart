@@ -176,7 +176,16 @@ class FnTracker extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'INFinance',
-          initialRoute: AppRouter.main,
+          initialRoute:
+              WidgetsBinding.instance.platformDispatcher.defaultRouteName,
+          onGenerateInitialRoutes: (initialRoute) {
+            final name = initialRoute == AppRouter.quickAdd
+                ? AppRouter.quickAdd
+                : AppRouter.main;
+            return [
+              AppRouter.onGenerateRoute(RouteSettings(name: name)),
+            ];
+          },
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: localeProvider.locale,
