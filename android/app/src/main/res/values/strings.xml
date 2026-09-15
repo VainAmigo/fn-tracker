@@ -6,4 +6,6 @@
     <string name="analytics_widget_name">Analytics</string>
     <string name="wallet_widget_name">Wallet</string>
     <string name="wallet_widget_empty">No wallets yet</string>
+    <string name="quick_add_shortcut_short">Quick Add</string>
+    <string name="quick_add_shortcut_long">Quick add expense</string>
 </resources>

@@ -17,8 +17,16 @@ import 'theme/themes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   ShorebirdUpdateService.initializeRestart();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await GoogleSignIn.instance.initialize();
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+  try {
+    await GoogleSignIn.instance.initialize();
+  } catch (_) {
+    // Second Flutter engine (Quick Add) can start in an already running process.
+  }
 
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
@@ -182,9 +190,7 @@ class FnTracker extends StatelessWidget {
             final name = initialRoute == AppRouter.quickAdd
                 ? AppRouter.quickAdd
                 : AppRouter.main;
-            return [
-              AppRouter.onGenerateRoute(RouteSettings(name: name)),
-            ];
+            return [AppRouter.onGenerateRoute(RouteSettings(name: name))];
           },
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

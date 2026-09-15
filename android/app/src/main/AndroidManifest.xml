@@ -15,18 +15,21 @@
             android:theme="@style/TrampolineTheme"
             android:noHistory="true"
             android:excludeFromRecents="true"
-            android:taskAffinity=""
-            android:launchMode="standard">
+            android:taskAffinity=".quicktap_trampoline"
+            android:launchMode="singleInstance"
+            android:documentLaunchMode="never">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -42,7 +45,7 @@
         </activity>
         <activity
             android:name=".QuickAddActivity"
-            android:exported="false"
+            android:exported="true"
             android:launchMode="singleInstance"
             android:taskAffinity=".quickadd"
             android:excludeFromRecents="true"
@@ -50,6 +53,10 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="com.example.fn_tracker.action.QUICK_ADD"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/QuickAddTheme"

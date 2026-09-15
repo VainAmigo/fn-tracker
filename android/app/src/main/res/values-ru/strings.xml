@@ -6,4 +6,6 @@
     <string name="analytics_widget_name">Аналитика</string>
     <string name="wallet_widget_name">Кошелёк</string>
     <string name="wallet_widget_empty">Пока нет кошельков</string>
+    <string name="quick_add_shortcut_short">Быстрый расход</string>
+    <string name="quick_add_shortcut_long">Быстро добавить расход</string>
 </resources>

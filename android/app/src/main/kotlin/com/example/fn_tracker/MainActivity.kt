@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.plugin.common.EventChannel
@@ -86,12 +87,52 @@ class MainActivity : FlutterFragmentActivity() {
         })
 
         handleIntent(intent)
+        maybeOpenQuickAddFromLegacyQuickTap()
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
         handleIntent(intent)
+        maybeOpenQuickAddFromLegacyQuickTap()
+    }
+
+    /**
+     * Quick Tap could still target [MainActivity] if the user assigned the app
+     * before the trampoline became the launcher activity.
+     */
+    private fun maybeOpenQuickAddFromLegacyQuickTap() {
+        if (!shouldTreatLaunchAsQuickTap()) return
+        val next = Intent(this, QuickAddActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            putExtra("route", "/quick-add")
+        }
+        startActivity(next)
+        overridePendingTransition(0, 0)
+    }
+
+    private fun shouldTreatLaunchAsQuickTap(): Boolean {
+        val fromHistory = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0
+        if (fromHistory) return false
+        if (!intent.getStringExtra(QuickCategoriesWidgetProvider.EXTRA_CATEGORY_ID).isNullOrEmpty()) {
+            return false
+        }
+        val caller = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            launchedFromPackage
+        } else {
+            referrer?.host
+        } ?: return false
+        if (caller == packageName) return false
+        val looksLikeLauncher =
+            caller.contains("launcher", ignoreCase = true) ||
+                caller.contains("lawnchair", ignoreCase = true) ||
+                caller == "com.android.shell" ||
+                caller == "com.android.vending"
+        if (looksLikeLauncher) return false
+        return caller.contains("systemui", ignoreCase = true) ||
+            caller.startsWith("com.google.android.as") ||
+            caller == "com.android.settings" ||
+            caller == "android"
     }
 
     private fun handleIntent(intent: Intent?) {
