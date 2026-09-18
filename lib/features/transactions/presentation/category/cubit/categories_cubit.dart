@@ -78,6 +78,7 @@ class CategoriesCubit extends HydratedCubit<CategoriesState> {
         name: categoryModel.name,
         colorId: categoryModel.colorId,
         iconId: categoryModel.iconId,
+        limitType: categoryModel.limitType,
         limitValue: categoryModel.limitValue,
         createdAt: DateTime.now(),
       );

@@ -159,7 +159,6 @@ class HomeLayoutSettingsSheet extends StatelessWidget {
 
 IconData _sectionIcon(HomeSection section) {
   return switch (section) {
-    HomeSection.budget => Icons.pie_chart_outline_rounded,
     HomeSection.wallets => Icons.account_balance_wallet_outlined,
     HomeSection.quickCategories => Icons.bolt_rounded,
     HomeSection.lastTransactions => Icons.receipt_long_rounded,

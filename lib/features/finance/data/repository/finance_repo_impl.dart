@@ -1,35 +1,18 @@
 import 'package:fn_tracker/features/features.dart';
 
 abstract class FinanceRepoImpl {
-  Future<BudgetModel> createBudget({required BudgetModel budget});
+  Future<BudgetModel> createBudget({
+    required BudgetModel budget,
+    required String startMonthKey,
+  });
   Future<BudgetModel> updateBudget({
     required BudgetModel budget,
-    String? effectiveDayKey,
-    bool replaceAll = false,
+    required String startMonthKey,
   });
   Future<void> deleteBudget(String id);
   Future<BudgetStatModel> getBudgetStats({
     required String startDayKey,
     required String endDayKey,
-  });
-  Future<List<BudgetHistoryEntry>> getBudgetHistory(String budgetId);
-  Future<void> addBudgetHistoryEntry({
-    required String budgetId,
-    required BudgetHistoryEntry entry,
-  });
-  Future<void> updateBudgetHistoryEntry({
-    required String budgetId,
-    required BudgetHistoryEntry entry,
-  });
-  Future<void> deleteBudgetHistoryEntry({
-    required String budgetId,
-    required String entryId,
-  });
-
-  /// Создаёт первую запись в истории, если её нет (миграция старых бюджетов).
-  Future<void> ensureBudgetHistoryIfEmpty({
-    required String budgetId,
-    required BudgetModel budget,
   });
 
   Future<WalletModel> addWallet({required WalletModel wallet});

@@ -656,15 +656,6 @@ class AppLocalizationsKy extends AppLocalizations {
   String get deleteBudgetConfirmation => 'Бул бюджетти өчүрүүнү каалайсызбы?';
 
   @override
-  String get noHistoryEntries => 'Тарых жазуулары жок';
-
-  @override
-  String get editHistoryEntry => 'Тарых жазуусун оңдоо';
-
-  @override
-  String get deleteHistoryEntry => 'Тарых жазуусун өчүрүү?';
-
-  @override
   String get budgetExceeded => 'Бюджет ашып кетти';
 
   @override
@@ -674,49 +665,47 @@ class AppLocalizationsKy extends AppLocalizations {
   String get overspent => 'Ашып кетти';
 
   @override
-  String get replaceAll => 'Баарын алмаштыруу';
-
-  @override
-  String get fromDate => 'Баштоо датасы';
-
-  @override
-  String get effectiveFrom => 'Күчүнө кирүү';
-
-  @override
-  String get info => 'Маалымат';
-
-  @override
-  String get aboutBudget => 'Бюджет тууралуу';
-
-  @override
-  String get budgetDescription =>
-      'Бюджет — айлык чыгым чеги. Ага каршы канча короткондугуңузду карап, бюджет өзгөргөндө жаңы суммалар кошсоңуз болот.';
-
-  @override
-  String get addOptions => 'Кошуу параметрлери';
-
-  @override
-  String get replaceAllDescription =>
-      'Бюджет тарыхын жаңы сумма менен толугу менен алмаштырат. Бюджетти толугу менен кайра коюуну каалаганда колдонуңуз.';
-
-  @override
-  String get fromDateDescription =>
-      'Белгилүү датадан баштап күчүнө кирген жаңы бюджет суммасын кошот. Мурунку жазуулар тарыхта калат.';
-
-  @override
-  String get yearlyBudget => 'Жылдык бюджет';
-
-  @override
   String get monthlyBudget => 'Айлык бюджет';
-
-  @override
-  String get weeklyBudget => 'Апталик бюджет';
 
   @override
   String get budgetCategories => 'Бюджет категориялары';
 
   @override
   String get limitExceeded => 'Чек ашылды';
+
+  @override
+  String get thisMonth => 'Бул ай';
+
+  @override
+  String get nextMonth => 'Кийинки ай';
+
+  @override
+  String get setLimit => 'Чек коюу';
+
+  @override
+  String get remainingBudget => 'Бюджеттин калдыгы';
+
+  @override
+  String get limitExceedsRemaining => 'Чек бюджеттин калдыгынан ашып кетет';
+
+  @override
+  String get fixedLimit => 'Фикс';
+
+  @override
+  String get percentLimit => 'Пайыз';
+
+  @override
+  String get clearLimit => 'Чекти өчүрүү';
+
+  @override
+  String get allocatedLimits => 'Бөлүнгөн';
+
+  @override
+  String get fixedLimitsExceedBudget =>
+      'Категориялардын фикс-чеги жаңы бюджеттен ашып кетет';
+
+  @override
+  String get budgetStartsFrom => 'Башталат';
 
   @override
   String get wallets => 'Капчыктар';

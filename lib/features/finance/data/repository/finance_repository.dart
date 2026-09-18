@@ -169,12 +169,54 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
     );
   }
 
+  Future<List<BudgetHistoryEntry>> _loadBudgetHistory(
+    String uid,
+    String budgetId,
+  ) async {
+    final snapshot = await _budgetHistoryRef(uid, budgetId).get();
+    final entries = snapshot.docs
+        .map((doc) => BudgetHistoryEntry.fromJson(doc.id, doc.data()))
+        .toList()
+      ..sort((a, b) => a.effectiveMonthKey.compareTo(b.effectiveMonthKey));
+    return entries;
+  }
+
+  Future<void> _upsertHistoryEntry({
+    required String uid,
+    required String budgetId,
+    required double amount,
+    required String startMonthKey,
+  }) async {
+    final historyRef = _budgetHistoryRef(uid, budgetId);
+    final snapshot = await historyRef.get();
+    final now = DateTime.now();
+    for (final doc in snapshot.docs) {
+      final entry = BudgetHistoryEntry.fromJson(doc.id, doc.data());
+      if (entry.effectiveMonthKey == startMonthKey) {
+        await doc.reference.update({
+          'amount': amount,
+          'effectiveMonthKey': startMonthKey,
+          'createdAt': now.toUtc().toIso8601String(),
+        });
+        return;
+      }
+    }
+    await historyRef.add({
+      'amount': amount,
+      'effectiveMonthKey': startMonthKey,
+      'createdAt': now.toUtc().toIso8601String(),
+    });
+  }
+
   @override
   Future<BudgetStatModel> getBudgetStats({
     required String startDayKey,
     required String endDayKey,
   }) async {
     final uid = requireUid();
+    final monthKey = startDayKey.length >= 7
+        ? startDayKey.substring(0, 7)
+        : DateTime.now().periodKey;
     return FirebaseLogger.query(
       operation: 'getBudgetStats',
       collection: _path(uid, 'budget + transactions + categories'),
@@ -192,12 +234,31 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
         final budgetSnapshot = results[0];
         final transactionsSnapshot = results[1];
         final categoriesSnapshot = results[2];
-        final BudgetModel? budget = budgetSnapshot.docs.isEmpty
-            ? null
-            : BudgetModel.fromJson({
-                ...budgetSnapshot.docs.first.data(),
-                'id': budgetSnapshot.docs.first.id,
-              });
+
+        BudgetModel? budget;
+        List<BudgetHistoryEntry> history = [];
+        if (budgetSnapshot.docs.isNotEmpty) {
+          final doc = budgetSnapshot.docs.first;
+          budget = BudgetModel.fromJson({...doc.data(), 'id': doc.id});
+          history = await _loadBudgetHistory(uid, budget.id);
+          // Миграция старых бюджетов без истории.
+          if (history.isEmpty) {
+            await _upsertHistoryEntry(
+              uid: uid,
+              budgetId: budget.id,
+              amount: budget.amount,
+              startMonthKey: '2000-01',
+            );
+            history = await _loadBudgetHistory(uid, budget.id);
+          }
+        }
+
+        final budgetAmount =
+            BudgetCalculator.amountForMonth(history, monthKey) ?? 0.0;
+        final hasBudgetForMonth =
+            budget != null &&
+            BudgetCalculator.amountForMonth(history, monthKey) != null;
+
         final transactions = transactionsSnapshot.docs
             .map((doc) => TransactionModel.fromJson(doc.data()))
             .where((t) => t.transferId == null)
@@ -207,6 +268,7 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
           0.0,
           (double sum, t) => sum + t.amount,
         );
+
         final categories = categoriesSnapshot.docs
             .map((doc) => CategoryModel.fromJson(doc.data()))
             .toList();
@@ -218,59 +280,86 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
             ifAbsent: () => t.amount,
           );
         }
-        final categoriesMap = {for (final c in categories) c.categoryId: c};
-        final categorySpending =
-            spendingByCategoryId.entries
-                .where((e) => categoriesMap.containsKey(e.key))
-                .map(
-                  (e) => CategorySpending(
-                    category: categoriesMap[e.key]!,
-                    amount: e.value,
-                  ),
-                )
-                .toList()
-              ..sort((a, b) => b.amount.compareTo(a.amount));
+
+        final allocated = BudgetCalculator.allocatedTotal(
+          categories,
+          budgetAmount,
+        );
+        final remaining = budgetAmount - allocated;
+
+        final categorySpending = categories
+            .map(
+              (c) => CategorySpending(
+                category: c,
+                amount: spendingByCategoryId[c.categoryId] ?? 0,
+                resolvedLimit: c.hasLimit
+                    ? BudgetCalculator.absoluteLimit(c, budgetAmount)
+                    : null,
+              ),
+            )
+            .toList()
+          ..sort((a, b) {
+            final bySpent = b.amount.compareTo(a.amount);
+            if (bySpent != 0) return bySpent;
+            return a.category.name.compareTo(b.category.name);
+          });
+
         return BudgetStatModel(
-          budget: budget,
+          budget: hasBudgetForMonth ? budget : null,
+          budgetAmount: budgetAmount,
           transactions: transactions,
           totalForPeriod: totalForPeriod,
+          allocatedLimits: allocated,
+          remainingAfterLimits: remaining,
           categorySpending: categorySpending,
+          history: history,
         );
       },
       serialize: (s) => {
-        'budgetAmount': s.budget?.amount,
+        'budgetAmount': s.budgetAmount,
         'totalForPeriod': s.totalForPeriod,
+        'allocatedLimits': s.allocatedLimits,
+        'remainingAfterLimits': s.remainingAfterLimits,
         'transactionsCount': s.transactions.length,
         'categoriesCount': s.categorySpending.length,
-        '_docs': s.categorySpending.map((cs) => {
-          'category': cs.category.name,
-          'amount': cs.amount,
-        }).toList(),
       },
     );
   }
 
   @override
-  Future<BudgetModel> createBudget({required BudgetModel budget}) async {
+  Future<BudgetModel> createBudget({
+    required BudgetModel budget,
+    required String startMonthKey,
+  }) async {
     final uid = requireUid();
     return FirebaseLogger.mutation(
       operation: 'createBudget',
       collection: _path(uid, 'budget'),
-      data: {'amount': budget.amount},
+      data: {'amount': budget.amount, 'startMonthKey': startMonthKey},
       fn: () async {
+        final existing = await _budgetsRef(uid).limit(1).get();
+        if (existing.docs.isNotEmpty) {
+          final id = existing.docs.first.id;
+          final updated = BudgetModel(id: id, amount: budget.amount);
+          await _budgetsRef(uid).doc(id).update(updated.toJson());
+          await _upsertHistoryEntry(
+            uid: uid,
+            budgetId: id,
+            amount: budget.amount,
+            startMonthKey: startMonthKey,
+          );
+          return updated;
+        }
         final docRef = _budgetsRef(uid).doc();
-        final budgetId = docRef.id;
-        final now = DateTime.now();
-        final effectiveDayKey = now.dayKey;
-        await docRef.set(
-          BudgetModel(id: budgetId, amount: budget.amount).toJson(),
+        final created = BudgetModel(id: docRef.id, amount: budget.amount);
+        await docRef.set(created.toJson());
+        await _upsertHistoryEntry(
+          uid: uid,
+          budgetId: created.id,
+          amount: budget.amount,
+          startMonthKey: startMonthKey,
         );
-        await _budgetHistoryRef(uid, budgetId).add({
-          'amount': budget.amount,
-          'effectiveDayKey': effectiveDayKey,
-          'createdAt': now.toUtc().toIso8601String(),
-        });
-        return BudgetModel(id: budgetId, amount: budget.amount);
+        return created;
       },
       serialize: (b) => {'id': b.id, 'amount': b.amount},
     );
@@ -279,130 +368,26 @@ class FinanceRepository with FirestoreUserContext implements FinanceRepoImpl {
   @override
   Future<BudgetModel> updateBudget({
     required BudgetModel budget,
-    String? effectiveDayKey,
-    bool replaceAll = false,
+    required String startMonthKey,
   }) async {
     final uid = requireUid();
     return FirebaseLogger.mutation(
       operation: 'updateBudget',
       collection: _path(uid, 'budget'),
       docId: budget.id,
-      data: {
-        'amount': budget.amount,
-        'effectiveDayKey': effectiveDayKey,
-        'replaceAll': replaceAll,
-      },
+      data: {'amount': budget.amount, 'startMonthKey': startMonthKey},
       fn: () async {
-        final docRef = _budgetsRef(uid).doc(budget.id);
-        await docRef.update(budget.toJson());
-        final now = DateTime.now();
-        final historyRef = _budgetHistoryRef(uid, budget.id);
-
-        if (replaceAll) {
-          final snapshot = await historyRef.get();
-          for (final doc in snapshot.docs) {
-            await doc.reference.delete();
-          }
-        }
-
-        final key = effectiveDayKey ?? now.dayKey;
-        await historyRef.add({
-          'amount': budget.amount,
-          'effectiveDayKey': key,
-          'createdAt': now.toUtc().toIso8601String(),
-        });
+        await _budgetsRef(uid).doc(budget.id).update(budget.toJson());
+        await _upsertHistoryEntry(
+          uid: uid,
+          budgetId: budget.id,
+          amount: budget.amount,
+          startMonthKey: startMonthKey,
+        );
         return budget;
       },
       serialize: (b) => {'id': b.id, 'amount': b.amount},
     );
-  }
-
-  @override
-  Future<List<BudgetHistoryEntry>> getBudgetHistory(String budgetId) async {
-    final uid = requireUid();
-    return FirebaseLogger.query(
-      operation: 'getBudgetHistory',
-      collection: _path(uid, 'budget/$budgetId/history'),
-      filters: {'orderBy': 'effectiveDayKey'},
-      fn: () async {
-        final snapshot = await _budgetHistoryRef(uid, budgetId)
-            .orderBy('effectiveDayKey')
-            .get();
-        return snapshot.docs
-            .map((doc) => BudgetHistoryEntry.fromJson(doc.id, doc.data()))
-            .toList();
-      },
-      serialize: (list) => {
-        '_docsCount': list.length,
-        '_docs': list.map((e) => {
-          'id': e.id,
-          'amount': e.amount,
-          'effectiveDayKey': e.effectiveDayKey,
-        }).toList(),
-      },
-    );
-  }
-
-  @override
-  Future<void> addBudgetHistoryEntry({
-    required String budgetId,
-    required BudgetHistoryEntry entry,
-  }) async {
-    final uid = requireUid();
-    return FirebaseLogger.mutation(
-      operation: 'addBudgetHistoryEntry',
-      collection: _path(uid, 'budget/$budgetId/history'),
-      data: entry.toJson(),
-      fn: () => _budgetHistoryRef(uid, budgetId).add(entry.toJson()),
-    );
-  }
-
-  @override
-  Future<void> updateBudgetHistoryEntry({
-    required String budgetId,
-    required BudgetHistoryEntry entry,
-  }) async {
-    final uid = requireUid();
-    return FirebaseLogger.mutation(
-      operation: 'updateBudgetHistoryEntry',
-      collection: _path(uid, 'budget/$budgetId/history'),
-      docId: entry.id,
-      data: entry.toJson(),
-      fn: () => _budgetHistoryRef(uid, budgetId)
-          .doc(entry.id)
-          .update(entry.toJson()),
-    );
-  }
-
-  @override
-  Future<void> deleteBudgetHistoryEntry({
-    required String budgetId,
-    required String entryId,
-  }) async {
-    final uid = requireUid();
-    return FirebaseLogger.mutation(
-      operation: 'deleteBudgetHistoryEntry',
-      collection: _path(uid, 'budget/$budgetId/history'),
-      docId: entryId,
-      fn: () => _budgetHistoryRef(uid, budgetId).doc(entryId).delete(),
-    );
-  }
-
-  @override
-  Future<void> ensureBudgetHistoryIfEmpty({
-    required String budgetId,
-    required BudgetModel budget,
-  }) async {
-    final uid = requireUid();
-    final snapshot = await _budgetHistoryRef(uid, budgetId).limit(1).get();
-    if (snapshot.docs.isEmpty) {
-      final now = DateTime.now();
-      await _budgetHistoryRef(uid, budgetId).add({
-        'amount': budget.amount,
-        'effectiveDayKey': '2000-01-01',
-        'createdAt': now.toUtc().toIso8601String(),
-      });
-    }
   }
 
   @override

@@ -655,15 +655,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Are you sure you want to delete this budget?';
 
   @override
-  String get noHistoryEntries => 'No history entries';
-
-  @override
-  String get editHistoryEntry => 'Edit history entry';
-
-  @override
-  String get deleteHistoryEntry => 'Delete history entry?';
-
-  @override
   String get budgetExceeded => 'Budget exceeded';
 
   @override
@@ -673,49 +664,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get overspent => 'Overspent';
 
   @override
-  String get replaceAll => 'Replace all';
-
-  @override
-  String get fromDate => 'From date';
-
-  @override
-  String get effectiveFrom => 'Effective from';
-
-  @override
-  String get info => 'Info';
-
-  @override
-  String get aboutBudget => 'About budget';
-
-  @override
-  String get budgetDescription =>
-      'Budget is a monthly spending limit. You can track how much you spend against it and add new amounts when your budget changes.';
-
-  @override
-  String get addOptions => 'Add options';
-
-  @override
-  String get replaceAllDescription =>
-      'Replaces all budget history with the new amount. Use when you want to reset your budget completely.';
-
-  @override
-  String get fromDateDescription =>
-      'Adds a new budget amount effective from a specific date. Previous entries remain in history.';
-
-  @override
-  String get yearlyBudget => 'Yearly budget';
-
-  @override
   String get monthlyBudget => 'Monthly budget';
-
-  @override
-  String get weeklyBudget => 'Weekly budget';
 
   @override
   String get budgetCategories => 'Budget categories';
 
   @override
   String get limitExceeded => 'Limit exceeded';
+
+  @override
+  String get thisMonth => 'This month';
+
+  @override
+  String get nextMonth => 'Next month';
+
+  @override
+  String get setLimit => 'Set limit';
+
+  @override
+  String get remainingBudget => 'Remaining budget';
+
+  @override
+  String get limitExceedsRemaining => 'Limit exceeds remaining budget';
+
+  @override
+  String get fixedLimit => 'Fixed';
+
+  @override
+  String get percentLimit => 'Percent';
+
+  @override
+  String get clearLimit => 'Clear limit';
+
+  @override
+  String get allocatedLimits => 'Allocated';
+
+  @override
+  String get fixedLimitsExceedBudget =>
+      'Fixed category limits exceed the new budget amount';
+
+  @override
+  String get budgetStartsFrom => 'Starts from';
 
   @override
   String get wallets => 'Wallets';

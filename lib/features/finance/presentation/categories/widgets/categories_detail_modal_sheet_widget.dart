@@ -40,35 +40,47 @@ class CategoriesDetailModalSheetWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSizing.spaceBtwElements),
-          CategoryCard(
-            title: category.name,
-            subtitle: category.limitValue != null
-                ? AmountFormatter.formatWithDots(
-                    context.l10n.limit,
-                    '${category.limitValue} ${currency.symbol}',
-                  )
-                : null,
-            leading: Container(
-              height: AppSizing.heightS,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(AppSizing.borderRadius8),
-              ),
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: Icon(
-                  icon?.icon ?? Icons.category,
-                  size: AppSizing.iconSizeM,
-                  color: color,
+          Builder(
+            builder: (context) {
+              final limitLabel = BudgetDisplayUtils.formatCategoryLimit(
+                category,
+                currencySymbol: currency.symbol,
+                formatAmount: (a) => AmountFormatter.format(a),
+              );
+              return CategoryCard(
+                title: category.name,
+                subtitle: limitLabel != null
+                    ? AmountFormatter.formatWithDots(
+                        context.l10n.limit,
+                        limitLabel,
+                      )
+                    : null,
+                leading: Container(
+                  height: AppSizing.heightS,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(
+                      AppSizing.borderRadius8,
+                    ),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Icon(
+                      icon?.icon ?? Icons.category,
+                      size: AppSizing.iconSizeM,
+                      color: color,
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
           const SizedBox(height: AppSizing.spaceBtwItemsExtra),
           PrimaryButton(
             text: context.l10n.history,
             icon: Icons.history,
             size: PrimaryButtonSize.xSmall,
+            paddingStyle: PrimaryButtonPaddingStyle.slim,
             rounded: true,
             backgroundColor: colorScheme.tertiary.withValues(alpha: 0.3),
             foregroundColor: colorScheme.tertiary,
@@ -94,9 +106,9 @@ class CategoriesDetailModalSheetWidget extends StatelessWidget {
                     Navigator.of(context).pop();
                   }
                   if (state is CategoriesError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(state.message)));
                   }
                 },
                 child: PrimaryButton(
@@ -120,17 +132,16 @@ class CategoriesDetailModalSheetWidget extends StatelessWidget {
                       return;
                     }
                     context.read<CategoriesCubit>().deleteCategory(
-                          categoryId: category.categoryId,
-                          deleteTransactions:
-                              result == DeleteEntityResult.deleteFull,
-                        );
+                      categoryId: category.categoryId,
+                      deleteTransactions:
+                          result == DeleteEntityResult.deleteFull,
+                    );
                   },
                 ),
               ),
               Flexible(
                 child: PrimaryButton(
                   text: context.l10n.addTransaction,
-                  icon: Icons.add,
                   size: PrimaryButtonSize.large,
                   rounded: true,
                   onPressed: () {

@@ -1,16 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fn_tracker/core/utils/date_keys_extention.dart';
 
 /// Бюджет всегда месячный. [amount] — сумма на месяц.
 class BudgetModel {
   const BudgetModel({
     required this.id,
     required this.amount,
-    this.canSpendAmount,
   });
 
   final String id;
   final double amount;
-  final double? canSpendAmount;
 
   Map<String, dynamic> toJson() {
     return {'id': id, 'amount': amount};
@@ -24,23 +23,24 @@ class BudgetModel {
   }
 }
 
+/// Запись истории бюджета, действующая с [effectiveMonthKey] (`YYYY-MM`).
 class BudgetHistoryEntry {
   const BudgetHistoryEntry({
     required this.id,
     required this.amount,
-    required this.effectiveDayKey,
+    required this.effectiveMonthKey,
     required this.createdAt,
   });
 
   final String id;
   final double amount;
-  final String effectiveDayKey;
+  final String effectiveMonthKey;
   final DateTime createdAt;
 
   Map<String, dynamic> toJson() {
     return {
       'amount': amount,
-      'effectiveDayKey': effectiveDayKey,
+      'effectiveMonthKey': effectiveMonthKey,
       'createdAt': createdAt.toUtc().toIso8601String(),
     };
   }
@@ -51,15 +51,18 @@ class BudgetHistoryEntry {
         ? createdAtRaw.toDate()
         : DateTime.tryParse(createdAtRaw as String? ?? '') ?? DateTime.now();
 
+    final monthKey = json['effectiveMonthKey'] as String?;
+    final dayKey = json['effectiveDayKey'] as String?;
+    final effectiveMonthKey = monthKey ??
+        (dayKey != null && dayKey.length >= 7
+            ? dayKey.substring(0, 7)
+            : DateTime.now().periodKey);
+
     return BudgetHistoryEntry(
       id: id,
       amount: (json['amount'] as num).toDouble(),
-      effectiveDayKey: json['effectiveDayKey'] as String,
+      effectiveMonthKey: effectiveMonthKey,
       createdAt: createdAt,
     );
-  }
-
-  BudgetModel toBudgetModel(String budgetId) {
-    return BudgetModel(id: budgetId, amount: amount);
   }
 }

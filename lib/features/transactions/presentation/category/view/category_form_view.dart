@@ -19,7 +19,6 @@ class _CategoryFormViewState extends State<CategoryFormView> {
   late CategoryIcon _selectedIcon;
   late CategoryShade _selectedShade;
   late TextEditingController _nameController;
-  late String? _limit;
   bool _isSubmitting = false;
   bool _isDeleting = false;
   bool _defaultsInitialized = false;
@@ -32,13 +31,11 @@ class _CategoryFormViewState extends State<CategoryFormView> {
     final category = widget.category;
     if (category != null) {
       _nameController = TextEditingController(text: category.name);
-      _limit = category.limitValue?.toString();
       _selectedIcon = findIconById(category.iconId)!;
       _selectedShade = findShadeById(category.colorId)!;
       _defaultsInitialized = true;
     } else {
       _nameController = TextEditingController();
-      _limit = null;
       _selectedIcon = categoryIconGroups[0].icons.first;
       _selectedShade = categoryColorPalettes[0].shades.first;
     }
@@ -144,16 +141,6 @@ class _CategoryFormViewState extends State<CategoryFormView> {
                           label: context.l10n.categoryName,
                           controller: _nameController,
                         ),
-                        FormCardWidget(
-                          title: _limit ?? context.l10n.noLimit,
-                          subtitle: context.l10n.monthlyLimit,
-                          icon: Icon(
-                            Icons.data_usage_rounded,
-                            color: colorScheme.onSecondary,
-                          ),
-                          onTap: () =>
-                              _openLimitSheet(context, _limit),
-                        ),
                         CreateCategoryIconPickerWidget(
                           selectedIcon: _selectedIcon,
                           selectedColor: _selectedShade.color,
@@ -216,18 +203,6 @@ class _CategoryFormViewState extends State<CategoryFormView> {
     );
   }
 
-  void _openLimitSheet(BuildContext context, String? limit) {
-    final initialAmount = limit != null && limit.isNotEmpty
-        ? double.tryParse(limit)
-        : null;
-    AmountFormModalSheet.show(
-      context,
-      initialAmount: initialAmount,
-      saveLabel: context.l10n.save,
-      onSave: (amount) => setState(() => _limit = amount.toString()),
-    );
-  }
-
   Future<void> _deleteCategory() async {
     final result = await showDeleteEntityDialog(
       context,
@@ -259,10 +234,6 @@ class _CategoryFormViewState extends State<CategoryFormView> {
       return;
     }
 
-    final double? limitValue = _limit != null && _limit!.isNotEmpty
-        ? double.parse(_limit!)
-        : null;
-
     setState(() => _isSubmitting = true);
 
     if (_isEditing) {
@@ -271,7 +242,8 @@ class _CategoryFormViewState extends State<CategoryFormView> {
         name: name,
         colorId: _selectedShade.id,
         iconId: _selectedIcon.id,
-        limitValue: limitValue,
+        limitType: widget.category!.limitType,
+        limitValue: widget.category!.limitValue,
         createdAt: widget.category!.createdAt,
         isQuick: widget.category!.isQuick,
       );
@@ -282,7 +254,6 @@ class _CategoryFormViewState extends State<CategoryFormView> {
         name: name,
         colorId: _selectedShade.id,
         iconId: _selectedIcon.id,
-        limitValue: limitValue,
       );
       context.read<CategoriesCubit>().createCategory(categoryModel: category);
     }

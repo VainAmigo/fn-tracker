@@ -37,6 +37,7 @@ class CategoryRepository
           'name': c.name,
           'colorId': c.colorId,
           'iconId': c.iconId,
+          'limitType': c.limitType.toJson(),
           'limitValue': c.limitValue,
         }).toList(),
       },
@@ -53,6 +54,7 @@ class CategoryRepository
         'name': category!.name,
         'colorId': category.colorId,
         'iconId': category.iconId,
+        'limitType': category.limitType.toJson(),
         'limitValue': category.limitValue,
       },
       fn: () async {
@@ -63,6 +65,7 @@ class CategoryRepository
           name: category.name,
           colorId: category.colorId,
           iconId: category.iconId,
+          limitType: category.limitType,
           limitValue: category.limitValue,
           createdAt: now.toDate(),
         );
@@ -71,6 +74,7 @@ class CategoryRepository
           'name': model.name,
           'colorId': model.colorId,
           'iconId': model.iconId,
+          'limitType': model.limitType.toJson(),
           'limitValue': model.limitValue,
           'createdAt': now,
         });
@@ -93,6 +97,7 @@ class CategoryRepository
       'colorId': category.colorId,
       'iconId': category.iconId,
       'isQuick': category.isQuick,
+      'limitType': category.limitType.toJson(),
       'limitValue': category.limitValue,
     };
     return FirebaseLogger.mutation(

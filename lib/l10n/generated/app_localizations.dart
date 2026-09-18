@@ -1330,24 +1330,6 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to delete this budget?'**
   String get deleteBudgetConfirmation;
 
-  /// No description provided for @noHistoryEntries.
-  ///
-  /// In en, this message translates to:
-  /// **'No history entries'**
-  String get noHistoryEntries;
-
-  /// No description provided for @editHistoryEntry.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit history entry'**
-  String get editHistoryEntry;
-
-  /// No description provided for @deleteHistoryEntry.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete history entry?'**
-  String get deleteHistoryEntry;
-
   /// No description provided for @budgetExceeded.
   ///
   /// In en, this message translates to:
@@ -1366,77 +1348,11 @@ abstract class AppLocalizations {
   /// **'Overspent'**
   String get overspent;
 
-  /// No description provided for @replaceAll.
-  ///
-  /// In en, this message translates to:
-  /// **'Replace all'**
-  String get replaceAll;
-
-  /// No description provided for @fromDate.
-  ///
-  /// In en, this message translates to:
-  /// **'From date'**
-  String get fromDate;
-
-  /// No description provided for @effectiveFrom.
-  ///
-  /// In en, this message translates to:
-  /// **'Effective from'**
-  String get effectiveFrom;
-
-  /// No description provided for @info.
-  ///
-  /// In en, this message translates to:
-  /// **'Info'**
-  String get info;
-
-  /// No description provided for @aboutBudget.
-  ///
-  /// In en, this message translates to:
-  /// **'About budget'**
-  String get aboutBudget;
-
-  /// No description provided for @budgetDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Budget is a monthly spending limit. You can track how much you spend against it and add new amounts when your budget changes.'**
-  String get budgetDescription;
-
-  /// No description provided for @addOptions.
-  ///
-  /// In en, this message translates to:
-  /// **'Add options'**
-  String get addOptions;
-
-  /// No description provided for @replaceAllDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Replaces all budget history with the new amount. Use when you want to reset your budget completely.'**
-  String get replaceAllDescription;
-
-  /// No description provided for @fromDateDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Adds a new budget amount effective from a specific date. Previous entries remain in history.'**
-  String get fromDateDescription;
-
-  /// No description provided for @yearlyBudget.
-  ///
-  /// In en, this message translates to:
-  /// **'Yearly budget'**
-  String get yearlyBudget;
-
   /// No description provided for @monthlyBudget.
   ///
   /// In en, this message translates to:
   /// **'Monthly budget'**
   String get monthlyBudget;
-
-  /// No description provided for @weeklyBudget.
-  ///
-  /// In en, this message translates to:
-  /// **'Weekly budget'**
-  String get weeklyBudget;
 
   /// No description provided for @budgetCategories.
   ///
@@ -1449,6 +1365,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Limit exceeded'**
   String get limitExceeded;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get thisMonth;
+
+  /// No description provided for @nextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get nextMonth;
+
+  /// No description provided for @setLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Set limit'**
+  String get setLimit;
+
+  /// No description provided for @remainingBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining budget'**
+  String get remainingBudget;
+
+  /// No description provided for @limitExceedsRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit exceeds remaining budget'**
+  String get limitExceedsRemaining;
+
+  /// No description provided for @fixedLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed'**
+  String get fixedLimit;
+
+  /// No description provided for @percentLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Percent'**
+  String get percentLimit;
+
+  /// No description provided for @clearLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear limit'**
+  String get clearLimit;
+
+  /// No description provided for @allocatedLimits.
+  ///
+  /// In en, this message translates to:
+  /// **'Allocated'**
+  String get allocatedLimits;
+
+  /// No description provided for @fixedLimitsExceedBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed category limits exceed the new budget amount'**
+  String get fixedLimitsExceedBudget;
+
+  /// No description provided for @budgetStartsFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts from'**
+  String get budgetStartsFrom;
 
   /// No description provided for @wallets.
   ///

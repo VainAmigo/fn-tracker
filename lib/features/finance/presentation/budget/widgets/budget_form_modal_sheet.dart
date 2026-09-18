@@ -6,10 +6,9 @@ import 'package:fn_tracker/l10n/l10.dart';
 import 'package:fn_tracker/theme/themes.dart';
 import 'package:provider/provider.dart';
 
-import 'budget_effective_date_selector.dart';
-import 'budget_info_modal_sheet.dart';
+enum BudgetStartMonth { thisMonth, nextMonth }
 
-/// Bottom sheet для создания/редактирования бюджета с выбором типа.
+/// Bottom sheet для создания/редактирования месячного бюджета.
 class BudgetFormModalSheet extends StatefulWidget {
   const BudgetFormModalSheet({
     super.key,
@@ -18,28 +17,24 @@ class BudgetFormModalSheet extends StatefulWidget {
     this.onSave,
     this.saveLabel,
     this.title,
+    this.categories = const [],
   });
 
   final double? initialAmount;
   final bool isEdit;
-  final void Function(
-    double amount, {
-    String? effectiveDayKey,
-    bool replaceAll,
-  })?
-  onSave;
+  final void Function(double amount, {required String startMonthKey})? onSave;
   final String? saveLabel;
   final String? title;
+  final List<CategoryModel> categories;
 
-  /// Показать sheet для создания/редактирования бюджета.
   static Future<void> show(
     BuildContext context, {
     double? initialAmount,
     bool isEdit = false,
-    void Function(double amount, {String? effectiveDayKey, bool replaceAll})?
-    onSave,
+    void Function(double amount, {required String startMonthKey})? onSave,
     String? saveLabel,
     String? title,
+    List<CategoryModel> categories = const [],
   }) {
     return AppBottomSheet.showFittedModalBottomSheet<void>(
       context,
@@ -51,6 +46,7 @@ class BudgetFormModalSheet extends StatefulWidget {
         onSave: onSave,
         saveLabel: saveLabel ?? context.l10n.save,
         title: title,
+        categories: categories,
       ),
     );
   }
@@ -61,8 +57,8 @@ class BudgetFormModalSheet extends StatefulWidget {
 
 class _BudgetFormModalSheetState extends State<BudgetFormModalSheet> {
   late String _amountText;
-  BudgetEffectiveDateMode _effectiveMode = BudgetEffectiveDateMode.replaceAll;
-  DateTime _effectiveDate = DateTime.now();
+  BudgetStartMonth _startMonth = BudgetStartMonth.thisMonth;
+  String? _error;
 
   @override
   void initState() {
@@ -70,6 +66,14 @@ class _BudgetFormModalSheetState extends State<BudgetFormModalSheet> {
     _amountText = widget.initialAmount != null
         ? AmountFormUtils.formatAmountForInput(widget.initialAmount!)
         : '';
+  }
+
+  String _monthKeyFor(BudgetStartMonth start) {
+    final now = DateTime.now();
+    final date = start == BudgetStartMonth.thisMonth
+        ? DateTime(now.year, now.month)
+        : DateTime(now.year, now.month + 1);
+    return date.periodKey;
   }
 
   @override
@@ -89,52 +93,66 @@ class _BudgetFormModalSheetState extends State<BudgetFormModalSheet> {
         children: [
           ModalSheetTitleWidget(
             title: widget.title ?? context.l10n.budget,
-            action: widget.isEdit
-                ? PrimaryButton(
-                    text: context.l10n.info,
-                    onPressed: () => BudgetInfoModalSheet.show(context),
-                    size: PrimaryButtonSize.xSmall,
-                    fullWidth: false,
-                    rounded: true,
-                    iconOnly: true,
-                    icon: Icons.info_outline,
-                  )
-                : null,
           ),
-          if (widget.isEdit) ...[
-            const SizedBox(height: AppSizing.spaceBtwItems),
-            BudgetEffectiveDateSelector(
-              mode: _effectiveMode,
-              effectiveDate: _effectiveDate,
-              onModeChanged: (m) => setState(() => _effectiveMode = m),
-              onDateChanged: (d) {
-                if (mounted) setState(() => _effectiveDate = d);
-              },
+          const SizedBox(height: AppSizing.spaceBtwItems),
+          SegmentedControl<BudgetStartMonth>(
+            segments: [
+              SegmentItem(
+                value: BudgetStartMonth.thisMonth,
+                label: context.l10n.thisMonth,
+              ),
+              SegmentItem(
+                value: BudgetStartMonth.nextMonth,
+                label: context.l10n.nextMonth,
+              ),
+            ],
+            selectedValue: _startMonth,
+            onChanged: (m) => setState(() {
+              _startMonth = m;
+              _error = null;
+            }),
+          ),
+          const SizedBox(height: AppSizing.spaceBtwItemsExtra),
+          Text(
+            '${context.l10n.budgetStartsFrom}: ${_monthKeyFor(_startMonth)}',
+            style: AppTextStyles.text12w400(context).copyWith(
+              color: Theme.of(context).colorScheme.onSecondary,
             ),
-          ],
+          ),
           const SizedBox(height: AppSizing.spaceBtwItems),
           AmountInputWidget(
             enableCalculator: true,
             initialAmount: _amountText,
             currency: currency,
-            onAmountChanged: (amount) => setState(() => _amountText = amount),
+            onAmountChanged: (amount) => setState(() {
+              _amountText = amount;
+              _error = null;
+            }),
           ),
+          if (_error != null) ...[
+            const SizedBox(height: AppSizing.spaceBtwItems),
+            Text(
+              _error!,
+              style: AppTextStyles.text12w400(context).copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          ],
           const SizedBox(height: AppSizing.spaceBtwItems),
           PrimaryButton(
             text: widget.saveLabel ?? context.l10n.save,
             onPressed: () {
               final parsed = AmountFormUtils.parseAmount(_amountText);
               if (parsed == null || parsed <= 0) return;
-              final replaceAll =
-                  _effectiveMode == BudgetEffectiveDateMode.replaceAll;
-              final effectiveDayKey =
-                  _effectiveMode == BudgetEffectiveDateMode.fromDate
-                  ? _effectiveDate.dayKey
-                  : null;
+              final fixedTotal =
+                  BudgetCalculator.fixedLimitsTotal(widget.categories);
+              if (fixedTotal > parsed) {
+                setState(() => _error = context.l10n.fixedLimitsExceedBudget);
+                return;
+              }
               widget.onSave?.call(
                 parsed,
-                effectiveDayKey: effectiveDayKey,
-                replaceAll: replaceAll,
+                startMonthKey: _monthKeyFor(_startMonth),
               );
               if (context.mounted) Navigator.of(context).pop();
             },

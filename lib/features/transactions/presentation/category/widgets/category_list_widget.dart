@@ -105,14 +105,16 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
         final icon = findIconById(category.iconId);
         final color = shade?.color ?? Colors.grey;
         final radius = radiusForIndex(index, total);
+        final limitLabel = BudgetDisplayUtils.formatCategoryLimit(
+          category,
+          currencySymbol: currency.symbol,
+          formatAmount: (a) => AmountFormatter.format(a),
+        );
 
         final card = CategoryCard(
           title: category.name,
-          subtitle: category.limitValue != null
-              ? AmountFormatter.formatWithDots(
-                  context.l10n.limit,
-                  '${category.limitValue} ${currency.symbol}',
-                )
+          subtitle: limitLabel != null
+              ? AmountFormatter.formatWithDots(context.l10n.limit, limitLabel)
               : null,
           leading: Container(
             height: AppSizing.heightS,

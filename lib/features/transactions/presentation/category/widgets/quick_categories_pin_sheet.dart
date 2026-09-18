@@ -75,15 +75,7 @@ class _QuickCategoriesPinSheetState extends State<QuickCategoriesPinSheet> {
         final shouldBePinned = _pinnedIds.contains(category.categoryId);
         if (category.isQuick != shouldBePinned) {
           await categoriesCubit.updateCategory(
-            categoryModel: CategoryModel(
-              categoryId: category.categoryId,
-              name: category.name,
-              colorId: category.colorId,
-              iconId: category.iconId,
-              limitValue: category.limitValue,
-              createdAt: category.createdAt,
-              isQuick: shouldBePinned,
-            ),
+            categoryModel: category.copyWith(isQuick: shouldBePinned),
           );
         }
       }

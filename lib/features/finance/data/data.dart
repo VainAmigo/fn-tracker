@@ -4,6 +4,7 @@ export 'models/budget_stat_model.dart';
 export 'models/wallet_model.dart';
 export 'models/goal_model.dart';
 export 'models/scheduled_payment_model.dart';
+export 'budget_calculator.dart';
 export 'repository/finance_repository.dart';
 export 'repository/finance_repo_impl.dart';
 export 'services/scheduled_payment_auto_create_service.dart';

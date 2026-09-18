@@ -656,15 +656,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get deleteBudgetConfirmation => 'Удалить этот бюджет?';
 
   @override
-  String get noHistoryEntries => 'Нет записей истории';
-
-  @override
-  String get editHistoryEntry => 'Изменить запись';
-
-  @override
-  String get deleteHistoryEntry => 'Удалить запись истории?';
-
-  @override
   String get budgetExceeded => 'Бюджет превышен';
 
   @override
@@ -674,49 +665,47 @@ class AppLocalizationsRu extends AppLocalizations {
   String get overspent => 'Перерасход';
 
   @override
-  String get replaceAll => 'Заменить всё';
-
-  @override
-  String get fromDate => 'С даты';
-
-  @override
-  String get effectiveFrom => 'Действует с';
-
-  @override
-  String get info => 'Сведения';
-
-  @override
-  String get aboutBudget => 'О бюджете';
-
-  @override
-  String get budgetDescription =>
-      'Бюджет — это месячный лимит расходов. Вы можете отслеживать траты относительно него и добавлять новые суммы при изменении бюджета.';
-
-  @override
-  String get addOptions => 'Варианты добавления';
-
-  @override
-  String get replaceAllDescription =>
-      'Полностью заменяет историю бюджета новой суммой. Используйте, если хотите полностью сбросить бюджет.';
-
-  @override
-  String get fromDateDescription =>
-      'Добавляет новую сумму бюджета, действующую с указанной даты. Предыдущие записи остаются в истории.';
-
-  @override
-  String get yearlyBudget => 'Годовой бюджет';
-
-  @override
   String get monthlyBudget => 'Месячный бюджет';
-
-  @override
-  String get weeklyBudget => 'Недельный бюджет';
 
   @override
   String get budgetCategories => 'Категории бюджета';
 
   @override
   String get limitExceeded => 'Лимит превышен';
+
+  @override
+  String get thisMonth => 'Этот месяц';
+
+  @override
+  String get nextMonth => 'Следующий месяц';
+
+  @override
+  String get setLimit => 'Задать лимит';
+
+  @override
+  String get remainingBudget => 'Остаток бюджета';
+
+  @override
+  String get limitExceedsRemaining => 'Лимит превышает остаток бюджета';
+
+  @override
+  String get fixedLimit => 'Фикс';
+
+  @override
+  String get percentLimit => 'Процент';
+
+  @override
+  String get clearLimit => 'Сбросить лимит';
+
+  @override
+  String get allocatedLimits => 'Выделено';
+
+  @override
+  String get fixedLimitsExceedBudget =>
+      'Фикс-лимиты категорий превышают новую сумму бюджета';
+
+  @override
+  String get budgetStartsFrom => 'Действует с';
 
   @override
   String get wallets => 'Кошельки';

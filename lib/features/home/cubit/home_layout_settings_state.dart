@@ -12,12 +12,11 @@ class HomeLayoutSettingsState {
   /// Видимость по ключу [HomeSection.storageKey].
   final Map<String, bool> sectionVisible;
 
-  /// wallets → quickCategories → lastTransactions → budget
+  /// wallets → quickCategories → lastTransactions
   static List<int> get defaultOrder => [
     HomeSection.wallets.index,
     HomeSection.quickCategories.index,
     HomeSection.lastTransactions.index,
-    HomeSection.budget.index,
   ];
 
   static Map<String, bool> get defaultVisibility => {

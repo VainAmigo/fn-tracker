@@ -14,7 +14,7 @@ class WalletBudgetTabWidget extends StatefulWidget {
 }
 
 class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
-  DatePickerPeriod? _currentPeriod;
+  MonthlyPeriod? _currentPeriod;
 
   void _onPeriodChange(DatePickerPeriod period) {
     context.read<BudgetCubit>().loadBudgetStats(
@@ -22,20 +22,27 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
       endDayKey: period.endDayKey,
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) setState(() => _currentPeriod = period);
+      if (!mounted) return;
+      if (period is MonthlyPeriod) {
+        setState(() => _currentPeriod = period);
+      }
     });
   }
 
-  DatePickerPeriod _periodOrDefault() {
+  MonthlyPeriod _periodOrDefault() {
     if (_currentPeriod != null) return _currentPeriod!;
     final (:start, :end) = MonthRangeUtils.currentMonth();
     return MonthlyPeriod(year: start.year, month: Month.fromDateTime(start));
   }
 
+  List<CategoryModel> _categoriesFrom(BudgetStatModel stats) =>
+      stats.categorySpending.map((e) => e.category).toList();
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: MonthPickerScrollWidget(
+        showModeTabs: false,
         onPeriodChange: _onPeriodChange,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,41 +54,39 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                   BudgetInitial() || BudgetLoading() => const Center(
                     child: CircularProgressIndicator(),
                   ),
-                  BudgetStatsLoaded(:final stats, :final history) =>
+                  BudgetStatsLoaded(:final stats) =>
                     stats.budget == null
                         ? _NoBudgetPlaceholder(
-                            onCreatePressed: () => _showBudgetSheet(),
+                            onCreatePressed: () => _showBudgetSheet(
+                              categories: _categoriesFrom(stats),
+                            ),
                           )
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               BudgetSummaryCard(
-                                budget: stats.budget!,
-                                period: _periodOrDefault(),
-                                totalForPeriod: stats.totalForPeriod,
-                                history: history,
-                                transactions: stats.transactions,
+                                stats: stats,
+                                year: _periodOrDefault().year,
+                                month: _periodOrDefault().month.value,
+                                onTap: () => _showBudgetDetailsSheet(stats),
                               ),
                               const SizedBox(
                                 height: AppSizing.spaceBtwElements,
                               ),
                               BudgetDonutStatWidget(
-                                budget: stats.budget!,
-                                period: _periodOrDefault(),
+                                budgetAmount: stats.budgetAmount,
                                 totalForPeriod: stats.totalForPeriod,
-                                history: history,
-                                onBudgetTap: () => _showBudgetDetailsSheet(
-                                  budget: stats.budget!,
-                                  totalForPeriod: stats.totalForPeriod,
-                                  history: history,
-                                ),
+                                onBudgetTap: () =>
+                                    _showBudgetDetailsSheet(stats),
                               ),
                               const SizedBox(
                                 height: AppSizing.spaceBtwSections,
                               ),
                               BudgetsSpendingCategoriesListWidget(
                                 categorySpending: stats.categorySpending,
+                                onCategoryTap: (spending) =>
+                                    _showCategoryActions(stats, spending),
                               ),
                             ],
                           ),
@@ -104,41 +109,87 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
     );
   }
 
-  void _showBudgetDetailsSheet({
-    required BudgetModel budget,
-    required double totalForPeriod,
-    required List<BudgetHistoryEntry> history,
-  }) {
-    final period = _periodOrDefault();
+  void _showBudgetDetailsSheet(BudgetStatModel stats) {
+    final budget = stats.budget;
+    if (budget == null) return;
     BudgetDetailsSheet.show(
       context,
       budget: budget,
-      totalForPeriod: totalForPeriod,
-      period: period,
-      history: history,
-      onEdit: () => _showBudgetSheet(existingBudget: budget),
+      budgetAmount: stats.budgetAmount,
+      onEdit: () => _showBudgetSheet(
+        existingBudget: budget,
+        initialAmount: stats.budgetAmount,
+        categories: _categoriesFrom(stats),
+      ),
     );
   }
 
-  void _showBudgetSheet({BudgetModel? existingBudget}) {
+  void _showBudgetSheet({
+    BudgetModel? existingBudget,
+    double? initialAmount,
+    List<CategoryModel> categories = const [],
+  }) {
     BudgetFormModalSheet.show(
       context,
-      initialAmount: existingBudget?.amount,
+      initialAmount: initialAmount ?? existingBudget?.amount,
       isEdit: existingBudget != null,
       saveLabel: context.l10n.save,
-      title: existingBudget != null ? context.l10n.editBudget : context.l10n.createBudget,
-      onSave: (amount, {String? effectiveDayKey, bool replaceAll = false}) {
+      title: existingBudget != null
+          ? context.l10n.editBudget
+          : context.l10n.createBudget,
+      categories: categories,
+      onSave: (amount, {required String startMonthKey}) {
         if (existingBudget != null) {
           context.read<BudgetCubit>().updateBudget(
             budget: BudgetModel(id: existingBudget.id, amount: amount),
-            effectiveDayKey: effectiveDayKey,
-            replaceAll: replaceAll,
+            startMonthKey: startMonthKey,
           );
         } else {
           context.read<BudgetCubit>().createBudget(
             budget: BudgetModel(id: '', amount: amount),
+            startMonthKey: startMonthKey,
           );
         }
+      },
+    );
+  }
+
+  void _showCategoryActions(
+    BudgetStatModel stats,
+    CategorySpending spending,
+  ) {
+    final categories = _categoriesFrom(stats);
+    BudgetCategoryActionsSheet.show(
+      context,
+      spending: spending,
+      budgetAmount: stats.budgetAmount,
+      allCategories: categories,
+      onSetLimit: () {
+        BudgetCategoryLimitSheet.show(
+          context,
+          category: spending.category,
+          budgetAmount: stats.budgetAmount,
+          allCategories: categories,
+          onSave: ({
+            required CategoryLimitType limitType,
+            required double? limitValue,
+          }) async {
+            final updated = spending.category.copyWith(
+              limitType: limitType,
+              limitValue: limitValue,
+              clearLimitValue: limitType == CategoryLimitType.none,
+            );
+            await context.read<CategoriesCubit>().updateCategory(
+              categoryModel: updated,
+            );
+            if (!mounted) return;
+            final period = _periodOrDefault();
+            await context.read<BudgetCubit>().loadBudgetStats(
+              startDayKey: period.startDayKey,
+              endDayKey: period.endDayKey,
+            );
+          },
+        );
       },
     );
   }

@@ -23,68 +23,38 @@ class BudgetCubit extends Cubit<BudgetState> {
         startDayKey: startDayKey,
         endDayKey: endDayKey,
       );
-      List<BudgetHistoryEntry> history = [];
-      if (stats.budget != null) {
-        await financeRepo.ensureBudgetHistoryIfEmpty(
-          budgetId: stats.budget!.id,
-          budget: stats.budget!,
-        );
-        history = await financeRepo.getBudgetHistory(stats.budget!.id);
-      }
-      emit(BudgetStatsLoaded(stats, history));
+      emit(BudgetStatsLoaded(stats));
     } catch (e) {
       emit(BudgetError(e.toString()));
     }
   }
 
-  Future<void> createBudget({required BudgetModel budget}) async {
-    await _executeWithReload(() => financeRepo.createBudget(budget: budget));
+  Future<void> createBudget({
+    required BudgetModel budget,
+    required String startMonthKey,
+  }) async {
+    await _executeWithReload(
+      () => financeRepo.createBudget(
+        budget: budget,
+        startMonthKey: startMonthKey,
+      ),
+    );
   }
 
   Future<void> updateBudget({
     required BudgetModel budget,
-    String? effectiveDayKey,
-    bool replaceAll = false,
+    required String startMonthKey,
   }) async {
-    await _executeWithReload(() => financeRepo.updateBudget(
-          budget: budget,
-          effectiveDayKey: effectiveDayKey,
-          replaceAll: replaceAll,
-        ));
+    await _executeWithReload(
+      () => financeRepo.updateBudget(
+        budget: budget,
+        startMonthKey: startMonthKey,
+      ),
+    );
   }
 
   Future<void> deleteBudget(String id) async {
     await _executeWithReload(() => financeRepo.deleteBudget(id));
-  }
-
-  Future<void> addBudgetHistoryEntry({
-    required String budgetId,
-    required BudgetHistoryEntry entry,
-  }) async {
-    await _executeWithReload(() => financeRepo.addBudgetHistoryEntry(
-          budgetId: budgetId,
-          entry: entry,
-        ));
-  }
-
-  Future<void> updateBudgetHistoryEntry({
-    required String budgetId,
-    required BudgetHistoryEntry entry,
-  }) async {
-    await _executeWithReload(() => financeRepo.updateBudgetHistoryEntry(
-          budgetId: budgetId,
-          entry: entry,
-        ));
-  }
-
-  Future<void> deleteBudgetHistoryEntry({
-    required String budgetId,
-    required String entryId,
-  }) async {
-    await _executeWithReload(() => financeRepo.deleteBudgetHistoryEntry(
-          budgetId: budgetId,
-          entryId: entryId,
-        ));
   }
 
   Future<void> _executeWithReload(Future<void> Function() action) async {
@@ -103,11 +73,7 @@ class BudgetCubit extends Cubit<BudgetState> {
         startDayKey: _lastStartDayKey!,
         endDayKey: _lastEndDayKey!,
       );
-      List<BudgetHistoryEntry> history = [];
-      if (stats.budget != null) {
-        history = await financeRepo.getBudgetHistory(stats.budget!.id);
-      }
-      emit(BudgetStatsLoaded(stats, history));
+      emit(BudgetStatsLoaded(stats));
     }
   }
 }

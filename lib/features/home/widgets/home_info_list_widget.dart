@@ -45,19 +45,6 @@ class HomeInfoListWidget extends StatelessWidget {
 
   Widget _buildSection(BuildContext context, HomeSection section) {
     return switch (section) {
-      HomeSection.budget => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TitledSection(
-            title: context.l10n.budget,
-            children: [
-              const HomeBudgetSummaryWidget(),
-              const SizedBox(height: AppSizing.spaceBtwElements),
-            ],
-          ),
-        ],
-      ),
       HomeSection.wallets => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
