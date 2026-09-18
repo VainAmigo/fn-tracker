@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="quick_add"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/quick_add_shortcut_short"
+        android:shortcutLongLabel="@string/quick_add_shortcut_long">
+        <intent
+            android:action="com.example.fn_tracker.action.QUICK_ADD"
+            android:targetPackage="com.example.fn_tracker"
+            android:targetClass="com.example.fn_tracker.QuickAddActivity" />
+    </shortcut>
+</shortcuts>
