@@ -76,7 +76,7 @@ class _SpendingCategoryCard extends StatelessWidget {
 
     final limit = spending.resolvedLimit;
     final hasLimit = limit != null && limit > 0;
-    final exceeded = hasLimit && spent > limit!;
+    final exceeded = hasLimit && spent > limit;
 
     final limitLabel = BudgetDisplayUtils.formatCategoryLimit(
       category,
@@ -149,11 +149,11 @@ class _SpendingCategoryCard extends StatelessWidget {
                 segments: exceeded
                     ? [
                         BarChartSegment(
-                          value: spent > limit! ? spent - limit : spent,
+                          value: spent > limit ? spent - limit : spent,
                           color: colorScheme.error,
                         ),
                         BarChartSegment(
-                          value: spent > limit! ? 0 : limit,
+                          value: spent > limit ? 0 : limit,
                           color: colorScheme.onSecondary,
                         ),
                       ]
@@ -163,7 +163,7 @@ class _SpendingCategoryCard extends StatelessWidget {
                           color: colorScheme.primary,
                         ),
                         BarChartSegment(
-                          value: limit! - spent,
+                          value: limit - spent,
                           color: colorScheme.onSecondary,
                         ),
                       ],
@@ -173,7 +173,7 @@ class _SpendingCategoryCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AmountDividerWidget(leftAmount: spent, rightAmount: limit!),
+                  AmountDividerWidget(leftAmount: spent, rightAmount: limit),
                   if (isPastMonth)
                     _PastMonthResult(
                       savedOrOverrun: (limit - spent).abs(),
@@ -213,8 +213,9 @@ class _PastMonthResult extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final color = exceeded ? colorScheme.error : colorScheme.primary;
-    final label =
-        exceeded ? context.l10n.overrunAmount : context.l10n.savedAmount;
+    final label = exceeded
+        ? context.l10n.overrunAmount
+        : context.l10n.savedAmount;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
