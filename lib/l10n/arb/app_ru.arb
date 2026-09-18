@@ -215,6 +215,8 @@
   "monthlyBudget": "Месячный бюджет",
   "budgetCategories": "Категории бюджета",
   "limitExceeded": "Лимит превышен",
+  "savedAmount": "Сэкономлено",
+  "overrunAmount": "Превышение",
   "thisMonth": "Этот месяц",
   "nextMonth": "Следующий месяц",
   "setLimit": "Задать лимит",

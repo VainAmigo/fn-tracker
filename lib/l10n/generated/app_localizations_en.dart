@@ -673,6 +673,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get limitExceeded => 'Limit exceeded';
 
   @override
+  String get savedAmount => 'Saved';
+
+  @override
+  String get overrunAmount => 'Overrun';
+
+  @override
   String get thisMonth => 'This month';
 
   @override

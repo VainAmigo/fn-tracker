@@ -1366,6 +1366,18 @@ abstract class AppLocalizations {
   /// **'Limit exceeded'**
   String get limitExceeded;
 
+  /// No description provided for @savedAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get savedAmount;
+
+  /// No description provided for @overrunAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Overrun'**
+  String get overrunAmount;
+
   /// No description provided for @thisMonth.
   ///
   /// In en, this message translates to:

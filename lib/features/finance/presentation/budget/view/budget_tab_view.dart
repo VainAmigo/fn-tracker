@@ -85,6 +85,11 @@ class _WalletBudgetTabWidgetState extends State<WalletBudgetTabWidget> {
                               ),
                               BudgetsSpendingCategoriesListWidget(
                                 categorySpending: stats.categorySpending,
+                                isPastMonth: _periodOrDefault()
+                                    .startDate
+                                    .periodKey
+                                    .compareTo(DateTime.now().periodKey) <
+                                    0,
                                 onCategoryTap: (spending) =>
                                     _showCategoryActions(stats, spending),
                               ),

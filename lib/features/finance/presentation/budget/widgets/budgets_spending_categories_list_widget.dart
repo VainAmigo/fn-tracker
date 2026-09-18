@@ -11,10 +11,12 @@ class BudgetsSpendingCategoriesListWidget extends StatelessWidget {
     super.key,
     required this.categorySpending,
     required this.onCategoryTap,
+    this.isPastMonth = false,
   });
 
   final List<CategorySpending> categorySpending;
   final void Function(CategorySpending spending) onCategoryTap;
+  final bool isPastMonth;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +38,7 @@ class BudgetsSpendingCategoriesListWidget extends StatelessWidget {
                 spending: categorySpending[i],
                 currency: currency,
                 radius: radiusForIndex(i, total),
+                isPastMonth: isPastMonth,
                 onTap: () => onCategoryTap(categorySpending[i]),
               ),
             ],
@@ -51,12 +54,14 @@ class _SpendingCategoryCard extends StatelessWidget {
     required this.spending,
     required this.currency,
     required this.radius,
+    required this.isPastMonth,
     required this.onTap,
   });
 
   final CategorySpending spending;
   final Currency currency;
   final CardRadius radius;
+  final bool isPastMonth;
   final VoidCallback onTap;
 
   @override
@@ -71,7 +76,7 @@ class _SpendingCategoryCard extends StatelessWidget {
 
     final limit = spending.resolvedLimit;
     final hasLimit = limit != null && limit > 0;
-    final exceeded = hasLimit && spent > limit;
+    final exceeded = hasLimit && spent > limit!;
 
     final limitLabel = BudgetDisplayUtils.formatCategoryLimit(
       category,
@@ -144,11 +149,11 @@ class _SpendingCategoryCard extends StatelessWidget {
                 segments: exceeded
                     ? [
                         BarChartSegment(
-                          value: spent > limit ? spent - limit : spent,
+                          value: spent > limit! ? spent - limit : spent,
                           color: colorScheme.error,
                         ),
                         BarChartSegment(
-                          value: spent > limit ? 0 : limit,
+                          value: spent > limit! ? 0 : limit,
                           color: colorScheme.onSecondary,
                         ),
                       ]
@@ -158,7 +163,7 @@ class _SpendingCategoryCard extends StatelessWidget {
                           color: colorScheme.primary,
                         ),
                         BarChartSegment(
-                          value: limit - spent,
+                          value: limit! - spent,
                           color: colorScheme.onSecondary,
                         ),
                       ],
@@ -168,23 +173,62 @@ class _SpendingCategoryCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AmountDividerWidget(leftAmount: spent, rightAmount: limit),
-                  Text(
-                    exceeded
-                        ? context.l10n.limitExceeded
-                        : '${((limit - spent) / limit * 100).clamp(0, 100).toStringAsFixed(0)}% ${context.l10n.remaining}',
-                    style: AppTextStyles.listTileSubtitle(context).copyWith(
-                      color: exceeded
-                          ? colorScheme.error
-                          : colorScheme.onSecondary,
+                  AmountDividerWidget(leftAmount: spent, rightAmount: limit!),
+                  if (isPastMonth)
+                    _PastMonthResult(
+                      savedOrOverrun: (limit - spent).abs(),
+                      exceeded: exceeded,
+                    )
+                  else
+                    Text(
+                      exceeded
+                          ? context.l10n.limitExceeded
+                          : '${((limit - spent) / limit * 100).clamp(0, 100).toStringAsFixed(0)}% ${context.l10n.remaining}',
+                      style: AppTextStyles.listTileSubtitle(context).copyWith(
+                        color: exceeded
+                            ? colorScheme.error
+                            : colorScheme.onSecondary,
+                      ),
                     ),
-                  ),
                 ],
               ),
             ],
           ],
         ),
       ),
+    );
+  }
+}
+
+class _PastMonthResult extends StatelessWidget {
+  const _PastMonthResult({
+    required this.savedOrOverrun,
+    required this.exceeded,
+  });
+
+  final double savedOrOverrun;
+  final bool exceeded;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = exceeded ? colorScheme.error : colorScheme.primary;
+    final label =
+        exceeded ? context.l10n.overrunAmount : context.l10n.savedAmount;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: AppTextStyles.listTileSubtitle(context).copyWith(color: color),
+        ),
+        AmountTextWidget(
+          amount: savedOrOverrun,
+          style: AppTextStyles.listTileTitle(context).copyWith(color: color),
+        ),
+      ],
     );
   }
 }

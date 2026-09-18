@@ -674,6 +674,12 @@ class AppLocalizationsKy extends AppLocalizations {
   String get limitExceeded => 'Чек ашылды';
 
   @override
+  String get savedAmount => 'Үнөмдөлдү';
+
+  @override
+  String get overrunAmount => 'Ашып кетти';
+
+  @override
   String get thisMonth => 'Бул ай';
 
   @override

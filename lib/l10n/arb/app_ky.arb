@@ -215,6 +215,8 @@
   "monthlyBudget": "Айлык бюджет",
   "budgetCategories": "Бюджет категориялары",
   "limitExceeded": "Чек ашылды",
+  "savedAmount": "Үнөмдөлдү",
+  "overrunAmount": "Ашып кетти",
   "thisMonth": "Бул ай",
   "nextMonth": "Кийинки ай",
   "setLimit": "Чек коюу",

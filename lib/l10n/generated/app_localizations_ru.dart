@@ -674,6 +674,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get limitExceeded => 'Лимит превышен';
 
   @override
+  String get savedAmount => 'Сэкономлено';
+
+  @override
+  String get overrunAmount => 'Превышение';
+
+  @override
   String get thisMonth => 'Этот месяц';
 
   @override
